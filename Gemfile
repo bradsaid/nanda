@@ -43,24 +43,14 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 gem "slim-rails"
 
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+gem "roo"                 # XLSX reader
+gem "activerecord-import" # fast bulk inserts (optional but recommended)
+# for Roo on Ruby 3.4+
+gem "csv"
+gem "geocoder", "~> 1.8"
 
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
 
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
-end
 
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-end
 
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-end
+
+

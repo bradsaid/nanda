@@ -1,0 +1,28 @@
+/ wrap everything so it stacks vertically
+.w-full.flex.flex-col.gap-4
+  h1.text-2xl.font-bold Survivors
+
+  = form_with url: survivors_path, method: :get, local: true, class: "flex flex-wrap gap-2 items-end" do
+    .flex.flex-col
+      label.text-sm.font-medium.mb-1 for="q" Search
+      = text_field_tag :q, @q, placeholder: "Search name…", class: "border rounded px-3 py-2 w-64"
+    .flex.items-end.gap-2
+      = submit_tag "Search", class: "px-3 py-2 rounded bg-gray-900 text-white"
+      = link_to "Reset", survivors_path, class: "px-3 py-2 rounded border"
+
+  .table.w-full.border.rounded-lg.overflow-hidden
+    table.w-full[data-sort]
+      thead.bg-gray-100.text-sm
+        tr
+          th.px-3.py-2.text-left[data-key="name"] Name
+          th.px-3.py-2.text-right[data-key="episodes"] Episodes
+      tbody.text-sm
+        - if (@survivors || []).empty?
+          tr
+            td.px-3.py-4.text-gray-500 colspan="2" No survivors
+        - else
+          - (@survivors || []).each do |s|
+            - ep_count = (s.respond_to?(:appearances_count) ? s.read_attribute(:appearances_count).to_i : s.appearances.size)
+            tr.border-t[data-name=s.full_name data-episodes=ep_count]
+              td.px-3.py-2 = link_to s.full_name, survivor_path(s), class: "underline"
+              td.px-3.py-2.text-right = ep_count

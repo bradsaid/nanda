@@ -1,0 +1,73 @@
+/ === Episodes list (vertical cards) ===
+- grouped = @episodes.group_by { |e| [e.season.series.name, e.season.number] }
+
+.text-gray-900
+  - grouped.each do |(series_name, season_num), eps|
+    h2.text-lg.font-semibold.mt-6.mb-3 = "#{series_name} — Season #{season_num}"
+
+    - eps.each do |ep|
+      - loc = ep.location
+      - loc_str = [loc&.country, loc&.region, loc&.site].compact.join(" • ").presence || "—"
+      - air_str = ep.air_date&.strftime("%b %-d, %Y") || "—"
+      - title   = ep.title.presence || "Untitled"
+
+      .rounded-lg.border.bg-white/80.backdrop-blur.p-4.mb-3
+        .flex.items-start.justify-between.gap-3
+          h3.font-semibold.text-base = link_to(title, episode_path(ep), class: "underline text-blue-700")
+          span.text-sm.text-gray-600 = "S#{season_num} • E#{ep.number_in_season || '—'}"
+
+        dl.mt-2.divide-y.divide-gray-200
+          .grid.grid-cols-3.sm:grid-cols-4.gap-2.py-2
+            dt.text-xs.text-gray-500 Air date
+            dd.col-span-2.sm:col-span-3 = air_str
+
+          / Survivors
+          .grid.grid-cols-3.sm:grid-cols-4.gap-2.py-2
+            dt.text-xs.text-gray-500 Survivors
+            dd.col-span-2.sm:col-span-3
+              - if ep.appearances.any?
+                ul.space-y-1
+                  - ep.appearances.each do |a|
+                    - sv = a.survivor
+                    - next unless sv
+                    - brought_ais  = a.appearance_items.select { |ai| ai.source == "brought" && ai.item.present? }
+                    - brought_list = brought_ais.map { |ai| "#{ai.item.name}#{ai.quantity.to_i > 1 ? "×#{ai.quantity}" : ""}" }
+
+                    li
+                      = link_to(sv.full_name, survivor_path(sv), class: "underline text-blue-700")
+                      - if brought_list.any?
+                        |  — 
+                        = brought_list.join(", ")
+
+                / Shared "Given" items once per episode
+                - given_ais = ep.appearances.flat_map(&:appearance_items)
+                - given_ais = given_ais.select { |ai| ai.source == "given" && ai.item.present? }
+                - given_ais = given_ais.uniq { |ai| [ai.item_id, ai.quantity.to_i] }
+                - given_list = given_ais.map { |ai| "#{ai.item.name}#{ai.quantity.to_i > 1 ? "×#{ai.quantity}" : ""}" }
+                - if given_list.any?
+                  .pl-6.mt-2.text-sm.text-gray-700
+                    span.font-medium Given:
+                    | 
+                    = given_list.join(", ")
+              - else
+                | —
+
+
+
+
+          .grid.grid-cols-3.sm:grid-cols-4.gap-2.py-2
+            dt.text-xs.text-gray-500 Location
+            dd.col-span-2.sm:col-span-3 = loc_str
+
+          - if ep.participant_arrangement.present?
+            .grid.grid-cols-3.sm:grid-cols-4.gap-2.py-2
+              dt.text-xs.text-gray-500 Arrangement
+              dd.col-span-2.sm:col-span-3 = ep.participant_arrangement
+
+          - if ep.type_modifiers.present?
+            - mods = ep.type_modifiers.split(/[;,]/).map(&:strip).reject(&:blank?)
+            .grid.grid-cols-3.sm:grid-cols-4.gap-2.py-2
+              dt.text-xs.text-gray-500 Modifiers
+              dd.col-span-2.sm:col-span-3
+                - mods.each do |m|
+                  span.text-xs.rounded-full.bg-gray-100.px-2.py-0.5.mr-1 = m

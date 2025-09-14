@@ -1,3 +1,4 @@
+# config/routes.rb
 Rails.application.routes.draw do
   resource  :session,    only: %i[new create destroy]
   resources :passwords,  only: %i[new create edit update], param: :token
@@ -7,5 +8,15 @@ Rails.application.routes.draw do
     root to: "dashboard#show"
   end
 
-  root "admin/dashboard#show"  # temp: admin as homepage
+  resources :survivors, only: [:index, :show] do
+    get :datatable, on: :collection
+  end
+
+  resources :episodes,  only: [:index, :show]
+  resources :items,     only: [:index, :show]
+  resources :locations, only: [:index]
+
+  # NEW:
+  get "home", to: "home#index"
+  root "home#index"
 end
