@@ -1,0 +1,14 @@
+/ app/views/locations/index.html.slim
+- content_for :title, "Locations Map"
+
+- content_for :head do
+  link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+
+h1.text-2xl.font-bold.mb-4 Locations
+
+/ Map container (Leaflet JS initializes this; height is required)
+#map.w-full.rounded-lg.shadow
+
+
+
+

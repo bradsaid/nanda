@@ -1,0 +1,112 @@
+/ Items Index — analytics
+- content_for :title, "Items"
+
+h1.text-3xl.font-bold.mb-6 Items
+
+/ FILTERS
+= form_with url: items_path, method: :get, local: true, class: "bg-white/70 backdrop-blur border rounded-xl p-4 mb-6 flex flex-wrap gap-4 items-end" do
+  .flex.flex-col
+    label.text-sm.font-medium.mb-1 for="q" Search items
+    = text_field_tag :q, @q, placeholder: "e.g. Machete, Fire Starter", class: "border rounded px-3 py-2 w-64"
+  .flex.flex-col
+    label.text-sm.font-medium.mb-1 for="country" Country
+    = select_tag :country, options_for_select(@countries, @country), include_blank: "All countries", class: "border rounded px-3 py-2 w-56"
+  .flex.flex-col
+    label.text-sm.font-medium.mb-1 for="limit" Top N
+    = select_tag :limit, options_for_select([10, 20, 50, 100, 200], @limit), class: "border rounded px-3 py-2 w-32"
+  .flex.items-end.gap-2
+    = submit_tag "Apply", class: "px-4 py-2 rounded-lg bg-gray-900 text-white"
+    = link_to "Reset", items_path, class: "px-4 py-2 rounded-lg border"
+
+/ ROW: Top brought / Top given
+.grid.grid-cols-1.md:grid-cols-2.gap-6
+  .rounded-xl.border.bg-white.shadow-sm.overflow-hidden
+    .px-4.py-3.bg-gray-50.flex.items-center.justify-between
+      h2.text-lg.font-semibold Most common (brought)
+      - if @country.present?
+        span.text-xs.text-gray-600 = @country
+    table.w-full
+      thead.bg-gray-100.text-sm
+        tr
+          th.text-left.px-3.py-2.w-10 #
+          th.text-left.px-3.py-2 Item
+          th.text-right.px-3.py-2 Count
+      tbody.text-sm
+        - if @top_brought.blank?
+          tr
+            td.px-3.py-4.text-gray-500.colspan-3 No data
+        - else
+          - @top_brought.each_with_index do |r, i|
+            tr.border-t.hover:bg-gray-50
+              td.px-3.py-2 = i+1
+              td.px-3.py-2 = link_to r.name, item_path(r.id), class: "underline"
+              td.px-3.py-2.text-right = r.total.to_i
+
+  .rounded-xl.border.bg-white.shadow-sm.overflow-hidden
+    .px-4.py-3.bg-gray-50.flex.items-center.justify-between
+      h2.text-lg.font-semibold Most common (given)
+      - if @country.present?
+        span.text-xs.text-gray-600 = @country
+    table.w-full
+      thead.bg-gray-100.text-sm
+        tr
+          th.text-left.px-3.py-2.w-10 #
+          th.text-left.px-3.py-2 Item
+          th.text-right.px-3.py-2 Count
+      tbody.text-sm
+        - if @top_given.blank?
+          tr
+            td.px-3.py-4.text-gray-500.colspan-3 No data
+        - else
+          - @top_given.each_with_index do |r, i|
+            tr.border-t.hover:bg-gray-50
+              td.px-3.py-2 = i+1
+              td.px-3.py-2 = link_to r.name, item_path(r.id), class: "underline"
+              td.px-3.py-2.text-right = r.total.to_i
+
+/ RAREST
+.rounded-xl.border.bg-white.shadow-sm.overflow-hidden.mt-8
+  .px-4.py-3.bg-gray-50.flex.items-center.justify-between
+    h2.text-lg.font-semibold Rarest items (by total occurrences)
+    - if @q.present? || @country.present?
+      span.text-xs.text-gray-600 Filters applied
+  table.w-full
+    thead.bg-gray-100.text-sm
+      tr
+        th.text-left.px-3.py-2 Item
+        th.text-right.px-3.py-2 Total
+        th.text-right.px-3.py-2 Brought
+        th.text-right.px-3.py-2 Given
+    tbody.text-sm
+      - if @rarest.blank?
+        tr
+          td.px-3.py-4.text-gray-500.colspan-4 No data
+      - else
+        - @rarest.each do |r|
+          tr.border-t.hover:bg-gray-50
+            td.px-3.py-2 = link_to r.name, item_path(r.id), class: "underline"
+            td.px-3.py-2.text-right = r.total.to_i
+            td.px-3.py-2.text-right = r.try(:brought_total).to_i
+            td.px-3.py-2.text-right = r.try(:given_total).to_i
+
+/ ITEMS PER COUNTRY
+h2.text-lg.font-semibold.mt-10.mb-3 Items per country (top 10 each)
+.grid.grid-cols-1.sm:grid-cols-2.lg:grid-cols-3.gap-6
+  - if @items_by_country.blank?
+    .text-gray-500 No country data available.
+  - else
+    - @items_by_country.each do |country, rows|
+      .rounded-xl.border.bg-white.shadow-sm.overflow-hidden
+        .px-4.py-3.bg-gray-50.font-medium.flex.items-center.justify-between
+          span = country.presence || "Unknown"
+          span.text-xs.text-gray-500 = "#{rows.sum { |r| r.total.to_i }} total"
+        table.w-full
+          thead.bg-gray-100.text-xs.uppercase.tracking-wide
+            tr
+              th.text-left.px-3.py-2 Item
+              th.text-right.px-3.py-2 Total
+          tbody.text-sm
+            - rows.each do |row|
+              tr.border-t.hover:bg-gray-50
+                td.px-3.py-2 = link_to row.item_name, item_path(row.item_id), class: "underline"
+                td.px-3.py-2.text-right = row.total.to_i

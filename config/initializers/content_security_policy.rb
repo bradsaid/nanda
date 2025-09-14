@@ -23,3 +23,29 @@
 #   # Report violations without enforcing the policy.
 #   # config.content_security_policy_report_only = true
 # end
+
+Rails.application.config.content_security_policy do |policy|
+  policy.script_src :self, :https, "https://code.jquery.com", "https://cdn.datatables.net"
+  policy.style_src  :self, :https, "https://cdn.datatables.net"
+end
+
+# Make Rails emit nonces so inline tags from helpers (e.g. importmap) are allowed
+Rails.application.config.content_security_policy_nonce_generator = ->(_req) { SecureRandom.base64(16) }
+Rails.application.config.content_security_policy_nonce_directives = %w(script-src style-src)
+
+Rails.application.configure do
+  config.content_security_policy do |p|
+    cdn = "https://unpkg.com"
+    p.default_src :self
+    p.script_src  :self
+    p.style_src   :self, :https, cdn
+    p.style_src_attr :unsafe_inline   # ← allow only inline style *attributes*
+    p.img_src     :self, :https, :data, cdn
+    p.connect_src :self
+    p.font_src    :self, :https, :data
+  end
+end
+
+
+
+

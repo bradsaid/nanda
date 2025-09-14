@@ -1,0 +1,5 @@
+#map {
+  height: 70vh;      /* fills the screen nicely */
+  min-height: 420px; /* safety for short viewports */
+  width: 100%;
+}

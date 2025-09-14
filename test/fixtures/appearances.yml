@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  survivor: one
+  episode: one
+  starting_psr: 9.99
+  ending_psr: 9.99
+  days_lasted: 1
+  result: MyString
+  role: MyString
+  partner_replacement: false
+  notes: MyText
+
+two:
+  survivor: two
+  episode: two
+  starting_psr: 9.99
+  ending_psr: 9.99
+  days_lasted: 1
+  result: MyString
+  role: MyString
+  partner_replacement: false
+  notes: MyText

@@ -1,0 +1,142 @@
+div class="max-w-4xl mx-auto space-y-8"
+  / Hero Section
+  div class="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white rounded-xl p-8 shadow-2xl"
+    div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+      div
+        h1 class="text-4xl md:text-5xl font-bold mb-2" = @survivor.full_name
+        / Quick Stats inline
+        div class="flex flex-wrap gap-4 text-sm md:text-base"
+          div class="flex items-center bg-white bg-opacity-20 px-3 py-2 rounded-lg backdrop-blur-sm"
+            span class="mr-2" 📺
+            strong Episodes: 
+            span class="ml-1 font-semibold" = @survivor.appearances.count
+          div class="flex items-center bg-white bg-opacity-20 px-3 py-2 rounded-lg backdrop-blur-sm"
+            span class="mr-2" 🌍
+            strong Countries: 
+            - countries = @survivor.episodes.joins(:location).group("locations.country").count
+            span class="ml-1 font-semibold" #{countries.keys.compact.join(", ")}
+
+    / Survivalist badge (only if IG/FB exists)
+    - if (avatar = social_avatar_url(@survivor, size: 256)).present?
+      .text-center
+        = image_tag avatar,
+          alt: "#{@survivor.full_name} avatar",
+          class: "mx-auto h-24 w-24 rounded-full object-cover shadow",
+          loading: "lazy",
+          referrerpolicy: "no-referrer",
+          onerror: "this.remove()"   
+
+
+
+    / Social Media Links
+    - if @survivor.instagram.present? || @survivor.facebook.present?
+      .flex.flex-col.sm:flex-row.gap-4.mt-6
+
+        - if (ig = @survivor.instagram).present?
+          - ig_handle = ig.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, '').sub(%r{/.*$}, '')
+          = link_to "https://www.instagram.com/#{ig_handle}",
+                    target: "_blank", rel: "noopener noreferrer",
+                    class: "flex items-center justify-center gap-3 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg transition-all duration-300 backdrop-blur-sm text-gray-900 visited:text-gray-900" do
+            span.text-2xl aria-hidden="true" 📸
+            span.font-semibold.text-gray-900 = "@#{ig_handle}"
+
+        - if (fb = @survivor.facebook).present?
+          - fb_handle = fb.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?facebook\.com/}i, '').sub(%r{/.*$}, '')
+          = link_to "https://www.facebook.com/#{fb_handle}",
+                    target: "_blank", rel: "noopener noreferrer",
+                    class: "flex items-center justify-center gap-3 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg transition-all duration-300 backdrop-blur-sm text-gray-900 visited:text-gray-900" do
+            span.text-2xl aria-hidden="true" 📘
+            span.font-semibold.text-gray-900 = "@#{fb_handle}"
+
+
+
+
+    / Bio
+    - if @survivor.bio.present?
+      div class="mt-6 bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm"
+        p class="text-lg leading-relaxed" = @survivor.bio
+
+  / Items Sections
+  div class="grid md:grid-cols-2 gap-8 mb-8"
+    / Items Brought
+    div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100"
+      div class="flex items-center mb-6"
+        span class="text-3xl mr-4" 🎒
+        h2 class="text-2xl font-bold text-gray-800" Items Brought
+      - if @brought_counts.present?
+        div class="space-y-3"
+          - @brought_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
+            div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200"
+              span class="text-lg font-semibold text-gray-800" = name
+              div class="flex items-center"
+                span class="text-sm text-gray-600 mr-2" ×
+                span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold" #{c}
+      - else
+        div class="text-center py-12"
+          span class="text-6xl mb-4 block" ❌
+          p class="text-gray-500 font-medium" None brought
+
+    / Items Given
+    div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100"
+      div class="flex items-center mb-6"
+        span class="text-3xl mr-4" 🎁
+        h2 class="text-2xl font-bold text-gray-800" Items Given
+      - if @given_counts.present?
+        div class="space-y-3"
+          - @given_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
+            div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200"
+              span class="text-lg font-semibold text-gray-800" = name
+              div class="flex items-center"
+                span class="text-sm text-gray-600 mr-2" ×
+                span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold" #{c}
+      - else
+        div class="text-center py-12"
+          span class="text-6xl mb-4 block" ➡️
+          p class="text-gray-500 font-medium" None given
+
+  / Appearances Table
+  div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100"
+    div class="flex items-center px-6 py-5 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200"
+      span class="text-3xl mr-4" 📊
+      h2 class="text-2xl font-bold text-gray-800" Appearances
+    div class="overflow-x-auto"
+      table class="w-full"
+        thead class="bg-gray-50"
+          tr
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" Episode
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" Air Date
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" Location
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" Days
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" PSR
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" Result
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" Brought
+            th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" Given
+        tbody class="divide-y divide-gray-200"
+          - @appearances.each do |a|
+            - ep = a.episode
+            - brought = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| ai.item.name }.join(", ")
+            - given   = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| ai.item.name }.join(", ")
+            tr class="hover:bg-gray-50 transition-colors duration-200"
+              td class="px-6 py-4 whitespace-nowrap"
+                = link_to ep.title, episode_path(ep), class: "text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+              td class="px-6 py-4 whitespace-nowrap text-gray-900" = ep.air_date.presence || "—"
+              td class="px-6 py-4 text-gray-900" = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ")
+              td class="px-6 py-4 whitespace-nowrap text-gray-900" = a.days_lasted.presence || "—"
+              td class="px-6 py-4 whitespace-nowrap text-gray-900" = [a.starting_psr, a.ending_psr].compact.join(" → ")
+              td class="px-6 py-4 whitespace-nowrap"
+                - if a.result.present?
+                  span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium #{a.result == 'Completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}" = a.result
+                - else
+                  span class="text-gray-400" —
+              td class="px-6 py-4"
+                - if brought.present?
+                  div class="bg-green-50 p-2 rounded-lg border border-green-100"
+                    span class="text-xs text-green-800" = brought
+                - else
+                  span class="text-gray-400" —
+              td class="px-6 py-4"
+                - if given.present?
+                  div class="bg-blue-50 p-2 rounded-lg border border-blue-100"
+                    span class="text-xs text-blue-800" = given
+                - else
+                  span class="text-gray-400" —

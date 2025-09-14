@@ -1,0 +1,95 @@
+- series      = @episode.season&.series
+- season_num  = @episode.season&.number
+- ep_num      = @episode.number_in_season
+- title_text  = @episode.title.presence || "Episode"
+- subtitle    = [series&.name, ("S#{season_num}" if season_num), ("E#{ep_num}" if ep_num)].compact.join(" • ")
+- air_date    = @episode.air_date&.strftime("%b %-d, %Y")
+- loc         = @episode.location
+- loc_str     = [loc&.country, loc&.region, loc&.site].compact.join(" • ")
+
+- content_for :title, "#{title_text} | #{subtitle}"
+
+/ Header
+.mb-6
+  = link_to "← All episodes", episodes_path, class: "text-sm text-blue-700 hover:underline"
+  h1.text-2xl.font-semibold.mt-2 = title_text
+  - if subtitle.present?
+    p.text-sm.text-gray-600.mt-1 = subtitle
+
+  .flex.flex-wrap.gap-2.mt-3
+    - if @episode.participant_arrangement.present?
+      span.text-xs.rounded-full.bg-gray-100.px-2.py-1 = @episode.participant_arrangement
+    - if @episode.type_modifiers.present?
+      - @episode.type_modifiers.split(/[;,]/).map(&:strip).reject(&:blank?).each do |mod|
+        span.text-xs.rounded-full.bg-gray-100.px-2.py-1 = mod
+
+/ Meta
+.grid.grid-cols-1.sm:grid-cols-3.gap-4.mt-6
+  .rounded-lg.border.p-4.bg-white/50
+    p.text-xs.text-gray-500 Location
+    p.mt-1 = loc_str.presence || "—"
+  .rounded-lg.border.p-4.bg-white/50
+    p.text-xs.text-gray-500 Air date
+    p.mt-1 = air_date.presence || "—"
+  .rounded-lg.border.p-4.bg-white/50
+    p.text-xs.text-gray-500 Scheduled days
+    p.mt-1 = @episode.scheduled_days || "—"
+
+- if @episode.notes.present?
+  .rounded-lg.border.p-4.bg-yellow-50.mt-4
+    p.text-xs.text-yellow-700.mb-1 Notes
+    p.whitespace-pre-wrap = @episode.notes
+
+/ Participants
+.mt-8
+  h2.text-xl.font-semibold.mb-3 Participants
+  - if @episode.appearances.any?
+    .overflow-x-auto.rounded-lg.border
+      table.w-full.border-collapse
+        thead.bg-gray-50
+          tr
+            th.text-left.px-3.py-2 Name
+            th.text-left.px-3.py-2 Role
+            th.text-left.px-3.py-2 PSR
+            th.text-left.px-3.py-2 Days
+            th.text-left.px-3.py-2 Result
+            th.text-left.px-3.py-2 Items
+        tbody
+          - @episode.appearances.each do |a|
+            - survivor = a.survivor
+            - start_psr = a.starting_psr ? format('%.2f', a.starting_psr) : nil
+            - end_psr   = a.ending_psr   ? format('%.2f', a.ending_psr)   : nil
+            - days_cell = [a.days_lasted, (@episode.scheduled_days && "/ #{@episode.scheduled_days}")].compact.join(" ")
+            - brought = a.appearance_items.select { |ai| ai.source == "brought" }
+            - given   = a.appearance_items.select { |ai| ai.source == "given" }
+            - list = []
+            - if brought.any?
+              - list << "brought: " + brought.map { |ai| ai.item&.name.to_s + (ai.quantity.to_i > 1 ? "×#{ai.quantity}" : "") }.join(", ")
+            - if given.any?
+              - list << "given: " + given.map   { |ai| ai.item&.name.to_s + (ai.quantity.to_i > 1 ? "×#{ai.quantity}" : "") }.join(", ")
+
+            tr.border-t
+              td.px-3.py-2
+                - if survivor
+                  = link_to survivor.full_name, survivor_path(survivor), class: "text-blue-700 hover:underline"
+                - else
+                  | —
+              td.px-3.py-2
+                = a.role.presence || "—"
+                - if a.partner_replacement
+                  span.ml-2.text-xs.rounded-full.bg-orange-100.text-orange-900.px-2.py-0.5 title="Partner replacement" PR
+              td.px-3.py-2
+                - if start_psr || end_psr
+                  = [start_psr, end_psr].compact.join(" → ")
+                - else
+                  | —
+              td.px-3.py-2 = days_cell.presence || "—"
+              td.px-3.py-2
+                - if a.result.present?
+                  span.text-xs.rounded-full.bg-green-100.text-green-900.px-2.py-0.5 = a.result
+                - else
+                  | —
+              td.px-3.py-2
+                = list.any? ? list.join(" • ") : "—"
+  - else
+    p.text-gray-500 No participants recorded.
