@@ -15,7 +15,6 @@ gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
@@ -48,7 +47,6 @@ gem "activerecord-import" # fast bulk inserts (optional but recommended)
 # for Roo on Ruby 3.4+
 gem "csv"
 gem "geocoder", "~> 1.8"
-
 
 
 
