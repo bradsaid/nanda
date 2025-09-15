@@ -1,0 +1,24 @@
+/ ===== Season details =====
+- content_for :title, "#{@season.series&.name} — Season #{@season.number}"
+
+.container.my-4
+  = link_to "← All seasons", episodes_path, class: "small link-primary text-decoration-underline"
+  h1.h3.mt-2.mb-4 = "#{@season.series&.name} — Season #{@season.number}"
+
+  - if @episodes.empty?
+    p.text-muted.mb-0 No episodes in this season yet.
+  - else
+    .row.row-cols-1.g-3
+      - @episodes.each do |ep|
+        - loc = ep.location
+        - loc_str = [loc&.country, loc&.region, loc&.site].compact.join(" • ").presence || "—"
+        - air_str = ep.air_date&.strftime("%b %-d, %Y") || "—"
+        - title   = ep.title.presence || "Untitled"
+        .col
+          .card.shadow-sm
+            .card-body
+              .d-flex.justify-content-between.align-items-start.gap-3
+                h2.h6.mb-0 = link_to(title, episode_path(ep), class: "link-primary text-decoration-underline")
+                span.badge.text-bg-secondary = "E#{ep.number_in_season || '—'}"
+              .small.text-muted.mt-1 = air_str
+              .small.text-muted = loc_str

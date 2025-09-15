@@ -1,91 +1,98 @@
-/ Item details
+/ ===== Item details — Bootstrap =====
 - content_for :title, @item.name
 
-h1.text-3xl.font-bold.mb-2 = @item.name
-p.text-sm.text-gray-600.mb-6
-  | Analytics for this item across all episodes.
+.container.my-4
+  h1.h3.mb-1 = @item.name
+  p.text-muted.mb-4 Analytics for this item across all episodes.
 
-/ Country filter
-= form_with url: item_path(@item), method: :get, local: true, class: "bg-white/70 backdrop-blur border rounded-xl p-4 mb-6 flex flex-wrap gap-4 items-end" do
-  - countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
-  .flex.flex-col
-    label.text-sm.font-medium.mb-1 for="country" Country
-    = select_tag :country, options_for_select(countries, @country), include_blank: "All countries", class: "border rounded px-3 py-2 w-56"
-  .flex.items-end.gap-2
-    = submit_tag "Filter", class: "px-4 py-2 rounded-lg bg-gray-900 text-white"
-    = link_to "Reset", item_path(@item), class: "px-4 py-2 rounded-lg border"
+  / Country filter
+  = form_with url: item_path(@item), method: :get, local: true, class: "card card-body mb-4" do
+    - countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
+    .row.g-3.align-items-end
+      .col-sm-4.col-md-3
+        = label_tag :country, "Country", class: "form-label"
+        = select_tag :country, options_for_select(countries, @country), include_blank: "All countries", class: "form-select"
+      .col-sm-8.col-md-9
+        .d-flex.gap-2
+          = submit_tag "Filter", class: "btn btn-dark"
+          = link_to "Reset", item_path(@item), class: "btn btn-outline-secondary"
 
-/ Countries summary
-.rounded-xl.border.bg-white.shadow-sm.overflow-hidden.mb-8
-  .px-4.py-3.bg-gray-50.flex.items-center.justify-between
-    h2.text-lg.font-semibold Countries where this appears
-  table.w-full
-    thead.bg-gray-100.text-sm
-      tr
-        th.text-left.px-3.py-2 Country
-        th.text-right.px-3.py-2 Total
-    tbody.text-sm
-      - if @by_country.blank?
-        tr
-          td.px-3.py-4.text-gray-500.colspan-2 No data
-      - else
-        - @by_country.each do |r|
-          tr.border-t.hover:bg-gray-50
-            td.px-3.py-2 = r.country.presence || "Unknown"
-            td.px-3.py-2.text-right = r.total.to_i
-
-/ Two-column: Brought vs Given
-.grid.grid-cols-1.lg:grid-cols-2.gap-6
-  .rounded-xl.border.bg-white.shadow-sm.overflow-hidden
-    .px-4.py-3.bg-gray-50.flex.items-center.justify-between
-      h2.text-lg.font-semibold Brought by
-      span.text-xs.text-gray-500 = pluralize(@brought_ai.size, "record")
-    table.w-full
-      thead.bg-gray-100.text-sm
-        tr
-          th.text-left.px-3.py-2 Survivor
-          th.text-left.px-3.py-2 Episode
-          th.text-left.px-3.py-2 Series/Season
-          th.text-left.px-3.py-2 Country
-          th.text-right.px-3.py-2 Qty
-      tbody.text-sm
-        - if @brought_ai.blank?
+  / Countries summary
+  .card.shadow-sm.mb-4
+    .card-header
+      h2.h6.mb-0 Countries where this appears
+    .table-responsive
+      table.table.table-sm.mb-0
+        thead.table-light
           tr
-            td.px-3.py-4.text-gray-500.colspan-5 No one brought this item in the selected scope.
-        - else
-          - @brought_ai.each do |ai|
-            - ap  = ai.appearance
-            - ep  = ap.episode
-            - loc = ep.location
-            tr.border-t.hover:bg-gray-50
-              td.px-3.py-2 = link_to ap.survivor.full_name, survivor_path(ap.survivor), class: "underline"
-              td.px-3.py-2 = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "underline"
-              td.px-3.py-2 = "#{ep.season&.series&.name} S#{ep.season&.number}"
-              td.px-3.py-2 = loc&.country
-              td.px-3.py-2.text-right = ai.quantity.to_i
+            th(scope="col") Country
+            th.text-end(scope="col") Total
+        tbody
+          - if @by_country.blank?
+            tr
+              td.text-muted.py-4(colspan="2") No data
+          - else
+            - @by_country.each do |r|
+              tr
+                td = r.country.presence || "Unknown"
+                td.text-end = r.total.to_i
 
-  .rounded-xl.border.bg-white.shadow-sm.overflow-hidden
-    .px-4.py-3.bg-gray-50.flex.items-center.justify-between
-      h2.text-lg.font-semibold Given in episodes
-      span.text-xs.text-gray-500 = pluralize(@given_ai.size, "record")
-    table.w-full
-      thead.bg-gray-100.text-sm
-        tr
-          th.text-left.px-3.py-2 Episode
-          th.text-left.px-3.py-2 Survivors
-          th.text-left.px-3.py-2 Country
-          th.text-right.px-3.py-2 Qty
-      tbody.text-sm
-        - if @given_ai.blank?
-          tr
-            td.px-3.py-4.text-gray-500.colspan-4 No episodes gave this item in the selected scope.
-        - else
-          - @given_ai.group_by { |x| x.appearance.episode_id }.each do |_, group|
-            - ep = group.first.appearance.episode
-            - survivors = group.map { |x| x.appearance.survivor }.uniq
-            - qty = group.sum(&:quantity)
-            tr.border-t.hover:bg-gray-50
-              td.px-3.py-2 = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "underline"
-              td.px-3.py-2 == survivors.map { |s| link_to s.full_name, survivor_path(s), class: "underline" }.join(", ")
-              td.px-3.py-2 = ep.location&.country
-              td.px-3.py-2.text-right = qty.to_i
+  / Two-column: Brought vs Given
+  .row.g-4
+    .col-12.col-lg-6
+      .card.shadow-sm
+        .card-header.d-flex.justify-content-between.align-items-center
+          h2.h6.mb-0 Brought by
+          span.small.text-muted = pluralize(@brought_ai.size, "record")
+        .table-responsive
+          table.table.table-sm.mb-0
+            thead.table-light
+              tr
+                th(scope="col") Survivor
+                th(scope="col") Episode
+                th(scope="col") Series/Season
+                th(scope="col") Country
+                th.text-end(scope="col") Qty
+            tbody
+              - if @brought_ai.blank?
+                tr
+                  td.text-muted.py-4(colspan="5") No one brought this item in the selected scope.
+              - else
+                - @brought_ai.each do |ai|
+                  - ap  = ai.appearance
+                  - ep  = ap.episode
+                  - loc = ep.location
+                  tr
+                    td = link_to ap.survivor.full_name, survivor_path(ap.survivor), class: "link-primary text-decoration-underline"
+                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary text-decoration-underline"
+                    td = "#{ep.season&.series&.name} S#{ep.season&.number}"
+                    td = loc&.country
+                    td.text-end = ai.quantity.to_i
+
+    .col-12.col-lg-6
+      .card.shadow-sm
+        .card-header.d-flex.justify-content-between.align-items-center
+          h2.h6.mb-0 Given in episodes
+          span.small.text-muted = pluralize(@given_ai.size, "record")
+        .table-responsive
+          table.table.table-sm.mb-0
+            thead.table-light
+              tr
+                th(scope="col") Episode
+                th(scope="col") Survivors
+                th(scope="col") Country
+                th.text-end(scope="col") Qty
+            tbody
+              - if @given_ai.blank?
+                tr
+                  td.text-muted.py-4(colspan="4") No episodes gave this item in the selected scope.
+              - else
+                - @given_ai.group_by { |x| x.appearance.episode_id }.each do |_, group|
+                  - ep = group.first.appearance.episode
+                  - survivors = group.map { |x| x.appearance.survivor }.uniq
+                  - qty = group.sum(&:quantity)
+                  tr
+                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary text-decoration-underline"
+                    td == survivors.map { |s| link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline" }.join(", ")
+                    td = ep.location&.country
+                    td.text-end = qty.to_i

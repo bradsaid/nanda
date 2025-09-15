@@ -1,28 +1,27 @@
-/ wrap everything so it stacks vertically
-.w-full.flex.flex-col.gap-4
-  h1.text-2xl.font-bold Survivors
+.container.my-4
+  h1.h3.mb-4 Survivors
 
-  = form_with url: survivors_path, method: :get, local: true, class: "flex flex-wrap gap-2 items-end" do
-    .flex.flex-col
-      label.text-sm.font-medium.mb-1 for="q" Search
-      = text_field_tag :q, @q, placeholder: "Search name…", class: "border rounded px-3 py-2 w-64"
-    .flex.items-end.gap-2
-      = submit_tag "Search", class: "px-3 py-2 rounded bg-gray-900 text-white"
-      = link_to "Reset", survivors_path, class: "px-3 py-2 rounded border"
+  = form_with url: survivors_path, method: :get, local: true, class: "row g-3 mb-4" do
+    .col-sm-4
+      = label_tag :q, "Search", class: "form-label"
+      = text_field_tag :q, @q, placeholder: "Search name…", class: "form-control"
+    .col-sm-3.d-flex.align-items-end.gap-2
+      = submit_tag "Search", class: "btn btn-dark"
+      = link_to "Reset", survivors_path, class: "btn btn-outline-secondary"
 
-  .table.w-full.border.rounded-lg.overflow-hidden
-    table.w-full[data-sort]
-      thead.bg-gray-100.text-sm
+  .table-responsive
+    table.table.table-striped.table-hover[data-sort]
+      thead.table-light
         tr
-          th.px-3.py-2.text-left[data-key="name"] Name
-          th.px-3.py-2.text-right[data-key="episodes"] Episodes
-      tbody.text-sm
-        - if (@survivors || []).empty?
+          th(scope="col" data-key="name") Name
+          th(scope="col" class="text-end" data-key="episodes") Episodes
+      tbody
+        - if @survivors.empty?
           tr
-            td.px-3.py-4.text-gray-500 colspan="2" No survivors
+            td(colspan="2" class="text-muted text-center") No survivors
         - else
-          - (@survivors || []).each do |s|
-            - ep_count = (s.respond_to?(:appearances_count) ? s.read_attribute(:appearances_count).to_i : s.appearances.size)
-            tr.border-t[data-name=s.full_name data-episodes=ep_count]
-              td.px-3.py-2 = link_to s.full_name, survivor_path(s), class: "underline"
-              td.px-3.py-2.text-right = ep_count
+          - @survivors.each do |s|
+            - ep_count = s.read_attribute(:appearances_count).to_i
+            tr(data-name=s.full_name data-episodes=ep_count)
+              td = link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline"
+              td.text-end = ep_count
