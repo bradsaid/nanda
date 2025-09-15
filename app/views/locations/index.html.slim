@@ -1,14 +1,11 @@
 / app/views/locations/index.html.slim
-- content_for :title, "Locations Map"
+- content_for :title, "Locations"
 
-- content_for :head do
-  link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+.container.my-4
+  h1.h3.mb-3 Locations
+  p.text-muted.mb-4 Interactive map of filming locations. Zoom or click markers for details.
 
-h1.text-2xl.font-bold.mb-4 Locations
-
-/ Map container (Leaflet JS initializes this; height is required)
-#map.w-full.rounded-lg.shadow
-
-
-
+  .card.shadow-sm
+    .card-body
+      #locations-map.map-frame(data-locations-url="#{locations_path(format: :json)}")
 

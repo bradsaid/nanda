@@ -5,10 +5,7 @@ pin "@hotwired/turbo-rails", to: "turbo.min.js"
 pin "@hotwired/stimulus", to: "stimulus.min.js"
 pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
-pin "custom/survivors_datatable", to: "custom/survivors_datatable.js"
-
-
 pin "locations_map", to: "locations_map.js"
-pin "leaflet", to: "leaflet.js", preload: true   # if not already
+pin "leaflet" # @1.9.4
 pin "sort_table", to: "sort_table.js"
 

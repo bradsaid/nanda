@@ -8,13 +8,12 @@ Rails.application.routes.draw do
     root to: "dashboard#show"
   end
 
-  resources :survivors, only: [:index, :show] do
-    get :datatable, on: :collection
-  end
-
+  resources :survivors, only: [:index, :show]
   resources :episodes,  only: [:index, :show]
   resources :items,     only: [:index, :show]
   resources :locations, only: [:index]
+
+  resources :seasons, only: [:show]
 
   # NEW:
   get "home", to: "home#index"

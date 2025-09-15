@@ -13,26 +13,6 @@ class SurvivorsController < ApplicationController
               .limit(1000)
   end
 
-  def datatable
-    scope = Survivor.order(:full_name)
-    if params[:q].present?
-      scope = scope.where("full_name ILIKE ?", "%#{params[:q]}%")
-    end
-
-    data = scope.limit(1000).map { |s|
-      {
-        id: s.id,
-        name: s.full_name,
-        show_path: survivor_path(s),
-        instagram: s.instagram,
-        facebook:  s.facebook
-      }
-    }
-
-    render json: { data: data }
-  end
-
-
   def show
     @survivor = Survivor.find(params[:id])
 

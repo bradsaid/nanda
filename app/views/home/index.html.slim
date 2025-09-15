@@ -1,50 +1,150 @@
-/ Main wrapper with flex column layout and explicit background
-.w-full.min-h-screen.bg-gray-100
+/ app/views/home/index.html.slim
+.container.my-4
+  / ===== Hero / Header =====
+  .pb-3.mb-4.border-bottom
+    h1.h3.mb-1 Naked & Afraid — Fan Database
+    p.text-muted.mb-0 Stats, episodes, survivors, items, and locations.
 
-  / Header with stylized logo-like text
-  header.bg-gradient-to-r.from-amber-400.via-gray-200.to-emerald-400.py-6.px-4.sm:px-6.lg:px-8
-    .max-w-7xl.mx-auto
-      h1.text-4xl.sm:text-5xl.font-extrabold.tracking-wide.drop-shadow-md
-        span.text-amber-800
-          | Naked & Afraid
-        span.text-sm.font-semibold.text-gray-600.ml-2.uppercase.tracking-widest.border.border-gray-600.rounded-full.px-3.py-1.bg-white/50
-          | Fan Hub
+  / ===== Quick Stats =====
+  .row.g-3.mb-4
+    .col-6.col-md-4.col-lg-2
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @counts[:series]
+          small.text-muted Series
+    .col-6.col-md-4.col-lg-2
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @counts[:seasons]
+          small.text-muted Seasons
+    .col-6.col-md-4.col-lg-2
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @counts[:episodes]
+          small.text-muted Episodes
+    .col-6.col-md-4.col-lg-2
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @counts[:survivors]
+          small.text-muted Survivors
+    .col-6.col-md-4.col-lg-2
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @counts[:items]
+          small.text-muted Items
+    .col-6.col-md-4.col-lg-2
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @counts[:locations]
+          small.text-muted Locations
 
-  / Navigation row with high-contrast, distinct-colored links
-  nav.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8.mt-6
-    .flex.flex-wrap.gap-4.justify-center.sm:justify-start
-      = link_to "Survivors", survivors_path, class: "px-4 py-2 rounded-lg border-2 border-gray-400 bg-white text-gray-800 font-medium hover:bg-gray-200 transition-all duration-200"
-      = link_to "Episodes", episodes_path, class: "px-4 py-2 rounded-lg border-2 border-gray-400 bg-white text-gray-800 font-medium hover:bg-gray-200 transition-all duration-200"
-      = link_to "Items", items_path, class: "px-4 py-2 rounded-lg border-2 border-gray-400 bg-white text-gray-800 font-medium hover:bg-gray-200 transition-all duration-200"
-      = link_to "Locations", locations_path, class: "px-4 py-2 rounded-lg border-2 border-gray-400 bg-white text-gray-800 font-medium hover:bg-gray-200 transition-all duration-200"
+  / ===== Latest Episode + Recent Episodes =====
+  .row.g-4.mb-4
+    .col-lg-7
+      .card.shadow-sm
+        .card-header Latest Episode
+        - if @latest_episode
+          - ep = @latest_episode
+          - series_name = ep.season&.series&.name
+          - season_num  = ep.season&.number
+          - loc = ep.location
+          - loc_str = [loc&.country, loc&.region, loc&.site].compact.join(" • ")
+          - air_str = ep.air_date&.strftime("%b %-d, %Y") || "—"
+          .card-body
+            h5.card-title.mb-1 = link_to(ep.title.presence || "Untitled", episode_path(ep), class: "link-primary")
+            p.text-muted.mb-2
+              = [series_name, ("Season #{season_num}" if season_num)].compact.join(" — ")
+            - if loc_str.present?
+              p.mb-2
+                i.me-1.bi.bi-geo
+                = loc_str
+            span.badge.bg-secondary = "Aired #{air_str}"
+        - else
+          .card-body
+            .alert.alert-info.mb-0 No episodes yet.
 
-  / Main content
-  main.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8.py-8
-    / About section with clear background and text
-    .bg-white.rounded-2xl.border.border-gray-300.shadow-sm.p-6.mb-8
-      h2.text-2xl.font-bold.text-gray-900.mb-4 What is “Naked & Afraid”?
-      p.text-gray-700.max-w-3xl.mb-4
-        | A survival series where participants are dropped into harsh environments with minimal gear.
-      ul.list-disc.pl-6.text-gray-700.space-y-1
-        li Pairs/teams; Solo, XL, Frozen variants.
-        li Each participant brings one item; others may be given.
-        li Filmed around the world (jungles, deserts, swamps, …)
+    .col-lg-5
+      .card.shadow-sm
+        .card-header Recent Episodes
+        - if @recent_episodes.present?
+          .list-group.list-group-flush
+            - @recent_episodes.each do |ep|
+              - air = ep.air_date&.strftime("%b %-d, %Y") || "—"
+              - series_name = ep.season&.series&.name
+              a.list-group-item.d-flex.justify-content-between.align-items-start href=episode_path(ep)
+                .me-2
+                  div.fw-semibold = ep.title.presence || "Untitled"
+                  small.text-muted = [series_name, air].compact.join(" · ")
+                span.badge.text-bg-light &rsaquo;
+        - else
+          .card-body
+            .text-muted No recent episodes.
 
-    / Survivor cards
-    - if (@active_survivors || []).empty?
-      .bg-white.rounded-2xl.border.border-gray-300.shadow-sm.p-6.text-gray-600.text-center
-        | No survivor data available.
+  / ===== Top Items =====
+  .row.g-4.mb-4
+    .col-lg-6
+      .card.shadow-sm
+        .card-header Top Items — Brought
+        - if @top_items_brought.present?
+          .table-responsive
+            table.table.table-sm.mb-0
+              thead
+                tr
+                  th Name
+                  th.text-end Total
+              tbody
+                - @top_items_brought.each do |row|
+                  tr
+                    td = link_to row.name, item_path(row.id)
+                    td.text-end = row.total
+        - else
+          .card-body
+            .text-muted No data.
+
+    .col-lg-6
+      .card.shadow-sm
+        .card-header Top Items — Given
+        - if @top_items_given.present?
+          .table-responsive
+            table.table.table-sm.mb-0
+              thead
+                tr
+                  th Name
+                  th.text-end Total
+              tbody
+                - @top_items_given.each do |row|
+                  tr
+                    td = link_to row.name, item_path(row.id)
+                    td.text-end = row.total
+        - else
+          .card-body
+            .text-muted No data.
+
+  / ===== Active Survivors =====
+  .card.shadow-sm.mb-4
+    .card-header Recently Active Survivors
+    - if @active_survivors.present?
+      .card-body
+        .row.g-3
+          - @active_survivors.each do |s|
+            - display = (s.try(:name) || s.try(:full_name) || [s.try(:first_name), s.try(:last_name)].compact.join(" ")).presence || "Survivor ##{s.id}"
+            .col-6.col-md-4.col-lg-2
+              .border.rounded.p-3.h-100
+                div.fw-semibold.mb-1 = link_to display, survivor_path(s)
+                small.text-muted = "Appearances: #{(s.try(:appearances_count) || s.appearances.size)}"
     - else
-      .grid.grid-cols-1.sm:grid-cols-2.lg:grid-cols-3.gap-6
-        - @active_survivors.each do |s|
-          = link_to survivor_path(s), class: "bg-white.rounded-xl.border.border-gray-300.shadow-sm.hover:shadow-md.transition-all.duration-200.p-5.block" do
-            .flex.items-center.gap-4
-              .text-2xl.text-emerald-600 = "🧭"
-              .flex-1
-                .font-semibold.text-gray-900.truncate = s.full_name
-                - app = s.appearances.order(created_at: :desc).first
-                - if app
-                  .text-sm.text-gray-600.mt-1 = app.episode&.location&.country || "Unknown"
-            .mt-3.text-sm.text-emerald-600.font-medium.inline-flex.items-center.gap-2
-              span View Profile
-              span →
+      .card-body
+        .text-muted No survivors yet.
+
+  / ===== Top Countries =====
+  .card.shadow-sm
+    .card-header Top Countries by Episode Count
+    - if @top_countries.present?
+      .list-group.list-group-flush
+        - @top_countries.each do |country, count|
+          .list-group-item.d-flex.justify-content-between.align-items-center
+            = country.presence || "Unknown"
+            span.badge.text-bg-secondary = count
+    - else
+      .card-body
+        .text-muted No country data yet.
