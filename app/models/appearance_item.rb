@@ -13,4 +13,8 @@ class AppearanceItem < ApplicationRecord
   }, prefix: true
 
   validates :quantity, numericality: { greater_than: 0 }
+  validates :source, presence: true
+  validates :appearance_id, uniqueness: { scope: :source,
+                                        conditions: -> { where(source: "brought") },
+                                        message: "already has a brought item" }
 end

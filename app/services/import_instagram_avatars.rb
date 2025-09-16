@@ -3,6 +3,8 @@ require "roo"
 require "net/http"
 require "json"
 require "uri"
+require "stringio"
+require "cgi"
 
 class ImportInstagramAvatars
   IG_APP_ID     = "936619743392459"
@@ -47,10 +49,7 @@ class ImportInstagramAvatars
       (2..sheet.last_row).each do |r|
         name = (sheet.cell(r, fullname_idx + 1) || "").to_s.strip
         ig   = (sheet.cell(r, instagram_idx + 1) || "").to_s.strip
-
-        if name.blank?
-          next
-        end
+        next if name.blank?
 
         survivor = find_survivor(name)
         unless survivor
@@ -70,20 +69,30 @@ class ImportInstagramAvatars
           next
         end
 
+        @logger.info "Row #{r}: fetching avatar for @#{username} (#{name})"
         res = fetch_ig_avatar(username)
 
         changes = {}
-        # backfill instagram if blank
+        # backfill instagram if DB blank
         changes[:instagram] = normalized_ig_url(ig) if survivor.instagram.blank? && ig.present?
 
-        if res[:url].present? && survivor.avatar_url != res[:url]
-          changes[:avatar_url] = res[:url]
+        # attach avatar blob if we got a URL and either not attached yet or source changed
+        if res[:url].present? && (!survivor.avatar.attached? || survivor.avatar_url != res[:url])
+          unless @dry_run
+            if attach_avatar!(survivor, res[:url])
+              @logger.info "  attached avatar blob (#{res[:status]})"
+            else
+              @logger.warn "  failed to download avatar bytes (#{res[:status]})"
+            end
+          end
+          # keep the source URL for reference (not used in views)
+          changes[:avatar_url] = res[:url] if survivor.avatar_url != res[:url]
         end
 
         if changes.any?
           survivor.update!(changes)
           updated += 1
-          @logger.info "Updated #{survivor.full_name} → #{changes.keys.join(", ")} (#{res[:status]})"
+          @logger.info "  updated #{survivor.full_name} → #{changes.keys.join(", ")}"
         else
           unchanged += 1
         end
@@ -211,4 +220,35 @@ class ImportInstagramAvatars
 
     { url: nil, private: false, status: :not_found }
   end
+
+  def attach_avatar!(survivor, remote_url)
+    # 1) Unescape HTML entities from og:image/ld+json (turn &amp; into &)
+    raw = remote_url.to_s.strip
+    return false if raw.empty?
+    normalized = CGI.unescapeHTML(raw).gsub("&amp;", "&")
+
+    uri = URI.parse(normalized) rescue nil
+    return false unless uri
+
+    # 2) Fetch bytes (uses your cookie + browsery headers via http_get_with_redirects)
+    res = http_get_with_redirects(uri, { "Accept" => "image/*" })
+    unless res&.is_a?(Net::HTTPSuccess)
+      @logger.warn "  download failed: #{res&.code} #{res&.class} for #{uri}"
+      return false
+    end
+
+    # 3) Attach
+    mime_type = res["content-type"].presence || "image/jpeg"
+    ext       = File.extname(uri.path)
+    ext       = ".jpg" if ext.blank?
+    filename  = "survivor-#{survivor.id}-avatar#{ext}"
+
+    io = StringIO.new(res.body)
+    survivor.avatar.attach(io: io, filename: filename, content_type: mime_type)
+    true
+  rescue => e
+    @logger.warn "  attach_avatar! error: #{e.class} - #{e.message}"
+    false
+  end
+
 end
