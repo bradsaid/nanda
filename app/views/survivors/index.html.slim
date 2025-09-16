@@ -1,26 +1,26 @@
 .container.my-4
   h1.h3.mb-4 Survivors
 
-  / ===== Top Survivors by Appearances =====
+  / ===== Top Survivors (cards) =====
   - if @top_survivors.present?
     .card.shadow-sm.mb-4
-      .card-header Top Survivors — Most Appearances
+      .card-header Top Survivors — Episodes (total vs. collapsed)
       .card-body
         .row.g-3
           - @top_survivors.each do |s|
-            - display = (s.try(:full_name) || s.try(:name) || [s.try(:first_name), s.try(:last_name)].compact.join(" ")).presence || "Survivor ##{s.id}"
-            - count = (s.respond_to?(:appearances_count) && s.appearances_count) ? s.appearances_count.to_i : s.appearances.size
-            - initials = display.split.map { |w| w[0] }.join[0,2].upcase
+            - name = (s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}")
+            - total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : (s.respond_to?(:episodes_count) ? s.episodes_count.to_i : s.appearances.select(:episode_id).distinct.count)
+            - collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
             .col-6.col-md-4.col-lg-2
-              .card.h-100.text-center border=0
+              .card.h-100.text-center.border-0
                 .card-body.py-3
-                  .mx-auto.mb-2.rounded-circle.d-flex.align-items-center.justify-content-center.fg-avatar
-                    = initials
-                  div.fw-semibold.mb-1 = link_to display, survivor_path(s), class: "st-link"
-                  small.text-muted = "#{count} appearance#{'s' if count != 1}"
+                  .fw-semibold.mb-1 = link_to name, survivor_path(s)
+                  .small.text-muted Episodes
+                  .display-6.fw-bold = total
+                  .small.text-muted Challenges
+                  .display-6.fw-bold = collapsed
   - else
-    .mb-3.text-muted No appearance data yet.
-
+    .mb-3.text-muted No survivor data yet.
 
   = form_with url: survivors_path, method: :get, local: true, class: "row g-3 mb-4" do
     .col-sm-4
@@ -30,19 +30,26 @@
       = submit_tag "Search", class: "btn btn-dark"
       = link_to "Reset", survivors_path, class: "btn btn-outline-secondary"
 
-  .table-responsive
-    table.table.table-striped.table-hover[data-sort]
-      thead.table-light
-        tr
-          th(scope="col" data-key="name") Name
-          th(scope="col" class="text-end" data-key="episodes") Episodes
-      tbody
-        - if @survivors.empty?
-          tr
-            td(colspan="2" class="text-muted text-center") No survivors
-        - else
-          - @survivors.each do |s|
-            - ep_count = s.read_attribute(:appearances_count).to_i
-            tr(data-name=s.full_name data-episodes=ep_count)
-              td = link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline"
-              td.text-end = ep_count
+  / ===== Survivors table =====
+  .card.shadow-sm
+    .card-header Survivors
+    .card-body
+      .table-responsive
+        table.table.table-striped.table-hover[data-sort]
+          thead.table-light
+            tr
+              th(scope="col" data-key="name") Name
+              th(scope="col" class="text-end" data-key="episodes_total") Episodes (total)
+              th(scope="col" class="text-end" data-key="episodes_collapsed") Challenges
+          tbody
+            - if @survivors.blank?
+              tr
+                td(colspan="3" class="text-muted text-center") No survivors
+            - else
+              - @survivors.each do |s|
+                - total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
+                - collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
+                tr(data-name=s.full_name data-episodes_total=total data-episodes_collapsed=collapsed)
+                  td = link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline"
+                  td.text-end = total
+                  td.text-end = collapsed
