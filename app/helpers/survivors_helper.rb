@@ -18,7 +18,20 @@ module SurvivorsHelper
      .sub(%r{/.*$}, "")
   end
 
+  # Try IG (disabled by default), then FB Page avatar. Return URL or nil.
+  def social_avatar_url(survivor, size: 256)
+    # If you want to *try* IG via unavatar knowing it 404s often, uncomment:
+    if (h = ig_handle(survivor.instagram)).present?
+       return "https://unavatar.io/instagram/#{ERB::Util.url_encode(h)}?size=#{size}"
+    end
 
+    if (h = fb_handle(survivor.facebook)).present?
+      # Graph API picture (works for public *Pages*; users may not)
+      return "https://graph.facebook.com/#{ERB::Util.url_encode(h)}/picture?type=large&width=#{size}&height=#{size}"
+    end
+
+    nil
+  end
 
 
 end

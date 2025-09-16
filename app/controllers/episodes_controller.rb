@@ -5,11 +5,10 @@ class EpisodesController < ApplicationController
       loc_id    = params[:location_id].to_i
       @location = Location.find_by(id: loc_id)
 
-      @episodes = Episode
-        .joins(season: :series)
-        .includes(:location, season: :series, appearances: :survivor)
-        .where(location_id: loc_id)
-        .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
+      @episode = Episode
+        .includes(:location, season: :series,
+                  appearances: [:survivor, { appearance_items: :item }])
+        .find(params[:id])
 
       # ensure overview vars exist so the view never blows up
       @seasons            = []

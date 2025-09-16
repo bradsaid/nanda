@@ -46,14 +46,12 @@ class ImportSurvivalistSocialLinks
             next
           end
 
-          ig_url     = normalize_instagram(pick(row, :instagram))
-          fb_url     = normalize_facebook(pick(row, :facebook))
-          avatar_url = normalize_avatar(pick(row, :avatar)) # NEW
+          ig_url = normalize_instagram(pick(row, :instagram))
+          fb_url = normalize_facebook(pick(row, :facebook))
 
           changes = {}
-          changes[:instagram]  = ig_url     if ig_url.present?     && survivor.instagram  != ig_url
-          changes[:facebook]   = fb_url     if fb_url.present?      && survivor.facebook   != fb_url
-          changes[:avatar_url] = avatar_url if avatar_url.present?  && survivor.avatar_url != avatar_url
+          changes[:instagram] = ig_url if ig_url.present? && survivor.instagram != ig_url
+          changes[:facebook]  = fb_url if fb_url.present? && survivor.facebook  != fb_url
 
           if changes.any?
             survivor.update!(changes)
@@ -94,8 +92,8 @@ class ImportSurvivalistSocialLinks
   def norm(v)
     s = v.to_s.strip
     s = s.gsub(/\s+/, "_").gsub(/[()]/, "").gsub(/-/, "_")
-    s = s.gsub(/([a-z\d])([A-Z])/, '\1_\2')
-    s.downcase
+    s = s.gsub(/([a-z\d])([A-Z])/, '\1_\2') # FullName -> Full_Name
+    s.downcase                                # => "full_name"
   end
 
   def blank_row?(row)
@@ -106,8 +104,7 @@ class ImportSurvivalistSocialLinks
     aliases = {
       name:      %w[survivalist survivor full_name fullname name],
       instagram: %w[instagram ig instagram_url instagram_link instagram_handle],
-      facebook:  %w[facebook fb facebook_url facebook_link facebook_page],
-      avatar:    %w[avatar avatar_url profile_pic profile_picture instagram_profile_pic ig_profile_pic]
+      facebook:  %w[facebook fb facebook_url facebook_link facebook_page]
     }
     key = Array(aliases[field] || field.to_s).find { |k| row.key?(k) }
     row[key]
@@ -135,14 +132,6 @@ class ImportSurvivalistSocialLinks
     handle = s.sub(/\A@/, "")
     return nil if handle.blank?
     "https://facebook.com/#{handle}"
-  end
-
-  # Accept only http(s) URLs for avatar; ignore handles/base64/etc.
-  def normalize_avatar(v)
-    s = clean_urlish(v)
-    return nil if s.blank?
-    return s if s =~ %r{\Ahttps?://}i
-    nil
   end
 
   def clean_urlish(v)

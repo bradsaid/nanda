@@ -15,89 +15,105 @@
     .card-body
       - countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
       .row.g-3.align-items-end
-        .col-sm-4.col-md-3
+        .col-md-4
           = label_tag :country, "Country", class: "form-label"
-          = select_tag :country, options_for_select(countries, @country), include_blank: "All countries", class: "form-select"
-        .col-sm-8.col-md-9
-          .d-flex.gap-2
-            = submit_tag "Filter", class: "btn btn-dark"
-            = link_to "Reset", item_path(@item), class: "btn btn-outline-secondary"
+          = select_tag :country,
+              options_for_select([["All Countries", ""]] + countries.map { |c| [c, c] }, @country),
+              class: "form-select"
+        .col-md-auto
+          = submit_tag "Apply", class: "btn btn-dark"
+        .col-md-auto
+          = link_to "Reset", item_path(@item), class: "btn btn-outline-secondary"
 
-  / Two-column: Brought vs Given
-  .row.g-4.mb-4
-    .col-12.col-lg-6
-      .card.shadow-sm
-        .card-header.d-flex.justify-content-between.align-items-center
-          h2.h6.mb-0.d-flex.align-items-center
-            span.me-2(aria-hidden="true") 🎒
-            | Brought by
-          span.small.text-muted = pluralize(@brought_ai.size, "record")
-        .table-responsive
-          table.table.table-sm.table-hover.mb-0
-            thead.table-light
+  / ---------- Quick stats (dedup + adjusted) ----------
+  - given_episode_ids   = @given_episode_ids   || []
+  - brought_episode_ids = @brought_episode_ids || []
+  - given_keys          = @given_keys          || []
+  - brought_keys        = @brought_keys        || []
+
+  .row.g-3.mb-4
+    .col-md-6.col-lg-3
+      .card.shadow-sm.h-100
+        .card-body
+          .small.text-muted.mb-1 Given in episodes 
+          .display-6.fw-bold = given_episode_ids.size
+          /.small.text-muted.mt-1 = "Adjusted (continuous=1): #{given_keys.size}"
+    .col-md-6.col-lg-3
+      .card.shadow-sm.h-100
+        .card-body
+          .small.text-muted.mb-1 Brought in episodes 
+          .display-6.fw-bold = brought_episode_ids.size
+          /.small.text-muted.mt-1 = "Adjusted (continuous=1): #{brought_keys.size}"
+
+  / ===== Given — by episode (unique within episode) =====
+  - given_by_ep = (@given_ai || []).group_by { |ai| ai.appearance.episode }
+  .card.shadow-sm.mb-4
+    .card-header.d-flex.align-items-center.justify-content-between
+      span
+        span.me-2(aria-hidden="true") 🎁
+        strong Given — Episodes (unique)
+      span.badge.rounded-pill.bg-secondary-subtle.text-secondary-emphasis = given_by_ep.size
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th Episode
+            th Air Date
+            th Location
+            th Recipients
+        tbody
+          - if given_by_ep.blank?
+            tr
+              td.text-muted.py-4(colspan="4") No given appearances
+          - else
+            - given_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
+              - recipients = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
               tr
-                th(scope="col") Survivor
-                th(scope="col") Episode
-                th(scope="col") Series/Season
-                th(scope="col") Country
-                th(scope="col" class="text-end") Qty
-            tbody
-              - if @brought_ai.blank?
-                tr
-                  td.text-muted.py-4(colspan="5") No one brought this item in the selected scope.
-              - else
-                - @brought_ai.each do |ai|
-                  - ap  = ai.appearance
-                  - ep  = ap.episode
-                  - loc = ep.location
-                  tr
-                    td = link_to ap.survivor.full_name, survivor_path(ap.survivor), class: "link-primary"
-                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary"
-                    td = "#{ep.season&.series&.name} S#{ep.season&.number}"
-                    td = loc&.country
-                    td.text-end = ai.quantity.to_i
+                td = link_to(ep.title, episode_path(ep))
+                td = ep.air_date || "—"
+                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td = recipients.join(", ")
 
-    .col-12.col-lg-6
-      .card.shadow-sm
-        .card-header.d-flex.justify-content-between.align-items-center
-          h2.h6.mb-0.d-flex.align-items-center
-            span.me-2(aria-hidden="true") 🎁
-            | Given in episodes
-          span.small.text-muted = pluralize(@given_ai.size, "record")
-        .table-responsive
-          table.table.table-sm.table-hover.mb-0
-            thead.table-light
+  / ===== Brought — by episode (unique within episode) =====
+  - brought_by_ep = (@brought_ai || []).group_by { |ai| ai.appearance.episode }
+  .card.shadow-sm.mb-4
+    .card-header.d-flex.align-items-center.justify-content-between
+      span
+        span.me-2(aria-hidden="true") 🧰
+        strong Brought — Episodes
+      span.badge.rounded-pill.bg-secondary-subtle.text-secondary-emphasis = brought_by_ep.size
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th Episode
+            th Air Date
+            th Location
+            th Brought by
+        tbody
+          - if brought_by_ep.blank?
+            tr
+              td.text-muted.py-4(colspan="4") No brought appearances
+          - else
+            - brought_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
+              - people = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
               tr
-                th(scope="col") Episode
-                th(scope="col") Survivors
-                th(scope="col") Country
-                th(scope="col" class="text-end") Qty
-            tbody
-              - if @given_ai.blank?
-                tr
-                  td.text-muted.py-4(colspan="4") No episodes gave this item in the selected scope.
-              - else
-                - @given_ai.group_by { |x| x.appearance.episode_id }.each do |_, group|
-                  - ep = group.first.appearance.episode
-                  - survivors = group.map { |x| x.appearance.survivor }.uniq
-                  - qty = group.sum(&:quantity)
-                  tr
-                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary"
-                    td == survivors.map { |s| link_to s.full_name, survivor_path(s), class: "link-primary" }.join(", ")
-                    td = ep.location&.country
-                    td.text-end = qty.to_i
+                td = link_to(ep.title, episode_path(ep))
+                td = ep.air_date || "—"
+                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td = people.join(", ")
 
-  / Countries summary
+  / ===== By Country (adjusted totals from controller) =====
   .card.shadow-sm
     .card-header.d-flex.align-items-center
-      span.me-2(aria-hidden="true") 🗺️
-      h2.h6.mb-0 Countries where this appears
+      span.me-3.fs-3(aria-hidden="true") 🌐
+      h2.h6.mb-0 By Country
     .table-responsive
       table.table.table-sm.table-hover.mb-0
         thead.table-light
           tr
             th(scope="col") Country
-            th(scope="col" class="text-end") Total
+            th(scope="col" class="text-end") Total (adjusted)
         tbody
           - if @by_country.blank?
             tr
