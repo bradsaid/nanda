@@ -1,40 +1,85 @@
-/ ===== Episodes — Seasons overview =====
 - content_for :title, "Episodes"
 
-.container.my-4
-  h1.h3.mb-4 Episodes by Season
+- if @location
+  / === Filtered by location ===
+  .pb-2.mb-3.border-bottom.site-header
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      h1.h3.mb-0.logo Episodes at this location
+      = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
+    p.subtitle.mb-0 = [@location.site, @location.region, @location.country].compact_blank.join(", ")
 
-  - if @seasons.empty?
-    p.text-muted.mb-0 No seasons found.
-  - else
-    .row.row-cols-1.row-cols-md-2.row-cols-xl-3.g-4
-      - @seasons.each do |season|
-        - series_name = season.series&.name
-        - count = @episode_counts[season.id].to_i
-        .col
-          .card.h-100.shadow-sm
-            .card-header.d-flex.justify-content-between.align-items-center
-              h2.h6.mb-0
-                = link_to "#{series_name} — Season #{season.number}", season_path(season), class: "link-body-emphasis text-decoration-none fw-semibold"
-              span.badge.text-bg-light = "#{count} ep#{'s' if count != 1}"
+  .card.shadow-sm
+    .card-header Episodes
+    .table-responsive
+      table.table.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th(scope="col") Episode
+            th(scope="col") Season
+            th(scope="col") Air Date
+            th(scope="col") Location
+            th(scope="col") Survivors
+        tbody
+          - if @episodes.blank?
+            tr
+              td(colspan="5" class="text-muted text-center py-4") No episodes found for this location.
+          - else
+            - @episodes.each do |ep|
+              - series_name = ep.season&.series&.name
+              - season_num  = ep.season&.number
+              tr
+                td = link_to(ep.title.presence || "Episode #{ep.number_in_season || ep.id}", episode_path(ep), class: "link-primary text-decoration-underline")
+                td
+                  - if series_name && season_num
+                    = link_to "#{series_name} • S#{season_num}", episodes_path(series: series_name, season: season_num), class: "link-secondary text-decoration-underline"
+                  - else
+                    | —
+                td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ")
+                td = ep.appearances.size
 
-            .list-group.list-group-flush
-              - previews = @episodes_by_season[season] || []
-              - if previews.empty?
-                .list-group-item.text-muted No episodes yet.
-              - else
-                - previews.each do |ep|
-                  - loc = ep.location
-                  - loc_str = [loc&.country, loc&.region, loc&.site].compact.join(" • ").presence || "—"
-                  - air_str = ep.air_date&.strftime("%b %-d, %Y") || "—"
-                  - title   = ep.title.presence || "Untitled"
-                  .list-group-item
-                    .d-flex.justify-content-between.align-items-start
-                      .me-3
-                        = link_to title, episode_path(ep), class: "link-primary text-decoration-underline fw-semibold"
-                        .small.text-muted.mt-1 = loc_str
-                      span.badge.text-bg-secondary.ms-2 = "E#{ep.number_in_season || '—'}"
-                    .small.text-muted.mt-1 = air_str
+- else
+  / === Series navigation (anchors) ===
+  - series_list = @seasons.map(&:series).compact.uniq
+  - if series_list.any?
+    .mb-4.text-center.series-nav
+      - series_list.each do |series|
+        - anchor = series.name.to_s.parameterize
+        = link_to series.name, "##{anchor}", class: "btn btn-outline-success me-2 mb-2"
 
-            .card-body
-              = link_to "View all #{count} episodes", season_path(season), class: "btn btn-outline-primary w-100"
+  / === All Episodes by season ===
+  .pb-2.mb-3.border-bottom.site-header
+    h1.h3.mb-1.logo Episodes
+    p.subtitle Explore all episodes by season and location
+
+  - prev_series_id = nil
+  - @seasons.each do |season|
+    - if season.series_id != prev_series_id
+      - anchor = season.series&.name.to_s.parameterize
+      .pb-2.mb-3.border-bottom.site-header.series-anchor(id=anchor)
+        h2.h4.mb-0.logo = season.series&.name
+      - prev_series_id = season.series_id
+
+    .card.shadow-sm.mb-4
+      .card-header = "Season #{season.number}"
+      - eps = (@episodes_by_season[season] || [])
+      - if eps.any?
+        .card-body
+          .row.g-3
+            - eps.each do |ep|
+              .col-md-4
+                .card.h-100 border=0
+                  .card-body
+                    h5.card-title.mb-1 = link_to(ep.title.presence || "Episode #{ep.number_in_season || ep.id}", episode_path(ep), class: "link-primary")
+                    p.card-text.text-muted.mb-2 = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+                    p.card-text.small.text-muted = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+      - else
+        .card-body
+          .text-muted.py-4.px-3 No episodes yet in this season.
+
+      - count = @episode_counts[season.id].to_i
+      - if count > 3
+        .px-3.pb-3
+          = link_to "View all #{count} episodes",
+                    episodes_path(series_id: season.series_id, season: season.number),
+                    class: "btn btn-outline-primary btn-sm"

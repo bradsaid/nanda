@@ -11,3 +11,574 @@
 /* util width + map height */
 .w-32px { width: 32px; }
 #locations-map.map-frame { height: 540px; }
+
+/* Header container */
+.site-header {
+  border-bottom: 3px solid #2f5233; /* deep forest green */
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7); /* light green tint */
+}
+
+/* Logo text */
+.site-header .logo {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: #14532d; /* dark forest green */
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+  background: linear-gradient(to right, #166534, #4ade80);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Optional: subtle leaf-like underline effect */
+.site-header .logo::after {
+  content: "";
+  display: block;
+  margin-top: 6px;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, #22c55e, #15803d);
+  border-radius: 2px;
+}
+
+/* Subtitle styling */
+.site-header .subtitle {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 1.05rem;
+  color: #374151; /* deep gray for readability */
+  margin-top: 0.25rem;
+  letter-spacing: 0.3px;
+  font-style: italic;
+  position: relative;
+  padding-left: 12px;
+}
+
+/* Subtle vine-like accent on the left */
+.site-header .subtitle::before {
+  content: "🌿";
+  position: relative; /* no need for absolute now */
+  margin-right: 0.5rem; /* <-- adds spacing */
+  font-size: 1rem;
+  color: #15803d;
+}
+
+/* Force nav to be horizontal */
+.site-nav {
+  display: flex;
+  flex-direction: row;   /* <--- important */
+  gap: 1.5rem;           /* space between links */
+}
+
+/* Links */
+.site-nav .nav-link {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-weight: 600;
+  color: #14532d; /* forest green */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0;
+  position: relative;
+  transition: color 0.3s ease;
+  white-space: nowrap;   /* prevent wrapping */
+}
+
+.site-nav .nav-link:hover {
+  color: #22c55e; /* lighter green */
+  text-decoration: none;
+}
+
+.site-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(to right, #22c55e, #15803d);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.site-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+/* Card header styling */
+.card-header {
+  background: linear-gradient(to right, #166534, #22c55e); /* forest gradient */
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  border-bottom: none;
+  padding: 0.75rem 1rem;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+
+/* Add subtle shadow for depth */
+.card-header {
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Optional: rounded top corners if card doesn’t have them already */
+.card-header:first-child {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+
+/* Card base */
+.card.text-center.shadow-sm {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover lift + stronger shadow */
+.card.text-center.shadow-sm:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Numbers */
+.card .h4 {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: #14532d; /* forest green */
+  margin-bottom: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+/* Numbers turn brighter green on hover */
+.card.text-center.shadow-sm:hover .h4 {
+  color: #22c55e; /* lighter leaf green */
+}
+
+/* Labels */
+.card small {
+  font-family: "Georgia", serif;
+  font-size: 0.9rem;
+  color: #374151;
+  letter-spacing: 0.5px;
+}
+
+/* Page title */
+.container.my-4 > h1.h3 {
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-weight: 800;
+  letter-spacing: .3px;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, #166534, #4ade80);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Card headers (global) */
+.card-header {
+  background: linear-gradient(to right, #166534, #22c55e);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  border-bottom: none;
+  font-size: .9rem;
+  padding: .65rem 1rem;
+}
+
+/* ---- Top Survivors card grid ---- */
+.card.h-100.text-center {
+  border: 1px solid #eaf8ef;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card.h-100.text-center:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+/* Avatar circle */
+.fg-avatar {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, #166534, #22c55e);
+  color: #fff; font-weight: 800; font-size: 1rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+/* Survivor name link */
+.st-link { color: #14532d; text-decoration: none; }
+.st-link:hover { color: #15803d; text-decoration: underline; }
+
+/* Count text */
+.card.small, .card small { color: #374151; }
+
+/* ---- Table styling ---- */
+.table-responsive {
+  border: 1px solid #e5f7ea;
+  border-radius: .5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+/* Header row */
+table.table thead.table-light {
+  background: linear-gradient(to right, #166534, #22c55e);
+  color: #fff;
+}
+table.table thead th {
+  border: none !important;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  font-size: .8rem;
+}
+
+/* Body rows */
+table.table tbody tr:hover { background-color: #f0fdf4 !important; }
+table.table tbody td { vertical-align: middle; font-size: .98rem; }
+
+/* Name links in table */
+table a.link-primary {
+  color: #14532d !important;
+  text-decoration: none !important;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+table a.link-primary:hover {
+  color: #15803d !important;
+  border-color: #86efac;
+}
+
+/* Right column numbers */
+td.text-end { font-variant-numeric: tabular-nums; }
+
+/* ===== HERO CARD ===== */
+.card.bg-success.text-white {
+  /* forest gradient overlay */
+  background: linear-gradient(135deg, #166534, #22c55e);
+  border: 0;
+}
+.card.bg-success.text-white .card-body {
+  padding: 1.5rem 1.25rem;
+}
+.card.bg-success.text-white h1.h2 {
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-weight: 800;
+  letter-spacing: .3px;
+  margin-bottom: .25rem;
+}
+
+/* Quick-stat badges inside hero */
+.card.bg-success.text-white .badge.bg-light.text-dark {
+  border-radius: 9999px;
+  background: #f0fdf4 !important;
+  color: #0b3b1f !important;
+  border: 1px solid #bbf7d0;
+  font-weight: 700;
+}
+
+/* Secondary tiny stat chips */
+.card.bg-success.text-white .badge.bg-dark-subtle,
+.card.bg-success.text-white .badge.bg-primary-subtle,
+.card.bg-success.text-white .badge.bg-success-subtle {
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+/* ===== SECTION CARDS / HEADERS ===== */
+.card.shadow, .card.shadow-sm, .card {
+  border: 1px solid #eaf8ef;
+  border-radius: .6rem;
+}
+.card-header {
+  background: linear-gradient(to right, #166534, #22c55e);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  border: none;
+  font-size: .9rem;
+  padding: .65rem 1rem;
+}
+
+/* ===== TABLES ===== */
+.table-responsive {
+  border-top: 1px solid #e5f7ea;
+  border-bottom-left-radius: .6rem;
+  border-bottom-right-radius: .6rem;
+  overflow: hidden;
+}
+table.table thead {
+  background: linear-gradient(to right, #166534, #22c55e);
+  color: #fff;
+}
+table.table thead th {
+  border: none !important;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+  font-size: .8rem;
+}
+table.table tbody tr:hover { background: #f0fdf4 !important; }
+table.table tbody td { vertical-align: middle; }
+
+/* Result badge colors in Appearances table */
+.badge.bg-success { background-color: #16a34a !important; }
+.badge.bg-danger { background-color: #dc2626 !important; }
+
+/* “Brought / Given” subtle badges (Bootstrap 5.3 “-subtle” helpers) */
+.badge.bg-success-subtle {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px solid #a7f3d0;
+}
+.badge.bg-primary-subtle {
+  background: #eff6ff !important;
+  color: #1e3a8a !important;
+  border: 1px solid #bfdbfe;
+}
+
+/* ===== LISTS ===== */
+.list-group-item {
+  border-color: #eaf8ef;
+}
+.list-group-item:hover {
+  background: #f0fdf4;
+}
+
+/* ===== LINKS ===== */
+a.link-primary, .card a {
+  color: #14532d;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color .2s ease, border-color .2s ease;
+}
+a.link-primary:hover, .card a:hover {
+  color: #15803d;
+  border-color: #86efac;
+}
+
+/* ===== MISC LAYOUT ===== */
+.row.g-3 .card,
+.row.g-4 .card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.row.g-3 .card:hover,
+.row.g-4 .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+}
+
+/* Make numeric columns align nicely */
+.text-end { font-variant-numeric: tabular-nums; }
+
+/* Small muted helpers inside hero or sections */
+.text-success-emphasis { color: #14532d !important; }
+.text-primary-emphasis { color: #0f3c8a !important; }
+
+/* ===== Page header (reuse from Home) ===== */
+.site-header {
+  border-bottom: 3px solid #2f5233;
+}
+.site-header .logo {
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-weight: 800;
+  letter-spacing: .3px;
+  background: linear-gradient(to right, #166534, #4ade80);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.site-header .subtitle {
+  font-family: "Georgia","Times New Roman",serif;
+  font-size: 1.02rem;
+  color: #374151;
+  margin-top: .25rem;
+  letter-spacing: .2px;
+  position: relative;
+  padding-left: 0.9rem;
+}
+.site-header .subtitle::before {
+  content: "🌿";
+  margin-right: .5rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* ===== Card headers (global) ===== */
+.card-header {
+  background: linear-gradient(to right, #166534, #22c55e);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  border: none;
+  font-size: .9rem;
+  padding: .65rem 1rem;
+}
+
+/* ===== Table styling ===== */
+.table-responsive {
+  border: 1px solid #e5f7ea;
+  border-radius: .5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+table.table thead.table-light {
+  background: linear-gradient(to right, #166534, #22c55e);
+  color: #fff;
+}
+table.table thead th {
+  border: none !important;
+  font-weight: 700;
+  letter-spacing: .35px;
+  text-transform: uppercase;
+  font-size: .8rem;
+}
+table.table tbody tr:hover { background-color: #f0fdf4 !important; }
+table.table tbody td { vertical-align: middle; }
+table a.link-primary {
+  color: #14532d !important;
+  text-decoration: none !important;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+table a.link-primary:hover {
+  color: #15803d !important;
+  border-color: #86efac;
+}
+
+/* ===== Season episode mini-cards (inside seasons grid) ===== */
+.card .card-body .row.g-3 .card {
+  border: 1px solid #eaf8ef;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card .card-body .row.g-3 .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+}
+.card .card-body .card-title a {
+  color: #14532d;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+.card .card-body .card-title a:hover {
+  color: #15803d;
+  border-color: #86efac;
+}
+.card .card-body .card-text.small,
+.card .card-body .text-muted { color: #4b5563; }
+
+/* ===== Buttons in filter/header ===== */
+.btn.btn-outline-secondary.btn-sm {
+  color: #14532d;
+  border-color: #86efac;
+}
+.btn.btn-outline-secondary.btn-sm:hover {
+  color: #0b3b1f;
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+.btn.btn-outline-primary.btn-sm {
+  color: #14532d;
+  border-color: #86efac;
+}
+.btn.btn-outline-primary.btn-sm:hover {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+/* Numbers align neat */
+.text-end { font-variant-numeric: tabular-nums; }
+
+.series-nav .btn {
+  color: #14532d;
+  border-color: #86efac;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.series-nav .btn:hover {
+  color: #0b3b1f;
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+html { scroll-behavior: smooth; }
+.series-anchor { scroll-margin-top: 80px; } /* adjust if you have a sticky navbar */
+.series-nav .btn {
+  color: #14532d;
+  border-color: #86efac;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.series-nav .btn:hover {
+  color: #0b3b1f;
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+/* Reuse your site header + logo + subtitle styles already defined */
+
+/* Make meta cards consistent with forest theme */
+.card.shadow-sm .card-header {
+  background: linear-gradient(to right, #166534, #22c55e);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .35px;
+  text-transform: uppercase;
+  border: none;
+  font-size: .9rem;
+  padding: .55rem .9rem;
+}
+
+/* Table polish */
+.table-responsive { border: 1px solid #e5f7ea; border-radius: .5rem; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+table.table thead.table-light { background: linear-gradient(to right, #166534, #22c55e); color: #fff; }
+table.table thead th { border: none !important; font-weight: 700; letter-spacing: .35px; text-transform: uppercase; font-size: .8rem; }
+table.table tbody tr:hover { background: #f0fdf4 !important; }
+.text-end { font-variant-numeric: tabular-nums; }
+
+/* Page header uses your existing .site-header, .logo, .subtitle styles */
+
+/* Card header: reuses global gradient if already set for .card-header */
+
+/* Map frame */
+.map-frame {
+  height: 540px;           /* adjust as needed */
+  min-height: 360px;
+  border-radius: .5rem;
+  overflow: hidden;
+  border: 1px solid #e5f7ea;
+  box-shadow: inset 0 0 0 1px rgba(22,101,52,.03);
+}
+
+/* Legend dot */
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 30%, #4ade80, #166534);
+  box-shadow: 0 0 0 2px #bbf7d0 inset, 0 0 8px rgba(34,197,94,.35);
+}
+
+/* Button tone */
+.btn.btn-outline-secondary.btn-sm {
+  color: #14532d;
+  border-color: #86efac;
+}
+.btn.btn-outline-secondary.btn-sm:hover {
+  color: #0b3b1f;
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+/* Optional: tighten card padding on small screens */
+@media (max-width: 576px) {
+  .map-frame { height: 420px; }
+}
+

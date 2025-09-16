@@ -1,11 +1,23 @@
-/ app/views/locations/index.html.slim
 - content_for :title, "Locations"
 
 .container.my-4
-  h1.h3.mb-3 Locations
-  p.text-muted.mb-4 Interactive map of filming locations. Zoom or click markers for details.
+  / ===== Page Header =====
+  .pb-2.mb-3.border-bottom.site-header
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      h1.h3.mb-0.logo Locations
+      = link_to "Episodes", episodes_path, class: "btn btn-outline-secondary btn-sm"
+    p.subtitle.mb-0 Explore filming locations. Click a pin to see all episodes at that spot.
 
+  / ===== Map =====
   .card.shadow-sm
-    .card-body
+    .card-header.d-flex.align-items-center
+      span.me-2(aria-hidden="true") 🗺️
+      span Map
+    .card-body.p-0
+      / Height via CSS (#locations-map.map-frame)
       #locations-map.map-frame(data-locations-url="#{locations_path(format: :json)}")
 
+  / ===== Legend =====
+  .mt-3.small.text-muted.d-flex.align-items-center.gap-3
+    .legend-dot
+    span Pins show unique locations. Popups include a link to filter Episodes by that location.

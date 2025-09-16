@@ -11,6 +11,14 @@ class SurvivorsController < ApplicationController
               .group("survivors.id")
               .order("survivors.full_name ASC")
               .limit(1000)
+              
+    @top_survivors =
+      Survivor
+        .left_joins(:appearances)
+        .select('survivors.*, COUNT(appearances.id) AS appearances_count')
+        .group('survivors.id')
+        .order('COUNT(appearances.id) DESC')
+        .limit(6)          
   end
 
   def show

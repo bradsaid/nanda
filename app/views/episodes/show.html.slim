@@ -1,4 +1,4 @@
-/ ===== Episode Show — Bootstrap =====
+/ ===== Episode Show =====
 - series      = @episode.season&.series
 - season_num  = @episode.season&.number
 - ep_num      = @episode.number_in_season
@@ -9,60 +9,71 @@
 - loc_str     = [loc&.country, loc&.region, loc&.site].compact.join(" • ")
 
 - content_for :title, "#{title_text} | #{subtitle}"
-    
+
 .container.my-4
-  / Header
-  .mb-4
+  / ===== Back link + Title =====
+  .pb-2.mb-3.border-bottom.site-header
     = link_to "← All episodes", episodes_path, class: "small link-primary text-decoration-underline"
-    h1.h3.mt-2.mb-1 = title_text
+    h1.h3.mt-2.mb-1.logo = title_text
     - if subtitle.present?
-      p.text-muted.mb-0 = subtitle
+      p.subtitle = subtitle
 
-    .mt-2
-      - if @episode.participant_arrangement.present?
-        span.badge.text-bg-light.me-1.mb-1 = @episode.participant_arrangement
-      - if @episode.type_modifiers.present?
-        - @episode.type_modifiers.split(/[;,]/).map(&:strip).reject(&:blank?).each do |mod|
-          span.badge.text-bg-light.me-1.mb-1 = mod
+    - if @episode.participant_arrangement.present? || @episode.type_modifiers.present?
+      .mt-2
+        - if @episode.participant_arrangement.present?
+          span.badge.text-bg-light.me-1.mb-1 = @episode.participant_arrangement
+        - if @episode.type_modifiers.present?
+          - @episode.type_modifiers.split(/[;,]/).map(&:strip).reject(&:blank?).each do |mod|
+            span.badge.text-bg-light.me-1.mb-1 = mod
 
-  / Meta
-  .row.g-3.mt-1
+  / ===== Meta =====
+  .row.g-3
     .col-12.col-sm-4
-      .card.h-100
+      .card.shadow-sm.h-100
+        .card-header.d-flex.align-items-center
+          span.me-2(aria-hidden="true") 📍
+          span Location
         .card-body
-          .small.text-muted Location
-          .fw-semibold.mt-1 = loc_str.presence || "—"
+          .fw-semibold = loc_str.presence || "—"
+
     .col-12.col-sm-4
-      .card.h-100
+      .card.shadow-sm.h-100
+        .card-header.d-flex.align-items-center
+          span.me-2(aria-hidden="true") 📅
+          span Air Date
         .card-body
-          .small.text-muted Air date
-          .fw-semibold.mt-1 = air_date.presence || "—"
+          .fw-semibold = air_date.presence || "—"
+
     .col-12.col-sm-4
-      .card.h-100
+      .card.shadow-sm.h-100
+        .card-header.d-flex.align-items-center
+          span.me-2(aria-hidden="true") ⏱️
+          span Scheduled Days
         .card-body
-          .small.text-muted Scheduled days
-          .fw-semibold.mt-1 = @episode.scheduled_days || "—"
+          .fw-semibold = (@episode.scheduled_days.presence || "—")
 
   - if @episode.notes.present?
     .alert.alert-warning.mt-4.mb-0
       .small.text-uppercase.fw-semibold.mb-1 Notes
       p.mb-0.white-space-pre-wrap = @episode.notes
 
-  / Participants
+  / ===== Participants =====
   .mt-5
-    h2.h5.mb-3 Participants
-    - if @episode.appearances.any?
-      .card
+    .card.shadow-sm
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-5(aria-hidden="true") 👥
+        h2.h5.mb-0 Participants
+      - if @episode.appearances.any?
         .table-responsive
           table.table.table-striped.table-hover.mb-0
             thead.table-light
               tr
-                th scope="col" Name
-                th scope="col" Role
-                th scope="col" PSR
-                th scope="col" Days
-                th scope="col" Result
-                th scope="col" Items
+                th(scope="col") Name
+                th(scope="col") Role
+                th(scope="col" class="text-nowrap") PSR
+                th(scope="col" class="text-end") Days
+                th(scope="col") Result
+                th(scope="col") Items
             tbody
               - @episode.appearances.each do |a|
                 - survivor   = a.survivor
@@ -80,25 +91,22 @@
                 tr
                   td
                     - if survivor
-                      = link_to survivor.full_name, survivor_path(survivor), class: "link-primary text-decoration-underline"
+                      = link_to survivor.full_name, survivor_path(survivor), class: "link-primary"
                     - else
                       span.text-muted —
                   td
                     = a.role.presence || "—"
                     - if a.partner_replacement
                       span.badge.text-bg-warning.ms-2 title="Partner replacement" PR
-                  td
-                    - if start_psr || end_psr
-                      = [start_psr, end_psr].compact.join(" → ")
-                    - else
-                      span.text-muted —
-                  td = days_cell.presence || "—"
+                  td = ([start_psr, end_psr].compact.join(" → ").presence || "—")
+                  td.text-end = days_cell.presence || "—"
                   td
                     - if a.result.present?
                       - ok = (a.result == "Completed")
-                      span.badge class=(ok ? "text-bg-success" : "text-bg-danger") = a.result
+                      span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
                     - else
                       span.text-muted —
                   td = list.any? ? list.join(" • ") : "—"
-    - else
-      p.text-muted.mb-0 No participants recorded.
+      - else
+        .card-body
+          p.text-muted.mb-0 No participants recorded.

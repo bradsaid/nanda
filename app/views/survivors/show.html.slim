@@ -1,139 +1,133 @@
+/ ===== Survivor Show =====
+.row.justify-content-center
+  .col-lg-10
 
-    
-  .row.justify-content-center
-    .col-lg-10
+    / ===== Hero =====
+    .card.hero-card.text-white.shadow.mb-4
+      .card-body
+        .d-flex.flex-column.flex-md-row.align-items-md-center.justify-content-md-between.gap-3
+          .me-md-4
+            h1.h2.mb-2 = @survivor.full_name
 
-      / ===== Hero =====
-      .card.bg-success.text-white.shadow.mb-4
-        .card-body
-          .d-flex.flex-column.flex-md-row.align-items-md-center.justify-content-md-between.gap-3
-            .me-md-4
-              h1.h2.mb-2 = @survivor.full_name
+            / Quick stats
+            - countries = @survivor.episodes.joins(:location).group("locations.country").count
+            .d-flex.flex-wrap.gap-2
+              .stat-pill
+                span.me-2(aria-hidden="true") 📺
+                strong.me-1 Episodes:
+                span = @survivor.appearances.count
+              .stat-pill
+                span.me-2(aria-hidden="true") 🌍
+                strong.me-1 Countries:
+                span = countries.keys.compact.join(", ").presence || "—"
 
-              / Quick stats
-              - countries = @survivor.episodes.joins(:location).group("locations.country").count
-              .d-flex.flex-wrap.gap-2
-                .badge.bg-light.text-dark.py-2.px-3.d-flex.align-items-center
-                  span.me-2 📺
-                  strong.me-1 Episodes:
-                  span = @survivor.appearances.count
-                .badge.bg-light.text-dark.py-2.px-3.d-flex.align-items-center
-                  span.me-2 🌍
-                  strong.me-1 Countries:
-                  span = countries.keys.compact.join(", ")
+          - if (avatar = social_avatar_url(@survivor, size: 256)).present?
+            .text-center
+              = image_tag avatar,
+                alt: "#{@survivor.full_name} avatar",
+                class: "avatar-lg rounded-circle shadow img-thumbnail",
+                loading: "lazy",
+                referrerpolicy: "no-referrer",
+                onerror: "this.remove()"
 
-            - if (avatar = social_avatar_url(@survivor, size: 256)).present?
-              .text-center
-                = image_tag avatar,
-                  alt: "#{@survivor.full_name} avatar",
-                  class: "rounded-circle shadow img-thumbnail",
-                  style: "width: 96px; height: 96px; object-fit: cover;",
-                  loading: "lazy",
-                  referrerpolicy: "no-referrer",
-                  onerror: "this.remove()"
+        / Social links
+        - if @survivor.instagram.present? || @survivor.facebook.present?
+          .d-flex.flex-column.flex-sm-row.gap-3.mt-3
+            - if (ig = @survivor.instagram).present?
+              - ig_handle = ig.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, '').sub(%r{/.*$}, '')
+              = link_to "https://www.instagram.com/#{ig_handle}",
+                        target: "_blank", rel: "noopener noreferrer",
+                        class: "btn btn-light d-inline-flex align-items-center gap-2 social-btn" do
+                span(aria-hidden="true") 📸
+                span = "@#{ig_handle}"
 
-          / Social links
-          - if @survivor.instagram.present? || @survivor.facebook.present?
-            .d-flex.flex-column.flex-sm-row.gap-3.mt-3
-              - if (ig = @survivor.instagram).present?
-                - ig_handle = ig.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, '').sub(%r{/.*$}, '')
-                = link_to "https://www.instagram.com/#{ig_handle}",
-                          target: "_blank", rel: "noopener noreferrer",
-                          class: "btn btn-light d-inline-flex align-items-center gap-2"
-                  span aria-hidden="true" 📸
-                  span = "@#{ig_handle}"
+            - if (fb = @survivor.facebook).present?
+              - fb_handle = fb.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?facebook\.com/}i, '').sub(%r{/.*$}, '')
+              = link_to "https://www.facebook.com/#{fb_handle}",
+                        target: "_blank", rel: "noopener noreferrer",
+                        class: "btn btn-light d-inline-flex align-items-center gap-2 social-btn" do
+                span(aria-hidden="true") 📘
+                span = "@#{fb_handle}"
 
-              - if (fb = @survivor.facebook).present?
-                - fb_handle = fb.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?facebook\.com/}i, '').sub(%r{/.*$}, '')
-                = link_to "https://www.facebook.com/#{fb_handle}",
-                          target: "_blank", rel: "noopener noreferrer",
-                          class: "btn btn-light d-inline-flex align-items-center gap-2"
-                  span aria-hidden="true" 📘
-                  span = "@#{fb_handle}"
-
-          / Bio
-          - if @survivor.bio.present?
-            .card.bg-white.bg-opacity-10.border-0.mt-3
-              .card-body
-                p.lead.mb-0 = @survivor.bio
-
-      / ===== Items Sections =====
-      .row.g-4.mb-4
-        .col-md-6
-          .card.shadow-sm
+        / Bio
+        - if @survivor.bio.present?
+          .card.bg-white.bg-opacity-10.border-0.mt-3
             .card-body
-              .d-flex.align-items-center.mb-3
-                span.me-3.fs-3 🎒
-                h2.h5.mb-0 Items Brought
-              - if @brought_counts.present?
-                ul.list-group.list-group-flush
-                  - @brought_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
-                    li.list-group-item.d-flex.justify-content-between.align-items-center
-                      span.fw-semibold = name
-                      span.badge.bg-success.rounded-pill = c
-              - else
-                .text-center.py-5.text-muted
-                  .fs-1.mb-2 ❌
-                  .fw-medium None brought
+              p.lead.mb-0 = @survivor.bio
 
-        .col-md-6
-          .card.shadow-sm
-            .card-body
-              .d-flex.align-items-center.mb-3
-                span.me-3.fs-3 🎁
-                h2.h5.mb-0 Items Given
-              - if @given_counts.present?
-                ul.list-group.list-group-flush
-                  - @given_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
-                    li.list-group-item.d-flex.justify-content-between.align-items-center
-                      span.fw-semibold = name
-                      span.badge.bg-primary.rounded-pill = c
-              - else
-                .text-center.py-5.text-muted
-                  .fs-1.mb-2 ➡️
-                  .fw-medium None given
+    / ===== Items Sections =====
+    .row.g-4.mb-4
+      .col-md-6
+        .card.shadow-sm
+          .card-header Items Brought
+          .card-body
+            - if @brought_counts.present?
+              ul.list-group.list-group-flush
+                - @brought_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
+                  li.list-group-item.d-flex.justify-content-between.align-items-center
+                    span.fw-semibold = name
+                    span.badge.bg-success.rounded-pill = c
+            - else
+              .text-center.py-5.text-muted
+                .fs-1.mb-2 ❌
+                .fw-medium None brought
 
-      / ===== Appearances Table =====
-      .card.shadow-sm
-        .card-header.bg-light.d-flex.align-items-center
-          span.me-3.fs-3 📊
-          h2.h5.mb-0 Appearances
-        .table-responsive
-          table.table.table-striped.table-hover.mb-0
-            thead.table-light
+      .col-md-6
+        .card.shadow-sm
+          .card-header Items Given
+          .card-body
+            - if @given_counts.present?
+              ul.list-group.list-group-flush
+                - @given_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
+                  li.list-group-item.d-flex.justify-content-between.align-items-center
+                    span.fw-semibold = name
+                    span.badge.bg-primary.rounded-pill = c
+            - else
+              .text-center.py-5.text-muted
+                .fs-1.mb-2 ➡️
+                .fw-medium None given
+
+    / ===== Appearances Table =====
+    .card.shadow-sm
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 📊
+        h2.h5.mb-0 Appearances
+      .table-responsive
+        table.table.table-striped.table-hover.mb-0
+          thead.table-light
+            tr
+              th(scope="col") Episode
+              th(scope="col") Air Date
+              th(scope="col") Location
+              th(scope="col" class="text-end") Days
+              th(scope="col" class="text-nowrap") PSR
+              th(scope="col") Result
+              th(scope="col") Brought
+              th(scope="col") Given
+          tbody
+            - @appearances.each do |a|
+              - ep = a.episode
+              - brought = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| ai.item.name }.join(", ")
+              - given   = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| ai.item.name }.join(", ")
               tr
-                th scope="col" Episode
-                th scope="col" Air Date
-                th scope="col" Location
-                th scope="col" class="text-end" Days
-                th scope="col" class="text-nowrap" PSR
-                th scope="col" Result
-                th scope="col" Brought
-                th scope="col" Given
-            tbody
-              - @appearances.each do |a|
-                - ep = a.episode
-                - brought = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| ai.item.name }.join(", ")
-                - given   = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| ai.item.name }.join(", ")
-                tr
-                  td = link_to ep.title, episode_path(ep), class: "link-primary fw-medium text-decoration-underline"
-                  td = ep.air_date.presence || "—"
-                  td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ")
-                  td.text-end = a.days_lasted.presence || "—"
-                  td = [a.starting_psr, a.ending_psr].compact.join(" → ")
-                  td
-                    - if a.result.present?
-                      - ok = (a.result == "Completed")
-                      span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
-                    - else
-                      span.text-muted —
-                  td
-                    - if brought.present?
-                      span.badge.bg-success-subtle.text-success-emphasis = brought
-                    - else
-                      span.text-muted —
-                  td
-                    - if given.present?
-                      span.badge.bg-primary-subtle.text-primary-emphasis = given
-                    - else
-                      span.text-muted —
+                td = link_to ep.title, episode_path(ep), class: "link-primary fw-medium"
+                td = ep.air_date.presence || "—"
+                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td.text-end = a.days_lasted.presence || "—"
+                td = [a.starting_psr, a.ending_psr].compact.join(" → ").presence || "—"
+                td
+                  - if a.result.present?
+                    - ok = (a.result == "Completed")
+                    span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
+                  - else
+                    span.text-muted —
+                td
+                  - if brought.present?
+                    span.badge.bg-success-subtle.text-success-emphasis = brought
+                  - else
+                    span.text-muted —
+                td
+                  - if given.present?
+                    span.badge.bg-primary-subtle.text-primary-emphasis = given
+                  - else
+                    span.text-muted —
