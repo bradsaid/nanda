@@ -21,14 +21,15 @@
                 strong.me-1 Countries:
                 span = countries.keys.compact.join(", ").presence || "—"
 
-          - if (avatar = social_avatar_url(@survivor, size: 256)).present?
-            .text-center
-              = image_tag avatar,
-                alt: "#{@survivor.full_name} avatar",
-                class: "avatar-lg rounded-circle shadow img-thumbnail",
-                loading: "lazy",
-                referrerpolicy: "no-referrer",
-                onerror: "this.remove()"
+              - if @survivor.avatar_url.present?
+                .text-center
+                  = image_tag @survivor.avatar_url,
+                    alt: @survivor.full_name,
+                    class: "avatar-lg rounded-circle shadow img-thumbnail",
+                    loading: "lazy",
+                    referrerpolicy: "no-referrer",
+                    onerror: "this.remove()"
+
 
         / Social links
         - if @survivor.instagram.present? || @survivor.facebook.present?
@@ -97,6 +98,7 @@
           thead.table-light
             tr
               th(scope="col") Episode
+              th(scope="col") Series
               th(scope="col") Air Date
               th(scope="col") Location
               th(scope="col" class="text-end") Days
@@ -107,10 +109,12 @@
           tbody
             - @appearances.each do |a|
               - ep = a.episode
+              - ser = ep.season&.series
               - brought = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| ai.item.name }.join(", ")
               - given   = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| ai.item.name }.join(", ")
               tr
                 td = link_to ep.title, episode_path(ep), class: "link-primary fw-medium"
+                td = ser&.name || "—"
                 td = ep.air_date.presence || "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
                 td.text-end = a.days_lasted.presence || "—"

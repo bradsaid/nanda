@@ -47,7 +47,8 @@ gem "activerecord-import" # fast bulk inserts (optional but recommended)
 # for Roo on Ruby 3.4+
 gem "csv"
 gem "geocoder", "~> 1.8"
-
+gem "aws-sdk-s3", "~> 1", require: false
+gem "image_processing", "~> 1.2" # optional, for variants
 
 
 
