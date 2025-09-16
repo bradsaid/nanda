@@ -1,6 +1,27 @@
 .container.my-4
   h1.h3.mb-4 Survivors
 
+  / ===== Top Survivors by Appearances =====
+  - if @top_survivors.present?
+    .card.shadow-sm.mb-4
+      .card-header Top Survivors — Most Appearances
+      .card-body
+        .row.g-3
+          - @top_survivors.each do |s|
+            - display = (s.try(:full_name) || s.try(:name) || [s.try(:first_name), s.try(:last_name)].compact.join(" ")).presence || "Survivor ##{s.id}"
+            - count = (s.respond_to?(:appearances_count) && s.appearances_count) ? s.appearances_count.to_i : s.appearances.size
+            - initials = display.split.map { |w| w[0] }.join[0,2].upcase
+            .col-6.col-md-4.col-lg-2
+              .card.h-100.text-center border=0
+                .card-body.py-3
+                  .mx-auto.mb-2.rounded-circle.d-flex.align-items-center.justify-content-center.fg-avatar
+                    = initials
+                  div.fw-semibold.mb-1 = link_to display, survivor_path(s), class: "st-link"
+                  small.text-muted = "#{count} appearance#{'s' if count != 1}"
+  - else
+    .mb-3.text-muted No appearance data yet.
+
+
   = form_with url: survivors_path, method: :get, local: true, class: "row g-3 mb-4" do
     .col-sm-4
       = label_tag :q, "Search", class: "form-label"

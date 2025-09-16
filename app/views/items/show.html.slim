@@ -1,58 +1,46 @@
-/ ===== Item details — Bootstrap =====
+/ ===== Item details =====
 - content_for :title, @item.name
 
 .container.my-4
-  h1.h3.mb-1 = @item.name
-  p.text-muted.mb-4 Analytics for this item across all episodes.
+  / Header
+  .pb-2.mb-3.border-bottom.site-header
+    h1.h3.mb-0.logo = @item.name
+    p.subtitle Analytics for this item across all episodes.
 
   / Country filter
-  = form_with url: item_path(@item), method: :get, local: true, class: "card card-body mb-4" do
-    - countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
-    .row.g-3.align-items-end
-      .col-sm-4.col-md-3
-        = label_tag :country, "Country", class: "form-label"
-        = select_tag :country, options_for_select(countries, @country), include_blank: "All countries", class: "form-select"
-      .col-sm-8.col-md-9
-        .d-flex.gap-2
-          = submit_tag "Filter", class: "btn btn-dark"
-          = link_to "Reset", item_path(@item), class: "btn btn-outline-secondary"
-
-  / Countries summary
-  .card.shadow-sm.mb-4
-    .card-header
-      h2.h6.mb-0 Countries where this appears
-    .table-responsive
-      table.table.table-sm.mb-0
-        thead.table-light
-          tr
-            th(scope="col") Country
-            th.text-end(scope="col") Total
-        tbody
-          - if @by_country.blank?
-            tr
-              td.text-muted.py-4(colspan="2") No data
-          - else
-            - @by_country.each do |r|
-              tr
-                td = r.country.presence || "Unknown"
-                td.text-end = r.total.to_i
+  = form_with url: item_path(@item), method: :get, local: true, class: "card shadow-sm mb-4" do
+    .card-header.d-flex.align-items-center
+      span.me-2(aria-hidden="true") 🌍
+      span Filter
+    .card-body
+      - countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
+      .row.g-3.align-items-end
+        .col-sm-4.col-md-3
+          = label_tag :country, "Country", class: "form-label"
+          = select_tag :country, options_for_select(countries, @country), include_blank: "All countries", class: "form-select"
+        .col-sm-8.col-md-9
+          .d-flex.gap-2
+            = submit_tag "Filter", class: "btn btn-dark"
+            = link_to "Reset", item_path(@item), class: "btn btn-outline-secondary"
 
   / Two-column: Brought vs Given
-  .row.g-4
+  .row.g-4.mb-4
     .col-12.col-lg-6
       .card.shadow-sm
         .card-header.d-flex.justify-content-between.align-items-center
-          h2.h6.mb-0 Brought by
+          h2.h6.mb-0.d-flex.align-items-center
+            span.me-2(aria-hidden="true") 🎒
+            | Brought by
           span.small.text-muted = pluralize(@brought_ai.size, "record")
         .table-responsive
-          table.table.table-sm.mb-0
+          table.table.table-sm.table-hover.mb-0
             thead.table-light
               tr
                 th(scope="col") Survivor
                 th(scope="col") Episode
                 th(scope="col") Series/Season
                 th(scope="col") Country
-                th.text-end(scope="col") Qty
+                th(scope="col" class="text-end") Qty
             tbody
               - if @brought_ai.blank?
                 tr
@@ -63,8 +51,8 @@
                   - ep  = ap.episode
                   - loc = ep.location
                   tr
-                    td = link_to ap.survivor.full_name, survivor_path(ap.survivor), class: "link-primary text-decoration-underline"
-                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary text-decoration-underline"
+                    td = link_to ap.survivor.full_name, survivor_path(ap.survivor), class: "link-primary"
+                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary"
                     td = "#{ep.season&.series&.name} S#{ep.season&.number}"
                     td = loc&.country
                     td.text-end = ai.quantity.to_i
@@ -72,16 +60,18 @@
     .col-12.col-lg-6
       .card.shadow-sm
         .card-header.d-flex.justify-content-between.align-items-center
-          h2.h6.mb-0 Given in episodes
+          h2.h6.mb-0.d-flex.align-items-center
+            span.me-2(aria-hidden="true") 🎁
+            | Given in episodes
           span.small.text-muted = pluralize(@given_ai.size, "record")
         .table-responsive
-          table.table.table-sm.mb-0
+          table.table.table-sm.table-hover.mb-0
             thead.table-light
               tr
                 th(scope="col") Episode
                 th(scope="col") Survivors
                 th(scope="col") Country
-                th.text-end(scope="col") Qty
+                th(scope="col" class="text-end") Qty
             tbody
               - if @given_ai.blank?
                 tr
@@ -92,7 +82,28 @@
                   - survivors = group.map { |x| x.appearance.survivor }.uniq
                   - qty = group.sum(&:quantity)
                   tr
-                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary text-decoration-underline"
-                    td == survivors.map { |s| link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline" }.join(", ")
+                    td = link_to (ep.title.presence || "Episode #{ep.number_in_season}"), episode_path(ep), class: "link-primary"
+                    td == survivors.map { |s| link_to s.full_name, survivor_path(s), class: "link-primary" }.join(", ")
                     td = ep.location&.country
                     td.text-end = qty.to_i
+
+  / Countries summary
+  .card.shadow-sm
+    .card-header.d-flex.align-items-center
+      span.me-2(aria-hidden="true") 🗺️
+      h2.h6.mb-0 Countries where this appears
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th(scope="col") Country
+            th(scope="col" class="text-end") Total
+        tbody
+          - if @by_country.blank?
+            tr
+              td.text-muted.py-4(colspan="2") No data
+          - else
+            - @by_country.each do |r|
+              tr
+                td = r.country.presence || "Unknown"
+                td.text-end = r.total.to_i

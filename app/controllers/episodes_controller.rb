@@ -1,25 +1,37 @@
 # app/controllers/episodes_controller.rb
 class EpisodesController < ApplicationController
   def index
-    # Seasons ordered by Series then season number
-    @seasons = Season
-                 .includes(:series) # avoid N+1 on series
-                 .order("series_id ASC, number ASC")
+    if params[:location_id].present?
+      loc_id    = params[:location_id].to_i
+      @location = Location.find_by(id: loc_id)
 
-    # Preload a small preview (first 3) per season
-    @episodes_by_season = @seasons.index_with do |s|
-      s.episodes
-       .includes(:location) # lightweight location info on cards
-       .order("number_in_season ASC NULLS LAST, id ASC")
-       .limit(3)
+      @episodes = Episode
+        .joins(season: :series)
+        .includes(:location, season: :series, appearances: :survivor)
+        .where(location_id: loc_id)
+        .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
+
+      # ensure overview vars exist so the view never blows up
+      @seasons            = []
+      @episodes_by_season = {}
+      @episode_counts     = {}
+    else
+      @seasons = Season.includes(:series).order("series_id ASC, number ASC")
+      @episodes_by_season = @seasons.index_with do |s|
+        s.episodes.includes(:location).order("number_in_season ASC NULLS LAST, id ASC").limit(3)
+      end
+      @episode_counts = Episode.group(:season_id).count
+
+      @episodes = Episode
+        .joins(season: :series)
+        .includes(:location, season: :series, appearances: :survivor)
+        .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
     end
-
-    # Episode counts per season for the “View all X” buttons
-    @episode_counts = Episode.group(:season_id).count
   end
 
   def show
-    @episode = Episode.includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
-                      .find(params[:id])
+    @episode = Episode
+      .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
+      .find(params[:id])
   end
 end
