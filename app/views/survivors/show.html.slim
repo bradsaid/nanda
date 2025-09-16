@@ -3,32 +3,36 @@
   .col-lg-10
 
     / ===== Hero =====
-    .card.hero-card.text-white.shadow.mb-4
+    .card.hero-card.mb-4
       .card-body
         .d-flex.flex-column.flex-md-row.align-items-md-center.justify-content-md-between.gap-3
           .me-md-4
-            h1.h2.mb-2 = @survivor.full_name
+            h1.h2.mb-2.survivor-name = @survivor.full_name
 
             / Quick stats
             - countries = @survivor.episodes.joins(:location).group("locations.country").count
-            .d-flex.flex-wrap.gap-2
-              .stat-pill
-                span.me-2(aria-hidden="true") 📺
-                strong.me-1 Episodes:
-                span = @survivor.appearances.count
-              .stat-pill
-                span.me-2(aria-hidden="true") 🌍
-                strong.me-1 Countries:
-                span = countries.keys.compact.join(", ").presence || "—"
+            .d-flex.align-items-center.justify-content-between.flex-wrap.gap-4
+              .d-flex.flex-column.gap-2
+                .stat-pill
+                  span.me-2(aria-hidden="true") 📺
+                  strong.me-1 Challenges:
+                  span = @episodes_collapsed_count
+                .stat-pill
+                  span.me-2(aria-hidden="true") 📺
+                  strong.me-1 Episodes:
+                  span = @survivor.appearances.count
+                .stat-pill
+                  span.me-2(aria-hidden="true") 🌍
+                  strong.me-1 Countries:
+                  span = countries.keys.compact.join(", ").presence || "—"
 
-              - if @survivor.avatar_url.present?
-                .text-center
-                  = image_tag @survivor.avatar_url,
-                    alt: @survivor.full_name,
-                    class: "avatar-lg rounded-circle shadow img-thumbnail",
-                    loading: "lazy",
-                    referrerpolicy: "no-referrer",
-                    onerror: "this.remove()"
+              - if @survivor.avatar.attached?
+                .text-center.flex-shrink-0
+                  = image_tag url_for(@survivor.avatar),
+                              alt: @survivor.full_name,
+                              class: "avatar-lg rounded-circle shadow img-thumbnail"
+
+
 
 
         / Social links
