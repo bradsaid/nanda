@@ -1,92 +1,127 @@
-/ ===== Items Index — Bootstrap =====
+/ ===== Items Index =====
 - content_for :title, "Items"
 
 .container.my-4
-  h1.h3.mb-4 Items
+  .d-flex.flex-wrap.align-items-center.justify-content-between.gap-3.mb-3
+    h1.h3.mb-0 Items
 
-  / FILTERS
-  = form_with url: items_path, method: :get, local: true, class: "card card-body mb-4" do
-    .row.g-3.align-items-end
-      .col-sm-4.col-md-5.col-lg-4
-        = label_tag :q, "Search items", class: "form-label"
-        = text_field_tag :q, @q, placeholder: "e.g. Machete, Fire Starter", class: "form-control"
-      .col-sm-3.col-md-3.col-lg-3
-        = label_tag :country, "Country", class: "form-label"
-        = select_tag :country, options_for_select(@countries, @country), include_blank: "All countries", class: "form-select"
-      .col-sm-2.col-md-2.col-lg-2
-        = label_tag :limit, "Top N", class: "form-label"
-        = select_tag :limit, options_for_select([10, 20, 50, 100, 200], @limit), class: "form-select"
-      .col-sm-3.col-md-2.col-lg-3
-        .d-flex.gap-2
+  / ===== Filters =====
+  = form_with url: items_path, method: :get, local: true, class: "card shadow-sm mb-4" do
+    .card-header.d-flex.align-items-center.gap-2
+      span.me-2(aria-hidden="true") 🔎
+      span Filter
+    .card-body
+      .row.g-3
+        .col-md-4
+          = label_tag :q, "Search items", class: "form-label"
+          = text_field_tag :q, @q, placeholder: "e.g. machete", class: "form-control"
+        .col-md-4
+          = label_tag :country, "Country", class: "form-label"
+          = select_tag :country,
+              options_for_select([["All Countries", ""]] + @countries.map { |c| [c, c] }, @country),
+              class: "form-select"
+        .col-md-auto.align-self-end
           = submit_tag "Apply", class: "btn btn-dark"
+          = " "
           = link_to "Reset", items_path, class: "btn btn-outline-secondary"
 
-  / ROW: Top brought / Top given
-  .row.row-cols-1.row-cols-md-2.g-4
-    .col
-      .card.shadow-sm
+  / ===== Top Lists (Adjusted totals) =====
+  .row.g-4
+    .col-lg-6
+      .card.shadow-sm.h-100
         .card-header.d-flex.justify-content-between.align-items-center
-          h2.h6.mb-0 Most common (brought)
-          - if @country.present?
-            span.badge.text-bg-light = @country
+          span.fw-medium Top Brought (adjusted)
+          span.small.text-muted = "#{@top_brought.sum { |r| r.read_attribute(:total).to_i }} overall"
         .table-responsive
-          table.table.table-sm.mb-0
+          table.table.table-sm.table-hover.mb-0
             thead.table-light
               tr
-                th(scope="col" class="w-32px")
-                  | #
-                th(scope="col") Item
-                th.text-end(scope="col") Count
+                th Item
+                th.text-end Total (adj.)
             tbody
               - if @top_brought.blank?
                 tr
-                  td.text-muted.py-4(colspan="3") No data
+                  td.text-muted.py-4(colspan="2") No data
               - else
-                - @top_brought.each_with_index do |r, i|
+                - @top_brought.each do |r|
                   tr
-                    td = i + 1
-                    td = link_to r.name, item_path(r.id), class: "link-primary text-decoration-underline"
-                    td.text-end = r.total.to_i
+                    td = link_to r.name, item_path(r.id)
+                    td.text-end = r.read_attribute(:total).to_i
 
-    .col
-      .card.shadow-sm
+    .col-lg-6
+      .card.shadow-sm.h-100
         .card-header.d-flex.justify-content-between.align-items-center
-          h2.h6.mb-0 Most common (given)
-          - if @country.present?
-            span.badge.text-bg-light = @country
+          span.fw-medium Top Given (adjusted)
+          span.small.text-muted = "#{@top_given.sum { |r| r.read_attribute(:total).to_i }} overall"
         .table-responsive
-          table.table.table-sm.mb-0
+          table.table.table-sm.table-hover.mb-0
             thead.table-light
               tr
-                th(scope="col" class="w-32px")
-                  | #
-                th(scope="col") Item
-                th.text-end(scope="col") Count
+                th Item
+                th.text-end Total (adj.)
             tbody
               - if @top_given.blank?
                 tr
-                  td.text-muted.py-4(colspan="3") No data
+                  td.text-muted.py-4(colspan="2") No data
               - else
-                - @top_given.each_with_index do |r, i|
+                - @top_given.each do |r|
                   tr
-                    td = i + 1
-                    td = link_to r.name, item_path(r.id), class: "link-primary text-decoration-underline"
-                    td.text-end = r.total.to_i
+                    td = link_to r.name, item_path(r.id)
+                    td.text-end = r.read_attribute(:total).to_i
 
-  / RAREST
+  / ===== Given in Episodes (unique per episode) =====
+  .row.g-4.mt-1
+    .col-lg-6
+      .card.shadow-sm.h-100
+        .card-header.fw-medium Given in Episodes (unique)
+        .table-responsive
+          table.table.table-sm.table-hover.mb-0
+            thead.table-light
+              tr
+                th Item
+                th.text-end Episodes
+            tbody
+              - if @given_in_episodes.blank?
+                tr
+                  td.text-muted.py-4(colspan="2") No data
+              - else
+                - @given_in_episodes.each do |r|
+                  tr
+                    td = link_to r.name, item_path(r.id)
+                    / Expect alias "total"
+                    td.text-end = r.read_attribute(:total).to_i
+
+    .col-lg-6
+      .card.shadow-sm.h-100
+        .card-header.fw-medium Given in Episodes (adjusted — continuous=1)
+        .table-responsive
+          table.table.table-sm.table-hover.mb-0
+            thead.table-light
+              tr
+                th Item
+                th.text-end Episodes (adj.)
+            tbody
+              - if @given_in_episodes_adj.blank?
+                tr
+                  td.text-muted.py-4(colspan="2") No data
+              - else
+                - @given_in_episodes_adj.each do |r|
+                  tr
+                    td = link_to r.name, item_path(r.id)
+                    / Expect alias "total_adj"
+                    td.text-end = r.read_attribute(:total_adj).to_i
+
+  / ===== Rarest Items (by adjusted total occurrences > 0) =====
   .card.shadow-sm.mt-4
-    .card-header.d-flex.justify-content-between.align-items-center
-      h2.h6.mb-0 Rarest items (by total occurrences)
-      - if @q.present? || @country.present?
-        span.badge.text-bg-warning-subtle.text-warning-emphasis Filters applied
+    .card-header.fw-medium Rarest Items (adjusted)
     .table-responsive
-      table.table.table-sm.mb-0
+      table.table.table-sm.table-hover.mb-0
         thead.table-light
           tr
-            th(scope="col") Item
-            th.text-end(scope="col") Total
-            th.text-end(scope="col") Brought
-            th.text-end(scope="col") Given
+            th Item
+            th.text-end Total (adj.)
+            th.text-end Brought (adj.)
+            th.text-end Given (adj.)
         tbody
           - if @rarest.blank?
             tr
@@ -94,31 +129,56 @@
           - else
             - @rarest.each do |r|
               tr
-                td = link_to r.name, item_path(r.id), class: "link-primary text-decoration-underline"
-                td.text-end = r.total.to_i
-                td.text-end = r.try(:brought_total).to_i
-                td.text-end = r.try(:given_total).to_i
+                td = link_to r.name, item_path(r.id)
+                td.text-end = r.read_attribute(:total).to_i
+                td.text-end = r.read_attribute(:brought_total).to_i
+                td.text-end = r.read_attribute(:given_total).to_i
 
-  / ITEMS PER COUNTRY
-  h2.h6.text-uppercase.text-muted.mt-5.mb-3 Items per country (top 10 each)
-  - if @items_by_country.blank?
-    p.text-muted.mb-0 No country data available.
-  - else
-    .row.row-cols-1.row-cols-sm-2.row-cols-lg-3.g-4
-      - @items_by_country.each do |country, rows|
-        .col
-          .card.shadow-sm
+  / ===== Items per Country (unique per episode) =====
+  .row.g-4.mt-1
+    - (@items_by_country || {}).each do |country, rows|
+      .col-lg-6
+        .card.shadow-sm.h-100
+          .card-header.d-flex.justify-content-between.align-items-center
+            span.fw-medium = (country.presence || "Unknown")
+            span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total).to_i }} total"
+          .table-responsive
+            table.table.table-sm.table-hover.mb-0
+              thead.table-light
+                tr
+                  th Item
+                  th.text-end Episodes
+              tbody
+                - if rows.blank?
+                  tr
+                    td.text-muted.py-4(colspan="2") No data
+                - else
+                  - rows.each do |r|
+                    tr
+                      td = link_to r.item_name, item_path(r.item_id)
+                      td.text-end = r.read_attribute(:total).to_i
+
+  / ===== Items per Country (adjusted — continuous=1) =====
+  - if @items_by_country_adj.present?
+    .row.g-4.mt-1
+      - @items_by_country_adj.each do |country, rows|
+        .col-lg-6
+          .card.shadow-sm.h-100
             .card-header.d-flex.justify-content-between.align-items-center
-              span.fw-medium = (country.presence || "Unknown")
-              span.small.text-muted = "#{rows.sum { |r| r.total.to_i }} total"
+              span.fw-medium = "#{country.presence || 'Unknown'} (adjusted)"
+              span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total_adj).to_i }} total"
             .table-responsive
-              table.table.table-sm.mb-0
+              table.table.table-sm.table-hover.mb-0
                 thead.table-light
                   tr
-                    th(scope="col") Item
-                    th.text-end(scope="col") Total
+                    th Item
+                    th.text-end Episodes (adj.)
                 tbody
-                  - rows.each do |row|
+                  - if rows.blank?
                     tr
-                      td = link_to row.item_name, item_path(row.item_id), class: "link-primary text-decoration-underline"
-                      td.text-end = row.total.to_i
+                      td.text-muted.py-4(colspan="2") No data
+                  - else
+                    - rows.each do |r|
+                      tr
+                        td = link_to r.item_name, item_path(r.item_id)
+                        td.text-end = r.read_attribute(:total_adj).to_i

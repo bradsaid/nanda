@@ -3,54 +3,41 @@ class SurvivorsController < ApplicationController
   def index
     @q = params[:q].to_s.strip
 
+    # Precompute episode counts to avoid N+1
     @survivors =
-      Survivor
-        .left_joins(appearances: { episode: { season: :series } })
-        .where("survivors.full_name ILIKE ?", "%#{@q}%")
-        .select([
-          "survivors.*",
-          "COUNT(DISTINCT episodes.id) AS episodes_total_count",
-          collapsed_episodes_sql("episodes_collapsed_count"),
-          "COUNT(appearances.id) AS appearances_count"
-        ].join(", "))
-        .group("survivors.id")
-        .order("survivors.full_name ASC")
-        .limit(1000)
-
-    # 🔽 Sort Top Survivors by COLLAPSED, but also select TOTAL so the view can show both
+      Survivor.left_joins(:appearances)
+              .where("survivors.full_name ILIKE ?", "%#{@q}%") # drop if no search
+              .select("survivors.*, COUNT(appearances.id) AS appearances_count")
+              .group("survivors.id")
+              .order("survivors.full_name ASC")
+              .limit(1000)
+              
     @top_survivors =
       Survivor
-        .left_joins(appearances: { episode: { season: :series } })
-        .select([
-          "survivors.*",
-          "COUNT(DISTINCT episodes.id) AS episodes_total_count",
-          collapsed_episodes_sql("episodes_collapsed_count")
-        ].join(", "))
-        .group("survivors.id")
-        .order("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC")
-        .limit(6)
+        .left_joins(:appearances)
+        .select('survivors.*, COUNT(appearances.id) AS appearances_count')
+        .group('survivors.id')
+        .order('COUNT(appearances.id) DESC')
+        .limit(6)          
   end
 
   def show
     @survivor = Survivor.find(params[:id])
 
+    # Eager-load to avoid N+1
     @appearances = @survivor.appearances
-                            .includes(episode: [:season, :location], appearance_items: :item)
+                            .includes(:episode => [:season, :location], :appearance_items => :item)
                             .order("episodes.air_date NULLS LAST, episodes.id")
 
-    base = @survivor.appearances.joins(episode: { season: :series })
-
-    # DISTINCT episodes total
-    row = base.except(:select).select("COUNT(DISTINCT episodes.id) AS total").take
-    @episodes_total_count = row["total"].to_i
-
-    # Collapsed: 1 per continuous series, else distinct episodes
-    row2 = base.except(:select).select(collapsed_episodes_sql("collapsed")).take
-    @episodes_collapsed_count = row2["collapsed"].to_i
-
-    @brought_counts = @survivor.appearance_items.where(source: :brought).joins(:item).group("items.name").count
-    @given_counts   = @survivor.appearance_items.where(source: :given).joins(:item).group("items.name").count
+    # Rollups
+    @brought_counts = @survivor.appearance_items
+                               .where(source: :brought).joins(:item)
+                               .group("items.name").count
+    @given_counts = @survivor.appearance_items
+                             .where(source: :given).joins(:item)
+                             .group("items.name").count
   end
+
 
   private
 
@@ -63,12 +50,9 @@ class SurvivorsController < ApplicationController
     links << h.link_to("Site", s.website,   target: "_blank", rel: "noopener") if s.website.present?
     links << h.link_to("Merch", s.merch,    target: "_blank", rel: "noopener") if s.merch.present?
 
-    episodes_total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count     : s.appearances.distinct.count(:episode_id)
-    episodes_collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count : episodes_total
-
     [
       h.link_to(s.full_name, h.survivor_path(s)),
-      episodes_collapsed, # show collapsed stat
+      (s.respond_to?(:episodes_count) ? s.episodes_count : s.appearances.size),
       (links.any? ? h.safe_join(links, " · ".html_safe) : h.content_tag(:span, "-", class: "text-gray-400"))
     ]
   end

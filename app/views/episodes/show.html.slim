@@ -14,99 +14,91 @@
   / ===== Back link + Title =====
   .pb-2.mb-3.border-bottom.site-header
     = link_to "← All episodes", episodes_path, class: "small link-primary text-decoration-underline"
-    h1.h3.mt-2.mb-1.logo = title_text
+    h1.h3.mb-1 = title_text
     - if subtitle.present?
-      p.subtitle = subtitle
+      p.text-muted.mb-0 = subtitle
 
-    - if @episode.participant_arrangement.present? || @episode.type_modifiers.present?
-      .mt-2
-        - if @episode.participant_arrangement.present?
-          span.badge.text-bg-light.me-1.mb-1 = @episode.participant_arrangement
-        - if @episode.type_modifiers.present?
-          - @episode.type_modifiers.split(/[;,]/).map(&:strip).reject(&:blank?).each do |mod|
-            span.badge.text-bg-light.me-1.mb-1 = mod
-
-  / ===== Meta =====
-  .row.g-3
-    .col-12.col-sm-4
+  / ===== Episode meta =====
+  .row.g-3.mb-4
+    .col-md-4
       .card.shadow-sm.h-100
-        .card-header.d-flex.align-items-center
-          span.me-2(aria-hidden="true") 📍
-          span Location
         .card-body
-          .fw-semibold = loc_str.presence || "—"
-
-    .col-12.col-sm-4
+          .d-flex.align-items-center.gap-3
+            span.fs-3(aria-hidden="true") 📍
+            .flex-grow-1
+              .text-uppercase.small.text-muted Location
+              .fw-semibold = loc_str.presence || "—"
+    .col-md-4
       .card.shadow-sm.h-100
-        .card-header.d-flex.align-items-center
-          span.me-2(aria-hidden="true") 📅
-          span Air Date
         .card-body
-          .fw-semibold = air_date.presence || "—"
-
-    .col-12.col-sm-4
+          .d-flex.align-items-center.gap-3
+            span.fs-3(aria-hidden="true") 📅
+            .flex-grow-1
+              .text-uppercase.small.text-muted Air Date
+              .fw-semibold = air_date.presence || "—"
+    .col-md-4
       .card.shadow-sm.h-100
-        .card-header.d-flex.align-items-center
-          span.me-2(aria-hidden="true") ⏱️
-          span Scheduled Days
         .card-body
-          .fw-semibold = (@episode.scheduled_days.presence || "—")
+          .d-flex.align-items-center.gap-3
+            span.fs-3(aria-hidden="true") ⏱️
+            .flex-grow-1
+              .text-uppercase.small.text-muted Scheduled Days
+              .fw-semibold = (@episode.scheduled_days.presence || "—")
 
   - if @episode.notes.present?
-    .alert.alert-warning.mt-4.mb-0
-      .small.text-uppercase.fw-semibold.mb-1 Notes
-      p.mb-0.white-space-pre-wrap = @episode.notes
+    .card.shadow-sm.mb-4
+      .card-header Notes
+      .card-body
+        = simple_format(@episode.notes)
 
   / ===== Participants =====
-  .mt-5
-    .card.shadow-sm
-      .card-header.d-flex.align-items-center
-        span.me-3.fs-5(aria-hidden="true") 👥
-        h2.h5.mb-0 Participants
-      - if @episode.appearances.any?
-        .table-responsive
-          table.table.table-striped.table-hover.mb-0
-            thead.table-light
+  .card.shadow-sm
+    .card-header.d-flex.align-items-center
+      span.me-3.fs-3(aria-hidden="true") 👥
+      h2.h5.mb-0 Participants
+    - if @episode.appearances.present?
+      .table-responsive
+        table.table.table-striped.table-hover.mb-0
+          thead.table-light
+            tr
+              th(scope="col") Name
+              th(scope="col") Role
+              th(scope="col" class="text-nowrap") PSR
+              th(scope="col" class="text-end") Days
+              th(scope="col") Result
+              th(scope="col") Items
+          tbody
+            - @episode.appearances.each do |a|
+              - s = a.survivor
+              - start_psr = a.starting_psr
+              - end_psr   = a.ending_psr
+              - days_cell = a.days_lasted
+              / ----- Items per appearance (corrected) -----
+              - br_ai = a.appearance_items.find { |ai| ai.source == "brought" }
+              - br    = br_ai&.item&.name
+              - given = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| q = ai.quantity.to_i; name = ai.item.name; q > 1 ? "#{name}×#{q}" : name }.join(", ")
               tr
-                th(scope="col") Name
-                th(scope="col") Role
-                th(scope="col" class="text-nowrap") PSR
-                th(scope="col" class="text-end") Days
-                th(scope="col") Result
-                th(scope="col") Items
-            tbody
-              - @episode.appearances.each do |a|
-                - survivor   = a.survivor
-                - start_psr  = a.starting_psr ? format('%.2f', a.starting_psr) : nil
-                - end_psr    = a.ending_psr   ? format('%.2f', a.ending_psr)   : nil
-                - days_cell  = [a.days_lasted, (@episode.scheduled_days && "/ #{@episode.scheduled_days}")].compact.join(" ")
-                - brought    = a.appearance_items.select { |ai| ai.source == "brought" }
-                - given      = a.appearance_items.select { |ai| ai.source == "given" }
-                - list = []
-                - if brought.any?
-                  - list << "brought: " + brought.map { |ai| ai.item&.name.to_s + (ai.quantity.to_i > 1 ? "×#{ai.quantity}" : "") }.join(", ")
-                - if given.any?
-                  - list << "given: " + given.map   { |ai| ai.item&.name.to_s + (ai.quantity.to_i > 1 ? "×#{ai.quantity}" : "") }.join(", ")
-
-                tr
-                  td
-                    - if survivor
-                      = link_to survivor.full_name, survivor_path(survivor), class: "link-primary"
-                    - else
-                      span.text-muted —
-                  td
-                    = a.role.presence || "—"
-                    - if a.partner_replacement
-                      span.badge.text-bg-warning.ms-2 title="Partner replacement" PR
-                  td = ([start_psr, end_psr].compact.join(" → ").presence || "—")
-                  td.text-end = days_cell.presence || "—"
-                  td
-                    - if a.result.present?
-                      - ok = (a.result == "Completed")
-                      span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
-                    - else
-                      span.text-muted —
-                  td = list.any? ? list.join(" • ") : "—"
-      - else
-        .card-body
-          p.text-muted.mb-0 No participants recorded.
+                td
+                  = link_to(s.full_name, survivor_path(s), class: "link-primary fw-medium")
+                  - if a.partner_replacement
+                    span.badge.text-bg-warning.ms-2 title="Partner replacement" PR
+                td = a.role.presence || "—"
+                td = ([start_psr, end_psr].compact.join(" → ").presence || "—")
+                td.text-end = (days_cell.presence || "—")
+                td
+                  - if a.result.present?
+                    - ok = (a.result == "Completed")
+                    span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
+                  - else
+                    span.text-muted —
+                td
+                  - if br.present?
+                    span = "brought: #{br}"
+                  - else
+                    span.text-muted —
+                  - if given.present?
+                    br
+                    span = "given: #{given}"
+    - else
+      .card-body
+        p.text-muted.mb-0 No participants recorded.
