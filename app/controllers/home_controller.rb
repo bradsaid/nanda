@@ -6,7 +6,7 @@ class HomeController < ApplicationController
       episodes:  Episode.count,
       survivors: Survivor.count,
       items:     Item.count,
-      locations: Location.count
+      locations: Location.distinct.count(:country)
     }
 
     @latest_episode =
