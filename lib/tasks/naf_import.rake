@@ -1,18 +1,8 @@
 # frozen_string_literal: true
 namespace :naf do
-  desc "Import Naked & Afraid XLSX (usage: bin/rails 'naf:import[/path/to/file.xlsx]' or add ,true for dry-run)"
-  task :import, [:path, :dry_run] => :environment do |_t, args|
-    path    = args[:path] || ENV["PATH"]
-    dry_run = ActiveModel::Type::Boolean.new.cast(args[:dry_run] || ENV["DRY_RUN"])
-
-    unless path && File.exist?(path)
-      puts "ERROR: provide a valid path. Example:"
-      puts "  bin/rails 'naf:import[/absolute/path/NakedAndAfraidDB latest.xlsx]'"
-      exit(1)
-    end
-
-    puts "Importing: #{path} (dry_run=#{dry_run})"
-    ImportNakedAndAfraidWorkbook.new(path: path, dry_run: dry_run).call
-    puts "Done."
+  desc "Import Naked & Afraid workbook (XLSX/CSV). FILE=path [DRY=1]"
+  task import: :environment do
+    path = ENV["FILE"] || abort("Usage: rake naf:import FILE=path/to.xlsx [DRY=1]")
+    Naf::Importer.new(path, dry_run: ENV["DRY"].to_s == "1").run!
   end
 end

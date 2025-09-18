@@ -6,23 +6,35 @@ class ItemsController < ApplicationController
 
     @countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
 
-    # Base (must join series for adjusted logic)
+    # Base (used for your other lists)
     ai = AppearanceItem.joins(:item, appearance: { episode: [:location, { season: :series }] })
     ai = ai.where("items.name ILIKE ?", "%#{@q}%") if @q.present?
     ai = ai.where(locations: { country: @country }) if @country.present?
 
-    # Top lists (adjusted totals)
-    @top_brought = ai.where(source: "brought")
-                    .select("items.id, items.name, #{adjusted_total_sql}")           # alias => total
-                    .group("items.id, items.name")
-                    .order("total DESC").limit(@limit)
+    # ===== Top lists =====
+    # Brought: count each survivor’s brought item; collapse across continuous series.
+    # Given:   count once per episode (shared); collapse across continuous series.
+    items_scope = Item.all
+    items_scope = items_scope.where("items.name ILIKE ?", "%#{@q}%") if @q.present?
 
-    @top_given   = ai.where(source: "given")
-                    .select("items.id, items.name, #{adjusted_total_sql}")           # alias => total
-                    .group("items.id, items.name")
-                    .order("total DESC").limit(@limit)
+    brought_sub = brought_subquery(@country, @q)
+    given_sub   = given_subquery(@country, @q)
 
-    # Given in episodes (unique & adjusted)
+    @top_brought = items_scope
+      .joins("JOIN (#{brought_sub.to_sql}) bi ON bi.item_id = items.id")
+      .select("items.id, items.name, COUNT(*) AS total")
+      .group("items.id, items.name")
+      .order("total DESC")
+      .limit(@limit)
+
+    @top_given = items_scope
+      .joins("JOIN (#{given_sub.to_sql}) gi ON gi.item_id = items.id")
+      .select("items.id, items.name, COUNT(*) AS total")
+      .group("items.id, items.name")
+      .order("total DESC")
+      .limit(@limit)
+
+    # ===== Given in episodes (unique & adjusted) =====
     @given_in_episodes = ai
       .select("items.id, items.name, #{per_episode_presence_sql('total')}")
       .group("items.id, items.name")
@@ -35,6 +47,7 @@ class ItemsController < ApplicationController
       .order("total_adj DESC")
       .limit(@limit)
 
+    # ===== Rarest (existing logic preserved) =====
     @rarest = ai
       .select([
         "items.id, items.name",
@@ -47,7 +60,7 @@ class ItemsController < ApplicationController
       .order("total ASC, items.name ASC")
       .limit(@limit)
 
-    # Items per country (unique per episode) and adjusted
+    # ===== Items per country (unique per episode) and adjusted =====
     rows = ai
       .select([
         "locations.country AS country",
@@ -71,8 +84,6 @@ class ItemsController < ApplicationController
       .order("locations.country ASC, total_adj DESC")
 
     @items_by_country_adj = rows_adj.group_by(&:country).transform_values { |arr| arr.first(10) }
-
-
   end
 
   def show
@@ -88,17 +99,15 @@ class ItemsController < ApplicationController
 
     # Split by source
     @brought_ai = scope.where(source: "brought")
-                      .order("episodes.air_date NULLS LAST, survivors.full_name")
+                       .order("episodes.air_date NULLS LAST, survivors.full_name")
     @given_ai   = scope.where(source: "given")
-                      .order("episodes.air_date NULLS LAST, survivors.full_name")
-
+                       .order("episodes.air_date NULLS LAST, survivors.full_name")
 
     @given_episode_ids   = @given_ai.reorder(nil).distinct.pluck("appearances.episode_id")
     @brought_episode_ids = @brought_ai.reorder(nil).distinct.pluck("appearances.episode_id")
 
     # ---------- Adjusted presence (continuous series collapse to 1) ----------
     # Build stable keys: ep-<episode_id> for normal, series-<series_id> for continuous
-    # Use to_a to guarantee an array even if relation is empty
     @given_keys = @given_ai.to_a.map do |ai|
       ep  = ai.appearance.episode
       ser = ep.season&.series
@@ -119,5 +128,55 @@ class ItemsController < ApplicationController
                       .select("locations.country AS country, #{adjusted_total_sql}")
                       .group("locations.country")
                       .order("total DESC")
+  end
+
+  private
+
+  # For brought items:
+  # - Count per survivor (appearance) within each episode.
+  # - Collapse across continuous story by counting once per series instead of per episode
+  #   when seasons.continuous_story OR series.continuous_story.
+  # Emits DISTINCT rows of (grp_key, item_id, appearance_id).
+  def brought_subquery(country, q)
+    key_sql = <<~SQL.squish
+      CASE
+        WHEN COALESCE(seasons.continuous_story, FALSE) OR COALESCE(series.continuous_story, FALSE)
+          THEN series.id::text
+        ELSE episodes.id::text
+      END
+    SQL
+
+    rel = AppearanceItem
+            .where(source: "brought")
+            .joins(:item, appearance: { episode: [:location, { season: :series }] })
+
+    rel = rel.where("items.name ILIKE ?", "%#{q}%") if q.present?
+    rel = rel.where(locations: { country: country }) if country.present?
+
+    rel.select("DISTINCT (#{key_sql}) AS grp_key, appearance_items.item_id, appearance_items.appearance_id")
+  end
+
+  # For given items:
+  # - Shared, so count once per episode.
+  # - Collapse across continuous story by counting once per series instead of per episode
+  #   when seasons.continuous_story OR series.continuous_story.
+  # Emits DISTINCT rows of (grp_key, item_id).
+  def given_subquery(country, q)
+    key_sql = <<~SQL.squish
+      CASE
+        WHEN COALESCE(seasons.continuous_story, FALSE) OR COALESCE(series.continuous_story, FALSE)
+          THEN series.id::text
+        ELSE episodes.id::text
+      END
+    SQL
+
+    rel = AppearanceItem
+            .where(source: "given")
+            .joins(:item, appearance: { episode: [:location, { season: :series }] })
+
+    rel = rel.where("items.name ILIKE ?", "%#{q}%") if q.present?
+    rel = rel.where(locations: { country: country }) if country.present?
+
+    rel.select("DISTINCT (#{key_sql}) AS grp_key, appearance_items.item_id")
   end
 end

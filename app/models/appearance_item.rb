@@ -4,12 +4,6 @@ class AppearanceItem < ApplicationRecord
   scope :brought, -> { where(source: "brought") }
   scope :given,   -> { where(source: "given") }
 
-  has_one :brought_ai, -> { where(source: "brought") }, class_name: "AppearanceItem"
-  has_one :brought_item, through: :brought_ai, source: :item
-
-  has_many :given_ais, -> { where(source: "given") }, class_name: "AppearanceItem"
-  has_many :given_items, through: :given_ais, source: :item
-
   enum :source, {
     brought: "brought",
     given:   "given",
