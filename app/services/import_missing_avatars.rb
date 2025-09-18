@@ -3,8 +3,9 @@ require "roo"
 require "net/http"
 require "json"
 require "uri"
+require "set"
 
-class ImportInstagramAvatars
+class ImportMissingAvatars
   IG_APP_ID     = "936619743392459"
   OPEN_TIMEOUT  = 10
   READ_TIMEOUT  = 10
@@ -26,72 +27,86 @@ class ImportInstagramAvatars
 
     xlsx  = Roo::Excelx.new(@path)
     sheet = if @sheet_name && xlsx.sheets.include?(@sheet_name)
-              xlsx.sheet(@sheet_name)
-            else
-              xlsx.sheet(xlsx.sheets.first)
-            end
+      xlsx.sheet(@sheet_name)
+    else
+      xlsx.sheet(xlsx.sheets.first)
+    end
 
-    headers = sheet.row(1).map { |h| h.to_s.strip }
-    fullname_idx  = headers.index("FullName")
-    instagram_idx = headers.index("Instagram")
+    header = sheet.row(1).map { |h| h.to_s.strip }
+    fullname_idx  = header.index("FullName")
+    instagram_idx = header.index("Instagram")
     raise "Column 'FullName' not found"  unless fullname_idx
     raise "Column 'Instagram' not found" unless instagram_idx
+
+    # Preload who already has avatars to avoid N+1 checks
+    has_avatar_ids = Survivor.joins(:avatar_attachment).pluck(:id).to_set
 
     updated = 0
     unchanged = 0
     not_found = 0
     missing_ig = 0
+    skipped_existing = 0
     errors = 0
 
     ActiveRecord::Base.transaction do
       (2..sheet.last_row).each do |r|
-        name = (sheet.cell(r, fullname_idx + 1) || "").to_s.strip
-        ig   = (sheet.cell(r, instagram_idx + 1) || "").to_s.strip
+        begin
+          name = (sheet.cell(r, fullname_idx + 1)  || "").to_s.strip
+          ig   = (sheet.cell(r, instagram_idx + 1) || "").to_s.strip
+          next if name.blank?
 
-        if name.blank?
-          next
+          survivor = find_survivor(name)
+          unless survivor
+            not_found += 1
+            @logger.warn "Row #{r}: NO MATCH in DB for #{name.inspect} → skip"
+            next
+          end
+
+          # NEW: skip survivors that already have an attached avatar
+          if has_avatar_ids.include?(survivor.id)
+            skipped_existing += 1
+            @logger.info "Row #{r}: SKIP (already has avatar) — #{survivor.id} #{survivor.full_name}"
+            next
+          end
+
+          if ig.blank?
+            missing_ig += 1
+            @logger.info "Row #{r}: #{survivor.id} #{survivor.full_name} → no Instagram value → skip"
+            next
+          end
+
+          username = extract_username(ig)
+          if username.blank?
+            unchanged += 1
+            @logger.info "Row #{r}: #{survivor.id} #{survivor.full_name} → could not extract username from #{ig.inspect} → skip"
+            next
+          end
+
+          res = fetch_ig_avatar(username)
+
+          changes = {}
+          # backfill instagram if DB blank
+          changes[:instagram] = normalized_ig_url(ig) if survivor.instagram.blank? && ig.present?
+
+          # (We’re only updating DB fields here — this version intentionally does not attach blobs)
+          if res[:url].present? && survivor.avatar_url != res[:url]
+            changes[:avatar_url] = res[:url]
+          end
+
+          if changes.any?
+            survivor.update!(changes) unless @dry_run
+            updated += 1
+            @logger.info "Row #{r}: UPDATE #{survivor.id} #{survivor.full_name} → #{changes.keys.join(", ")} (#{res[:status]})"
+          else
+            unchanged += 1
+            @logger.info "Row #{r}: UNCHANGED #{survivor.id} #{survivor.full_name}"
+          end
+
+          jitter_sleep
+        rescue => e
+          errors += 1
+          @logger.error "Row #{r} ERROR: #{e.class} - #{e.message}"
         end
-
-        survivor = find_survivor(name)
-        unless survivor
-          not_found += 1
-          @logger.warn "No survivor: #{name}"
-          next
-        end
-
-        if ig.blank?
-          missing_ig += 1
-          next
-        end
-
-        username = extract_username(ig)
-        if username.blank?
-          unchanged += 1
-          next
-        end
-
-        res = fetch_ig_avatar(username)
-
-        changes = {}
-        # backfill instagram if blank
-        changes[:instagram] = normalized_ig_url(ig) if survivor.instagram.blank? && ig.present?
-
-        if res[:url].present? && survivor.avatar_url != res[:url]
-          changes[:avatar_url] = res[:url]
-        end
-
-        if changes.any?
-          survivor.update!(changes)
-          updated += 1
-          @logger.info "Updated #{survivor.full_name} → #{changes.keys.join(", ")} (#{res[:status]})"
-        else
-          unchanged += 1
-        end
-
-        jitter_sleep
-      rescue => e
-        errors += 1
-        @logger.error "Row #{r} error: #{e.class} - #{e.message}"
       end
 
       if @dry_run
@@ -100,7 +115,7 @@ class ImportInstagramAvatars
       end
     end
 
-    @logger.info "Summary → updated: #{updated}, unchanged: #{unchanged}, not_found: #{not_found}, missing_ig: #{missing_ig}, errors: #{errors}"
+    @logger.info "Summary → updated: #{updated}, unchanged: #{unchanged}, not_found: #{not_found}, missing_ig: #{missing_ig}, skipped_existing: #{skipped_existing}, errors: #{errors}"
   end
 
   private

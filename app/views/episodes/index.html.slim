@@ -25,61 +25,74 @@
               td(colspan="5" class="text-muted text-center py-4") No episodes found for this location.
           - else
             - @episodes.each do |ep|
-              - series_name = ep.season&.series&.name
-              - season_num  = ep.season&.number
               tr
-                td = link_to(ep.title.presence || "Episode #{ep.number_in_season || ep.id}", episode_path(ep), class: "link-primary text-decoration-underline")
-                td
-                  - if series_name && season_num
-                    = link_to "#{series_name} • S#{season_num}", episodes_path(series: series_name, season: season_num), class: "link-secondary text-decoration-underline"
-                  - else
-                    | —
+                td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
+                td = "S#{ep.season&.number} • #{ep.season&.series&.name}"
                 td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
-                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ")
-                td = ep.appearances.size
+                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+                td = ep.survivors.map(&:full_name).join(", ").presence || "—"
+
+- elsif defined?(@season) && @season.present?
+  / === Filtered by season ===
+  .pb-2.mb-3.border-bottom.site-header
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      h1.h3.mb-0.logo = "Season #{@season.number} • #{@season.series.name}"
+      = link_to "All seasons", episodes_path, class: "btn btn-outline-secondary btn-sm"
+    p.subtitle.mb-0 = "All #{@episodes.size} episode(s) in this season"
+
+  .card.shadow-sm
+    .card-header Episodes
+    .table-responsive
+      table.table.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th(scope="col") Episode
+            th(scope="col") Air Date
+            th(scope="col") Location
+            th(scope="col") Survivors
+        tbody
+          - if @episodes.blank?
+            tr
+              td(colspan="4" class="text-muted text-center py-4") No episodes found for this season.
+          - else
+            - @episodes.each do |ep|
+              tr
+                td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
+                td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+                td = ep.survivors.map(&:full_name).join(", ").presence || "—"
 
 - else
-  / === Series navigation (anchors) ===
-  - series_list = @seasons.map(&:series).compact.uniq
-  - if series_list.any?
-    .mb-4.text-center.series-nav
-      - series_list.each do |series|
-        - anchor = series.name.to_s.parameterize
-        = link_to series.name, "##{anchor}", class: "btn btn-outline-success me-2 mb-2"
-
-  / === All Episodes by season ===
+  / === Overview (cards per season, with 'View all' link) ===
   .pb-2.mb-3.border-bottom.site-header
-    h1.h3.mb-1.logo Episodes
-    p.subtitle Explore all episodes by season and location
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      h1.h3.mb-0.logo Episodes
+      = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
 
-  - prev_series_id = nil
   - @seasons.each do |season|
-    - if season.series_id != prev_series_id
-      - anchor = season.series&.name.to_s.parameterize
-      .pb-2.mb-3.border-bottom.site-header.series-anchor(id=anchor)
-        h2.h4.mb-0.logo = season.series&.name
-      - prev_series_id = season.series_id
-
-    .card.shadow-sm.mb-4
-      .card-header = "Season #{season.number}"
-      - eps = (@episodes_by_season[season] || [])
-      - if eps.any?
-        .card-body
-          .row.g-3
-            - eps.each do |ep|
-              .col-md-4
-                .card.h-100 border=0
-                  .card-body
-                    h5.card-title.mb-1 = link_to(ep.title.presence || "Episode #{ep.number_in_season || ep.id}", episode_path(ep), class: "link-primary")
-                    p.card-text.text-muted.mb-2 = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
-                    p.card-text.small.text-muted = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+    .card.shadow-sm.mb-3
+      .card-header
+        .d-flex.align-items-center.justify-content-between
+          .fw-semibold = "#{season.series.name} — Season #{season.number}"
+          - if season.continuous_story_effective?
+            .badge.text-bg-warning.ms-2 Continuous Story
+      - if @episodes_by_season[season].present?
+        .list-group.list-group-flush
+          - @episodes_by_season[season].each do |ep|
+            .list-group-item
+              .d-flex.justify-content-between.align-items-start
+                .me-3
+                  = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep), class: "fw-semibold"
+                  .small.text-muted = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+                  .small.text-muted = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+                .text-end.small.text-muted
+                  = ep.survivors.map(&:full_name).join(", ").presence || "—"
+        - count = @episode_counts[season.id].to_i
+        - if count > 3
+          .px-3.pb-3
+            = link_to "View all #{count} episodes",
+                      episodes_path(season_id: season.id),
+                      class: "btn btn-outline-primary btn-sm"
       - else
         .card-body
           .text-muted.py-4.px-3 No episodes yet in this season.
-
-      - count = @episode_counts[season.id].to_i
-      - if count > 3
-        .px-3.pb-3
-          = link_to "View all #{count} episodes",
-                    episodes_path(series_id: season.series_id, season: season.number),
-                    class: "btn btn-outline-primary btn-sm"

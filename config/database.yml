@@ -8,8 +8,10 @@ default: &default
 
 
 development:
-  <<: *default
-  database: nakedandafraid_development
+  adapter: postgresql
+  encoding: unicode
+  database: nanda_dev_v2
+  pool: 5
 
 
 test:

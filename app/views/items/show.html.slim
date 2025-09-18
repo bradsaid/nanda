@@ -51,7 +51,7 @@
     .card-header.d-flex.align-items-center.justify-content-between
       span
         span.me-2(aria-hidden="true") 🎁
-        strong Given — Episodes (unique)
+        strong Given — Episodes 
       span.badge.rounded-pill.bg-secondary-subtle.text-secondary-emphasis = given_by_ep.size
     .table-responsive
       table.table.table-sm.table-hover.mb-0
@@ -113,7 +113,7 @@
         thead.table-light
           tr
             th(scope="col") Country
-            th(scope="col" class="text-end") Total (adjusted)
+            th(scope="col" class="text-end") Total
         tbody
           - if @by_country.blank?
             tr
