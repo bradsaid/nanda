@@ -1,6 +1,5 @@
 class PasswordsController < ApplicationController
-  #allow_unauthenticated_access
-  skip_before_action :authenticate_user!, only: %i[new create edit update]
+
 
   def new
   end

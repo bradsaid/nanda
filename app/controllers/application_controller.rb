@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   # TEMP: no auth anywhere
-  include Authentication
+
   allow_browser versions: :modern
 
   helper_method :current_user, :logged_in?
