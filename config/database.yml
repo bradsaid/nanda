@@ -22,19 +22,21 @@ test:
 #
 production:
   primary: &primary_production
-    <<: *default
-    database: nakedandafraid_production
-    username: nakedandafraid
-    password: <%= ENV["NAKEDANDAFRAID_DATABASE_PASSWORD"] %>
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+
+  # Point these to the same DB; keep separate migrations folders if you use them
   cache:
     <<: *primary_production
-    database: nakedandafraid_production_cache
     migrations_paths: db/cache_migrate
+    database_tasks: false
+
   queue:
     <<: *primary_production
-    database: nakedandafraid_production_queue
     migrations_paths: db/queue_migrate
+    database_tasks: false
+
   cable:
     <<: *primary_production
-    database: nakedandafraid_production_cable
     migrations_paths: db/cable_migrate
+    database_tasks: false
