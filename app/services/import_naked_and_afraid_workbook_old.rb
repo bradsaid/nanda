@@ -1,11 +1,11 @@
-# app/services/import_naked_and_afraid_workbook.rb
+# app/services/import_naked_and_afraid_workbook_old.rb
 # frozen_string_literal: true
 
 require "roo"
 require "csv"       # Ruby 3.4+: ensure csv is available for roo
 require "bigdecimal"
 
-class ImportNakedAndAfraidWorkbook
+class ImportNakedAndAfraidWorkbookOld
   SHEETS = %w[Regular Solo XL Frozen].freeze
 
   def initialize(path:, dry_run: false, logger: Rails.logger)

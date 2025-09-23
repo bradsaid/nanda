@@ -25,7 +25,6 @@ production:
     url: <%= ENV["DATABASE_URL"] %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
 
-  # Point these to the same DB; keep separate migrations folders if you use them
   cache:
     <<: *primary_production
     migrations_paths: db/cache_migrate
