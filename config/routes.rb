@@ -12,8 +12,12 @@ Rails.application.routes.draw do
   resources :episodes,  only: [:index, :show]
   resources :items,     only: [:index, :show]
   resources :locations, only: [:index]
+  resources :seasons,   only: [:index, :show]
 
   resources :seasons, only: [:show]
+
+  get 'podcasts', to: 'static_pages#podcasts'
+
 
   # NEW:
   get "home", to: "home#index"

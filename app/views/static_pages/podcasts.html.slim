@@ -1,0 +1,76 @@
+/ app/views/static_pages/podcasts.html.slim
+- content_for :title, "Naked & Afraid Podcasts"
+
+/ Site Header
+.pb-2.mb-3.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Naked & Afraid Podcasts
+  p.subtitle.mb-0.text-muted Explore fan podcasts discussing episodes, survivalists, and behind-the-scenes of Naked & Afraid.
+
+/ Podcast Cards
+/ Oh Heck NAA
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Oh Heck NAA - A Naked and Afraid Podcast
+  .card-body
+    p.text-muted The Naked and Afraid Podcast: Oh Heck NAA! is hosted by armchair survivalists MaLu Beyonce and Debbie V. They break down episodes of the Discovery reality TV show Naked and Afraid from the comfort of their couches, offering entertaining opinions and reviews for fans.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Listen now - Spotify", "https://open.spotify.com/show/2q2ZfSDQiL6u26dV4o2fNN", class: "btn btn-outline-primary btn-sm"
+        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/a-naked-and-afraid-podcast-oh-heck-naa/id1637024575", class: "btn btn-outline-primary btn-sm"
+
+/ Jaked and Afraid
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Jaked and Afraid
+  .card-body
+    p.text-muted Hosted by four-time Naked and Afraid survivalist Jake Nodar, this podcast recaps each new episode of the show. It features guest hosts from the show's favorite alumni, providing insider recaps, insights, and discussions on challenges and strategies.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Listen now - Spotify", "https://open.spotify.com/show/1jl5pP0rmBlo5Ra2G3sDmQ", class: "btn btn-outline-primary btn-sm"
+        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/jaked-and-afraid/id1673801964", class: "btn btn-outline-primary btn-sm"
+
+/ Books Section
+.pb-2.mb-3.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Books by Ky Furneaux
+  p.subtitle.mb-0.text-muted
+    | Discover survival guides and adventure books written by Naked & Afraid survivor 
+    = link_to "Ky Furneaux", survivor_path(Survivor.find_by(full_name: "Ky Furneaux")), class: "text-primary"
+    | .
+
+.card.shadow-sm.mb-3
+  .card-header
+    .fw-semibold Recommended Books
+  .card-body
+    ul.list-group.list-group-flush
+      li.list-group-item
+        .d-flex.justify-content-between.align-items-center
+          span The Superwoman's Survival Guide
+          = link_to "Buy on Amazon", "https://a.co/d/dJEVpqL", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+      li.list-group-item
+        .d-flex.justify-content-between.align-items-center
+          span Survive: The All-In-One Guide to Staying Alive in Extreme Conditions
+          = link_to "Buy on Amazon", "https://a.co/d/aCuVK7B", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+      li.list-group-item
+        .d-flex.justify-content-between.align-items-center
+          span When the Grid Fails: Easy Action Steps When Facing Hurricanes, ...
+          = link_to "Buy on Amazon", "https://a.co/d/cWj7nxr", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+      li.list-group-item
+        .d-flex.justify-content-between.align-items-center
+          span Surviving the First 36 Hours
+          = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+      li.list-group-item
+        .d-flex.justify-content-between.align-items-center
+          span Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival
+          = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+      li.list-group-item  
+        .d-flex.justify-content-between.align-items-center
+          span Adventure Awaits: The Beginner's Guide to the Great Outdoors
+          = link_to "Buy on Amazon", "https://a.co/d/iNGF8CS", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"   
+      li.list-group-item
+        .d-flex.justify-content-between.align-items-center
+          span Girl's Own Survival Guide - Signed Copy
+          = link_to "Buy on Ky's Website", "https://kyfurneaux.com/product/girls-own-survival-guide-signed/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"

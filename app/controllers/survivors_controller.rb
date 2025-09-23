@@ -1,5 +1,16 @@
 class SurvivorsController < ApplicationController
 
+  before_action :set_survivor, only: %i[show edit update destroy]
+
+  def update
+  end
+
+  def edit
+  end
+
+  def destroy
+  end 
+
   def index
     @q = params[:q].to_s.strip
 
@@ -32,7 +43,7 @@ class SurvivorsController < ApplicationController
   end
 
   def show
-    @survivor = Survivor.find(params[:id])
+    #@survivor = Survivor.find(params[:id])
 
     @appearances = @survivor.appearances
                             .includes(episode: [:season, :location], appearance_items: :item)
@@ -71,6 +82,10 @@ class SurvivorsController < ApplicationController
       episodes_collapsed, # show collapsed stat
       (links.any? ? h.safe_join(links, " · ".html_safe) : h.content_tag(:span, "-", class: "text-gray-400"))
     ]
+  end
+
+  def set_survivor
+    @survivor = Survivor.friendly.find(params[:id])  # This handles both slugs and IDs as fallback
   end
   
 end

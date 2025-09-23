@@ -15,6 +15,11 @@
               .card.h-100.text-center.border-0
                 .card-body.py-3
                   .fw-semibold.mb-1 = link_to name, survivor_path(s)
+                  = link_to survivor_path(s) do
+                    = image_tag url_for(s.avatar),
+                                alt: s.full_name,
+                                class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
+
                   .small.text-muted Episodes
                   .display-6.fw-bold = total
                   .small.text-muted Challenges
