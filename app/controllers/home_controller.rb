@@ -45,5 +45,20 @@ class HomeController < ApplicationController
              .group("locations.country")
              .order(Arel.sql("COUNT(*) DESC"))
              .limit(5).count
+
+    # 🔽 Sort Top Survivors by COLLAPSED, but also select TOTAL so the view can show both
+    @top_survivors =
+      Survivor
+        .left_joins(appearances: { episode: { season: :series } })
+        .select([
+          "survivors.*",
+          "COUNT(DISTINCT episodes.id) AS episodes_total_count",
+          collapsed_episodes_sql("episodes_collapsed_count")
+        ].join(", "))
+        .group("survivors.id")
+        .order("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC")
+        .limit(6)
   end
+
+
 end

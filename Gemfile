@@ -50,6 +50,7 @@ gem "geocoder", "~> 1.8"
 gem "aws-sdk-s3", "~> 1", require: false
 gem "image_processing", "~> 1.2" # optional, for variants
 
-
+gem 'friendly_id', '~> 5.5.0'
+gem 'babosa'
 
 

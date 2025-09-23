@@ -6,4 +6,8 @@ class SeasonsController < ApplicationController
                        .includes(:location)
                        .order("number_in_season ASC NULLS LAST, id ASC")
   end
+
+  def index
+    @seasons = Season.includes(:series).order("series_id ASC, number ASC")
+  end
 end

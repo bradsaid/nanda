@@ -93,6 +93,7 @@ GEM
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
+    babosa (2.0.0)
     base64 (0.3.0)
     bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.1)
@@ -121,6 +122,8 @@ GEM
     ffi (1.17.2-x86_64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
     ffi (1.17.2-x86_64-linux-musl)
+    friendly_id (5.5.1)
+      activerecord (>= 4.0.0)
     fugit (1.11.2)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -347,9 +350,11 @@ PLATFORMS
 DEPENDENCIES
   activerecord-import
   aws-sdk-s3 (~> 1)
+  babosa
   bcrypt (~> 3.1.7)
   bootsnap
   csv
+  friendly_id (~> 5.5.0)
   geocoder (~> 1.8)
   image_processing (~> 1.2)
   importmap-rails
