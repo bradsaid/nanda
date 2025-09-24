@@ -10,7 +10,11 @@ Rails.application.routes.draw do
 
   resources :survivors, only: [:index, :show]
   resources :episodes,  only: [:index, :show]
-  resources :items,     only: [:index, :show]
+  resources :items, only: [:index, :show] do
+    collection do
+      get "types/:item_type", to: "items#type", as: :type
+    end
+  end
   resources :locations, only: [:index]
   resources :seasons,   only: [:index, :show]
 

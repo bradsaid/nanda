@@ -2,6 +2,7 @@
 class Appearance < ApplicationRecord
   belongs_to :survivor
   belongs_to :episode
+  belongs_to :location, optional: true 
   has_many :appearance_items, dependent: :destroy
   has_many :items, through: :appearance_items
 

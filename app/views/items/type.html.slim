@@ -1,14 +1,14 @@
-/ ===== Item details =====
-- content_for :title, @item.name
+/ ===== Item Type details =====
+- content_for :title, @item_type
 
 .container.my-4
   / Header
   .pb-2.mb-3.border-bottom.site-header
-    h1.h3.mb-0.logo = @item.name
-    p.subtitle Analytics for this item across all episodes.
+    h1.h3.mb-0.logo = @item_type
+    p.subtitle = "#{@items_in_type_count} item(s) in this type. Analytics across all appearances."
 
   / Country filter
-  = form_with url: item_path(@item), method: :get, local: true, class: "card shadow-sm mb-4" do
+  = form_with url: type_items_path(@item_type), method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center
       span.me-2(aria-hidden="true") 🌍
       span Filter
@@ -23,27 +23,23 @@
         .col-md-auto
           = submit_tag "Apply", class: "btn btn-dark"
         .col-md-auto
-          = link_to "Reset", item_path(@item), class: "btn btn-light"
+          = link_to "Reset", type_items_path(@item_type), class: "btn btn-light"
 
-  / ---------- Quick stats (dedup + adjusted) ----------
+  / ---------- Quick stats (dedup by episode) ----------
   - given_episode_ids   = @given_episode_ids   || []
   - brought_episode_ids = @brought_episode_ids || []
-  - given_keys          = @given_keys          || []
-  - brought_keys        = @brought_keys        || []
 
   .row.g-3.mb-4
     .col-md-6.col-lg-3
       .card.shadow-sm.h-100
         .card-body
-          .small.text-muted.mb-1 Given in episodes 
+          .small.text-muted.mb-1 Given in episodes
           .display-6.fw-bold = given_episode_ids.size
-          /.small.text-muted.mt-1 = "Adjusted (continuous=1): #{given_keys.size}"
     .col-md-6.col-lg-3
       .card.shadow-sm.h-100
         .card-body
-          .small.text-muted.mb-1 Brought in episodes 
+          .small.text-muted.mb-1 Brought in episodes
           .display-6.fw-bold = brought_episode_ids.size
-          /.small.text-muted.mt-1 = "Adjusted (continuous=1): #{brought_keys.size}"
 
   / ===== Given — by episode (unique within episode) =====
   - given_by_ep = (@given_ai || []).group_by { |ai| ai.appearance.episode }
@@ -51,34 +47,35 @@
     .card-header.d-flex.align-items-center.justify-content-between
       span
         span.me-2(aria-hidden="true") 🎁
-        strong Given — Episodes 
+        strong Given — Episodes
       span.badge.rounded-pill.bg-secondary-subtle.text-secondary-emphasis = given_by_ep.size
     .table-responsive
       table.table.table-sm.table-hover.mb-0
         thead.table-light
           tr
             th Episode
-            th Season
             th Air Date
             th Location
             th Recipients
+            th Items
         tbody
           - if given_by_ep.blank?
             tr
-              td.text-muted.py-4(colspan="4") No given appearances
+              td.text-muted.py-4(colspan="5") No given appearances
           - else
             - given_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
-              - recipients = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
+              - recips = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
+              - items  = ais.map(&:item).compact.uniq
               tr
                 td = link_to(ep.title, episode_path(ep))
-                td
-                  - if ep&.season
-                    = link_to "S#{ep.season.number} • #{ep.season.series&.name}", season_path(ep.season)
-                  - else
-                    | —
                 td = ep.air_date || "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
-                td = recipients.join(", ")
+                td = recips.join(", ")
+                td
+                  - if items.any?
+                    = safe_join(items.map { |it| link_to(it.name, item_path(it)) }, ", ")
+                  - else
+                    | —
 
   / ===== Brought — by episode (unique within episode) =====
   - brought_by_ep = (@brought_ai || []).group_by { |ai| ai.appearance.episode }
@@ -93,29 +90,30 @@
         thead.table-light
           tr
             th Episode
-            th Season
             th Air Date
             th Location
             th Brought by
+            th Items
         tbody
           - if brought_by_ep.blank?
             tr
-              td.text-muted.py-4(colspan="4") No brought appearances
+              td.text-muted.py-4(colspan="5") No brought appearances
           - else
             - brought_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
               - people = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
+              - items  = ais.map(&:item).compact.uniq
               tr
                 td = link_to(ep.title, episode_path(ep))
-                td
-                  - if ep&.season
-                    = link_to "S#{ep.season.number} • #{ep.season.series&.name}", season_path(ep.season)
-                  - else
-                    | —
                 td = ep.air_date || "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
                 td = people.join(", ")
+                td
+                  - if items.any?
+                    = safe_join(items.map { |it| link_to(it.name, item_path(it)) }, ", ")
+                  - else
+                    | —
 
-  / ===== By Country (adjusted totals from controller) =====
+  / ===== By Country (distinct episodes) =====
   .card.shadow-sm
     .card-header.d-flex.align-items-center
       span.me-3.fs-3(aria-hidden="true") 🌐

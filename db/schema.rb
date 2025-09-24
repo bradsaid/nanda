@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_22_200512) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_24_200501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -53,7 +53,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_200512) do
     t.datetime "updated_at", null: false
     t.index ["appearance_id", "item_id", "source"], name: "index_appearance_items_on_appearance_id_and_item_id_and_source", unique: true
     t.index ["appearance_id"], name: "index_appearance_items_on_appearance_id"
-    t.index ["appearance_id"], name: "uniq_brought_per_appearance", unique: true, where: "((source)::text = 'brought'::text)"
     t.index ["item_id"], name: "index_appearance_items_on_item_id"
   end
 
@@ -69,7 +68,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_200512) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "location_id"
     t.index ["episode_id"], name: "index_appearances_on_episode_id"
+    t.index ["location_id"], name: "index_appearances_on_location_id"
     t.index ["survivor_id", "episode_id"], name: "index_appearances_on_survivor_id_and_episode_id", unique: true
     t.index ["survivor_id"], name: "index_appearances_on_survivor_id"
     t.check_constraint "days_lasted IS NULL OR days_lasted >= 0", name: "appearances_days_lasted_nonneg"
@@ -158,6 +159,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_200512) do
     t.datetime "updated_at", null: false
     t.string "avatar_url"
     t.string "slug"
+    t.string "cameo"
+    t.string "other"
     t.index ["full_name"], name: "index_survivors_on_full_name", unique: true
     t.index ["slug"], name: "index_survivors_on_slug", unique: true
   end
@@ -176,6 +179,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_200512) do
   add_foreign_key "appearance_items", "appearances"
   add_foreign_key "appearance_items", "items"
   add_foreign_key "appearances", "episodes"
+  add_foreign_key "appearances", "locations"
   add_foreign_key "appearances", "survivors"
   add_foreign_key "episodes", "locations"
   add_foreign_key "episodes", "seasons"

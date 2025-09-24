@@ -84,6 +84,13 @@ class ItemsController < ApplicationController
       .order("locations.country ASC, total_adj DESC")
 
     @items_by_country_adj = rows_adj.group_by(&:country).transform_values { |arr| arr.first(10) }
+
+    @items_by_type =
+      Item.where.not(item_type: [nil, ""])
+          .group(:item_type)
+          .order(Arel.sql("COUNT(*) DESC"))
+          .count
+          
   end
 
   def show
@@ -128,6 +135,31 @@ class ItemsController < ApplicationController
                       .select("locations.country AS country, #{adjusted_total_sql}")
                       .group("locations.country")
                       .order("total DESC")
+  end
+
+  def type
+    @item_type = params[:item_type].to_s
+    @country   = params[:country].presence
+
+    # ✅ Correct join syntax (array under :appearance)
+    ai = AppearanceItem
+          .joins(:item, appearance: [{ episode: [:location, { season: :series }] }, :survivor])
+          .where(items: { item_type: @item_type })
+
+    ai = ai.where(locations: { country: @country }) if @country
+
+    @given_ai   = ai.where(source: "given").includes(appearance: [:episode, :survivor])
+    @brought_ai = ai.where(source: "brought").includes(appearance: [:episode, :survivor])
+
+    @given_episode_ids   = @given_ai.select("DISTINCT appearances.episode_id").pluck("appearances.episode_id")
+    @brought_episode_ids = @brought_ai.select("DISTINCT appearances.episode_id").pluck("appearances.episode_id")
+
+    @by_country = ai
+      .select("locations.country AS country, COUNT(DISTINCT appearances.episode_id) AS total")
+      .group("locations.country")
+      .order("total DESC")
+
+    @items_in_type_count = Item.where(item_type: @item_type).count
   end
 
   private

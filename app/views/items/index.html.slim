@@ -92,6 +92,26 @@
                 td.text-end = r.read_attribute(:brought_total).to_i
                 td.text-end = r.read_attribute(:given_total).to_i
 
+  / ===== Items by Type =====
+  .card.shadow-sm.mt-4
+    .card-header.fw-medium Items by Type
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th Type
+            th.text-end Items
+        tbody
+          - if @items_by_type.blank?
+            tr
+              td.text-muted.py-4(colspan="2") No data
+          - else
+            - @items_by_type.each do |type, count|
+              tr
+                td = link_to type, type_items_path(type), class: "text-decoration-none"
+                td.text-end = count
+
+
   / ===== Items per Country (unique per episode) =====
   .row.g-4.mt-1
     - (@items_by_country || {}).each do |country, rows|
