@@ -7,8 +7,17 @@
 - if @seasons.blank?
   .text-muted.py-5.text-center No seasons found.
 - else
+  / === Series jump select (Stimulus) ===
+  .form-floating.mb-3(style="max-width: 360px;" data-controller="season-jump")
+    select.form-select#series-jump data-season-jump-target="select" data-action="change->season-jump#jump"
+      option value="" 
+      - @seasons.group_by(&:series).each do |series, _|
+        - next unless series
+        option value="series-#{series.id}" = series.name
+    label for="series-jump" Jump to a series
+
   - @seasons.group_by(&:series).each do |series, seasons|
-    .card.shadow-sm.mb-4
+    .card.shadow-sm.mb-4(id=(series ? "series-#{series.id}" : nil))
       .card-header
         h2.h5.mb-0 = series&.name || "Unknown Series"
 
@@ -25,48 +34,34 @@
                 td.fw-semibold
                   = link_to "Season #{season.number}", season_path(season), class: "text-decoration-none"
                 td = season.respond_to?(:episodes) ? season.episodes.size : "—"
-
                 td
                   .d-flex.flex-wrap.gap-2
-                    / Discovery+ (always)
                     = link_to (season.respond_to?(:discovery_plus_url) && season.discovery_plus_url.presence) || "https://www.discoveryplus.com",
                               target: "_blank", rel: "noopener",
                               class: "btn btn-primary btn-sm" do
                       | Discovery+
-
-                    / Max
                     = link_to (season.respond_to?(:max_url) && season.max_url.presence) || "#",
                               class: "btn btn-outline-secondary btn-sm#{(season.respond_to?(:max_url) && season.max_url.present?) ? '' : ' disabled'}",
                               target: ((season.respond_to?(:max_url) && season.max_url.present?) ? "_blank" : nil),
                               rel: ((season.respond_to?(:max_url) && season.max_url.present?) ? "noopener" : nil) do
                       | Max
-
-                    / Prime Video
                     = link_to (season.respond_to?(:prime_video_url) && season.prime_video_url.presence) || "#",
                               class: "btn btn-outline-secondary btn-sm#{(season.respond_to?(:prime_video_url) && season.prime_video_url.present?) ? '' : ' disabled'}",
                               target: ((season.respond_to?(:prime_video_url) && season.prime_video_url.present?) ? "_blank" : nil),
                               rel: ((season.respond_to?(:prime_video_url) && season.prime_video_url.present?) ? "noopener" : nil) do
                       | Prime Video
-
-                    / Apple TV
                     = link_to (season.respond_to?(:apple_tv_url) && season.apple_tv_url.presence) || "#",
                               class: "btn btn-outline-secondary btn-sm#{(season.respond_to?(:apple_tv_url) && season.apple_tv_url.present?) ? '' : ' disabled'}",
                               target: ((season.respond_to?(:apple_tv_url) && season.apple_tv_url.present?) ? "_blank" : nil),
                               rel: ((season.respond_to?(:apple_tv_url) && season.apple_tv_url.present?) ? "noopener" : nil) do
                       | Apple TV
-
-                    / YouTube
                     = link_to (season.respond_to?(:youtube_url) && season.youtube_url.presence) || "#",
                               class: "btn btn-outline-secondary btn-sm#{(season.respond_to?(:youtube_url) && season.youtube_url.present?) ? '' : ' disabled'}",
                               target: ((season.respond_to?(:youtube_url) && season.youtube_url.present?) ? "_blank" : nil),
                               rel: ((season.respond_to?(:youtube_url) && season.youtube_url.present?) ? "noopener" : nil) do
                       | YouTube
-
-                    / Google Play
                     = link_to (season.respond_to?(:google_play_url) && season.google_play_url.presence) || "#",
                               class: "btn btn-outline-secondary btn-sm#{(season.respond_to?(:google_play_url) && season.google_play_url.present?) ? '' : ' disabled'}",
                               target: ((season.respond_to?(:google_play_url) && season.google_play_url.present?) ? "_blank" : nil),
                               rel: ((season.respond_to?(:google_play_url) && season.google_play_url.present?) ? "noopener" : nil) do
                       | Google Play
-
- 

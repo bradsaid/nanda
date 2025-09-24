@@ -69,8 +69,16 @@
       h1.h3.mb-0.logo Episodes
       = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
 
+  / === Season jump select ===
+  .form-floating.mb-3(style="max-width: 360px;" data-controller="season-jump")
+    select.form-select#season-jump data-season-jump-target="select" data-action="change->season-jump#jump"
+      option value="" 
+      - @seasons.each do |s|
+        option value="season-#{s.id}" = "#{s.series.name} • S#{s.number}"
+    label for="season-jump" Jump to a season
+
   - @seasons.each do |season|
-    .card.shadow-sm.mb-3
+    .card.shadow-sm.mb-3(id="season-#{season.id}")
       .card-header
         .d-flex.align-items-center.justify-content-between
           .fw-semibold = "#{season.series.name} — Season #{season.number}"
@@ -96,3 +104,8 @@
       - else
         .card-body
           .text-muted.py-4.px-3 No episodes yet in this season.
+
+
+
+style
+    | [id^="season-"] { scroll-margin-top: 80px; }

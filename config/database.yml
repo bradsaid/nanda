@@ -10,7 +10,7 @@ default: &default
 development:
   adapter: postgresql
   encoding: unicode
-  database: nanda_dev_v2
+  database: sep24
   pool: 5
 
 

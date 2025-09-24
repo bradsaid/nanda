@@ -1,6 +1,8 @@
+# app/models/appearance_item.rb
 class AppearanceItem < ApplicationRecord
   belongs_to :appearance
   belongs_to :item
+
   scope :brought, -> { where(source: "brought") }
   scope :given,   -> { where(source: "given") }
 
@@ -14,7 +16,12 @@ class AppearanceItem < ApplicationRecord
 
   validates :quantity, numericality: { greater_than: 0 }
   validates :source, presence: true
-  validates :appearance_id, uniqueness: { scope: :source,
-                                        conditions: -> { where(source: "brought") },
-                                        message: "already has a brought item" }
+
+  # Allow multiple brought items for Solo; keep the rule for others.
+  validates :appearance_id, uniqueness: {
+    scope: :source,
+    conditions: -> { where(source: "brought") },
+    message: "already has a brought item"
+  }, unless: -> { source_brought? && appearance&.role == "solo" }
 end
+

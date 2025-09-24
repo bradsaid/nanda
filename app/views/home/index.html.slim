@@ -10,13 +10,15 @@
     .col-6.col-md-4.col-lg-2
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0 = @counts[:series]
-          small.text-muted Series
+          = link_to seasons_path, class: "text-decoration-none text-dark" do
+            div.h4.mb-0 = @counts[:series]
+            small.text-muted Series
     .col-6.col-md-4.col-lg-2
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0 = @counts[:seasons]
-          small.text-muted Seasons
+          = link_to seasons_path, class: "text-decoration-none text-dark" do
+            div.h4.mb-0 = @counts[:seasons]
+            small.text-muted Seasons
     .col-6.col-md-4.col-lg-2
       .card.text-center.shadow-sm
         .card-body.py-3
