@@ -1,5 +1,6 @@
 - content_for :title, "Locations"
 
+
 .container.my-4
   / ===== Page Header =====
   .pb-2.mb-3.border-bottom.site-header
@@ -15,9 +16,32 @@
       span Map
     .card-body.p-0
       / Height via CSS (#locations-map.map-frame)
-      #locations-map.map-frame(data-locations-url="#{locations_path(format: :json)}")
+      /#locations-map.map-frame(data-locations-url="#{locations_path(format: :json)}")
+      #locations-map.map-frame data-locations-url=(locations_path(format: :json))
+
+
 
   / ===== Legend =====
   .mt-3.small.text-muted.d-flex.align-items-center.gap-3
     .legend-dot
     span Pins show unique locations. Popups include a link to filter Episodes by that location.
+ 
+  / ===== Countries by Episodes (continuous collapsed) =====
+  .card.shadow-sm.mt-4
+    .card-header.fw-medium Countries by Episodes
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th Country
+            th.text-end Episodes
+        tbody
+          - if (@countries_by_eps_adj || []).blank?
+            tr
+              td.text-muted.py-4(colspan="2") No data
+          - else
+            - @countries_by_eps_adj.each do |country, total|
+              tr
+                td = link_to country, by_country_episodes_path(country), class: "text-decoration-none"
+                td.text-end = total
+

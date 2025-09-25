@@ -1,22 +1,29 @@
 / ===== Episode Show =====
 - series      = @episode.season&.series
-- season_num  = @episode.season&.number
+- season      = @episode.season
+- season_num  = season&.number
 - ep_num      = @episode.number_in_season
 - title_text  = @episode.title.presence || "Episode"
 - subtitle    = [series&.name, ("S#{season_num}" if season_num), ("E#{ep_num}" if ep_num)].compact.join(" • ")
 - air_date    = @episode.air_date&.strftime("%b %-d, %Y")
 - loc         = @episode.location
-- loc_str     = [loc&.country, loc&.region, loc&.site].compact.join(" • ")
+- country     = loc&.country.to_s.presence
+- region      = loc&.region.to_s.presence
+- site        = loc&.site.to_s.presence
 
 - content_for :title, "#{title_text} | #{subtitle}"
 
 .container.my-4
   / ===== Back link + Title =====
   .pb-2.mb-3.border-bottom.site-header
-    = link_to "← All episodes", episodes_path, class: "small link-primary text-decoration-underline"
-    h1.h3.mb-1 = title_text
-    - if subtitle.present?
-      p.text-muted.mb-0 = subtitle
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      .d-flex.flex-column
+        = link_to "← All episodes", episodes_path, class: "small link-primary text-decoration-underline"
+        h1.h3.mb-1 = title_text
+        - if subtitle.present?
+          p.text-muted.mb-0 = subtitle
+      - if season
+        = link_to "View Season #{season.number}", season_path(season), class: "btn btn-outline-secondary btn-sm"
 
   / ===== Episode meta =====
   .row.g-3.mb-4
@@ -27,7 +34,18 @@
             span.fs-3(aria-hidden="true") 📍
             .flex-grow-1
               .text-uppercase.small.text-muted Location
-              .fw-semibold = loc_str.presence || "—"
+              .fw-semibold
+                - if country || region || site
+                  - parts = []
+                  - if country
+                    - parts << link_to(country, episodes_path(country: country))
+                  - if region
+                    - parts << region
+                  - if site
+                    - parts << site
+                  = safe_join(parts, " • ")
+                - else
+                  | —
     .col-md-4
       .card.shadow-sm.h-100
         .card-body
@@ -73,10 +91,15 @@
               - start_psr = a.starting_psr
               - end_psr   = a.ending_psr
               - days_cell = a.days_lasted
-              / ----- Items per appearance (corrected) -----
+              / Items per appearance
               - br_ai = a.appearance_items.find { |ai| ai.source == "brought" }
               - br    = br_ai&.item&.name
-              - given = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| q = ai.quantity.to_i; name = ai.item.name; q > 1 ? "#{name}×#{q}" : name }.join(", ")
+              - given_items = a.appearance_items.select { |ai| ai.source == "given" }
+              - given_names = given_items.map do |ai|
+                - q = ai.quantity.to_i
+                - name = ai.item&.name
+                - name ? (q > 1 ? "#{name}×#{q}" : name) : nil
+              - given = given_names.compact.join(", ")
               tr
                 td
                   = link_to(s.full_name, survivor_path(s), class: "link-primary fw-medium")

@@ -10,7 +10,9 @@
 
 /* util width + map height */
 .w-32px { width: 32px; }
-#locations-map.map-frame { height: 540px; }
+#locations-map.map-frame {
+  height: 420px;  
+}
 
 /* Header container */
 .site-header {

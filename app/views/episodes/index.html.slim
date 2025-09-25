@@ -30,7 +30,11 @@
                 td = "S#{ep.season&.number} • #{ep.season&.series&.name}"
                 td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
-                td = ep.survivors.map(&:full_name).join(", ").presence || "—"
+                td
+                  - if ep.survivors.any?
+                    = safe_join(ep.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                  - else
+                    | —
 
 - elsif defined?(@season) && @season.present?
   / === Filtered by season ===
@@ -60,7 +64,11 @@
                 td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
                 td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
-                td = ep.survivors.map(&:full_name).join(", ").presence || "—"
+                td
+                  - if ep.survivors.any?
+                    = safe_join(ep.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                  - else
+                    | —
 
 - else
   / === Overview (cards per season, with 'View all' link) ===
@@ -94,7 +102,10 @@
                   .small.text-muted = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                   .small.text-muted = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
                 .text-end.small.text-muted
-                  = ep.survivors.map(&:full_name).join(", ").presence || "—"
+                  - if ep.survivors.any?
+                    = safe_join(ep.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                  - else
+                    | —
         - count = @episode_counts[season.id].to_i
         - if count > 3
           .px-3.pb-3
@@ -105,7 +116,5 @@
         .card-body
           .text-muted.py-4.px-3 No episodes yet in this season.
 
-
-
 style
-    | [id^="season-"] { scroll-margin-top: 80px; }
+  | [id^="season-"] { scroll-margin-top: 80px; }

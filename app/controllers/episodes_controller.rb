@@ -2,6 +2,26 @@
 class EpisodesController < ApplicationController
 
   def index
+
+      @country = params[:country].to_s.strip
+      if @country.present?
+        @episodes =
+          Episode
+            .includes(:location, season: :series)
+            .joins(:location)
+            .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
+            .order(Arel.sql("air_date IS NULL, air_date DESC"))
+
+        # keep view happy
+        @location = nil
+        @season   = nil
+        @seasons  = []
+        @episodes_by_season = {}
+        @episode_counts     = {}
+
+        render :index and return
+      end
+
       if params[:location_id].present?
         @location = Location.find_by(id: params[:location_id].to_i)
         return render status: :not_found, plain: "Location not found" unless @location
@@ -43,4 +63,15 @@ class EpisodesController < ApplicationController
       .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
       .find(params[:id])
   end
+
+  def by_country
+    @country = params[:country].to_s.strip
+    @episodes =
+      Episode
+        .includes(:location, season: :series, appearances: :survivor)
+        .joins(:location)
+        .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
+        .order(Arel.sql("air_date IS NULL, air_date DESC"))
+  end
+  
 end

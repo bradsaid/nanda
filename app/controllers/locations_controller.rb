@@ -1,32 +1,49 @@
 # app/controllers/locations_controller.rb
 class LocationsController < ApplicationController
   def index
-    @locations = Location.left_joins(:episodes)
-                         .select("locations.*, COUNT(episodes.id) AS episodes_count")
-                         .group("locations.id")
+    @locations =
+      Location.left_joins(:episodes)
+              .select("locations.*, COUNT(DISTINCT episodes.id) AS episodes_count")
+              .group("locations.id")
+
+    # Countries table (kept as-is if you like)
+    rows = Episode.joins(:location, season: :series)
+                  .where.not(locations: { country: [nil, ""] })
+                  .group("locations.country")
+                  .select(
+                    "locations.country",
+                    <<~SQL.squish
+                      COUNT(
+                        DISTINCT
+                        CASE
+                          WHEN #{continuous_flag_sql}
+                            THEN (series.id::text || '-' || locations.country)
+                          ELSE episodes.id::text
+                        END
+                      ) AS eps_adj_count
+                    SQL
+                  )
+                  .order("eps_adj_count DESC, locations.country ASC")
+
+    @countries_by_eps_adj = rows.map { |r| [r.country, r.eps_adj_count.to_i] }
 
     respond_to do |format|
       format.html
       format.json do
-        render json: @locations.filter_map { |loc|
-          lat = loc.latitude
-          lng = loc.longitude
-          next if lat.blank? || lng.blank?
-          lat = lat.to_f; lng = lng.to_f
-          next if lat.zero? && lng.zero?
-
-          {
-            id: loc.id,
-            name: [loc.site, loc.region, loc.country].compact_blank.join(", "),
-            country:  loc.country,
-            region:   loc.region,
-            site:     loc.site,
-            latitude:  lat,
-            longitude: lng,
-            episodes_count: loc.read_attribute(:episodes_count).to_i,
-            episodes_url: view_context.episodes_path(location_id: loc.id)
+        render json: @locations
+          .select { |l| l.latitude.present? && l.longitude.present? }
+          .map { |l|
+            {
+              id: l.id,
+              name: l.site.presence || l.region.presence || l.country,
+              address: l.full_address,
+              lat: l.latitude,
+              lng: l.longitude,
+              episodes_count: l.try(:episodes_count).to_i,
+              # You can handle this param in EpisodesController (filter by location_id)
+              episodes_url: Rails.application.routes.url_helpers.episodes_path(location_id: l.id)
+            }
           }
-        }
       end
     end
   end

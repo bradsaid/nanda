@@ -8,9 +8,6 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-if User.where(email_address: "bradsaid@gmail.com").none?
-  User.create!(email_address: "bradsaid@gmail.com",
-               password: "nakedandafraid",
-               role: :admin)
-  puts "Seeded bradsaid@gmail.com / nakedandafraid"
+AdminUser.find_or_create_by!(email: "bradsaid@gmail.com") do |u|
+  u.password = "changeme123"; u.password_confirmation = "changeme123"
 end

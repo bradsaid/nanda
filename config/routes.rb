@@ -1,15 +1,29 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  namespace :admin do
+      resources :appearances
+      resources :appearance_items
+      resources :episodes
+      resources :items
+      resources :locations
+      resources :seasons
+      resources :series
+      resources :sessions
+      resources :survivors
+      resources :users
+
+      root to: "appearances#index"
+    end
+  
   resource  :session,    only: %i[new create destroy]
   resources :passwords,  only: %i[new create edit update], param: :token
 
-  namespace :admin do
-    resource :dashboard, only: :show
-    root to: "dashboard#show"
-  end
-
   resources :survivors, only: [:index, :show]
-  resources :episodes,  only: [:index, :show]
+  resources :episodes, only: [:index, :show] do
+    collection do
+      get "by_country/:country", to: "episodes#by_country", as: :by_country
+    end
+  end
   resources :items, only: [:index, :show] do
     collection do
       get "types/:item_type", to: "items#type", as: :type
@@ -17,13 +31,10 @@ Rails.application.routes.draw do
   end
   resources :locations, only: [:index]
   resources :seasons,   only: [:index, :show]
-
-  resources :seasons, only: [:show]
+  resources :series,    only: [:index, :show]
 
   get 'podcasts', to: 'static_pages#podcasts'
-
-
-  # NEW:
   get "home", to: "home#index"
   root "home#index"
+  
 end
