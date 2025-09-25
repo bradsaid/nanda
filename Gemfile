@@ -14,7 +14,7 @@ gem "importmap-rails"
 gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
-# Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
+
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
@@ -52,5 +52,9 @@ gem "image_processing", "~> 1.2" # optional, for variants
 
 gem 'friendly_id', '~> 5.5.0'
 gem 'babosa'
+
+gem "administrate", "~> 0.19"
+gem "administrate-field-active_storage", "~> 1.0", ">= 1.0.6"
+
 
 

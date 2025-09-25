@@ -1,0 +1,36 @@
+/ ===== Episodes by Country =====
+- content_for :title, "Episodes in #{@country}"
+
+.pb-2.mb-3.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo = "Episodes in #{@country}"
+    = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
+  p.subtitle.mb-0 All episodes whose location country is #{@country}.
+
+.card.shadow-sm
+  .card-header Episodes
+  .table-responsive
+    table.table.table-striped.table-hover.mb-0
+      thead.table-light
+        tr
+          th(scope="col") Episode
+          th(scope="col") Season
+          th(scope="col") Air Date
+          th(scope="col") Location
+          th(scope="col") Survivors
+      tbody
+        - if @episodes.blank?
+          tr
+            td(colspan="5" class="text-muted text-center py-4") No episodes found in this country.
+        - else
+          - @episodes.each do |ep|
+            tr
+              td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
+              td = "S#{ep.season&.number} • #{ep.season&.series&.name}"
+              td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+              td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+              td
+                - if ep.survivors.any?
+                  = safe_join(ep.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                - else
+                  | —

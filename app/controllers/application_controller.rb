@@ -12,6 +12,10 @@ class ApplicationController < ActionController::Base
   def require_authentication; true; end
   def resume_session; true; end
 
+  if Rails.env.production?
+    allow_browser versions: :modern
+  end
+
   private
 
   # true if either the season or the series is marked continuous
