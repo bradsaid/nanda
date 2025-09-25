@@ -53,8 +53,4 @@ gem "image_processing", "~> 1.2" # optional, for variants
 gem 'friendly_id', '~> 5.5.0'
 gem 'babosa'
 
-gem "administrate", "~> 0.19"
-gem "administrate-field-active_storage", "~> 1.0", ">= 1.0.6"
-
-
 
