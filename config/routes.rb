@@ -1,20 +1,7 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  namespace :admin do
-      resources :appearances
-      resources :appearance_items
-      resources :episodes
-      resources :items
-      resources :locations
-      resources :seasons
-      resources :series
-      resources :sessions
-      resources :survivors
-      resources :users
 
-      root to: "appearances#index"
-    end
-  
+
   resource  :session,    only: %i[new create destroy]
   resources :passwords,  only: %i[new create edit update], param: :token
 
