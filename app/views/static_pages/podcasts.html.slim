@@ -1,6 +1,18 @@
+/ ===== SEO + JSON-LD: Podcasts & Books =====
+- content_for :title, "Naked & Afraid Podcasts and Books"
+- content_for :meta_description, "Fan podcasts about Naked & Afraid plus recommended survival books by Ky Furneaux."
+- content_for :keywords, "Naked and Afraid podcast, Oh Heck NAA, Jaked and Afraid, Ky Furneaux books, survival books"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "Naked & Afraid Podcasts and Books"
+- content_for :og_description, "Listen to fan podcasts and browse survival books by Ky Furneaux."
 
-/ app/views/static_pages/podcasts.html.slim
-- content_for :title, "Naked & Afraid Podcasts"
+
+- ky = Survivor.find_by(full_name: "Ky Furneaux")
+- data = podcasts_books_json_payload(ky: ky)
+script type="application/json" id="podcasts-books-jsonld-data"= data
+= javascript_import_module_tag "json_ld/podcasts_books", defer: true
+/ ===== end SEO + JSON-LD =====
+
 
 / Site Header
 .pb-2.mb-3.border-bottom.site-header

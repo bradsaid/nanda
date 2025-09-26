@@ -1,5 +1,21 @@
-/ ===== Season details =====
-- content_for :title, "#{@season.series&.name} — Season #{@season.number}"
+/ ===== SEO + JSON-LD: Season Show =====
+- series_name  = @season.series&.name || "Naked and Afraid"
+- season_num   = @season.number
+- ep_count     = (@episodes || []).size
+
+- content_for :title, "#{series_name} — Season #{season_num}"
+- content_for :meta_description, "#{series_name} Season #{season_num}: #{ep_count} episode(s) with air dates, locations, survivors, and items."
+- content_for :keywords, "Naked and Afraid, #{series_name}, Season #{season_num}, episodes, survivors, locations"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "#{series_name} — Season #{season_num}"
+- content_for :og_description, "Episode guide for #{series_name} Season #{season_num}."
+
+/ JSON blob (helper builds the JSON string; single line keeps Slim happy)
+- data = season_show_json_payload(season: @season, episodes: @episodes)
+script type="application/json" id="season-jsonld-data"= data
+= javascript_import_module_tag "json_ld/season_show", defer: true
+/ ===== end SEO + JSON-LD =====
+
 
 .container.my-4
   = link_to "← All seasons", episodes_path, class: "small link-primary text-decoration-underline"

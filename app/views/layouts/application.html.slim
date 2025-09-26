@@ -2,9 +2,38 @@ doctype html
 html
   head
     / === Core SEO ===
-    title = content_for(:title) || "Naked And Afraid WIKI"
-    meta name="description" content=(content_for?(:meta_description) || "Fan wiki with survivalists, episodes, items, and locations from Naked and Afraid.")
-    meta name="keywords" content=(content_for?(:keywords) || "Naked and Afraid, wiki, survivalists, episodes, items, PSR, locations")
+    - site_name = "Naked & Afraid Fan Wiki"
+    title = content_for?(:title) ? yield(:title) : "#{site_name}"
+    meta name="description" content=(content_for?(:meta_description) ? yield(:meta_description) : "Fan wiki with survivors, episodes, items, and filming locations for Naked & Afraid.")
+    / (Google ignores keywords; harmless to keep)
+    meta name="keywords" content=(content_for?(:keywords) ? yield(:keywords) : "Naked and Afraid, wiki, survivors, episodes, items, PSR, locations")
+
+    / Canonical + robots
+    link rel="canonical" href=(content_for?(:canonical_url) ? yield(:canonical_url) : request.original_url)
+    - if content_for?(:robots)
+      meta name="robots" content=yield(:robots)
+
+    / === Open Graph (fallbacks; override via content_for in views) ===
+    meta property="og:type"        content=(content_for?(:og_type)  ? yield(:og_type)  : "website")
+    meta property="og:site_name"   content=site_name
+    meta property="og:title"       content=(content_for?(:og_title) ? yield(:og_title) : (content_for?(:title) ? yield(:title) : site_name))
+    meta property="og:description" content=(content_for?(:og_description) ? yield(:og_description) : (content_for?(:meta_description) ? yield(:meta_description) : "Episodes, survivors, items, and locations."))
+    meta property="og:url"         content=(content_for?(:og_url) ? yield(:og_url) : request.original_url)
+    - if content_for?(:og_image)
+      meta property="og:image" content=yield(:og_image)
+
+    / === Twitter Card (fallbacks) ===
+    meta name="twitter:card"        content="summary_large_image"
+    meta name="twitter:title"       content=(content_for?(:twitter_title) ? yield(:twitter_title) : (content_for?(:og_title) || (content_for?(:title) ? yield(:title) : site_name)))
+    meta name="twitter:description" content=(content_for?(:twitter_description) ? yield(:twitter_description) : (content_for?(:og_description) || (content_for?(:meta_description) ? yield(:meta_description) : "Episodes, survivors, items, and locations.")))
+    - if content_for?(:twitter_image)
+      meta name="twitter:image" content=yield(:twitter_image)
+
+    / === JSON-LD sink (optional; many pages now inject via JS) ===
+    - if content_for?(:json_ld)
+      script type="application/ld+json"
+        = yield :json_ld
+
     meta name="viewport" content="width=device-width,initial-scale=1"
     meta name="apple-mobile-web-app-capable" content="yes"
     meta name="mobile-web-app-capable" content="yes"
@@ -14,17 +43,12 @@ html
     = csrf_meta_tags
     = csp_meta_tag
 
-    / === JSON-LD (structured data) ===
-    - if content_for?(:json_ld)
-      script type="application/ld+json"
-        = yield :json_ld
-
-    / JS importmap must come before page-specific module tags
+    / JS (importmap first), then per-page head hooks
     = javascript_importmap_tags
     = yield :head
 
     / Icons
-    = favicon_link_tag 'favicon.png', type: 'image/png'
+    = favicon_link_tag "/favicon.png", type: "image/png"
     link rel="icon" href="/icon.png" type="image/png"
     link rel="icon" href="/icon.svg" type="image/svg+xml"
     link rel="apple-touch-icon" href="/icon.png"
@@ -39,7 +63,7 @@ html
   body
     main.container.mx-auto.mt-8.px-5.flex
       .container.my-4
-        / ===== Navigation Links =====
+        / ===== Navigation =====
         .nav.mb-4.d-flex.justify-content-center.site-nav
           = link_to "Home", home_path, class: "nav-link"
           = link_to "Survivors", survivors_path, class: "nav-link"
@@ -48,5 +72,7 @@ html
           = link_to "Locations", locations_path, class: "nav-link"
           = link_to "Podcasts & Books", podcasts_path, class: "nav-link"
           = link_to "Where to Watch", seasons_path, class: "nav-link"
+          = link_to "About", about_path, class: "nav-link"
+        / ===== end Navigation =====
 
       = yield

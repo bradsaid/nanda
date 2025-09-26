@@ -3,4 +3,9 @@ class StaticPagesController < ApplicationController
   def podcasts
     # No logic needed for a static page, but you could add instance variables here if it becomes dynamic later
   end
+
+  def about
+    # Optional: populate @updates from DB later. For now, leave nil and the view provides fallbacks.
+  end
+  
 end

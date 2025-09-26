@@ -1,6 +1,7 @@
+/ ===== SEO + JSON-LD inject (Home) =====
 - site_name = "Naked & Afraid Fan Database"
 - tagline   = "Episodes, survivors, items, and locations — community-run fan wiki."
-
+/- hero_img  = image_path("icon.png")
 
 - content_for :title, "#{site_name} – Fan Wiki & Episode Guide"
 - content_for :meta_description, "Complete fan database for Naked & Afraid: searchable episodes, survivors, items, locations, stats, and more."
@@ -8,6 +9,11 @@
 - content_for :canonical_url, request.original_url
 - content_for :og_title, "#{site_name} – Fan Wiki"
 - content_for :og_description, tagline
+/- content_for :og_image, hero_img
+/- content_for :twitter_image, hero_img
+
+= javascript_import_module_tag "json_ld/home_schema", defer: true
+/ ===== end SEO =====
 
 
 / app/views/home/index.html.slim

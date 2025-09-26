@@ -1,6 +1,25 @@
-- content_for :title, "#{@survivor.full_name} – Naked and Afraid Survivor Wiki"
-- content_for :meta_description, "Details, episodes, and items for #{@survivor.full_name}."
-- content_for :keywords, "#{@survivor.full_name}, Naked and Afraid, survivor"
+/ ===== SEO + JSON-LD: Survivor Show =====
+- name        = @survivor.full_name
+- ep_total    = @survivor.appearances.select(:episode_id).distinct.count
+- challenges  = @episodes_collapsed_count
+- img_url     = (@survivor.avatar&.attached? ? url_for(@survivor.avatar) : nil)
+
+- content_for :title, "#{name} – Naked and Afraid Survivor Wiki"
+- content_for :meta_description, "Profile for #{name}: episodes, challenges, items brought/given, locations, and results."
+- content_for :keywords, "#{name}, Naked and Afraid, survivor, contestant"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "#{name} – Naked and Afraid Survivor"
+- content_for :og_description, "#{name}: #{ep_total} episode(s), #{challenges} challenge(s)."
+- if img_url
+  - content_for :og_image, img_url
+  - content_for :twitter_image, img_url
+
+/ JSON payload for schema (single line to keep Slim happy)
+- data = survivor_show_json_payload(survivor: @survivor, appearances: @appearances)
+script type="application/json" id="survivor-jsonld-data"= data
+= javascript_import_module_tag "json_ld/survivor_show", defer: true
+/ ===== end SEO + JSON-LD =====
+
 
 
 / ===== Survivor Show =====

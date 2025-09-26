@@ -1,3 +1,17 @@
+/ ===== SEO + JSON-LD: Survivors Index =====
+- total_survivors = Array(@survivors).size
+- content_for :title, "Naked and Afraid Survivors"
+- content_for :meta_description, "Browse Naked and Afraid survivors with episode counts, challenges, items brought/given, and profiles."
+- content_for :keywords, "Naked and Afraid survivors, contestants, episode count, challenges"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "Naked and Afraid Survivors"
+- content_for :og_description, "Complete list of survivors with episode totals and challenges."
+
+/ JSON blob (helper builds the JSON; single line keeps Slim happy)
+- data = survivors_index_json_payload(top_survivors: @top_survivors, survivors: @survivors)
+script type="application/json" id="survivors-index-jsonld-data"= data
+= javascript_import_module_tag "json_ld/survivors_index", defer: true
+/ ===== end SEO + JSON-LD =====
 
 
 .container.my-4

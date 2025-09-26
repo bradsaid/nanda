@@ -1,5 +1,19 @@
-/ ===== Episodes by Country =====
-- content_for :title, "Episodes in #{@country}"
+/ ===== SEO + JSON-LD: Episodes by Country =====
+- country_name = @country.to_s
+- ep_list      = (@episodes || [])
+
+- content_for :title, "Naked and Afraid Episodes in #{country_name}"
+- content_for :meta_description, "All #{ep_list.size} episode(s) filmed in #{country_name}: air dates, locations, and survivors."
+- content_for :keywords, "Naked and Afraid episodes, #{country_name}, filming locations, survivors, episode guide"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "Episodes in #{country_name} – Naked and Afraid"
+- content_for :og_description, "Episode list for #{country_name} with dates, locations, and survivors."
+
+/ JSON blob consumed by json_ld/episodes_by_country.js (single line to keep Slim happy)
+- data = episodes_by_country_json_payload(country: country_name, episodes: ep_list)
+script type="application/json" id="episodes-by-country-jsonld-data"= data
+= javascript_import_module_tag "json_ld/episodes_by_country", defer: true
+/ ===== end SEO + JSON-LD =====
 
 .pb-2.mb-3.border-bottom.site-header
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2

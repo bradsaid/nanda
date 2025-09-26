@@ -16,7 +16,7 @@ class Item < ApplicationRecord
 
     case name
 
-    when /knife|machete|sword|axe|tomahawk|hatchet|kukri|pulaski/
+    when /knife|machete|sword|axe|tomahawk|hatchet|kukri|blade|pulaski/
       self.item_type = "blade"
     when /pot|pan|pottery/
       self.item_type = "pot"
