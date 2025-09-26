@@ -1,3 +1,15 @@
+- site_name = "Naked & Afraid Fan Database"
+- tagline   = "Episodes, survivors, items, and locations — community-run fan wiki."
+
+
+- content_for :title, "#{site_name} – Fan Wiki & Episode Guide"
+- content_for :meta_description, "Complete fan database for Naked & Afraid: searchable episodes, survivors, items, locations, stats, and more."
+- content_for :keywords, "Naked and Afraid wiki, episodes, survivors, items, locations, PSR, guide"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "#{site_name} – Fan Wiki"
+- content_for :og_description, tagline
+
+
 / app/views/home/index.html.slim
 .container.my-4
   / ===== Hero / Header =====
@@ -167,18 +179,18 @@
       .card-body
         .text-muted No survivors yet.
 
-  / ===== Top Countries =====
-  .card.shadow-sm
-    .card-header Top Countries by Episode Count
-    - if @top_countries.present?
-      .list-group.list-group-flush
-        - @top_countries.each do |country, count|
-          .list-group-item.d-flex.justify-content-between.align-items-center
-            - if country.present?
-              = link_to country, by_country_episodes_path(country), class: "text-decoration-none"
-            - else
-              span.text-muted Unknown
-            span.badge.text-bg-secondary = count
-    - else
-      .card-body
-        .text-muted No country data yet.
+/ ===== Top Countries =====
+.card.shadow-sm
+  .card-header Top Countries by Episode Count
+  - if @top_countries.present?
+    .list-group.list-group-flush
+      - @top_countries.each do |country, count|
+        .list-group-item.d-flex.justify-content-between.align-items-center
+          - if country.present?
+            = link_to country, by_country_episodes_path(country), class: "text-decoration-none"
+          - else
+            span.text-muted Unknown
+          span.badge.text-bg-secondary = count
+  - else
+    .card-body
+      .text-muted No country data yet.
