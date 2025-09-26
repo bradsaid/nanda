@@ -1,15 +1,23 @@
 doctype html
 html
   head
-    title= content_for(:title) || "Naked And Afraid WIKI"
+    / === Core SEO ===
+    title = content_for(:title) || "Naked And Afraid WIKI"
+    meta name="description" content=(content_for?(:meta_description) || "Fan wiki with survivalists, episodes, items, and locations from Naked and Afraid.")
+    meta name="keywords" content=(content_for?(:keywords) || "Naked and Afraid, wiki, survivalists, episodes, items, PSR, locations")
     meta name="viewport" content="width=device-width,initial-scale=1"
     meta name="apple-mobile-web-app-capable" content="yes"
     meta name="mobile-web-app-capable" content="yes"
-    meta name="leaflet-icon"        content=(asset_path('leaflet/marker-icon.png'))
-    meta name="leaflet-icon-2x"     content=(asset_path('leaflet/marker-icon-2x.png'))
-    meta name="leaflet-shadow"      content=(asset_path('leaflet/marker-shadow.png'))
+    meta name="leaflet-icon"    content=(asset_path('leaflet/marker-icon.png'))
+    meta name="leaflet-icon-2x" content=(asset_path('leaflet/marker-icon-2x.png'))
+    meta name="leaflet-shadow"  content=(asset_path('leaflet/marker-shadow.png'))
     = csrf_meta_tags
     = csp_meta_tag
+
+    / === JSON-LD (structured data) ===
+    - if content_for?(:json_ld)
+      script type="application/ld+json"
+        = yield :json_ld
 
     / JS importmap must come before page-specific module tags
     = javascript_importmap_tags
@@ -28,12 +36,6 @@ html
     = stylesheet_link_tag "locations", "data-turbo-track": "reload"
     = stylesheet_link_tag "map", "data-turbo-track": "reload"
 
-
-
-
-
-
-
   body
     main.container.mx-auto.mt-8.px-5.flex
       .container.my-4
@@ -46,7 +48,5 @@ html
           = link_to "Locations", locations_path, class: "nav-link"
           = link_to "Podcasts & Books", podcasts_path, class: "nav-link"
           = link_to "Where to Watch", seasons_path, class: "nav-link"
-
-
 
       = yield

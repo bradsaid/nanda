@@ -1,3 +1,25 @@
+/ ===== SEO: Item show =====
+- item_name   = @item.name.to_s
+- country     = params[:country].to_s.presence
+- given_ep_cnt   = (@given_ai   || []).map { |ai| ai.appearance&.episode_id }.compact.uniq.size
+- brought_ep_cnt = (@brought_ai || []).map { |ai| ai.appearance&.episode_id }.compact.uniq.size
+- total_cnt      = given_ep_cnt + brought_ep_cnt
+- subtitle    = []
+- subtitle   << "in #{country}" if country
+- subtitle_str = subtitle.any? ? " — " + subtitle.join(" ") : ""
+
+/ Title + meta
+- content_for :title, "#{item_name} – Naked and Afraid Item#{subtitle_str}"
+- content_for :meta_description, "#{item_name} usage across Naked and Afraid episodes#{country ? " in #{country}" : ""}: given in #{given_ep_cnt}, brought in #{brought_ep_cnt}, total #{total_cnt}. Episode lists and country breakdown."
+- content_for :keywords, "#{item_name}, Naked and Afraid item, survival gear, brought items, given items, #{country}"
+- content_for :canonical_url, request.original_url
+
+/ Open Graph / Twitter
+- content_for :og_title, "#{item_name} – Naked and Afraid Item"
+- content_for :og_description, "Given in #{given_ep_cnt} episode(s), brought in #{brought_ep_cnt}; total #{total_cnt} appearances#{country ? " in #{country}" : ""}."
+
+/ ===== end SEO =====
+
 / ===== Item details =====
 - content_for :title, @item.name
 
