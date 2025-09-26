@@ -1,4 +1,29 @@
 
+/ ===== SEO + JSON-LD: Episode Show =====
+- series      = @episode.season&.series
+- season      = @episode.season
+- season_num  = season&.number
+- ep_num      = @episode.number_in_season
+- title_text  = @episode.title.presence || "Episode"
+- subtitle    = [series&.name, ("S#{season_num}" if season_num), ("E#{ep_num}" if ep_num)].compact.join(" • ")
+- air_date    = @episode.air_date&.strftime("%b %-d, %Y")
+- loc         = @episode.location
+- loc_str     = [loc&.country, loc&.region, loc&.site].compact_blank.join(", ").presence
+
+/ Titles & meta
+- content_for :title, "#{title_text} | #{subtitle}"
+- content_for :meta_description, "#{title_text} (#{subtitle}) — Aired #{air_date || '—'}#{loc_str ? " • Location: #{loc_str}" : ""}. Participants, PSR, days lasted, and items."
+- content_for :keywords, "Naked and Afraid episode, #{series&.name}, Season #{season_num}, Episode #{ep_num}, #{title_text}, survivors, PSR, items"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "#{title_text} | #{subtitle}"
+- content_for :og_description, "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
+
+/ JSON data for schema (built in helper to avoid Slim parsing issues)
+- data = episode_show_json_payload(@episode)
+script type="application/json" id="episode-jsonld-data"= data
+= javascript_import_module_tag "json_ld/episode_show", defer: true
+/ ===== end SEO + JSON-LD =====
+
 / ===== Episode Show =====
 - series      = @episode.season&.series
 - season      = @episode.season
@@ -36,17 +61,18 @@
             .flex-grow-1
               .text-uppercase.small.text-muted Location
               .fw-semibold
-                - if country || region || site
-                  - parts = []
-                  - if country
-                    - parts << link_to(country, episodes_path(country: country))
-                  - if region
-                    - parts << region
-                  - if site
-                    - parts << site
-                  = safe_join(parts, " • ")
-                - else
-                  | —
+              - if country || region || site
+                - parts = []
+                - if country
+                  / OLD: parts << link_to(country, episodes_path(country: country))
+                  - parts << link_to(country, by_country_episodes_path(country))
+                - if region
+                  - parts << region
+                - if site
+                  - parts << site
+                = safe_join(parts, " • ")
+              - else
+                | —
     .col-md-4
       .card.shadow-sm.h-100
         .card-body

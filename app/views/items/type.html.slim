@@ -1,5 +1,26 @@
-/ ===== Item Type details =====
-- content_for :title, @item_type
+/ ===== SEO + JSON-LD: Item Type =====
+- type_name     = @item_type.to_s
+- country_param = params[:country].to_s.presence
+- given_cnt     = (@given_episode_ids   || []).uniq.size
+- brought_cnt   = (@brought_episode_ids || []).uniq.size
+- total_items   = (@items_in_type_count || 0)
+- subtitle_bits = []
+- subtitle_bits << "in #{country_param}" if country_param
+- subtitle_str  = subtitle_bits.any? ? " — " + subtitle_bits.join(" ") : ""
+
+/ Title + meta
+- content_for :title, "#{type_name} Items – Naked and Afraid#{subtitle_str}"
+- content_for :meta_description, "#{type_name} items used on Naked & Afraid#{country_param ? " in #{country_param}" : ""}. #{total_items} item(s) in this type. Given in #{given_cnt} episode(s) and brought in #{brought_cnt}."
+- content_for :keywords, "Naked and Afraid items, #{type_name.downcase} items, survival gear, brought items, given items#{country_param ? ", #{country_param}" : ""}"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "#{type_name} Items – Naked and Afraid"
+- content_for :og_description, "#{total_items} #{type_name} item(s). Given: #{given_cnt} • Brought: #{brought_cnt}#{country_param ? " • Country: #{country_param}" : ""}."
+
+/ JSON for schema (helper builds JSON; single-line to keep Slim happy)
+- data = item_type_json_payload(item_type: type_name, country: country_param, items_in_type_count: total_items, given_episode_ids: @given_episode_ids, brought_episode_ids: @brought_episode_ids, given_ai: @given_ai, brought_ai: @brought_ai)
+script type="application/json" id="item-type-jsonld-data"= data
+= javascript_import_module_tag "json_ld/episodeitem_type", defer: true
+/ ===== end SEO + JSON-LD =====
 
 .container.my-4
   / Header

@@ -1,4 +1,47 @@
-- content_for :title, "Episodes"
+
+/ ===== SEO + JSON-LD: Episodes Index =====
+- if @location
+  - loc_parts = [@location.site, @location.region, @location.country].compact_blank
+  - loc_name  = loc_parts.join(", ").presence || "Unknown Location"
+  - ep_list   = (@episodes || [])
+
+  - content_for :title, "Naked and Afraid Episodes in #{loc_name}"
+  - content_for :meta_description, "Guide to #{ep_list.size} episode(s) filmed in #{loc_name}: air dates, survivors, and details."
+  - content_for :keywords, "Naked and Afraid episodes, #{loc_name}, locations, survivors, episode guide"
+  - content_for :canonical_url, request.original_url
+  - content_for :og_title, "Episodes in #{loc_name} – Naked and Afraid"
+  - content_for :og_description, "All episodes filmed in #{loc_name} with dates, survivors, and details."
+
+- elsif defined?(@season) && @season.present?
+  - series_name = @season.series&.name || "Naked and Afraid"
+  - title_txt   = "#{series_name} – Season #{@season.number}"
+  - ep_list     = (@episodes || [])
+
+  - content_for :title, "#{title_txt} (Episode Guide)"
+  - content_for :meta_description, "#{title_txt}: #{ep_list.size} episode(s) with air dates, locations, survivors, and items."
+  - content_for :keywords, "Naked and Afraid, #{series_name}, Season #{@season.number}, episodes, survivors, items"
+  - content_for :canonical_url, request.original_url
+  - content_for :og_title, "#{title_txt} – Episodes"
+  - content_for :og_description, "Full episode list for #{title_txt}."
+
+- else
+  - ep_counts   = (@episode_counts || {})
+  - total_count = ep_counts.values.map(&:to_i).sum
+
+  - content_for :title, "Naked and Afraid Episodes – By Season"
+  - content_for :meta_description, "Complete episode guide organized by season with air dates, locations, survivors, and items."
+  - content_for :keywords, "Naked and Afraid episodes, episode guide, seasons, survivors, locations, items"
+  - content_for :canonical_url, request.original_url
+  - content_for :og_title, "Naked and Afraid Episodes – Guide by Season"
+  - content_for :og_description, "Browse seasons to see episodes with dates, locations, and survivors."
+
+/ JSON blob for schema (single-line to avoid Slim parse errors)
+- data = episodes_index_json_payload(location: @location, episodes: @episodes, season: (defined?(@season) && @season.present?) ? @season : nil, episodes_by_season: @episodes_by_season, episode_counts: @episode_counts)
+script type="application/json" id="episodes-index-jsonld-data"= data
+= javascript_import_module_tag "json_ld/episodes_index", defer: true
+
+
+
 
 - if @location
   / === Filtered by location ===

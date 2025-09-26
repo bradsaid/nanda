@@ -1,4 +1,21 @@
-- content_for :title, "Seasons"
+/ ===== SEO + JSON-LD: Seasons Index =====
+- seasons_list  = Array(@seasons)
+- total_seasons = seasons_list.size
+- total_episodes = seasons_list.sum { |s| (s.respond_to?(:episodes) ? s.episodes.size : 0) }
+
+- content_for :title, "Naked and Afraid Seasons"
+- content_for :meta_description, "Browse #{total_seasons} seasons (#{total_episodes} total episodes) of Naked and Afraid. Jump to a series and find where to watch."
+- content_for :keywords, "Naked and Afraid seasons, episode guide, where to watch"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "Naked and Afraid Seasons"
+- content_for :og_description, "All seasons organized by series with episode counts and streaming links."
+
+/ JSON blob for schema (helper builds JSON; single line keeps Slim happy)
+- data = seasons_index_json_payload(seasons: seasons_list)
+script type="application/json" id="seasons-index-jsonld-data"= data
+= javascript_import_module_tag "json_ld/seasons_index", defer: true
+/ ===== end SEO + JSON-LD =====
+
 
 .pb-2.mb-3.border-bottom.site-header
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2

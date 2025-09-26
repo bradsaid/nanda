@@ -1,6 +1,16 @@
+/ ===== SEO: Items Index =====
+- total_items = @top_brought.sum { |r| r.read_attribute(:total).to_i } + @top_given.sum { |r| r.read_attribute(:total).to_i }
+- total_types = (@items_by_type || {}).size
 
-/ ===== Items Index =====
-- content_for :title, "Items"
+- content_for :title, "Naked and Afraid Items — Fan Wiki"
+- content_for :meta_description, "Browse #{total_items} survival items used in Naked and Afraid. Filter by country or type, see most common, rarest, brought, and given items."
+- content_for :keywords, "Naked and Afraid items, survival gear, brought items, given items, rare items, item types"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, "Naked and Afraid Items"
+- content_for :og_description, "Complete list of Naked and Afraid items — brought, given, rarest, by type, and by country."
+
+= javascript_import_module_tag "json_ld/items_index", defer: true
+/ ===== end SEO =====
 
 .container.my-4
   .d-flex.flex-wrap.align-items-center.justify-content-between.gap-3.mb-3

@@ -1,0 +1,30 @@
+/ ===== SEO: About =====
+- page_title = "About – Naked & Afraid Fan Wiki"
+- page_desc  = "Learn more about this Naked & Afraid fan site, its purpose, and how to use it."
+
+- content_for :title, page_title
+- content_for :meta_description, page_desc
+- content_for :keywords, "Naked and Afraid about, fan wiki, survivor database"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, page_title
+- content_for :og_description, page_desc
+/ ===== end SEO =====
+
+/ JSON-LD payload (consumed by JS)
+- data = about_json_payload(name: page_title, description: page_desc)
+script type="application/json" id="about-jsonld-data"= data
+= javascript_import_module_tag "json_ld/about", defer: true
+
+/ ===== Page =====
+.container.my-4
+  .pb-2.mb-3.border-bottom.site-header
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      h1.h3.mb-0.logo About This Site
+    p.subtitle.mb-0.text-muted = page_desc
+
+  .card.shadow-sm
+    .card-header
+      h2.h5.mb-0 Our Mission
+    .card-body
+      p.lead.text-muted
+        | [Placeholder: Add your About content here — why you built the site, what fans can explore, credits, contact.]
