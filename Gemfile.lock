@@ -280,6 +280,8 @@ GEM
       logger
     rubyzip (2.4.1)
     securerandom (0.4.1)
+    sitemap_generator (6.3.0)
+      builder (~> 3.0)
     slim (5.2.1)
       temple (~> 0.10.0)
       tilt (>= 2.1.0)
@@ -365,6 +367,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2, >= 8.0.2.1)
   roo
+  sitemap_generator
   slim-rails
   solid_cable
   solid_cache
