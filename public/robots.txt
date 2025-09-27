@@ -1,1 +1,4 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+User-agent: *
+Allow: /
+
+Sitemap: #{ENV.fetch("SITEMAPS_HOST", ENV.fetch("APP_HOST", "https://www.nakedandafraidfan.com"))}/sitemaps/sitemap.xml.gz
