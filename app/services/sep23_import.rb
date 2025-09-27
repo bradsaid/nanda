@@ -229,7 +229,9 @@ class Sep23Import
 
       participants.each_with_index do |full_name, idx|
         surv = Survivor.find_or_create_by!(full_name: norm(full_name))
-        app  = Appearance.find_or_create_by!(survivor: surv, episode: episode)
+
+        # IMPORTANT: create Appearance with a location so validations pass
+        app  = Appearance.find_or_create_by!(survivor: surv, episode: episode, location: location)
 
         sp = starting_psrs[idx]
         ep = ending_psrs[idx]
@@ -360,14 +362,16 @@ class Sep23Import
       }
     end
 
-    # Now: every Solo episode gets an appearance for every Solo survivor, with survivor's own location
+    # Every Solo episode gets an appearance for every Solo survivor.
+    # Create with location set BEFORE save so validations pass.
     episodes.each do |episode|
       survivors.each do |h|
-        app = Appearance.find_or_create_by!(survivor: h[:survivor], episode: episode)
-        updates = { role: "solo", location: h[:location] }
-        updates[:starting_psr] = h[:starting_psr] if within_0_10?(h[:starting_psr])
-        updates[:ending_psr]   = h[:ending_psr]   if within_0_10?(h[:ending_psr])
-        app.update!(updates)
+        app = Appearance.find_or_initialize_by(survivor: h[:survivor], episode: episode)
+        app.location ||= h[:location]
+        app.role = "solo"
+        app.starting_psr = h[:starting_psr] if within_0_10?(h[:starting_psr])
+        app.ending_psr   = h[:ending_psr]   if within_0_10?(h[:ending_psr])
+        app.save!
 
         h[:brought].each do |iname|
           next if iname.blank?
