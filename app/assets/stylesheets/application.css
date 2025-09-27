@@ -597,6 +597,15 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
   text-shadow: 1px 1px 2px rgba(0,0,0,.15);
 }
 
+.series-header td {
+  background-color: #228B22 !important; /* forest green */
+  color: #fff !important;               /* white font */
+  font-weight: bold;
+}
+
+/* make subheaders a touch smaller/tighter if you like */
+.subhead-row th { font-size: .9rem; font-weight: 600; }
+
 /* Reusable stat pills */
 .stat-pill {
   display: inline-flex;
