@@ -2,7 +2,7 @@ import { injectJsonLd } from "json_ld/helpers";
 
 export function run() {
   const siteName = "Naked & Afraid Fan Database";
-  const heroImg  = "/icon.png";
+  const heroImg  = "/favicon.png";
   const schema = [
     { "@context":"https://schema.org","@type":"WebSite","name":siteName,"url":window.location.origin },
     { "@context":"https://schema.org","@type":"CollectionPage","name":siteName,
