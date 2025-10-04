@@ -6,11 +6,11 @@ module JsonLdHelper
   def episodes_index_json_payload(location:, episodes:, season:, episodes_by_season:, episode_counts:)
     simplify = ->(ep) {
       {
-        name:   (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
-        url:    episode_url(ep),
-        series: ep.season&.series&.name,
-        season: ep.season&.number,
-        number: ep.number_in_season,
+        name:     (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        url:      episode_path(ep),
+        series:   ep.season&.series&.name,
+        season:   ep.season&.number,
+        number:   ep.number_in_season,
         air_date: ep.air_date&.strftime("%Y-%m-%d"),
         location: [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence
       }
@@ -57,161 +57,163 @@ module JsonLdHelper
     air_iso      = episode.air_date&.to_date
     loc          = episode.location
     location_str = [loc&.country, loc&.region, loc&.site].compact_blank.join(", ").presence
-    actors       = Array(episode.survivors).map { |s| { name: s.full_name, url: survivor_url(s) } }
 
-    # If any survivor has an avatar attached, use the first as preview image
-    image_url = episode.appearances
-                        .map { |a| a.survivor }
-                        .find { |s| s&.avatar&.attached? }
-                        &.yield_self { |s| Rails.application.routes.url_helpers.url_for(s.avatar) } rescue nil
+    actors = Array(episode.survivors).map { |s| { name: s.full_name, url: survivor_path(s) } }
+
+    # If any survivor has an avatar attached, use the first as preview image (path-only to avoid host requirement)
+    image_url =
+      episode.appearances
+             .map { |a| a.survivor }
+             .find { |s| s&.avatar&.attached? }
+             &.yield_self { |s| rails_blob_path(s.avatar, only_path: true) } rescue nil
 
     JSON.generate({
-        title: (episode.title.presence || "Episode"),
-        series_name: series_name,
-        season_number: season_num,
-        episode_number: ep_num,
-        air_date_iso: air_iso,
-        location: location_str,
-        actors: actors,
-        image: image_url
+      title:          (episode.title.presence || "Episode"),
+      series_name:    series_name,
+      season_number:  season_num,
+      episode_number: ep_num,
+      air_date_iso:   air_iso,
+      location:       location_str,
+      actors:         actors,
+      image:          image_url
     })
   end
 
-    def episodes_by_country_json_payload(country:, episodes:)
-        simplify = ->(ep) {
-            {
-                name:   (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
-                url:    episode_url(ep),
-                series: ep.season&.series&.name,
-                season: ep.season&.number,
-                number: ep.number_in_season,
-                air_date: ep.air_date&.strftime("%Y-%m-%d"),
-                location: [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence
-            }
-        }
-        payload = {
-            country: country.to_s,
-            count: Array(episodes).size,
-            episodes: Array(episodes).first(20).map(&simplify)
-        }
-        JSON.generate(payload)
-    end
+  def episodes_by_country_json_payload(country:, episodes:)
+    simplify = ->(ep) {
+      {
+        name:     (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        url:      episode_path(ep),
+        series:   ep.season&.series&.name,
+        season:   ep.season&.number,
+        number:   ep.number_in_season,
+        air_date: ep.air_date&.strftime("%Y-%m-%d"),
+        location: [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence
+      }
+    }
+    payload = {
+      country:  country.to_s,
+      count:    Array(episodes).size,
+      episodes: Array(episodes).first(20).map(&simplify)
+    }
+    JSON.generate(payload)
+  end
 
-    def item_show_json_payload(item:, given_ai:, brought_ai:, country:)
-        simplify_episode = ->(ep) {
-            {
-                name:   (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
-                url:    episode_url(ep),
-                series: ep.season&.series&.name,
-                season: ep.season&.number,
-                number: ep.number_in_season
-            }
-        }
+  def item_show_json_payload(item:, given_ai:, brought_ai:, country:)
+    simplify_episode = ->(ep) {
+      {
+        name:   (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        url:    episode_path(ep),
+        series: ep.season&.series&.name,
+        season: ep.season&.number,
+        number: ep.number_in_season
+      }
+    }
 
-        given_eps_ids   = Array(given_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
-        brought_eps_ids = Array(brought_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
-        total_ids       = (given_eps_ids + brought_eps_ids).uniq
+    given_eps_ids   = Array(given_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
+    brought_eps_ids = Array(brought_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
+    total_ids       = (given_eps_ids + brought_eps_ids).uniq
 
-        # sample up to 10 distinct episodes appearing for this item
-        episodes = ((Array(given_ai) + Array(brought_ai)).map { |ai| ai.appearance&.episode }.compact.uniq)
-                    .first(10).map(&simplify_episode)
+    # sample up to 10 distinct episodes appearing for this item
+    episodes = ((Array(given_ai) + Array(brought_ai)).map { |ai| ai.appearance&.episode }.compact.uniq)
+                .first(10).map(&simplify_episode)
 
-        JSON.generate({
-            name:    item.name.to_s,
-            category:(item.respond_to?(:item_type) ? item.item_type : nil),
-            given:   given_eps_ids.size,
-            brought: brought_eps_ids.size,
-            total:   total_ids.size,
-            country: country.presence,
-            episodes: episodes
-        })
+    JSON.generate({
+      name:     item.name.to_s,
+      category: (item.respond_to?(:item_type) ? item.item_type : nil),
+      given:    given_eps_ids.size,
+      brought:  brought_eps_ids.size,
+      total:    total_ids.size,
+      country:  country.presence,
+      episodes: episodes
+    })
   end
 
   def item_type_json_payload(item_type:, country:, items_in_type_count:, given_episode_ids:, brought_episode_ids:, given_ai:, brought_ai:)
     # Sample up to 10 distinct items shown on the page
     items = ((Array(given_ai) + Array(brought_ai)).map(&:item).compact.uniq)
               .first(10)
-              .map { |it| { name: it.name, url: item_url(it) } }
+              .map { |it| { name: it.name, url: item_path(it) } }
 
     JSON.generate({
-      type: item_type.to_s,
-      country: country.presence,
+      type:        item_type.to_s,
+      country:     country.presence,
       items_count: items_in_type_count.to_i,
-      given: Array(given_episode_ids).uniq.size,
-      brought: Array(brought_episode_ids).uniq.size,
-      items: items
+      given:       Array(given_episode_ids).uniq.size,
+      brought:     Array(brought_episode_ids).uniq.size,
+      items:       items
     })
   end
 
-    # JSON for Seasons index (consumed by json_ld/seasons_index.js)
+  # JSON for Seasons index (consumed by json_ld/seasons_index.js)
   def seasons_index_json_payload(seasons:)
     seasons = Array(seasons)
     sample = seasons.first(20).map do |s|
       {
-        url:    season_url(s),
-        name:   "#{s.series&.name} – Season #{s.number}",
-        series: s.series&.name,
-        number: s.number,
+        url:      season_path(s),
+        name:     "#{s.series&.name} – Season #{s.number}",
+        series:   s.series&.name,
+        number:   s.number,
         episodes: (s.respond_to?(:episodes) ? s.episodes.size : nil)
       }
     end
     JSON.generate({ total_seasons: seasons.size, sample: sample })
   end
 
-    # JSON string for Season show page; consumed by json_ld/season_show.js
-    def season_show_json_payload(season:, episodes:)
-        series_name = season.series&.name
-        season_num  = season.number
+  # JSON string for Season show page; consumed by json_ld/season_show.js
+  def season_show_json_payload(season:, episodes:)
+    series_name = season.series&.name
+    season_num  = season.number
 
-        episodes_simplified = Array(episodes).first(20).map do |ep|
-            {
-            name:     (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
-            url:      episode_url(ep),
-            number:   ep.number_in_season,
-            air_date: ep.air_date&.strftime("%Y-%m-%d"),
-            location: [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence,
-            series:   ep.season&.series&.name
-            }
-        end
-
-        JSON.generate({
-            series_name:    series_name,
-            season_number:  season_num,
-            episode_count:  Array(episodes).size,
-            episodes:       episodes_simplified
-        })
+    episodes_simplified = Array(episodes).first(20).map do |ep|
+      {
+        name:     (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        url:      episode_path(ep),
+        number:   ep.number_in_season,
+        air_date: ep.air_date&.strftime("%Y-%m-%d"),
+        location: [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence,
+        series:   ep.season&.series&.name
+      }
     end
 
-    def survivors_index_json_payload(top_survivors:, survivors:)
-        list = (Array(top_survivors).presence || Array(survivors)).first(20)
+    JSON.generate({
+      series_name:   series_name,
+      season_number: season_num,
+      episode_count: Array(episodes).size,
+      episodes:      episodes_simplified
+    })
+  end
 
-        simplified = list.map do |s|
-            total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
-            collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
-            img =
-            if s.respond_to?(:avatar) && s.avatar&.attached?
-                Rails.application.routes.url_helpers.url_for(s.avatar) rescue nil
+  def survivors_index_json_payload(top_survivors:, survivors:)
+    list = (Array(top_survivors).presence || Array(survivors)).first(20)
+
+    simplified = list.map do |s|
+      total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
+      collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
+
+      img = if s.respond_to?(:avatar) && s.avatar&.attached?
+              rails_blob_path(s.avatar, only_path: true) rescue nil
             end
 
-            {
-                name: s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}",
-                url:  Rails.application.routes.url_helpers.survivor_url(s),
-                image: img,
-                episodes_total: total,
-                challenges: collapsed
-            }
-        end
-
-        JSON.generate({
-            count: list.size,
-            survivors: simplified
-        })
+      {
+        name:            s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}",
+        url:             survivor_path(s),
+        image:           img,
+        episodes_total:  total,
+        challenges:      collapsed
+      }
     end
+
+    JSON.generate({
+      count:     list.size,
+      survivors: simplified
+    })
+  end
 
   def survivor_show_json_payload(survivor:, appearances:)
     img =
       if survivor.respond_to?(:avatar) && survivor.avatar&.attached?
-        Rails.application.routes.url_helpers.url_for(survivor.avatar) rescue nil
+        rails_blob_path(survivor.avatar, only_path: true) rescue nil
       end
 
     social = []
@@ -232,27 +234,27 @@ module JsonLdHelper
       ep = a.episode
       next unless ep
       {
-        name:   (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
-        url:    Rails.application.routes.url_helpers.episode_url(ep),
-        series: ep.season&.series&.name,
-        season: ep.season&.number,
-        number: ep.number_in_season,
+        name:     (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        url:      episode_path(ep),
+        series:   ep.season&.series&.name,
+        season:   ep.season&.number,
+        number:   ep.number_in_season,
         air_date: ep.air_date&.strftime("%Y-%m-%d"),
         location: [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence,
-        days: a.days_lasted,
-        psr: [a.starting_psr, a.ending_psr].compact.join(" → ").presence,
-        result: a.result.presence
+        days:     a.days_lasted,
+        psr:      [a.starting_psr, a.ending_psr].compact.join(" → ").presence,
+        result:   a.result.presence
       }
     end.compact.first(20)
 
     JSON.generate({
-      name: survivor.full_name.to_s,
-      url:  Rails.application.routes.url_helpers.survivor_url(survivor),
-      image: img,
-      sameAs: social,
-      episodes_total: survivor.appearances.select(:episode_id).distinct.count,
-      challenges: (survivor.respond_to?(:episodes_collapsed_count) ? survivor.episodes_collapsed_count.to_i : nil),
-      episodes: eps
+      name:             survivor.full_name.to_s,
+      url:              survivor_path(survivor),
+      image:            img,
+      sameAs:           social,
+      episodes_total:   survivor.appearances.select(:episode_id).distinct.count,
+      challenges:       (survivor.respond_to?(:episodes_collapsed_count) ? survivor.episodes_collapsed_count.to_i : nil),
+      episodes:         eps
     })
   end
 
@@ -283,9 +285,7 @@ module JsonLdHelper
     JSON.generate({
       podcasts: podcasts,
       books: books,
-      author: {
-        name: "Ky Furneaux"
-      }
+      author: { name: "Ky Furneaux" }
     })
   end
 
@@ -295,5 +295,4 @@ module JsonLdHelper
       description: description.to_s
     })
   end
-
 end

@@ -20,26 +20,22 @@ script type="application/json" id="survivors-index-jsonld-data"= data
   / ===== Top Survivors (cards) =====
   - if @top_survivors.present?
     .card.shadow-sm.mb-4
-      .card-header Top Survivors — Episodes 
+      .card-header Top Survivors — Challenges
       .card-body
         .row.g-3
           - @top_survivors.each do |s|
-            - name = (s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}")
+            - name = s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}"
             - total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : (s.respond_to?(:episodes_count) ? s.episodes_count.to_i : s.appearances.select(:episode_id).distinct.count)
             - collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
             .col-6.col-md-4.col-lg-2
-              .card.h-100.text-center.border-0
+              = link_to survivor_path(s), class: "card h-100 text-center border-0 text-decoration-none" do
                 .card-body.py-3
-                  .fw-semibold.mb-1 = link_to name, survivor_path(s)
-                  = link_to survivor_path(s) do
-                    = image_tag url_for(s.avatar),
-                                alt: s.full_name,
-                                class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
+                  = image_tag avatar_src(s, name: name),
+                              alt: name,
+                              class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
+                  .fw-semibold.mt-2 = name
+                  small.text-muted Challenges: #{collapsed}
 
-                  .small.text-muted Episodes
-                  .display-6.fw-bold = total
-                  .small.text-muted Challenges
-                  .display-6.fw-bold = collapsed
   - else
     .mb-3.text-muted No survivor data yet.
 
