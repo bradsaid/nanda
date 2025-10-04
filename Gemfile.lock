@@ -225,7 +225,7 @@ GEM
     psych (5.2.6)
       date
       stringio
-    puma (7.0.1)
+    puma (7.0.4)
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
@@ -364,7 +364,7 @@ DEPENDENCIES
   kamal
   pg (~> 1.1)
   propshaft
-  puma (>= 5.0)
+  puma (>= 7.0.3)
   rails (~> 8.0.2, >= 8.0.2.1)
   roo
   sitemap_generator
