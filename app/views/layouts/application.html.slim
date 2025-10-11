@@ -35,7 +35,8 @@ html
         = yield :json_ld
 
     / Google Tag Manager
-    javascript:
+    /javascript:
+      console.log("test")
       (function(w,d,s,l,i){
         w[l]=w[l]||[];
         w[l].push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
@@ -49,8 +50,9 @@ html
     / End Google Tag Manager
 
     / Google tag (gtag.js)
+    = javascript_include_tag "gtag", defer: true
     script async src="https://www.googletagmanager.com/gtag/js?id=G-8JGV4BSL96"
-    javascript:
+    /javascript:
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());

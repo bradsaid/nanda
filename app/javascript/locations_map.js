@@ -1,5 +1,5 @@
 // app/javascript/locations_map.js
-console.log("[map] locations_map loaded");
+//console.log("[map] locations_map loaded");
 import "leaflet";                // UMD build -> window.L
 
 const pick = n => document.querySelector(`meta[name="${n}"]`)?.content;
