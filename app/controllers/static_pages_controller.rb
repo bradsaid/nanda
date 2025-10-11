@@ -19,7 +19,7 @@ class StaticPagesController < ApplicationController
     message = params[:message].to_s.strip
 
     begin
-      ContactMailer.contact_email(name:, email:, message:).deliver_later
+      ContactMailer.contact_email(name:, email:, message:).deliver_now
       flash[:notice] = "Thanks for your message! I’ll get back to you soon."
     rescue => e
       Rails.logger.error "Contact mail failed: #{e.class} — #{e.message}"
