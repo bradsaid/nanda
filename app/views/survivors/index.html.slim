@@ -13,7 +13,6 @@ script type="application/json" id="survivors-index-jsonld-data"= data
 = javascript_import_module_tag "json_ld/survivors_index", defer: true
 / ===== end SEO + JSON-LD =====
 
-
 .container.my-4
   h1.h3.mb-4 Survivors
 
@@ -33,9 +32,8 @@ script type="application/json" id="survivors-index-jsonld-data"= data
                   = image_tag avatar_src(s, name: name),
                               alt: name,
                               class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
-                  .fw-semibold.mt-2 = name
+                  .fw-semibold.mt-2.wrap-name = name
                   small.text-muted Challenges: #{collapsed}
-
   - else
     .mb-3.text-muted No survivor data yet.
 
@@ -67,6 +65,6 @@ script type="application/json" id="survivors-index-jsonld-data"= data
                 - total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
                 - collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
                 tr(data-name=s.full_name data-episodes_total=total data-episodes_collapsed=collapsed)
-                  td = link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline"
+                  td.wrap-name = link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline d-inline"
                   td.text-end = total
                   td.text-end = collapsed

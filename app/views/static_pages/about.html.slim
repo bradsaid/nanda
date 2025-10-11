@@ -17,6 +17,7 @@ script type="application/json" id="about-jsonld-data"= data
 
 / ===== Page =====
 .container.my-4
+  = render "shared/flash"
   .pb-2.mb-3.border-bottom.site-header
     .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
       h1.h3.mb-0.logo About This Site
@@ -24,7 +25,58 @@ script type="application/json" id="about-jsonld-data"= data
 
   .card.shadow-sm
     .card-header
-      h2.h5.mb-0 Our Mission
+      h2.h5.mb-0 The Mission
     .card-body
       p.lead.text-muted
-        | [Placeholder: Add your About content here — why you built the site, what fans can explore, credits, contact.]
+        | Hello everyone and welcome to my Naked and Afraid Fan website! My name is Brad, and I'm a huge Naked and Afraid fan.
+
+      p.text-muted
+        | When I first heard about the show, I shrugged it off. I've always watched Survival shows, but I just assumed that Naked and Afraid couldn't possibly be authentic. How could they cram 21 days of real survival stuff into a single episode? No way.
+
+      p.text-muted
+        | Then came the COVID lockdowns. I came across Naked and Afraid XL and fell in love. Boy, was I wrong. Since then, it's been a non stop Naked and Afraid ride for me.
+
+      p.text-muted
+        | I started wondering stuff like, how many people have brought a fire starter? How many epsiodes have there been when they didn't have a pot? Stuff like that. What items has Laura Zerra brought on her challenges? Just how many challenges has Matt Wright done?
+
+      p.text-muted
+        | All those kinds of questions led me here, to this point. I couldn't find a good source on the internet to answer my questions. So I decided to build a website to answer those questions. And here we are.
+
+      p.text-muted
+        | I didn't rely on other websites or other people's work to gather the data for this website. I gathered it myself, straight from the show.
+
+      p.text-muted
+        | But I'm not done yet - one of the burning questions - who has the most days on Naked and Afraid? Or - Who has killed big game? There's more questions to answer.
+
+      p.text-muted
+        | I'd also like to use this site as a way to promote the Survivalists. Their books, podcasts, survival training, knives, and more.
+
+      p.text-muted.mb-0
+        | So stay tuned to the website, I'll be adding more answers over time! Please use the contact form if you find any errors or have any questions, thank you for visiting!
+
+hr.my-4
+
+h2.h5.mb-3 Contact
+p.text-muted
+  | Have a question, correction, or idea for the site? Send me a message below.
+
+= form_with url: contact_path, method: :post, local: true, class: "needs-validation" do |f|
+  / Accessible honeypot field — hidden from users but visible to bots
+  .visually-hidden aria-hidden="true"
+    = f.label :phone_number, "Phone Number (leave blank)"
+    = f.text_field :phone_number, autocomplete: "off", tabindex: "-1"
+
+  .mb-3
+    = f.label :name, "Your Name", class: "form-label"
+    = f.text_field :name, class: "form-control", required: true
+
+  .mb-3
+    = f.label :email, "Your Email", class: "form-label"
+    = f.email_field :email, class: "form-control", required: true
+
+  .mb-3
+    = f.label :message, "Message", class: "form-label"
+    = f.text_area :message, rows: 5, class: "form-control", required: true
+
+  = f.submit "Send Message", class: "btn btn-primary"
+

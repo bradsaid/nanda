@@ -646,3 +646,11 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 }
 
 [id^="series-"] { scroll-margin-top: 80px; }
+
+/* Prevent mid-word breaks; wrap nicely on small screens */
+.wrap-name {
+  white-space: normal;
+  overflow-wrap: break-word; /* only breaks very long tokens */
+  word-break: normal;
+  hyphens: none;
+}

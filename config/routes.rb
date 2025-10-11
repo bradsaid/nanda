@@ -23,7 +23,8 @@ Rails.application.routes.draw do
   get 'podcasts', to: 'static_pages#podcasts'
   get "home", to: "home#index"
   root "home#index"
-  
+
+  post "contact", to: "static_pages#contact"
 
   get "/about", to: "static_pages#about", as: :about
 
