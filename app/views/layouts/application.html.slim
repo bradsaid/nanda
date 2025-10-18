@@ -22,6 +22,9 @@ html
     - if content_for?(:og_image)
       meta property="og:image" content=yield(:og_image)
 
+    / === Google AdSense ===
+    meta name="google-adsense-account" content="ca-pub-7765489985293011"
+
     / === Twitter Card (fallbacks) ===
     meta name="twitter:card"        content="summary_large_image"
     meta name="twitter:title"       content=(content_for?(:twitter_title) ? yield(:twitter_title) : (content_for?(:og_title) || (content_for?(:title) ? yield(:title) : site_name)))
