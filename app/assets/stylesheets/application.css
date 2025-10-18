@@ -642,15 +642,16 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 }
 
 @media (max-width: 576px) {
-  .avatar-lg { width: 120px; height: 120px; }
+  .avatar-lg { width: 120px; height: 120px; } 
 }
 
 [id^="series-"] { scroll-margin-top: 80px; }
 
-/* Prevent mid-word breaks; wrap nicely on small screens */
-.wrap-name {
+/* Stop mid-word breaks on survivor names */
+.wrap-name,
+.wrap-name a {
   white-space: normal;
-  overflow-wrap: break-word; /* only breaks very long tokens */
-  word-break: normal;
-  hyphens: none;
+  word-break: normal;      /* undo break-word/break-all */
+  overflow-wrap: normal;   /* don't force mid-word wraps */
+  hyphens: manual;         /* no auto hyphenation */
 }

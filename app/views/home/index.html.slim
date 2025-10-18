@@ -72,7 +72,7 @@
                 .card.text-center.shadow-sm.h-100
                   .card-body.py-3
                     div.h5.mb-1.font-weight-bold.wrap-name
-                      = link_to s.full_name, survivor_path(s), class: "text-decoration-none text-dark d-inline"
+                      = link_to s.full_name, survivor_path(s), class: "text-decoration-none text-dark d-inline-block"
                     - if s.avatar.attached?
                       = image_tag url_for(s.avatar), alt: s.full_name, class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
                   .small.text-muted Challenges
@@ -171,7 +171,7 @@
             .col-6.col-md-4.col-lg-2
               .border.rounded.p-3.h-100
                 div.fw-semibold.mb-1.wrap-name
-                  = link_to display, survivor_path(s), class: "d-inline text-decoration-none"
+                  = link_to display, survivor_path(s), class: "d-inline-block text-decoration-none"
                 - if s.avatar.attached?
                   = image_tag url_for(s.avatar), alt: s.full_name, class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
                 small.text-muted = "Appearances: #{(s.try(:appearances_count) || s.appearances.size)}"
