@@ -1,0 +1,97 @@
+doctype html
+html lang="en"
+  head
+    meta charset="UTF-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+    title Privacy Policy - Naked and Afraid Fan Database
+    = stylesheet_link_tag 'application', media: 'all'
+    = csrf_meta_tags
+
+  body
+    .container
+      header
+        h1 Privacy Policy
+        p Last updated: October 30, 2025
+
+      section
+        h2 1. Introduction
+        p At Naked and Afraid Fan Database, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you visit our website (nakedandafraidfan.com) or use our note-taking application. By using Naked and Afraid Fan Database, you consent to the practices described here.
+
+        p If you have questions, contact us at bradsaid@gmail.com.
+
+      section
+        h2 2. Information We Collect
+        h3 2.1 Personal Information
+        p We do not require user accounts or collect personally identifiable information (PII) like names, emails, or addresses for core functionality. Notes are stored locally in your browser or device unless you choose to export them.
+
+        h3 2.2 Automatically Collected Information
+        ul
+          li 
+            strong IP Address and Browser Data: 
+            We log IP addresses, browser type, device info, and access times for security and performance monitoring. This helps prevent abuse but is not used for profiling.
+          li 
+            strong Cookies: 
+            We use essential cookies for session management (e.g., remembering preferences). No marketing cookies are used.
+          li 
+            strong Usage Analytics: 
+            Aggregated, anonymized data (e.g., page views) may be collected via server logs for app improvements. No individual tracking.
+
+        p We do not collect sensitive data like health or financial information.
+
+      section
+        h2 3. How We Use Your Information
+        p Your data is used solely to:
+        ul
+          li Provide and maintain the Naked and Afraid Fan Database service (e.g., rendering notes).
+          li Improve app performance and fix bugs.
+          li Detect and prevent fraud or security issues.
+          li Comply with legal obligations.
+
+        p We do not sell, rent, or share your data with third parties, except as required by law.
+
+      section
+        h2 4. Data Sharing and Disclosure
+        p 
+          strong Service Providers: 
+          Limited data (e.g., hosting logs) may be shared with trusted providers like our cloud host (e.g., Heroku) under strict confidentiality.
+        p 
+          strong Legal Requirements: 
+          We may disclose data if compelled by law, subpoena, or to protect rights/safety.
+        p 
+          strong Business Transfers: 
+          In case of merger or acquisition, your data may transfer to the new entity.
+
+      section
+        h2 5. Data Security
+        p We implement reasonable security measures (e.g., HTTPS encryption, secure Rails configurations) to protect against unauthorized access, alteration, or destruction. However, no system is 100% secure—use strong passwords for any exports and keep your device updated.
+
+      section
+        h2 6. Your Rights and Choices
+        ul
+          li 
+            strong Access and Deletion: 
+            Since data is minimal and local, you can clear browser storage or contact us to request log deletion.
+          li 
+            strong Opt-Out: 
+            Disable cookies via browser settings. No email subscriptions exist.
+          li 
+            strong Children's Privacy: 
+            Naked and Afraid Fan Database is not for users under 13; we do not knowingly collect their data.
+
+        p For EU/UK users: You have rights under GDPR to access, rectify, or erase data. Contact us to exercise them.
+
+      section
+        h2 7. Third-Party Links
+        p Our site may link to external resources (e.g., GitHub repo). We are not responsible for their privacy practices—review their policies.
+
+      section
+        h2 8. Changes to This Policy
+        p We may update this policy periodically. Significant changes will be posted here with the update date. Continued use after changes implies acceptance.
+
+      section
+        h2 9. Contact Us
+        p For privacy concerns, email bradsaid@gmail.com
+
+      footer
+        p &copy; 2025 Naked and Afraid Fan Database. All rights reserved.
+        = link_to 'Back to Home', root_path

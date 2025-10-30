@@ -38,3 +38,6 @@
 
 /eval \"\$\(ssh-agent -s\)\"
 /eval \"\$\(ssh-agent -s\)\".pub
+# DB dumps
+*.dump
+sep27.dump

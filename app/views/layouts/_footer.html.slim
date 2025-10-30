@@ -1,0 +1,47 @@
+footer.bg-light.py-4.mt-5.border-top
+  .container
+    .row.text-center.text-md-start
+      / Column 1: Site Info
+      .col-md-4.mb-3
+        h5.fw-bold Naked & Afraid Fan Wiki
+        p.small.text-muted
+          | Unofficial fan resource with episodes, survivors, items, locations, and more.
+
+      / Column 2: Legal Links
+      .col-md-4.mb-3
+        h6.fw-bold Legal
+        ul.list-unstyled.small
+          li
+            = link_to "Privacy Policy", privacy_policy_path, class: "text-decoration-none text-muted"
+          li
+            = link_to "Terms of Service", terms_of_service_path, class: "text-decoration-none text-muted"
+          li
+            = link_to "Disclaimer", disclaimer_path, class: "text-decoration-none text-muted" if defined?(disclaimer_path)
+
+      / Column 3: Connect (Optional)
+      .col-md-4.mb-3
+        h6.fw-bold Connect
+        .d-flex.justify-content-center.justify-content-md-end.gap-3
+          - if defined?(twitter_url)
+            = link_to twitter_url, target: "_blank", rel: "noopener", class: "text-muted"
+              i.bi.bi-twitter
+          - if defined?(github_url)
+            = link_to github_url, target: "_blank", rel: "noopener", class: "text-muted"
+              i.bi.bi-github
+          - if defined?(discord_url)
+            = link_to discord_url, target: "_blank", rel: "noopener", class: "text-muted"
+              i.bi.bi-discord
+
+    / Divider
+    hr.my-3
+
+    / Bottom Row: Copyright + AdSense Note
+    .row.align-items-center.small.text-muted
+      .col-12.col-md-6.order-last.order-md-first.text-center.text-md-start
+        p.mb-0
+          | © #{Time.now.year} Naked & Afraid Fan Wiki. All rights reserved.
+
+      .col-12.col-md-6.text-center.text-md-end
+        p.mb-0
+          strong Advertisements
+          |  are provided by Google AdSense. We do not endorse clicked products.

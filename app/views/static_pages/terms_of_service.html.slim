@@ -1,0 +1,113 @@
+doctype html
+html lang="en"
+  head
+    meta charset="UTF-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+    title Terms of Service - Naked and Afraid Fan Database
+    = stylesheet_link_tag 'application', media: 'all'
+    = csrf_meta_tags
+
+  body
+    .container
+      header
+        h1 Terms of Service
+        p Last updated: October 30, 2025
+
+      section
+        h2 1. Acceptance of Terms
+        p By accessing or using <strong>Naked and Afraid Fan Database</strong> ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Service.
+
+        p We may update these Terms at any time. Continued use after changes constitutes acceptance. Check this page periodically.
+
+      section
+        h2 2. Description of Service
+        p Naked and Afraid Fan Database is a free, open-source web application for personal note-taking. Notes are stored locally in your browser using IndexedDB or localStorage. We do not store your notes on our servers.
+
+        p The Service is provided "as is" for personal, non-commercial use.
+
+      section
+        h2 3. User Responsibilities
+        ul
+          li You are responsible for all content you create, store, or export using Naked and Afraid Fan Database.
+          li You must not use Naked and Afraid Fan Database to store or transmit:
+            ul
+              li Illegal, harmful, or abusive content
+              li Copyrighted material without permission
+              li Malware, viruses, or malicious code
+              li Spam or unsolicited messages
+          li You must not attempt to:
+            ul
+              li Reverse engineer, decompile, or extract source code
+              li Interfere with the Service's functionality
+              li Overload servers or perform denial-of-service attacks
+              li Automate access (e.g., scraping, bots) beyond normal use
+
+      section
+        h2 4. Intellectual Property
+        p
+          strong Naked and Afraid Fan Database's Code and Design: 
+          The Service is licensed under the MIT License. See 
+          = link_to 'GitHub Repository', 'https://github.com/bradsaid/nanda', target: '_blank'
+          |  for details.
+        p
+          strong Your Content: 
+          You retain full ownership of your notes. By using Naked and Afraid Fan Database, you grant us a limited, non-exclusive license to display and process your notes temporarily in your browser session.
+
+      section
+        h2 5. Advertisements (Google AdSense)
+        p We may display advertisements on the Service via Google AdSense.
+
+        p 
+          strong You agree not to:
+          ul
+            li Click on ads out of curiosity or to increase revenue
+            li Encourage others to click on ads
+            li Use automated tools, bots, or scripts to view or click ads
+            li Place misleading elements near ads
+            li Label ads in a way that confuses them with content
+
+        p Violation of these rules may result in immediate termination of access and reporting to Google AdSense.
+
+      section
+        h2 6. Limitation of Liability
+        p To the fullest extent permitted by law:
+        ul
+          li Naked and Afraid Fan Database is provided "as is" without warranties of any kind.
+          li We are not liable for:
+            ul
+              li Loss of data (notes are stored locally — back them up!)
+              li Service interruptions or downtime
+              li Indirect, incidental, or consequential damages
+              li Third-party content or links
+
+      section
+        h2 7. Termination
+        p We may suspend or terminate your access at any time, without notice, for:
+        ul
+          li Violation of these Terms
+          li Abusive behavior
+          li Legal or security reasons
+
+      section
+        h2 8. Governing Law
+        p These Terms are governed by the laws of the United States and the State of California, without regard to conflict of law principles.
+
+      section
+        h2 9. Dispute Resolution
+        p Any disputes will be resolved through binding arbitration in San Francisco, CA, under the rules of the American Arbitration Association. You waive the right to a jury trial or class action.
+
+      section
+        h2 10. Contact Information
+        p For questions about these Terms, contact:
+        p 
+          strong Email: 
+          = mail_to 'bradsaid@gmail.com'
+        p 
+          strong Mailing Address: 
+          | Naked and Afraid Fan Database Team, Legal Address: Available Upon Request
+
+      footer
+        p &copy; 2025 Naked and Afraid Fan Database. All rights reserved.
+        = link_to 'Privacy Policy', privacy_policy_path
+        |  | 
+        = link_to 'Back to Home', root_path
