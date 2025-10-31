@@ -19,20 +19,37 @@ class ItemsController < ApplicationController
 
     brought_sub = brought_subquery(@country, @q)
     given_sub   = given_subquery(@country, @q)
-
-    @top_brought = items_scope
+=begin
+    @top_brought = items_scope 
       .joins("JOIN (#{brought_sub.to_sql}) bi ON bi.item_id = items.id")
       .select("items.id, items.name, COUNT(*) AS total")
       .group("items.id, items.name")
       .order("total DESC")
       .limit(@limit)
+=end
 
+    @top_brought =
+      AppearanceItem.where(source: "brought")
+        .joins(:item)
+        .group("items.id", "items.name")
+        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
+        .order("total DESC")
+=begin
     @top_given = items_scope
       .joins("JOIN (#{given_sub.to_sql}) gi ON gi.item_id = items.id")
       .select("items.id, items.name, COUNT(*) AS total")
       .group("items.id, items.name")
       .order("total DESC")
       .limit(@limit)
+=end
+
+    @top_given =
+      AppearanceItem.where(source: "given")
+        .joins(:item)
+        .group("items.id", "items.name")
+        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
+        .order("total DESC")
+
 
     # ===== Given in episodes (unique & adjusted) =====
     @given_in_episodes = ai
