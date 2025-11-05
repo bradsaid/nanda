@@ -47,7 +47,7 @@ script type="application/json" id="survivor-jsonld-data"= data
                   span = @survivor.appearances.count
                 .stat-pill
                   span.me-2(aria-hidden="true") 🌍
-                  strong.me-1 Countries:
+                  strong.me-1 Locations:
                   span = countries.keys.compact.join(", ").presence || "—"
 
               - if @survivor.avatar.attached?
@@ -59,24 +59,60 @@ script type="application/json" id="survivor-jsonld-data"= data
 
 
 
-        / Social links
-        - if @survivor.instagram.present? || @survivor.facebook.present?
-          .d-flex.flex-column.flex-sm-row.gap-3.mt-3
+        / ===== Social links =====
+        - if @survivor.instagram.present? || @survivor.facebook.present? || @survivor.youtube.present? || @survivor.cameo.present?
+          / Flex: vertical stack on mobile, row on larger screens, wider gap for clarity
+          .d-flex.flex-column.flex-sm-row.flex-wrap.gap-4.mt-3
+
+            / === Instagram ===
             - if (ig = @survivor.instagram).present?
               - ig_handle = ig.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, '').sub(%r{/.*$}, '')
               = link_to "https://www.instagram.com/#{ig_handle}",
                         target: "_blank", rel: "noopener noreferrer",
                         class: "btn btn-light d-inline-flex align-items-center gap-2 social-btn" do
-                span(aria-hidden="true") 📸
+                span aria-hidden="true"
+                  svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 448 512" fill="currentColor"
+                    path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9 114.9-51.3 114.9-114.9S287.7 141 224.1 141zm0 189.6c-41.2 0-74.7-33.4-74.7-74.7s33.4-74.7 74.7-74.7 74.7 33.4 74.7 74.7-33.5 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.9-26.9 26.9s-26.9-12-26.9-26.9 12-26.9 26.9-26.9 26.9 12 26.9 26.9zm76.1 27.2c-1.7-35.7-9.9-67.3-36.3-93.7S345.6 32.5 309.9 30.8c-35.9-2-143.6-2-179.5 0-35.7 1.7-67.3 9.9-93.7 36.3S32.5 90.4 30.8 126.1c-2 35.9-2 143.6 0 179.5 1.7 35.7 9.9 67.3 36.3 93.7s58 34.6 93.7 36.3c35.9 2 143.6 2 179.5 0 35.7-1.7 67.3-9.9 93.7-36.3s34.6-58 36.3-93.7c2-35.9 2-143.6 0-179.5zM398.8 388c-7.8 19.7-23 35-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.7-7.8-35-23-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.7 23-35 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.7 7.8 35 23 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
                 span = "@#{ig_handle}"
 
+            / === Facebook ===
             - if (fb = @survivor.facebook).present?
               - fb_handle = fb.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?facebook\.com/}i, '').sub(%r{/.*$}, '')
               = link_to "https://www.facebook.com/#{fb_handle}",
                         target: "_blank", rel: "noopener noreferrer",
                         class: "btn btn-light d-inline-flex align-items-center gap-2 social-btn" do
-                span(aria-hidden="true") 📘
+                span aria-hidden="true"
+                  svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512" fill="currentColor"
+                    path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.5 225.9 208 245v-173h-62v-72h62v-55c0-61.2 36.3-95 91.7-95 26.6 0 54.3 4.8 54.3 4.8v60h-30.6c-30.1 0-39.5 18.7-39.5 37.8v45.4h67l-10.7 72h-56.3v173c117.5-19.1 208-121.5 208-245z"
                 span = "@#{fb_handle}"
+
+            / === YouTube ===
+            - if (yt = @survivor.youtube).present?
+              - yt_raw     = yt.to_s.strip
+              - yt_handle  = yt_raw.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?youtube\.com/(?:@|c/|channel/|user/)?}i, '').sub(%r{/.*$}, '')
+              - yt_channel = yt_handle.start_with?('UC')
+              - yt_url     = yt_channel ? "https://www.youtube.com/channel/#{yt_handle}" : "https://www.youtube.com/@#{yt_handle}"
+              - yt_label   = yt_channel ? yt_handle : "@#{yt_handle}"
+              = link_to yt_url,
+                        target: "_blank", rel: "noopener noreferrer",
+                        class: "btn btn-light d-inline-flex align-items-center gap-2 social-btn" do
+                span aria-hidden="true"
+                  svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 576 512" fill="currentColor"
+                    path d="M549.7 124.1c-6-22.6-23.7-40.4-46.3-46.4C458.5 64 288 64 288 64s-170.5 0-215.4 13.7c-22.6 6-40.4 23.8-46.4 46.4C12.5 169.1 12.5 256 12.5 256s0 86.9 13.7 131.9c6 22.6 23.8 40.4 46.4 46.4C117.5 448 288 448 288 448s170.5 0 215.4-13.7c22.6-6 40.4-23.8 46.4-46.4C563.4 342.9 563.5 256 563.5 256s-.1-86.9-13.8-131.9zM232 334.6V177.4L374.3 256 232 334.6z"
+                span = yt_label
+
+            / === Cameo ===
+            - if (cm = @survivor.cameo).present?
+              - cameo_handle = cm.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?cameo\.com/}i, '').sub(%r{/.*$}, '')
+              = link_to "https://www.cameo.com/#{cameo_handle}",
+                        target: "_blank", rel: "noopener noreferrer",
+                        class: "btn btn-light d-inline-flex align-items-center gap-2 social-btn" do
+                | Cameo
+                span aria-hidden="true"
+                  svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512" fill="currentColor"
+                    path d="M258.6 16l45.6 116.5L421 81.1l-51.6 108.3L488 211l-115.3 39.6L420.9 359l-116.7-45-45 116.7-39.6-115.3L93 420.9l36.6-115.3L16 258.6l116.5-45.6L81.1 91l108.3 51.6L258.6 16z"
+                span = "@#{cameo_handle}"
+
 
         / Bio
         - if @survivor.bio.present?

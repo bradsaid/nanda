@@ -18,6 +18,18 @@ module SurvivorsHelper
      .sub(%r{/.*$}, "")
   end
 
+  def yt_handle(v)
+    raw = v.to_s.strip
+    raw = raw.sub(/\A@/, "")
+             .sub(%r{\Ahttps?://(www\.)?youtube\.com/(?:@|c/|channel/|user/)?}i, "")
+             .sub(%r{/.*$}, "")
+    raw.presence
+  end
+
+  def cameo_handle(v)
+    clean_handle(v, %r{\Ahttps?://(www\.)?cameo\.com/}i)
+  end
+
   def avatar_src(record, name: nil)
     return rails_blob_path(record.avatar, only_path: true) if record&.avatar&.attached?
 
@@ -33,7 +45,15 @@ module SurvivorsHelper
     "data:image/svg+xml;utf8,#{ERB::Util.url_encode(svg)}"
   end
 
+  private
 
+  def clean_handle(value, domain_pattern)
+    value.to_s.strip
+         .sub(/\A@/, "")
+         .sub(domain_pattern, "")
+         .sub(%r{/.*$}, "")
+         .presence
+  end
 
 
 end

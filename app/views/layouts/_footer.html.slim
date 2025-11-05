@@ -17,20 +17,18 @@ footer.bg-light.py-4.mt-5.border-top
             = link_to "Terms of Service", terms_of_service_path, class: "text-decoration-none text-muted"
           li
             = link_to "Disclaimer", disclaimer_path, class: "text-decoration-none text-muted" if defined?(disclaimer_path)
+          
 
-      / Column 3: Connect (Optional)
+      / Column 3: Connect 
       .col-md-4.mb-3
         h6.fw-bold Connect
-        .d-flex.justify-content-center.justify-content-md-end.gap-3
-          - if defined?(twitter_url)
-            = link_to twitter_url, target: "_blank", rel: "noopener", class: "text-muted"
-              i.bi.bi-twitter
-          - if defined?(github_url)
-            = link_to github_url, target: "_blank", rel: "noopener", class: "text-muted"
-              i.bi.bi-github
-          - if defined?(discord_url)
-            = link_to discord_url, target: "_blank", rel: "noopener", class: "text-muted"
-              i.bi.bi-discord
+        ul.list-unstyled.small
+          li
+            = link_to "Contact", contact_path, class: "text-decoration-none text-muted"
+          li
+            = link_to "About", about_path, class: "text-decoration-none text-muted"
+
+
 
     / Divider
     hr.my-3
