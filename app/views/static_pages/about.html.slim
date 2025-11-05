@@ -60,7 +60,8 @@ h2.h5.mb-3 Contact
 p.text-muted
   | Have a question, correction, or idea for the site? Send me a message below.
 
-= form_with url: contact_path, method: :post, local: true, class: "needs-validation" do |f|
+/= form_with url: contact_path, method: :post, local: true, class: "needs-validation" do |f|
+= form_with url: contact_submit_path, method: :post, local: true, class: "needs-validation" do |f|
   / Accessible honeypot field — hidden from users but visible to bots
   .visually-hidden aria-hidden="true"
     = f.label :phone_number, "Phone Number (leave blank)"

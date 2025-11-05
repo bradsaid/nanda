@@ -24,10 +24,12 @@ Rails.application.routes.draw do
   get "home", to: "home#index"
   root "home#index"
 
-  post "contact", to: "static_pages#contact"
+ 
 
   get "/about", to: "static_pages#about", as: :about
   get "/privacy_policy", to: "static_pages#privacy_policy", as: :privacy_policy
   get "/terms_of_service", to: "static_pages#terms_of_service", as: :terms_of_service
+  get  "/contact", to: "static_pages#contact", as: :contact    # page
+  post "/contact", to: "contact_messages#create", as: :contact_submit
   
 end

@@ -8,6 +8,7 @@ class StaticPagesController < ApplicationController
     # Optional: populate @updates from DB later. For now, leave nil and the view provides fallbacks.
   end
 
+=begin
   def contact
     if params[:phone_number].present?
       Rails.logger.warn "🚫 Spam detected, form rejected (honeypot filled)"
@@ -28,7 +29,7 @@ class StaticPagesController < ApplicationController
 
     redirect_to about_path
   end
-
+=end
 
   
 end
