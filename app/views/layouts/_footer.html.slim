@@ -1,32 +1,37 @@
-footer.bg-light.py-4.mt-5.border-top
-  .container
-    .row.text-center.text-md-start
-      / Column 1: Site Info
-      .col-md-4.mb-3
-        h5.fw-bold Naked & Afraid Fan Wiki
-        p.small.text-muted
-          | Unofficial fan resource with episodes, survivors, items, locations, and more.
+.footer.container.mt-5.py-4.border-top
+  .row
+    / About or site blurb
+    .col-md-4.mb-3
+      h6.fw-bold About
+      p.small.text-muted
+        | Naked & Afraid Fan Database is a community-run resource for episodes, survivors, and stats.
 
-      / Column 2: Legal Links
-      .col-md-4.mb-3
-        h6.fw-bold Legal
-        ul.list-unstyled.small
-          li
-            = link_to "Privacy Policy", privacy_policy_path, class: "text-decoration-none text-muted"
-          li
-            = link_to "Terms of Service", terms_of_service_path, class: "text-decoration-none text-muted"
-          li
-            = link_to "Disclaimer", disclaimer_path, class: "text-decoration-none text-muted" if defined?(disclaimer_path)
-          
+    / Explore links (new)
+    .col-md-3.mb-3
+      h6.fw-bold Explore
+      ul.list-unstyled.small
+        li = link_to "Home", root_path, class: "text-decoration-none text-muted"
+        li = link_to "Survivors", survivors_path, class: "text-decoration-none text-muted"
+        li = link_to "Episodes", episodes_path, class: "text-decoration-none text-muted"
+        li = link_to "Items", items_path, class: "text-decoration-none text-muted"
+        li = link_to "Locations", locations_path, class: "text-decoration-none text-muted"
+        li = link_to "Podcasts & Books", podcasts_path, class: "text-decoration-none text-muted"
+        li = link_to "Where to Watch", seasons_path, class: "text-decoration-none text-muted"
 
-      / Column 3: Connect 
-      .col-md-4.mb-3
-        h6.fw-bold Connect
-        ul.list-unstyled.small
-          li
-            = link_to "Contact", contact_path, class: "text-decoration-none text-muted"
-          li
-            = link_to "About", about_path, class: "text-decoration-none text-muted"
+    / Connect & Legal combined section
+    .col-md-5.mb-3
+      .row
+        .col-sm-6
+          h6.fw-bold Connect
+          ul.list-unstyled.small
+            li = link_to "Contact", contact_path, class: "text-decoration-none text-muted"
+            li = link_to "About", about_path, class: "text-decoration-none text-muted"
+        .col-sm-6
+          h6.fw-bold Legal
+          ul.list-unstyled.small
+            li = link_to "Privacy Policy", privacy_policy_path, class: "text-decoration-none text-muted"
+            li = link_to "Terms of Service", terms_of_service_path, class: "text-decoration-none text-muted"
+
 
 
 
@@ -41,5 +46,5 @@ footer.bg-light.py-4.mt-5.border-top
 
       .col-12.col-md-6.text-center.text-md-end
         p.mb-0
-          strong Advertisements
-          |  are provided by Google AdSense. We do not endorse clicked products.
+          /strong Advertisements
+          /|  are provided by Google AdSense. We do not endorse clicked products.

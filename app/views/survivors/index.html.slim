@@ -47,7 +47,7 @@ script type="application/json" id="survivors-index-jsonld-data"= data
       = link_to "Reset", survivors_path, class: "btn btn-outline-secondary"
 
   / ===== Survivors table =====
-  .card.shadow-sm
+  /.card.shadow-sm
     .card-header Survivors
     .card-body
       .table-responsive
@@ -70,3 +70,27 @@ script type="application/json" id="survivors-index-jsonld-data"= data
                   td.wrap-name = link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline d-inline-block"
                   td.text-end = total
                   td.text-end = collapsed
+  / ===== Survivors table =====
+  .card.shadow-sm
+    .card-header Survivors
+    / Put the responsive wrapper directly around the table and ensure horizontal scroll
+    .table-responsive.overflow-auto
+      / Give the table a small min-width so all three columns exist on XS and can scroll
+      table.table.table-sm.table-striped.table-hover.mb-0[data-sort style="min-width: 520px;"]
+        thead.table-light
+          tr
+            th(scope="col" data-key="name") Name
+            th(scope="col" class="text-end text-nowrap" data-key="episodes_total") Episodes (total)
+            th(scope="col" class="text-end text-nowrap" data-key="episodes_collapsed") Challenges
+        tbody
+          - if @survivors.blank?
+            tr
+              td(colspan="3" class="text-muted text-center") No survivors
+          - else
+            - @survivors.each do |s|
+              - total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
+              - collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
+              tr(data-name=s.full_name data-episodes_total=total data-episodes_collapsed=collapsed)
+                td.wrap-name = link_to s.full_name, survivor_path(s), class: "link-primary text-decoration-underline d-inline-block"
+                td.text-end.text-nowrap = total
+                td.text-end.text-nowrap = collapsed

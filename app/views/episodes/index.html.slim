@@ -43,6 +43,7 @@ script type="application/json" id="episodes-index-jsonld-data"= data
 
 
 
+
 - if @location
   / === Filtered by location ===
   .pb-2.mb-3.border-bottom.site-header
@@ -117,8 +118,14 @@ script type="application/json" id="episodes-index-jsonld-data"= data
   / === Overview (cards per season, with 'View all' link) ===
   .pb-2.mb-3.border-bottom.site-header
     .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
-      h1.h3.mb-0.logo Episodes
+      h1.h3.mb-0.logo Naked & Afraid — Fan Database - Episodes
       = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
+      .mt-4
+        p.text-secondary.fs-6.lh-lg.pe-lg-5
+          | Use this page to find episodes by season. Click on any episode to see details including air date, location, survivors, and items used.
+          br/
+          | Seasons include Naked and Afraid, Solo, XL, Alone, Savage, Castaways, Last One Standing & Apocalypse
+
 
   / === Season jump select ===
   .form-floating.mb-3(style="max-width: 360px;" data-controller="season-jump")

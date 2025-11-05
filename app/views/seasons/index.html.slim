@@ -16,9 +16,22 @@ script type="application/json" id="seasons-index-jsonld-data"= data
 = javascript_import_module_tag "json_ld/seasons_index", defer: true
 / ===== end SEO + JSON-LD =====
 
-.pb-2.mb-3.border-bottom.site-header
-  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
-    h1.h3.mb-0.logo Seasons
+.pb-3.mb-4.border-bottom.site-header
+  / ===== Title Row =====
+  .row.align-items-center.g-3
+    .col
+      h1.h2.mb-0.fw-bold.logo.text-gradient Seasons
+
+  / ===== Description Row (below title) =====
+  .row.mt-3
+    .col-lg-9.col-xl-8
+      p.text-secondary.fs-6.lh-lg
+        | Discover where to watch 
+        strong every season 
+        | of 
+        em Naked and Afraid 
+        | — from the original 21-day challenges to XL team challenges
+
 
 - if @seasons.blank?
   .text-muted.py-5.text-center No seasons found.

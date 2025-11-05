@@ -12,9 +12,30 @@
 = javascript_import_module_tag "json_ld/items_index", defer: true
 / ===== end SEO =====
 
-.container.my-4
-  .d-flex.flex-wrap.align-items-center.justify-content-between.gap-3.mb-3
-    h1.h3.mb-0 Items
+.container.my-5
+  / ===== Hero / Header =====
+  .site-header.pb-4.mb-5.border-bottom.border-2
+    .d-flex.flex-column.gap-3
+      h1.h2.fw-bold.logo.text-gradient
+        | Naked & Afraid 
+        span.text-muted.small — Fan Database - Items
+
+    .mt-4
+      p.text-secondary.fs-6.lh-lg.pe-lg-5
+        strong Items - Brought & Given
+
+      p.text-secondary.fs-6.lh-lg.pe-lg-5
+        | Survivors typically bring one item each, and another item is given to the pair or team.
+        br/
+        | They do not know ahead of time which item they will recieve. The item they bring are choosen by the show's producers from a small pool of items.
+        br/
+        | The producers then give them an additional complimentary item. 
+        br/
+        | This database tracks all items - brought & given - used in Naked and Afraid episodes.
+        br/
+        | Items are also categorized by type, popularity and location for easier browsing.
+        br/
+        | You can click on any item name to see more details, including which survivors used them and in which episodes.
 
   / ===== Filters =====
   = form_with url: items_path, method: :get, local: true, class: "card shadow-sm mb-4" do

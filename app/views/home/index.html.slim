@@ -12,11 +12,32 @@
 = javascript_import_module_tag "json_ld/home_schema", defer: true
 / ===== end SEO =====
 
-.container.my-4
+.container.my-5
   / ===== Hero / Header =====
-  .pb-3.mb-4.border-bottom.site-header
-    h1.h3.mb-1.logo Naked & Afraid — Fan Database
-    p.subtitle Stats, episodes, survivors, items, and locations.
+  .site-header.pb-4.mb-5.border-bottom.border-2
+    .d-flex.flex-column.gap-3
+      h1.h2.fw-bold.logo.text-gradient
+        | Naked & Afraid 
+        span.text-muted.small — Fan Database
+
+      p.subtitle.text-primary.fw-medium.fs-5.mb-0
+        | Every episode. Every survivor. Every item. Every location.
+        span.text-muted — All in one place.
+
+    .mt-4
+      p.text-secondary.fs-6.lh-lg.pe-lg-5
+        strong So, what is Naked and Afraid?
+
+      p.text-secondary.fs-6.lh-lg.pe-lg-5
+        |  Discovery Channel’s hit survival series drops strangers — 
+        em completely naked 
+        | — into the planet’s harshest environments with nothing but one personal item each.
+        br
+        | From 14-day duos to brutal 60-day team expeditions, 
+        | this fan-powered database chronicles 
+        em every item used, every location 
+        | — season by season, survivor by survivor.
+
 
   / ===== Quick Stats =====
   .row.g-3.mb-4
@@ -174,7 +195,8 @@
                   = link_to display, survivor_path(s), class: "d-inline-block text-decoration-none"
                 - if s.avatar.attached?
                   = image_tag url_for(s.avatar), alt: s.full_name, class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
-                small.text-muted = "Appearances: #{(s.try(:appearances_count) || s.appearances.size)}"
+                small.text-muted.text-nowrap = "Appearances:\u00A0#{(s.try(:appearances_count) || s.appearances.size)}"
+
     - else
       .card-body
         .text-muted No survivors yet.
