@@ -1,6 +1,6 @@
 doctype html
 html
-  head
+  head 
     / === Core SEO ===
     - site_name = "Naked & Afraid Fan Wiki"
     title = content_for?(:title) ? yield(:title) : "#{site_name}"
@@ -88,11 +88,17 @@ html
     = stylesheet_link_tag "map", "data-turbo-track": "reload"
 
   body
-
     / Google Tag Manager (noscript)
     noscript
       iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KG87PJGV" height="0" width="0" style="display:none;visibility:hidden"
     / End Google Tag Manager (noscript)
+
+    / ===== Header Image =====
+    .container.text-center.my-4
+      = image_tag "NAKED.png",
+        alt: "Naked and Afraid Fan Database",
+        style: "max-width: 1200px; width: 100%; height: auto;"
+
     main.container.mx-auto.mt-8.px-5.flex
       .container.my-4
         / ===== Navigation =====
@@ -105,7 +111,6 @@ html
           = link_to "Podcasts & Books", podcasts_path, class: "nav-link"
           = link_to "Where to Watch", seasons_path, class: "nav-link"
           = link_to "About", about_path, class: "nav-link"
-        / ===== end Navigation =====
 
       = yield
       = render "layouts/footer"
