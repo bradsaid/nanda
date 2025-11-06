@@ -76,8 +76,9 @@
 
 /* Links */
 .site-nav .nav-link {
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-  font-weight: 600;
+  /*font-family: "Trebuchet MS", "Segoe UI", sans-serif;*/
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
   color: #14532d; /* forest green */
   text-transform: uppercase;
   letter-spacing: 0.5px;
