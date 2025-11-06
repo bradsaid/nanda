@@ -1,61 +1,83 @@
 # app/controllers/episodes_controller.rb
 class EpisodesController < ApplicationController
-
   def index
+    @country = params[:country].to_s.strip
+    if @country.present?
+      @episodes =
+        Episode
+          .includes(:location, season: :series)
+          .joins(:location)
+          .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
+          .order(Arel.sql("air_date IS NULL, air_date DESC"))
 
-      @country = params[:country].to_s.strip
-      if @country.present?
-        @episodes =
-          Episode
-            .includes(:location, season: :series)
-            .joins(:location)
-            .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
-            .order(Arel.sql("air_date IS NULL, air_date DESC"))
+      # keep view happy
+      @location = nil
+      @season   = nil
+      @seasons  = []
+      @episodes_by_season = {}
+      @episode_counts     = {}
 
-        # keep view happy
-        @location = nil
-        @season   = nil
-        @seasons  = []
-        @episodes_by_season = {}
-        @episode_counts     = {}
+      render :index and return
+    end
 
-        render :index and return
-      end
+    if params[:location_id].present?
+      @location = Location.find_by(id: params[:location_id].to_i)
+      return render status: :not_found, plain: "Location not found" unless @location
 
-      if params[:location_id].present?
-        @location = Location.find_by(id: params[:location_id].to_i)
-        return render status: :not_found, plain: "Location not found" unless @location
+      @episodes = Episode.where(location_id: @location.id)
+                         .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
+                         .order(Arel.sql("air_date IS NULL, air_date DESC, number_in_season ASC"))
+      @seasons = []; @episodes_by_season = {}; @episode_counts = {}
 
-        @episodes = Episode.where(location_id: @location.id)
-                          .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
-                          .order(Arel.sql("air_date IS NULL, air_date DESC, number_in_season ASC"))
-        @seasons = []; @episodes_by_season = {}; @episode_counts = {}
+    elsif params[:season_id].present? || (params[:series_id].present? && params[:season].present?)
+      @season =
+        if params[:season_id].present?
+          Season.find_by(id: params[:season_id].to_i)
+        else
+          Season.find_by(series_id: params[:series_id].to_i, number: params[:season].to_i)
+        end
+      return render status: :not_found, plain: "Season not found" unless @season
 
-      elsif params[:season_id].present? || (params[:series_id].present? && params[:season].present?)
-        @season =
-          if params[:season_id].present?
-            Season.find_by(id: params[:season_id].to_i)
-          else
-            Season.find_by(series_id: params[:series_id].to_i, number: params[:season].to_i)
-          end
-        return render status: :not_found, plain: "Season not found" unless @season
+      @episodes = Episode.where(season_id: @season.id)
+                         .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
+                         .order("number_in_season ASC")
+      @seasons = []; @episodes_by_season = {}; @episode_counts = {}
 
-        @episodes = Episode.where(season_id: @season.id)
-                          .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
-                          .order("number_in_season ASC")
-        @seasons = []; @episodes_by_season = {}; @episode_counts = {}
+    else
+      @sort = params[:sort].to_s
 
+      # Subquery for earliest valid airdate
+      sub = Episode
+              .where.not(air_date: nil)
+              .select("season_id, MIN(air_date) AS first_air_date, MAX(air_date) AS last_air_date")
+              .group("season_id")
+
+      case @sort
+      when "airdate" # oldest first
+        @seasons = Season
+                    .joins(:series)
+                    .joins("LEFT JOIN (#{sub.to_sql}) epdates ON epdates.season_id = seasons.id")
+                    .select("seasons.*, epdates.first_air_date, epdates.last_air_date, series.name AS series_name")
+                    .order(Arel.sql("COALESCE(epdates.first_air_date, DATE '9999-12-31') ASC, series.name ASC, seasons.number ASC, seasons.id ASC"))
+      when "newest" # newest first
+        @seasons = Season
+                    .joins(:series)
+                    .joins("LEFT JOIN (#{sub.to_sql}) epdates ON epdates.season_id = seasons.id")
+                    .select("seasons.*, epdates.first_air_date, epdates.last_air_date, series.name AS series_name")
+                    .order(Arel.sql("COALESCE(epdates.last_air_date, DATE '1900-01-01') DESC, series.name ASC, seasons.number ASC, seasons.id ASC"))
       else
         @seasons = Season.includes(:series).order("series_id ASC, number ASC")
-        @episodes_by_season = @seasons.index_with do |s|
-          s.episodes.includes(:location).order("number_in_season ASC NULLS LAST, id ASC").limit(3)
-        end
-        @episode_counts = Episode.group(:season_id).count
-
-        @episodes = Episode.joins(season: :series)
-                          .includes(:location, season: :series, appearances: :survivor)
-                          .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
       end
+
+      @episodes_by_season = @seasons.index_with do |s|
+        s.episodes.includes(:location).order("number_in_season ASC NULLS LAST, id ASC").limit(3)
+      end
+      @episode_counts = Episode.group(:season_id).count
+
+      @episodes = Episode.joins(season: :series)
+                        .includes(:location, season: :series, appearances: :survivor)
+                        .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
+    end
   end
 
   def show
@@ -73,5 +95,4 @@ class EpisodesController < ApplicationController
         .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
         .order(Arel.sql("air_date IS NULL, air_date DESC"))
   end
-  
 end

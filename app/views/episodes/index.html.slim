@@ -1,4 +1,3 @@
-
 / ===== SEO + JSON-LD: Episodes Index =====
 - if @location
   - loc_parts = [@location.site, @location.region, @location.country].compact_blank
@@ -39,10 +38,6 @@
 - data = episodes_index_json_payload(location: @location, episodes: @episodes, season: (defined?(@season) && @season.present?) ? @season : nil, episodes_by_season: @episodes_by_season, episode_counts: @episode_counts)
 script type="application/json" id="episodes-index-jsonld-data"= data
 = javascript_import_module_tag "json_ld/episodes_index", defer: true
-
-
-
-
 
 - if @location
   / === Filtered by location ===
@@ -126,14 +121,26 @@ script type="application/json" id="episodes-index-jsonld-data"= data
           br/
           | Seasons include Naked and Afraid, Solo, XL, Alone, Savage, Castaways, Last One Standing & Apocalypse
 
+  / === Season jump + sort controls (Stimulus-based) ===
+  .d-flex.flex-wrap.gap-3.align-items-start
+    / Jump to a season
+    .form-floating.mb-3(style="max-width: 360px;" data-controller="season-jump")
+      select.form-select#season-jump data-season-jump-target="select" data-action="change->season-jump#jump"
+        option value=""
+        - @seasons.each do |s|
+          option value="season-#{s.id}" = "#{s.series.name} • S#{s.number}"
+      label for="season-jump" Jump to a season
 
-  / === Season jump select ===
-  .form-floating.mb-3(style="max-width: 360px;" data-controller="season-jump")
-    select.form-select#season-jump data-season-jump-target="select" data-action="change->season-jump#jump"
-      option value="" 
-      - @seasons.each do |s|
-        option value="season-#{s.id}" = "#{s.series.name} • S#{s.number}"
-    label for="season-jump" Jump to a season
+    / Sort seasons box (CSP-safe Stimulus)
+    .form-floating.mb-3(style="max-width: 260px;"
+                        data-controller="season-sort"
+                        data-season-sort-base-url-value=episodes_path
+                        data-season-sort-current-value=@sort)
+      select.form-select id="season-sort" data-action="change->season-sort#change"
+        option value="" Sort by Airdate
+        option value="airdate" Sort by Oldest Airdate
+        option value="newest" Sort by Newest Airdate
+      label for="season-sort" Sort seasons
 
   - @seasons.each do |season|
     .card.shadow-sm.mb-3(id="season-#{season.id}")
@@ -142,13 +149,18 @@ script type="application/json" id="episodes-index-jsonld-data"= data
           .fw-semibold = "#{season.series.name} — Season #{season.number}"
           - if season.continuous_story_effective?
             .badge.text-bg-warning.ms-2 Continuous Story
+        / debug line to verify sort result (use raw attribute from SELECT)
+        - fad = season['first_air_date'] || (season.respond_to?(:first_air_date) ? season.first_air_date : nil)
+        - if fad.present?
+          .small.text-muted.mt-1 = "First airdate: #{fad.to_date.strftime('%b %-d, %Y')}"
+
       - if @episodes_by_season[season].present?
         .list-group.list-group-flush
           - @episodes_by_season[season].each do |ep|
             .list-group-item
               .d-flex.justify-content-between.align-items-start
                 .me-3
-                  = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep), class: "fw-semibold"
+                  = link_to "#{ep.title.presence || 'Episode'} ##{ep.number_in_season || ep.id}", episode_path(ep), class: "fw-semibold"
                   .small.text-muted = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                   .small.text-muted = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
                 .text-end.small.text-muted
