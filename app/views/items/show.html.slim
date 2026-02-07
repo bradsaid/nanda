@@ -81,13 +81,13 @@ script type="application/json" id="item-jsonld-data"= data
           tr
             th Episode
             th Season
-            th Air Date
-            th Location
+            th.d-none.d-md-table-cell Air Date
+            th.d-none.d-md-table-cell Location
             th Recipients
         tbody
           - if given_by_ep.blank?
             tr
-              td.text-muted.py-4(colspan="4") No given appearances
+              td.text-muted.py-4(colspan="5") No given appearances
           - else
             - given_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
               - recipients = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
@@ -95,11 +95,11 @@ script type="application/json" id="item-jsonld-data"= data
                 td = link_to(ep.title, episode_path(ep))
                 td
                   - if ep&.season
-                    = link_to "S#{ep.season.number} • #{ep.season.series&.name}", season_path(ep.season)
+                    = link_to "S#{ep.season.number}", season_path(ep.season)
                   - else
                     | —
-                td = ep.air_date || "—"
-                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td.d-none.d-md-table-cell = ep.air_date || "—"
+                td.d-none.d-md-table-cell = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
                 td = recipients.join(", ")
 
   / ===== Brought — by episode (unique within episode) =====
@@ -116,13 +116,13 @@ script type="application/json" id="item-jsonld-data"= data
           tr
             th Episode
             th Season
-            th Air Date
-            th Location
+            th.d-none.d-md-table-cell Air Date
+            th.d-none.d-md-table-cell Location
             th Brought by
         tbody
           - if brought_by_ep.blank?
             tr
-              td.text-muted.py-4(colspan="4") No brought appearances
+              td.text-muted.py-4(colspan="5") No brought appearances
           - else
             - brought_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
               - people = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
@@ -130,11 +130,11 @@ script type="application/json" id="item-jsonld-data"= data
                 td = link_to(ep.title, episode_path(ep))
                 td
                   - if ep&.season
-                    = link_to "S#{ep.season.number} • #{ep.season.series&.name}", season_path(ep.season)
+                    = link_to "S#{ep.season.number}", season_path(ep.season)
                   - else
                     | —
-                td = ep.air_date || "—"
-                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td.d-none.d-md-table-cell = ep.air_date || "—"
+                td.d-none.d-md-table-cell = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
                 td = people.join(", ")
 
   / ===== By Country (adjusted totals from controller) =====

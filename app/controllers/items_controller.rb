@@ -107,7 +107,15 @@ class ItemsController < ApplicationController
           .group(:item_type)
           .order(Arel.sql("COUNT(*) DESC"))
           .count
-          
+
+    # ===== Search results: episode-level detail =====
+    if @q.present?
+      @search_results = ai
+        .joins(appearance: [:survivor])
+        .includes(:item, appearance: [:survivor, { episode: [:location, { season: :series }] }])
+        .order("episodes.air_date DESC NULLS LAST, survivors.full_name")
+    end
+
   end
 
   def show
