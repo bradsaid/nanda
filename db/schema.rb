@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_27_173956) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_18_235256) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -78,6 +79,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_27_173956) do
     t.check_constraint "starting_psr >= 0::numeric AND starting_psr <= 10::numeric", name: "appearances_starting_psr_0_10"
   end
 
+  create_table "episode_shelters", force: :cascade do |t|
+    t.bigint "episode_id", null: false
+    t.string "shelter_type"
+    t.string "materials"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["episode_id"], name: "index_episode_shelters_on_episode_id"
+  end
+
   create_table "episodes", force: :cascade do |t|
     t.bigint "season_id", null: false
     t.integer "number_in_season", null: false
@@ -93,6 +104,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_27_173956) do
     t.index ["location_id"], name: "index_episodes_on_location_id"
     t.index ["season_id", "number_in_season"], name: "index_episodes_on_season_id_and_number_in_season", unique: true
     t.index ["season_id"], name: "index_episodes_on_season_id"
+  end
+
+  create_table "food_sources", force: :cascade do |t|
+    t.bigint "episode_id", null: false
+    t.bigint "survivor_id"
+    t.string "category", null: false
+    t.string "name", null: false
+    t.string "method"
+    t.string "tools_used"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["episode_id"], name: "index_food_sources_on_episode_id"
+    t.index ["name", "episode_id"], name: "index_food_sources_on_name_and_episode_id"
+    t.index ["survivor_id"], name: "index_food_sources_on_survivor_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -181,8 +207,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_27_173956) do
   add_foreign_key "appearances", "episodes"
   add_foreign_key "appearances", "locations"
   add_foreign_key "appearances", "survivors"
+  add_foreign_key "episode_shelters", "episodes"
   add_foreign_key "episodes", "locations"
   add_foreign_key "episodes", "seasons"
+  add_foreign_key "food_sources", "episodes"
+  add_foreign_key "food_sources", "survivors"
   add_foreign_key "seasons", "series"
   add_foreign_key "sessions", "users"
 end

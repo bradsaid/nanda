@@ -1,0 +1,58 @@
+- content_for :title, "Food Sources – Naked and Afraid Fan Database"
+- content_for :meta_description, "Animals hunted and plants foraged across all Naked and Afraid episodes."
+
+.container.my-4
+  .pb-2.mb-3.border-bottom.site-header
+    h1.h3.mb-0.logo Food Sources
+    p.subtitle Animals hunted and plants foraged across all episodes.
+
+  / Category filter
+  .d-flex.gap-2.mb-4
+    = link_to "All", food_sources_path, class: "btn btn-sm #{@category.blank? ? 'btn-dark' : 'btn-outline-secondary'}"
+    = link_to "Animals", food_sources_path(category: "animal"), class: "btn btn-sm #{@category == 'animal' ? 'btn-dark' : 'btn-outline-secondary'}"
+    = link_to "Plants", food_sources_path(category: "plant"), class: "btn btn-sm #{@category == 'plant' ? 'btn-dark' : 'btn-outline-secondary'}"
+
+  .row.g-4
+    .col-lg-6
+      .card.shadow-sm.h-100
+        .card-header.d-flex.justify-content-between.align-items-center
+          span.fw-medium Animals
+          span.small.text-muted = @food_counts.select { |(_, cat), _| cat == "animal" }.size
+        .table-responsive
+          table.table.table-sm.table-hover.mb-0
+            thead.table-light
+              tr
+                th Name
+                th.text-end Episodes
+            tbody
+              - animals = @food_counts.select { |(_, cat), _| cat == "animal" }
+              - if animals.blank?
+                tr
+                  td.text-muted.py-4(colspan="2") No data
+              - else
+                - animals.each do |(name, _cat), count|
+                  tr
+                    td = link_to name.titleize, food_source_path(name: name)
+                    td.text-end = count
+
+    .col-lg-6
+      .card.shadow-sm.h-100
+        .card-header.d-flex.justify-content-between.align-items-center
+          span.fw-medium Plants
+          span.small.text-muted = @food_counts.select { |(_, cat), _| cat == "plant" }.size
+        .table-responsive
+          table.table.table-sm.table-hover.mb-0
+            thead.table-light
+              tr
+                th Name
+                th.text-end Episodes
+            tbody
+              - plants = @food_counts.select { |(_, cat), _| cat == "plant" }
+              - if plants.blank?
+                tr
+                  td.text-muted.py-4(colspan="2") No data
+              - else
+                - plants.each do |(name, _cat), count|
+                  tr
+                    td = link_to name.titleize, food_source_path(name: name)
+                    td.text-end = count

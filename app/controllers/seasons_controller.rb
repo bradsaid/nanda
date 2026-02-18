@@ -15,11 +15,11 @@ class SeasonsController < ApplicationController
       {
         "Naked and Afraid" => begin
           h = {}
-          (1..18).each { |n| h[n] = { discovery_plus: "https://www.discoveryplus.com/" } }
+          (1..19).each { |n| h[n] = { discovery_plus: "https://www.discoveryplus.com/" } }
 
           [4, 5, 11, 12, 14].each { |n| h[n][:disney_plus] = "https://www.disneyplus.com/" }
           [4, 5, 7, 11, 12, 14, 18].each { |n| h[n][:hulu] = "https://www.hulu.com/" }
-          h[18][:max] = "https://play.hbomax.com/"
+          [18, 19].each { |n| h[n][:max] = "https://play.hbomax.com/" }
           [17, 18].each { |n| h[n][:discovery_go] = "https://go.discovery.com/" }
 
           h

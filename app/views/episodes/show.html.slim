@@ -152,3 +152,50 @@ script type="application/json" id="episode-jsonld-data"= data
     - else
       .card-body
         p.text-muted.mb-0 No participants recorded.
+
+  / ===== Shelter =====
+  - if @episode.episode_shelters.any?
+    .card.shadow-sm.mt-4
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 🏠
+        h2.h5.mb-0 Shelter
+      .card-body
+        - @episode.episode_shelters.each do |shelter|
+          .d-flex.gap-2.align-items-baseline
+            span.fw-semibold = shelter.shelter_type
+            - if shelter.materials.present?
+              span.text-muted = "— #{shelter.materials}"
+          - if shelter.notes.present?
+            p.small.text-muted.mb-0 = shelter.notes
+
+  / ===== Food Sources =====
+  - if @episode.food_sources.any?
+    .card.shadow-sm.mt-4
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 🍖
+        h2.h5.mb-0 Food Sources
+      .table-responsive
+        table.table.table-sm.table-hover.mb-0
+          thead.table-light
+            tr
+              th Name
+              th Category
+              th Method
+              th Obtained By
+              th.d-none.d-md-table-cell Tools Used
+          tbody
+            - @episode.food_sources.order(:category, :name).each do |fs|
+              tr
+                td = link_to fs.name.titleize, food_source_path(fs.name)
+                td
+                  - if fs.category_animal?
+                    span.badge.bg-danger-subtle.text-danger-emphasis Animal
+                  - else
+                    span.badge.bg-success-subtle.text-success-emphasis Plant
+                td = fs.method&.humanize || "—"
+                td
+                  - if fs.survivor
+                    = link_to fs.survivor.full_name, survivor_path(fs.survivor)
+                  - else
+                    | Team
+                td.d-none.d-md-table-cell = fs.tools_used.presence || "—"

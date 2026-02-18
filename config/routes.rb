@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       get "types/:item_type", to: "items#type", as: :type
     end
   end
+  resources :food_sources, only: [:index, :show], param: :name
   resources :locations, only: [:index]
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]

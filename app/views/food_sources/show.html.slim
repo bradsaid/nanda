@@ -1,0 +1,50 @@
+- food_name = @name.titleize
+- content_for :title, "#{food_name} – Naked and Afraid Food Source"
+- content_for :meta_description, "#{food_name} across all Naked and Afraid episodes: who obtained it, where, and how."
+
+.container.my-4
+  .pb-2.mb-3.border-bottom.site-header
+    = link_to "← All Food Sources", food_sources_path, class: "small link-primary text-decoration-underline"
+    h1.h3.mb-0.logo = food_name
+    - first = @food_sources.first
+    - if first
+      p.subtitle
+        - if first.category_animal?
+          span.badge.bg-danger-subtle.text-danger-emphasis Animal
+        - else
+          span.badge.bg-success-subtle.text-success-emphasis Plant
+        span.ms-2 = "#{@food_sources.size} episode(s)"
+
+  .card.shadow-sm
+    .card-header.d-flex.justify-content-between.align-items-center
+      span.fw-medium Episodes
+      span.small.text-muted = @food_sources.size
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th Episode
+            th Season
+            th.d-none.d-md-table-cell Location
+            th Obtained By
+            th Method
+            th.d-none.d-md-table-cell Tools Used
+        tbody
+          - if @food_sources.blank?
+            tr
+              td.text-muted.py-4(colspan="6") No data
+          - else
+            - @food_sources.each do |fs|
+              - ep = fs.episode
+              - season = ep.season
+              tr
+                td = link_to ep.title, episode_path(ep)
+                td = link_to "S#{season.number}", season_path(season)
+                td.d-none.d-md-table-cell = ep.location&.country || "—"
+                td
+                  - if fs.survivor
+                    = link_to fs.survivor.full_name, survivor_path(fs.survivor)
+                  - else
+                    | Team
+                td = fs.method&.humanize || "—"
+                td.d-none.d-md-table-cell = fs.tools_used.presence || "—"

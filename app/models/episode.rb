@@ -6,6 +6,8 @@ class Episode < ApplicationRecord
   has_many :appearances, dependent: :destroy
   has_many :appearance_items, through: :appearances
   has_many :survivors, through: :appearances
+  has_many :episode_shelters, dependent: :destroy
+  has_many :food_sources, dependent: :destroy
 
   validates :title, :number_in_season, presence: true
 

@@ -15,7 +15,7 @@ class Appearance < ApplicationRecord
   has_many :given_items,  through: :given_ais,  source: :item
 
   enum :result, { success: "success", tap_out: "tap_out", fail: "fail" }, prefix: true
-  enum :role,   { duo: "duo", solo: "solo", xl_team: "xl_team", frozen: "frozen" }, prefix: true
+  enum :role,   { duo: "duo", solo: "solo", trio: "trio", xl_team: "xl_team", frozen: "frozen" }, prefix: true
 
   validates :starting_psr, :ending_psr, numericality: { allow_nil: true, in: 0..10 }
   validates :days_lasted, numericality: { allow_nil: true, greater_than_or_equal_to: 0 }

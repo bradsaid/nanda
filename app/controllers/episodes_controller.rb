@@ -82,7 +82,9 @@ class EpisodesController < ApplicationController
 
   def show
     @episode = Episode
-      .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
+      .includes(:location, :episode_shelters, season: :series,
+                appearances: [:survivor, { appearance_items: :item }],
+                food_sources: :survivor)
       .find(params[:id])
   end
 
