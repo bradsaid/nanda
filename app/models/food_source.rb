@@ -6,7 +6,6 @@ class FoodSource < ApplicationRecord
   enum :method, {
     hunted: "hunted",
     foraged: "foraged",
-    found: "found",
     fished: "fished",
     trapped: "trapped",
     caught: "caught"
