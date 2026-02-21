@@ -10,7 +10,7 @@ default: &default
 development:
   adapter: postgresql
   encoding: unicode
-  database: sep27
+  database: feb6
   pool: 5
 
 
