@@ -1,0 +1,27 @@
+- content_for :title, "Shelters – Naked and Afraid Fan Database"
+- content_for :meta_description, "Shelter types built across all Naked and Afraid episodes."
+
+.container.my-4
+  .pb-2.mb-3.border-bottom.site-header
+    h1.h3.mb-0.logo Shelters
+    p.subtitle Shelter types built across all episodes.
+
+  .card.shadow-sm
+    .card-header.d-flex.justify-content-between.align-items-center
+      span.fw-medium Shelter Types
+      span.small.text-muted = @shelter_counts.size
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th Name
+            th.text-end Episodes
+        tbody
+          - if @shelter_counts.blank?
+            tr
+              td.text-muted.py-4(colspan="2") No data
+          - else
+            - @shelter_counts.each do |shelter_type, count|
+              tr
+                td = link_to shelter_type, shelter_path(shelter_type: shelter_type)
+                td.text-end = count

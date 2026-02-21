@@ -1,0 +1,38 @@
+- content_for :title, "#{@shelter_type} – Naked and Afraid Shelter"
+- content_for :meta_description, "#{@shelter_type} shelter across all Naked and Afraid episodes: where and when it was built."
+
+.container.my-4
+  .pb-2.mb-3.border-bottom.site-header
+    = link_to "← All Shelters", shelters_path, class: "small link-primary text-decoration-underline"
+    h1.h3.mb-0.logo = @shelter_type
+    p.subtitle
+      span.badge.bg-secondary-subtle.text-secondary-emphasis Shelter
+      span.ms-2 = "#{@episode_count} episode(s)"
+
+  .card.shadow-sm
+    .card-header.d-flex.justify-content-between.align-items-center
+      span.fw-medium Episodes
+      span.small.text-muted = @episode_count
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0
+        thead.table-light
+          tr
+            th Episode
+            th Season
+            th.d-none.d-md-table-cell Location
+            th Materials
+            th.d-none.d-md-table-cell Notes
+        tbody
+          - if @shelters.blank?
+            tr
+              td.text-muted.py-4(colspan="5") No data
+          - else
+            - @shelters.each do |shelter|
+              - ep = shelter.episode
+              - season = ep.season
+              tr
+                td = link_to ep.title, episode_path(ep)
+                td = link_to "S#{season.number}", season_path(season)
+                td.d-none.d-md-table-cell = ep.location&.country || "—"
+                td = shelter.materials.presence || "—"
+                td.d-none.d-md-table-cell = shelter.notes.presence || "—"

@@ -164,7 +164,7 @@ script type="application/json" id="episode-jsonld-data"= data
       .card-body
         - @episode.episode_shelters.each do |shelter|
           .d-flex.gap-2.align-items-baseline
-            span.fw-semibold = shelter.shelter_type
+            span.fw-semibold = link_to shelter.shelter_type, shelter_path(shelter_type: shelter.shelter_type)
             - if shelter.materials.present?
               span.text-muted = "— #{shelter.materials}"
           - if shelter.notes.present?

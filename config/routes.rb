@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     end
   end
   resources :food_sources, only: [:index, :show], param: :name
+  resources :shelters, only: [:index, :show], param: :shelter_type
   resources :locations, only: [:index]
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]
