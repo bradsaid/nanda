@@ -13,12 +13,12 @@
           span.badge.bg-danger-subtle.text-danger-emphasis Animal
         - else
           span.badge.bg-success-subtle.text-success-emphasis Plant
-        span.ms-2 = "#{@food_sources.size} episode(s)"
+        span.ms-2 = "#{@episode_count} episode(s)"
 
   .card.shadow-sm
     .card-header.d-flex.justify-content-between.align-items-center
       span.fw-medium Episodes
-      span.small.text-muted = @food_sources.size
+      span.small.text-muted = @episode_count
     .table-responsive
       table.table.table-sm.table-hover.mb-0
         thead.table-light
