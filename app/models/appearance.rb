@@ -8,8 +8,8 @@ class Appearance < ApplicationRecord
   accepts_nested_attributes_for :appearance_items, allow_destroy: true
 
   # Convenience accessors
-  has_one  :brought_ai,  -> { where(source: "brought") }, class_name: "AppearanceItem"
-  has_one  :brought_item, through: :brought_ai,  source: :item
+  has_many :brought_ais,  -> { where(source: "brought") }, class_name: "AppearanceItem"
+  has_many :brought_items, through: :brought_ais, source: :item
 
   has_many :given_ais,   -> { where(source: "given") },  class_name: "AppearanceItem"
   has_many :given_items,  through: :given_ais,  source: :item

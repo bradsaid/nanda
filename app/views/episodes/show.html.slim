@@ -120,8 +120,12 @@ script type="application/json" id="episode-jsonld-data"= data
               - end_psr   = a.ending_psr
               - days_cell = a.days_lasted
               / Items per appearance
-              - br_ai = a.appearance_items.find { |ai| ai.source == "brought" }
-              - br    = br_ai&.item&.name
+              - brought_items = a.appearance_items.select { |ai| ai.source == "brought" }
+              - brought_names = brought_items.map do |ai|
+                - q = ai.quantity.to_i
+                - name = ai.item&.name
+                - name ? (q > 1 ? "#{name}×#{q}" : name) : nil
+              - brought = brought_names.compact.join(", ")
               - given_items = a.appearance_items.select { |ai| ai.source == "given" }
               - given_names = given_items.map do |ai|
                 - q = ai.quantity.to_i
@@ -144,8 +148,8 @@ script type="application/json" id="episode-jsonld-data"= data
                     span.text-muted —
                 td.d-none.d-md-table-cell = a.weight_loss.present? ? "#{a.weight_loss.to_i} lbs" : "—"
                 td
-                  - if br.present?
-                    span = "brought: #{br}"
+                  - if brought.present?
+                    span = "brought: #{brought}"
                   - else
                     span.text-muted —
                   - if given.present?
