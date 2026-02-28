@@ -90,6 +90,15 @@ script type="application/json" id="episode-jsonld-data"= data
               .text-uppercase.small.text-muted Scheduled Days
               .fw-semibold = (@episode.scheduled_days.presence || "—")
 
+  - if @episode.synopsis.present?
+    .card.shadow-sm.mb-4
+      .card-header
+        .d-flex.align-items-center
+          span.me-3.fs-3(aria-hidden="true") 📝
+          h2.h5.mb-0 Episode Synopsis
+      .card-body
+        = simple_format(@episode.synopsis)
+
   - if @episode.notes.present?
     .card.shadow-sm.mb-4
       .card-header Notes
