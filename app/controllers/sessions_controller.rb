@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(email_address: params[:email])
+    user = User.find_by(email_address: params[:email_address])
     if user&.authenticate(params[:password])
       reset_session                         # session fixation safety
       session[:user_id] = user.id           # persist login
