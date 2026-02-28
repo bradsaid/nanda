@@ -5,6 +5,6 @@ class Current < ActiveSupport::CurrentAttributes
   # If you always want Current.user to come from Current.session.user:
   def user=(value)
     super
-    self.session ||= OpenStruct.new(user: value)
+    self.session ||= Struct.new(:user).new(value)
   end
 end
