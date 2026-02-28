@@ -52,6 +52,14 @@ class PageView < ApplicationRecord
     where("duration_seconds > 0").average(:duration_seconds)&.round(1)
   end
 
+  def self.avg_duration_by_page(limit = 25)
+    where("duration_seconds > 0")
+      .group(:path)
+      .select("path, ROUND(AVG(duration_seconds), 1) AS avg_seconds, COUNT(*) AS views")
+      .order("avg_seconds DESC")
+      .limit(limit)
+  end
+
   def self.top_referrer_domains(limit = 10)
     where.not(referrer_domain: [nil, ""])
       .group(:referrer_domain)

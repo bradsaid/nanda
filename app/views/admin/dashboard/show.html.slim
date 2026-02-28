@@ -139,6 +139,24 @@
                   td= type
                   td.text-end= count
 
+  / ===== Avg Time on Page (by path) =====
+  - if @time_by_page.any?
+    .card.shadow-sm.mb-4
+      .card-header Avg Time on Page
+      .table-responsive
+        table.table.table-sm.table-striped.mb-0
+          thead
+            tr
+              th Path
+              th.text-end Avg Time
+              th.text-end Views
+          tbody
+            - @time_by_page.each do |row|
+              tr
+                td= row.path
+                td.text-end= "#{row.avg_seconds}s"
+                td.text-end= row.views
+
   / ===== Top Referrer Domains =====
   - if @top_referrers.any?
     .card.shadow-sm.mb-4
