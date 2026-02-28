@@ -29,8 +29,8 @@
     }
   }
 
-  // Ping every 30 seconds
-  const interval = setInterval(sendPing, 30000);
+  // Ping every 15 seconds
+  const interval = setInterval(sendPing, 15000);
 
   // Ping when tab becomes hidden or page unloads
   document.addEventListener("visibilitychange", function () {
