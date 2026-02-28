@@ -1,0 +1,34 @@
+- content_for :title, "Admin — Seasons"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  = render "shared/flash"
+
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.h3.mb-0 Seasons
+    = link_to "New Season", new_admin_season_path, class: "btn btn-primary"
+
+  .card.shadow-sm
+    .table-responsive
+      table.table.table-sm.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th Series
+            th Season #
+            th Year
+            th Continuous Story
+            th.text-end Actions
+        tbody
+          - if @seasons.empty?
+            tr
+              td.text-muted.text-center.py-3(colspan="5") No seasons found.
+          - else
+            - @seasons.each do |season|
+              tr
+                td= season.series.name
+                td= season.number
+                td= season.year || "—"
+                td= season.continuous_story? ? "Yes" : "No"
+                td.text-end.text-nowrap
+                  = link_to "Edit", edit_admin_season_path(season), class: "btn btn-sm btn-outline-primary me-1"
+                  = button_to "Delete", admin_season_path(season), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Delete Season #{season.number} of #{season.series.name}?" }

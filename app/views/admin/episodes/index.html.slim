@@ -1,0 +1,38 @@
+- content_for :title, "Admin — Episodes"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  = render "shared/flash"
+
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.h3.mb-0 Episodes
+    = link_to "New Episode", new_admin_episode_path, class: "btn btn-primary"
+
+  .card.shadow-sm
+    .table-responsive
+      table.table.table-sm.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th Series
+            th Season
+            th #
+            th Title
+            th Air Date
+            th Location
+            th.text-end Actions
+        tbody
+          - if @episodes.empty?
+            tr
+              td.text-muted.text-center.py-3(colspan="7") No episodes found.
+          - else
+            - @episodes.each do |episode|
+              tr
+                td= episode.season.series.name
+                td= episode.season.number
+                td= episode.number_in_season
+                td= episode.title
+                td= episode.air_date&.strftime("%b %-d, %Y") || "—"
+                td= episode.location&.full_address || "—"
+                td.text-end.text-nowrap
+                  = link_to "Edit", edit_admin_episode_path(episode), class: "btn btn-sm btn-outline-primary me-1"
+                  = button_to "Delete", admin_episode_path(episode), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Delete \"#{episode.title}\"?" }

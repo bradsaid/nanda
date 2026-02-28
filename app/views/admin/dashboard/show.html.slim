@@ -4,6 +4,11 @@
 .container.my-4
   h1.h3.mb-4 Admin Dashboard
 
+  .d-flex.gap-2.mb-4
+    = link_to "Survivors", admin_survivors_path, class: "btn btn-outline-dark btn-sm"
+    = link_to "Seasons", admin_seasons_path, class: "btn btn-outline-dark btn-sm"
+    = link_to "Episodes", admin_episodes_path, class: "btn btn-outline-dark btn-sm"
+
   / ===== Summary Cards =====
   .row.g-3.mb-4
     .col-6.col-md-3

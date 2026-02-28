@@ -1,0 +1,6 @@
+- content_for :title, "Edit Episode — Admin"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  h1.h3.mb-4= "Edit: #{@episode.title}"
+  = render "form", episode: @episode

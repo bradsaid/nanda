@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "dashboard#show"
     get "dashboard", to: "dashboard#show"
+    resources :survivors
+    resources :seasons
+    resources :episodes
   end
 
   resources :survivors, only: [:index, :show]

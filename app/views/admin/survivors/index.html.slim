@@ -1,0 +1,28 @@
+- content_for :title, "Admin — Survivors"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  = render "shared/flash"
+
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.h3.mb-0 Survivors
+    = link_to "New Survivor", new_admin_survivor_path, class: "btn btn-primary"
+
+  .card.shadow-sm
+    .table-responsive
+      table.table.table-sm.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th Full Name
+            th.text-end Actions
+        tbody
+          - if @survivors.empty?
+            tr
+              td.text-muted.text-center.py-3(colspan="2") No survivors found.
+          - else
+            - @survivors.each do |survivor|
+              tr
+                td= survivor.full_name
+                td.text-end.text-nowrap
+                  = link_to "Edit", edit_admin_survivor_path(survivor), class: "btn btn-sm btn-outline-primary me-1"
+                  = button_to "Delete", admin_survivor_path(survivor), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Delete #{survivor.full_name}?" }

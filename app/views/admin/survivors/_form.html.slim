@@ -1,0 +1,59 @@
+= form_with model: [:admin, survivor], html: { class: "row g-3" } do |f|
+  - if survivor.errors.any?
+    .col-12
+      .alert.alert-danger
+        h6.alert-heading= "#{pluralize(survivor.errors.count, 'error')} prevented saving:"
+        ul.mb-0
+          - survivor.errors.full_messages.each do |msg|
+            li= msg
+
+  .col-md-6
+    = f.label :full_name, class: "form-label"
+    = f.text_field :full_name, class: "form-control", required: true
+
+  .col-md-6
+    = f.label :avatar, class: "form-label"
+    = f.file_field :avatar, class: "form-control", accept: "image/*"
+    - if survivor.avatar.attached?
+      .mt-2
+        = image_tag url_for(survivor.avatar), class: "img-thumbnail", style: "max-height: 80px;"
+
+  .col-12
+    = f.label :bio, class: "form-label"
+    = f.text_area :bio, class: "form-control", rows: 3
+
+  .col-md-6
+    = f.label :instagram, class: "form-label"
+    = f.text_field :instagram, class: "form-control", placeholder: "Handle or URL"
+
+  .col-md-6
+    = f.label :facebook, class: "form-label"
+    = f.text_field :facebook, class: "form-control", placeholder: "Handle or URL"
+
+  .col-md-6
+    = f.label :youtube, class: "form-label"
+    = f.text_field :youtube, class: "form-control", placeholder: "Handle or URL"
+
+  .col-md-6
+    = f.label :website, class: "form-label"
+    = f.url_field :website, class: "form-control", placeholder: "https://..."
+
+  .col-md-6
+    = f.label :cameo, class: "form-label"
+    = f.text_field :cameo, class: "form-control", placeholder: "Handle or URL"
+
+  .col-md-6
+    = f.label :merch, class: "form-label"
+    = f.url_field :merch, class: "form-control", placeholder: "https://..."
+
+  .col-md-6
+    = f.label :onlyfans, class: "form-label"
+    = f.text_field :onlyfans, class: "form-control"
+
+  .col-md-6
+    = f.label :other, class: "form-label"
+    = f.text_field :other, class: "form-control"
+
+  .col-12
+    = f.submit class: "btn btn-primary"
+    = link_to "Cancel", admin_survivors_path, class: "btn btn-outline-secondary ms-2"
