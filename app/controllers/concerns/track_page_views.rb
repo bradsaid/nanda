@@ -5,7 +5,6 @@ module TrackPageViews
 
   included do
     after_action :record_page_view
-    helper_method :page_view_id
   end
 
   private
@@ -36,13 +35,10 @@ module TrackPageViews
       city:            geo&.dig(:city)
     )
 
-    @_page_view_id = pv.id
+    response.set_header("X-Page-View-Id", pv.id.to_s)
+    cookies[:_pv_id] = { value: pv.id.to_s, path: "/", httponly: false }
   rescue StandardError => e
     Rails.logger.warn("PageView tracking failed: #{e.message}")
-  end
-
-  def page_view_id
-    @_page_view_id
   end
 
   def page_view_session_id
