@@ -63,14 +63,14 @@ class ApplicationController < ActionController::Base
     "(#{adjusted_episodes_expr}) AS #{alias_name}"
   end
 
-  # DISTINCT episodes normally; collapse to 1 per series when continuous.
+  # DISTINCT episodes normally; collapse to 1 per season when continuous.
   def collapsed_episodes_sql(alias_name = "episodes_collapsed_count")
     <<~SQL.squish
       COUNT(DISTINCT
         CASE
           WHEN NOT #{continuous_flag_sql}
             THEN episodes.id::text
-          ELSE 'series-' || series.id::text
+          ELSE 'season-' || seasons.id::text
         END
       ) AS #{alias_name}
     SQL
@@ -84,7 +84,7 @@ class ApplicationController < ActionController::Base
     SQL
   end
 
-  # optional: collapse continuous series to 1 per series
+  # optional: collapse continuous stories to 1 per season
   def collapsed_episode_presence_for_source_sql(source, alias_name = "ep_collapsed")
     <<~SQL.squish
       COUNT(DISTINCT
@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
           WHEN appearance_items.source='#{source}' AND NOT #{continuous_flag_sql}
             THEN episodes.id::text
           WHEN appearance_items.source='#{source}' AND #{continuous_flag_sql}
-            THEN 'series-' || series.id::text
+            THEN 'season-' || seasons.id::text
         END
       ) AS #{alias_name}
     SQL
@@ -104,12 +104,12 @@ class ApplicationController < ActionController::Base
     SQL
   end
 
-  # Same, but collapse continuous seasons/series to 1 per series
+  # Same, but collapse continuous stories to 1 per season
   def collapsed_episode_presence_sql(alias_name = "ep_collapsed")
     <<~SQL.squish
       COUNT(DISTINCT
         CASE
-          WHEN #{continuous_flag_sql} THEN ('series-' || series.id::text)
+          WHEN #{continuous_flag_sql} THEN ('season-' || seasons.id::text)
           ELSE episodes.id::text
         END
       ) AS #{alias_name}
