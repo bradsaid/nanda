@@ -9,6 +9,7 @@ pin "sort_table",    to: "sort_table.js"
 pin "leaflet",       to: "leaflet.js"
 pin "locations_map", to: "locations_map.js"
 pin "gtag",          to: "gtag.js"
+pin "page_timer",    to: "page_timer.js"
 
 #schema
 pin "json_ld/helpers", to: "json_ld/helpers.js"

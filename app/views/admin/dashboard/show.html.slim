@@ -32,6 +32,29 @@
           div.h4.mb-0= @month_views
           small.text-muted This Month
 
+  / ===== Unique Visitors + Avg Time =====
+  .row.g-3.mb-4
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @unique_today
+          small.text-muted Unique Today
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @unique_week
+          small.text-muted Unique This Week
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @unique_month
+          small.text-muted Unique This Month
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @avg_duration ? "#{@avg_duration}s" : "—"
+          small.text-muted Avg Time on Page
+
   .row.g-4.mb-4
     / ===== Top Pages =====
     .col-lg-6
@@ -67,6 +90,71 @@
                   td= section.action_name
                   td.text-end= section.hits
 
+  .row.g-4.mb-4
+    / ===== Top Countries =====
+    .col-lg-4
+      .card.shadow-sm
+        .card-header Top Countries
+        .table-responsive
+          table.table.table-sm.table-striped.mb-0
+            thead
+              tr
+                th Country
+                th.text-end Views
+            tbody
+              - @top_countries.each do |country, count|
+                tr
+                  td= country
+                  td.text-end= count
+
+    / ===== Browsers =====
+    .col-lg-4
+      .card.shadow-sm
+        .card-header Top Browsers
+        .table-responsive
+          table.table.table-sm.table-striped.mb-0
+            thead
+              tr
+                th Browser
+                th.text-end Views
+            tbody
+              - @top_browsers.each do |browser, count|
+                tr
+                  td= browser
+                  td.text-end= count
+
+    / ===== Device Breakdown =====
+    .col-lg-4
+      .card.shadow-sm
+        .card-header Devices
+        .table-responsive
+          table.table.table-sm.table-striped.mb-0
+            thead
+              tr
+                th Type
+                th.text-end Views
+            tbody
+              - @device_breakdown.each do |type, count|
+                tr
+                  td= type
+                  td.text-end= count
+
+  / ===== Top Referrer Domains =====
+  - if @top_referrers.any?
+    .card.shadow-sm.mb-4
+      .card-header Top Referrer Domains
+      .table-responsive
+        table.table.table-sm.table-striped.mb-0
+          thead
+            tr
+              th Domain
+              th.text-end Views
+          tbody
+            - @top_referrers.each do |domain, count|
+              tr
+                td= domain
+                td.text-end= count
+
   / ===== Daily Views (Last 30 Days) =====
   .card.shadow-sm.mb-4
     .card-header Daily Views (Last 30 Days)
@@ -91,12 +179,18 @@
           tr
             th Time
             th Path
-            th IP
+            th Country
+            th Device
+            th Browser
+            th Duration
             th Referrer
         tbody
           - @recent_views.each do |pv|
             tr
               td.text-nowrap= pv.created_at.strftime("%b %-d %H:%M")
               td= pv.path
-              td= pv.ip_address
-              td= truncate(pv.referrer.to_s, length: 60)
+              td= pv.country || "—"
+              td= pv.device_type || "—"
+              td= pv.browser || "—"
+              td= pv.duration_seconds ? "#{pv.duration_seconds}s" : "—"
+              td= truncate(pv.referrer_domain.to_s, length: 30).presence || "—"

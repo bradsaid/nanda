@@ -67,6 +67,8 @@ html
     meta name="leaflet-icon"    content=(asset_path('leaflet/marker-icon.png'))
     meta name="leaflet-icon-2x" content=(asset_path('leaflet/marker-icon-2x.png'))
     meta name="leaflet-shadow"  content=(asset_path('leaflet/marker-shadow.png'))
+    - if defined?(page_view_id) && page_view_id.present?
+      meta name="page-view-id" content=page_view_id
     = csrf_meta_tags
     = csp_meta_tag
 

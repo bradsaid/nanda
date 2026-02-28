@@ -21,4 +21,42 @@ class PageView < ApplicationRecord
       .order("date_created_at")
       .count
   end
+
+  def self.unique_visitors
+    distinct.count(:session_id)
+  end
+
+  def self.top_countries(limit = 15)
+    where.not(country: [nil, ""])
+      .group(:country)
+      .order("count_all desc")
+      .limit(limit)
+      .count
+  end
+
+  def self.top_browsers(limit = 10)
+    where.not(browser: [nil, ""])
+      .group(:browser)
+      .order("count_all desc")
+      .limit(limit)
+      .count
+  end
+
+  def self.device_breakdown
+    where.not(device_type: [nil, ""])
+      .group(:device_type)
+      .count
+  end
+
+  def self.avg_duration
+    where("duration_seconds > 0").average(:duration_seconds)&.round(1)
+  end
+
+  def self.top_referrer_domains(limit = 10)
+    where.not(referrer_domain: [nil, ""])
+      .group(:referrer_domain)
+      .order("count_all desc")
+      .limit(limit)
+      .count
+  end
 end

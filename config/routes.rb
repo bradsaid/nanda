@@ -30,6 +30,8 @@ Rails.application.routes.draw do
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]
 
+  post "page_view_ping", to: "page_view_pings#create"
+
   get 'podcasts', to: 'static_pages#podcasts'
   get "home", to: "home#index"
   root "home#index"

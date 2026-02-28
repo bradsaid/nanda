@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_28_190934) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_28_205259) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -153,9 +153,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_190934) do
     t.string "user_agent"
     t.string "referrer"
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "country"
+    t.string "city"
+    t.string "browser"
+    t.string "os"
+    t.string "device_type"
+    t.string "session_id"
+    t.integer "duration_seconds"
+    t.string "referrer_domain"
     t.index ["controller_name"], name: "index_page_views_on_controller_name"
     t.index ["created_at"], name: "index_page_views_on_created_at"
     t.index ["path"], name: "index_page_views_on_path"
+    t.index ["session_id"], name: "index_page_views_on_session_id"
   end
 
   create_table "seasons", force: :cascade do |t|
