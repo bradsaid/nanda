@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_28_152514) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_28_190934) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -142,6 +142,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_152514) do
     t.index ["country", "region", "site"], name: "index_locations_on_country_and_region_and_site"
     t.index ["country"], name: "index_locations_on_country"
     t.index ["latitude", "longitude"], name: "index_locations_on_latitude_and_longitude"
+  end
+
+  create_table "page_views", force: :cascade do |t|
+    t.string "path"
+    t.string "controller_name"
+    t.string "action_name"
+    t.string "method"
+    t.string "ip_address"
+    t.string "user_agent"
+    t.string "referrer"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["controller_name"], name: "index_page_views_on_controller_name"
+    t.index ["created_at"], name: "index_page_views_on_created_at"
+    t.index ["path"], name: "index_page_views_on_path"
   end
 
   create_table "seasons", force: :cascade do |t|

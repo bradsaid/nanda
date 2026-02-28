@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include TrackPageViews
+
   # TEMP: no auth anywhere
 
   allow_browser versions: :modern

@@ -1,0 +1,97 @@
+- content_for :title, "Admin Dashboard"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  h1.h3.mb-4 Admin Dashboard
+
+  / ===== Summary Cards =====
+  .row.g-3.mb-4
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @total_views
+          small.text-muted Total Views
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @today_views
+          small.text-muted Today
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @week_views
+          small.text-muted This Week
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @month_views
+          small.text-muted This Month
+
+  .row.g-4.mb-4
+    / ===== Top Pages =====
+    .col-lg-6
+      .card.shadow-sm
+        .card-header Top Pages
+        .table-responsive
+          table.table.table-sm.table-striped.mb-0
+            thead
+              tr
+                th Path
+                th.text-end Hits
+            tbody
+              - @top_pages.each do |path, count|
+                tr
+                  td= path
+                  td.text-end= count
+
+    / ===== Top Sections =====
+    .col-lg-6
+      .card.shadow-sm
+        .card-header Top Sections
+        .table-responsive
+          table.table.table-sm.table-striped.mb-0
+            thead
+              tr
+                th Controller
+                th Action
+                th.text-end Hits
+            tbody
+              - @top_sections.each do |section|
+                tr
+                  td= section.controller_name
+                  td= section.action_name
+                  td.text-end= section.hits
+
+  / ===== Daily Views (Last 30 Days) =====
+  .card.shadow-sm.mb-4
+    .card-header Daily Views (Last 30 Days)
+    .table-responsive
+      table.table.table-sm.table-striped.mb-0
+        thead
+          tr
+            th Date
+            th.text-end Views
+        tbody
+          - @daily_counts.sort_by { |d, _| d }.reverse.each do |date, count|
+            tr
+              td= date
+              td.text-end= count
+
+  / ===== Recent Views =====
+  .card.shadow-sm
+    .card-header Recent Page Views
+    .table-responsive
+      table.table.table-sm.table-striped.mb-0
+        thead
+          tr
+            th Time
+            th Path
+            th IP
+            th Referrer
+        tbody
+          - @recent_views.each do |pv|
+            tr
+              td.text-nowrap= pv.created_at.strftime("%b %-d %H:%M")
+              td= pv.path
+              td= pv.ip_address
+              td= truncate(pv.referrer.to_s, length: 60)
