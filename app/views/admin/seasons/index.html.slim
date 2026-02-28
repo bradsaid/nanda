@@ -31,4 +31,4 @@
                 td= season.continuous_story? ? "Yes" : "No"
                 td.text-end.text-nowrap
                   = link_to "Edit", edit_admin_season_path(season), class: "btn btn-sm btn-outline-primary me-1"
-                  = button_to "Delete", admin_season_path(season), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Delete Season #{season.number} of #{season.series.name}?" }
+                  = button_to "Delete", admin_season_path(season), method: :delete, class: "btn btn-sm btn-danger", data: { turbo_confirm: "Delete Season #{season.number} of #{season.series.name}?" }

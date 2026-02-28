@@ -35,4 +35,4 @@
                 td= episode.location&.full_address || "—"
                 td.text-end.text-nowrap
                   = link_to "Edit", edit_admin_episode_path(episode), class: "btn btn-sm btn-outline-primary me-1"
-                  = button_to "Delete", admin_episode_path(episode), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Delete \"#{episode.title}\"?" }
+                  = button_to "Delete", admin_episode_path(episode), method: :delete, class: "btn btn-sm btn-danger", data: { turbo_confirm: "Delete \"#{episode.title}\"?" }

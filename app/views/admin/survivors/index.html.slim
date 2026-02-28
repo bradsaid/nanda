@@ -25,4 +25,4 @@
                 td= survivor.full_name
                 td.text-end.text-nowrap
                   = link_to "Edit", edit_admin_survivor_path(survivor), class: "btn btn-sm btn-outline-primary me-1"
-                  = button_to "Delete", admin_survivor_path(survivor), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Delete #{survivor.full_name}?" }
+                  = button_to "Delete", admin_survivor_path(survivor), method: :delete, class: "btn btn-sm btn-danger", data: { turbo_confirm: "Delete #{survivor.full_name}?" }
