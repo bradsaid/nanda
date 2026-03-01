@@ -1,29 +1,46 @@
-// Tracks time spent on each page and pings the server periodically.
+// Tracks ACTIVE time spent on each page (ignores idle time).
+// User is considered idle after 30 seconds of no interaction.
 function initPageTimer() {
-  // Read page_view_id from cookie set by after_action
   const match = document.cookie.match(/(?:^|;\s*)_pv_id=(\d+)/);
   if (!match) return;
 
   const pageViewId = match[1];
-  // Clear it so we don't re-use on next Turbo navigation before new cookie arrives
   document.cookie = "_pv_id=; path=/; max-age=0";
 
-  const startTime = Date.now();
+  const IDLE_THRESHOLD = 30000; // 30 seconds of no activity = idle
+  let activeSeconds = 0;
+  let lastTick = Date.now();
+  let lastActivity = Date.now();
   let lastSent = 0;
   let timer = null;
+  let tickTimer = null;
 
-  function elapsed() {
-    return Math.round((Date.now() - startTime) / 1000);
+  // Track user activity
+  function onActivity() {
+    lastActivity = Date.now();
   }
 
-  function sendPing() {
-    const seconds = elapsed();
-    if (seconds <= lastSent) return;
-    lastSent = seconds;
+  var activityEvents = ["mousemove", "scroll", "keydown", "click", "touchstart"];
+  activityEvents.forEach(function (evt) {
+    document.addEventListener(evt, onActivity, { passive: true });
+  });
 
-    const data = new FormData();
+  // Every second, check if user is active and accumulate time
+  tickTimer = setInterval(function () {
+    var now = Date.now();
+    if (now - lastActivity < IDLE_THRESHOLD) {
+      activeSeconds += Math.round((now - lastTick) / 1000);
+    }
+    lastTick = now;
+  }, 1000);
+
+  function sendPing() {
+    if (activeSeconds <= lastSent) return;
+    lastSent = activeSeconds;
+
+    var data = new FormData();
     data.append("page_view_id", pageViewId);
-    data.append("seconds", seconds);
+    data.append("seconds", activeSeconds);
 
     if (navigator.sendBeacon) {
       navigator.sendBeacon("/page_view_ping", data);
@@ -38,6 +55,10 @@ function initPageTimer() {
   function cleanup() {
     sendPing();
     clearInterval(timer);
+    clearInterval(tickTimer);
+    activityEvents.forEach(function (evt) {
+      document.removeEventListener(evt, onActivity);
+    });
   }
 
   // Ping when tab becomes hidden
@@ -47,10 +68,10 @@ function initPageTimer() {
     }
   });
 
-  // Turbo navigation (SPA-style page change)
+  // Turbo navigation
   document.addEventListener("turbo:before-visit", cleanup, { once: true });
 
-  // Fallback for hard navigation
+  // Hard navigation
   window.addEventListener("beforeunload", sendPing);
 }
 

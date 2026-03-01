@@ -23,7 +23,11 @@ class PageView < ApplicationRecord
   end
 
   def self.unique_visitors
-    distinct.count(:session_id)
+    if where.not(visitor_id: [nil, ""]).exists?
+      distinct.count(:visitor_id)
+    else
+      distinct.count(:session_id)
+    end
   end
 
   def self.top_countries(limit = 15)

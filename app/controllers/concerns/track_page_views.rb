@@ -29,6 +29,7 @@ module TrackPageViews
       browser:         "#{ua.browser} #{ua.version}".strip.presence,
       os:              ua.os.to_s.presence,
       device_type:     ua.mobile? ? "Mobile" : "Desktop",
+      visitor_id:      persistent_visitor_id,
       session_id:      page_view_session_id,
       referrer_domain: extract_domain(ref),
       country:         geo&.dig(:country),
@@ -39,6 +40,11 @@ module TrackPageViews
     cookies[:_pv_id] = { value: pv.id.to_s, path: "/", httponly: false }
   rescue StandardError => e
     Rails.logger.warn("PageView tracking failed: #{e.message}")
+  end
+
+  def persistent_visitor_id
+    cookies[:_vid] ||= { value: SecureRandom.hex(16), expires: 1.year.from_now, httponly: true }
+    cookies[:_vid]
   end
 
   def page_view_session_id
