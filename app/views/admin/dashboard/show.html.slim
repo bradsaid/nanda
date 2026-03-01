@@ -52,7 +52,7 @@
     .col-6.col-md-3
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @avg_duration ? "#{@avg_duration}s" : "—"
+          div.h4.mb-0= @avg_duration ? format_duration(@avg_duration) : "—"
           small.text-muted Avg Time on Page
 
   .row.g-4.mb-4
@@ -154,7 +154,7 @@
             - @time_by_page.each do |row|
               tr
                 td= row.path
-                td.text-end= "#{row.avg_seconds}s"
+                td.text-end= format_duration(row.avg_seconds)
                 td.text-end= row.views
 
   / ===== Top Referrer Domains =====
@@ -210,5 +210,5 @@
               td= pv.country || "—"
               td= pv.device_type || "—"
               td= pv.browser || "—"
-              td= pv.duration_seconds ? "#{pv.duration_seconds}s" : "—"
+              td= format_duration(pv.duration_seconds)
               td= truncate(pv.referrer_domain.to_s, length: 30).presence || "—"
