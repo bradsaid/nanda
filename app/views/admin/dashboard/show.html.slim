@@ -45,12 +45,18 @@
       .card.text-center.shadow-sm
         .card-body.py-3
           div.h4.mb-0= @unique_week
-          small.text-muted Unique This Week
+          small.text-muted
+            | Unique This Week
+            br
+            = "#{Date.current.beginning_of_week.strftime('%-m/%-d')} – #{Date.current.end_of_week.strftime('%-m/%-d')}"
     .col-6.col-md-3
       .card.text-center.shadow-sm
         .card-body.py-3
           div.h4.mb-0= @unique_month
-          small.text-muted Unique This Month
+          small.text-muted
+            | Unique This Month
+            br
+            = Date.current.strftime("%B")
     .col-6.col-md-3
       .card.text-center.shadow-sm
         .card-body.py-3
