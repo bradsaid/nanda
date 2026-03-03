@@ -77,7 +77,7 @@
             tbody
               - @top_pages.each do |path, count|
                 tr
-                  td= path
+                  td= link_to path, path, class: "link-primary"
                   td.text-end= count
 
     / ===== Top Sections =====
@@ -161,7 +161,7 @@
           tbody
             - @time_by_page.each do |row|
               tr
-                td= row.path
+                td= link_to row.path, row.path, class: "link-primary"
                 td.text-end= format_duration(row.avg_seconds)
                 td.text-end= row.views
 
@@ -216,7 +216,7 @@
           - @recent_views.each do |pv|
             tr
               td.text-nowrap= pv.created_at.strftime("%b %-d %H:%M")
-              td= pv.path
+              td= link_to pv.path, pv.path, class: "link-primary"
               td= pv.country || "—"
               td= pv.device_type || "—"
               td= pv.browser || "—"
