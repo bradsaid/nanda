@@ -135,9 +135,14 @@ script type="application/json" id="survivor-jsonld-data"= data
           - ep_count = @appearances.count { |ap| ap.episode.season_id == season.id }
           - label = series&.name || "Season #{season.number}"
           - label = "#{label} Season #{season.number}" if @appearances.any? { |ap| ap.episode.season_id != season.id && ap.episode.season&.series_id == series&.id }
-          - challenges << { type: :season, name: label, episode_count: ep_count }
+          - season_appearances = @appearances.select { |ap| ap.episode.season_id == season.id }
+          - locations = season_appearances.map { |ap| ap.episode.location }.compact.uniq
+          - location_str = locations.map { |l| [l.country, l.region, l.site].compact.join(" / ") }.uniq.join(", ")
+          - challenges << { type: :season, name: label, episode_count: ep_count, season: season, location: location_str }
       - else
-        - challenges << { type: :episode, appearance: a, episode: ep, series_name: series&.name }
+        - loc = ep.location
+        - location_str = loc ? [loc.country, loc.region, loc.site].compact.join(" / ") : nil
+        - challenges << { type: :episode, appearance: a, episode: ep, series_name: series&.name, location: location_str }
 
     .card.shadow-sm.mb-4
       .card-header.d-flex.align-items-center
@@ -151,7 +156,10 @@ script type="application/json" id="survivor-jsonld-data"= data
               - if c[:type] == :season
                 .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
                   div
-                    span.fw-semibold = c[:name]
+                    = link_to c[:name], season_path(c[:season]), class: "fw-semibold link-primary"
+                    - if c[:location].present?
+                      br
+                      small.text-muted = c[:location]
                   span.badge.bg-light.text-dark = "#{c[:episode_count]} episodes"
               - else
                 - a = c[:appearance]
@@ -160,6 +168,9 @@ script type="application/json" id="survivor-jsonld-data"= data
                   div
                     = link_to ep.title, episode_path(ep), class: "fw-semibold link-primary"
                     small.text-muted.ms-2 = c[:series_name]
+                    - if c[:location].present?
+                      br
+                      small.text-muted = c[:location]
                   .d-flex.align-items-center.gap-3
                     - if a.starting_psr && a.ending_psr
                       span.badge.bg-light.text-dark = "PSR #{a.starting_psr} → #{a.ending_psr}"
