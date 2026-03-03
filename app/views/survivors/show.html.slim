@@ -128,12 +128,14 @@ script type="application/json" id="survivor-jsonld-data"= data
       - season = ep.season
       - series = season&.series
       - is_continuous = season&.continuous_story? || series&.continuous_story?
-      - if is_continuous && series
-        - key = series.id
+      - if is_continuous && season
+        - key = season.id
         - unless continuous_seen[key]
           - continuous_seen[key] = true
-          - ep_count = @appearances.count { |ap| ap.episode.season&.series_id == series.id }
-          - challenges << { type: :series, name: series.name, episode_count: ep_count }
+          - ep_count = @appearances.count { |ap| ap.episode.season_id == season.id }
+          - label = series&.name || "Season #{season.number}"
+          - label = "#{label} Season #{season.number}" if @appearances.any? { |ap| ap.episode.season_id != season.id && ap.episode.season&.series_id == series&.id }
+          - challenges << { type: :season, name: label, episode_count: ep_count }
       - else
         - challenges << { type: :episode, appearance: a, episode: ep, series_name: series&.name }
 
@@ -146,7 +148,7 @@ script type="application/json" id="survivor-jsonld-data"= data
         ul.list-group.list-group-flush
           - challenges.each do |c|
             li.list-group-item
-              - if c[:type] == :series
+              - if c[:type] == :season
                 .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
                   div
                     span.fw-semibold = c[:name]
