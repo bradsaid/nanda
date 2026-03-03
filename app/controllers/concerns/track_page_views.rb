@@ -9,10 +9,17 @@ module TrackPageViews
 
   private
 
+  BOT_PATTERN = /bot|crawl|spider|slurp|bingpreview|mediapartners|facebookexternalhit|
+    linkedinbot|twitterbot|applebot|duckduckbot|yandex|baidu|sogou|exabot|
+    semrush|ahrefs|mj12bot|dotbot|rogerbot|screaming|archive\.org|
+    headlesschrome|phantomjs|wget|curl|python-requests|go-http-client|
+    pingdom|uptimerobot|statuscake|site24x7|googleother|petalbot|bytespider/ix.freeze
+
   def record_page_view
     return unless request.get?
     return if request.path.start_with?("/admin")
     return if request.path.match?(/\.(js|css|png|jpg|svg|ico|woff2?|map)\z/)
+    return if request.user_agent.blank? || BOT_PATTERN.match?(request.user_agent)
 
     ua  = UserAgent.parse(request.user_agent.to_s)
     geo = geocode_ip(request.remote_ip)
