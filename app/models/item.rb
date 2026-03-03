@@ -29,9 +29,30 @@ class Item < ApplicationRecord
     when /cord|rope|string/
       self.item_type = "cordage"
     when /tarp|duct|hammock|tent|mosquito|hide|pelt|fabric/
-      self.item_type = "comfort item"  
+      self.item_type = "comfort item"
     when /shovel/
-      self.item_type = "digging tool"  
+      self.item_type = "digging tool"
+    when /snake|lizard|iguana|caiman|crocodile|alligator|turtle|tortoise|frog|toad|
+          crab|lobster|shrimp|clam|mussel|oyster|snail|slug|conch|
+          fish|eel|catfish|piranha|trout|bass|tilapia|perch|
+          bird|chicken|duck|goose|pigeon|dove|parrot|
+          pig|boar|hog|deer|goat|rabbit|rat|mouse|monkey|
+          cow|buffalo|bison|elk|moose|
+          scorpion|spider|ant|termite|beetle|cricket|grasshopper|worm|grub|larvae|maggot|
+          shark|ray|octopus|squid|jellyfish|urchin|starfish|
+          jaguar|puma|leopard|lion|bear|wolf|fox|coyote|hyena|
+          insect|bug|animal/x
+      self.item_type = "animal"
+    when /coconut|banana|mango|papaya|pineapple|guava|passion\s*fruit|jackfruit|breadfruit|
+          berry|berries|fruit|
+          yam|taro|cassava|potato|tuber|root|
+          bamboo|palm|cactus|aloe|
+          mushroom|fungus|fungi|
+          seaweed|kelp|algae|
+          herb|mint|basil|sage|
+          plant|leaf|leaves|bark|vine|seed|nut|grain|corn|rice|bean|lentil|
+          tree|wood(?!land)|flower|grass|reed|cattail|lily\s*pad|lotus/x
+      self.item_type = "plant"
     else
       self.item_type = "other"
     end
