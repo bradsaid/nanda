@@ -120,6 +120,51 @@ script type="application/json" id="survivor-jsonld-data"= data
             .card-body
               p.lead.mb-0 = @survivor.bio
 
+    / ===== Challenge Summary =====
+    .card.shadow-sm.mb-4
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 🏆
+        h2.h5.mb-0 Challenge Summary
+        span.badge.bg-secondary.ms-2 = @appearances.size
+      .card-body
+        - total_days = @appearances.sum { |a| a.days_lasted.to_i }
+        - successes = @appearances.count { |a| a.result == "success" }
+        - tap_outs = @appearances.count { |a| a.result == "tap_out" }
+        - fails = @appearances.count { |a| a.result == "fail" }
+        - psr_changes = @appearances.select { |a| a.starting_psr && a.ending_psr }.map { |a| a.ending_psr - a.starting_psr }
+        - avg_psr_change = psr_changes.any? ? (psr_changes.sum.to_f / psr_changes.size).round(1) : nil
+
+        .row.g-3.mb-3
+          .col-6.col-md-3.text-center
+            .h4.mb-0 = total_days
+            small.text-muted Total Days
+          .col-6.col-md-3.text-center
+            .h4.mb-0.text-success = successes
+            small.text-muted Completed
+          .col-6.col-md-3.text-center
+            .h4.mb-0.text-danger = tap_outs + fails
+            small.text-muted Tap Outs / Fails
+          .col-6.col-md-3.text-center
+            .h4.mb-0 = avg_psr_change ? "#{avg_psr_change > 0 ? '+' : ''}#{avg_psr_change}" : "—"
+            small.text-muted Avg PSR Change
+
+        ul.list-group.list-group-flush
+          - @appearances.each do |a|
+            - ep = a.episode
+            li.list-group-item
+              .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
+                div
+                  = link_to ep.title, episode_path(ep), class: "fw-semibold link-primary"
+                  small.text-muted.ms-2 = ep.season&.series&.name
+                .d-flex.align-items-center.gap-3
+                  - if a.days_lasted.present?
+                    span.badge.bg-light.text-dark = "#{a.days_lasted} days"
+                  - if a.starting_psr && a.ending_psr
+                    span.badge.bg-light.text-dark = "PSR #{a.starting_psr} → #{a.ending_psr}"
+                  - if a.result.present?
+                    - ok = (a.result == "success")
+                    span.badge class=(ok ? "bg-success" : "bg-danger") = a.result.titleize
+
     / ===== Items Sections =====
     .row.g-4.mb-4
       .col-md-6
