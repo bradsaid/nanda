@@ -6,6 +6,72 @@ module ApplicationHelper
     mins > 0 ? "#{mins}m #{secs}s" : "#{secs}s"
   end
 
+  def food_icon(food_source)
+    name = food_source.name.to_s.downcase
+    # Try specific animal/plant icon first
+    icon = case name
+    # Animals
+    when /snake|python|cobra|viper|boa/      then "🐍"
+    when /lizard|iguana|gecko/               then "🦎"
+    when /caiman|crocodile|alligator/        then "🐊"
+    when /turtle|tortoise/                   then "🐢"
+    when /frog|toad/                         then "🐸"
+    when /crab|hermit crab/                  then "🦀"
+    when /lobster/                           then "🦞"
+    when /shrimp|prawn/                      then "🦐"
+    when /clam|mussel|oyster|conch/          then "🐚"
+    when /snail|slug/                        then "🐌"
+    when /shark/                             then "🦈"
+    when /octopus|squid/                     then "🐙"
+    when /jellyfish/                         then "🪼"
+    when /eel/                               then "🐟"
+    when /fish|piranha|trout|bass|tilapia|catfish|perch/ then "🐟"
+    when /bird|chicken|duck|goose|pigeon|dove|parrot/    then "🐦"
+    when /egg/                               then "🥚"
+    when /pig|boar|hog/                      then "🐗"
+    when /deer|elk|venison/                  then "🦌"
+    when /goat/                              then "🐐"
+    when /rabbit/                            then "🐇"
+    when /rat|mouse/                         then "🐀"
+    when /monkey/                            then "🐒"
+    when /bear/                              then "🐻"
+    when /wolf|coyote|fox/                   then "🐺"
+    when /jaguar|puma|leopard|lion/          then "🐆"
+    when /scorpion/                          then "🦂"
+    when /spider/                            then "🕷️"
+    when /ant|termite/                       then "🐜"
+    when /beetle/                            then "🪲"
+    when /cricket|grasshopper/               then "🦗"
+    when /worm|grub|larvae|maggot/           then "🪱"
+    when /bug|insect/                        then "🐛"
+    # Plants
+    when /coconut/                           then "🥥"
+    when /banana/                            then "🍌"
+    when /mango|papaya|guava|passion\s*fruit|jackfruit|breadfruit|pineapple/ then "🥭"
+    when /berry|berries/                     then "🫐"
+    when /fruit/                             then "🍈"
+    when /mushroom|fungus|fungi/             then "🍄"
+    when /yam|taro|cassava|potato|tuber|root/ then "🥔"
+    when /corn/                              then "🌽"
+    when /rice|grain/                        then "🌾"
+    when /bean|lentil/                       then "🫘"
+    when /nut/                               then "🥜"
+    when /seed/                              then "🌱"
+    when /bamboo/                            then "🎋"
+    when /cactus/                            then "🌵"
+    when /seaweed|kelp|algae/                then "🌿"
+    end
+
+    # Fallback to category
+    return icon if icon
+    food_source.category_animal? ? "🐾" : "🌿"
+  end
+
+  def food_icon_by_name(name, category)
+    stub = OpenStruct.new(name: name, category_animal?: category == "animal")
+    food_icon(stub)
+  end
+
   def item_icon(item)
     name = item.is_a?(String) ? item : item&.name.to_s
     case name

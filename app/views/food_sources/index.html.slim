@@ -32,7 +32,9 @@
               - else
                 - animals.each do |(name, _cat), count|
                   tr
-                    td = link_to name.titleize, food_source_path(name: name)
+                    td
+                      span.me-1 = food_icon_by_name(name, "animal")
+                      = link_to name.titleize, food_source_path(name: name)
                     td.text-end = count
 
     .col-lg-6
@@ -54,5 +56,7 @@
               - else
                 - plants.each do |(name, _cat), count|
                   tr
-                    td = link_to name.titleize, food_source_path(name: name)
+                    td
+                      span.me-1 = food_icon_by_name(name, "plant")
+                      = link_to name.titleize, food_source_path(name: name)
                     td.text-end = count
