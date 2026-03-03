@@ -14,7 +14,7 @@ module ApplicationHelper
     when /saw/                          then "🪚"
     when /knife|machete|kukri|blade/    then "🔪"
     when /pan/                          then "🍳"
-    when /pot|pottery/                  then "🏺"
+    when /pot|pottery/                  then "🍲"
     when /bow drill/                    then "🔥"
     when /fire|lighter|flint|lens/      then "🔥"
     when /\bbow\b|arrow/                then "🏹"
@@ -30,10 +30,10 @@ module ApplicationHelper
     when /mosquito/                     then "🦟"
     when /shovel/                       then "⛏️"
     else
-      type = item.is_a?(String) ? nil : item&.item_type
+      type = item.respond_to?(:item_type) ? (item.item_type rescue nil) : nil
       case type
       when "blade"              then "🔪"
-      when "pot"                then "🏺"
+      when "pot"                then "🍲"
       when "fire starting tool" then "🔥"
       when "hunting weapon"     then "🏹"
       when "fishing tool"       then "🎣"
