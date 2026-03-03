@@ -46,7 +46,7 @@ class SurvivorsController < ApplicationController
     #@survivor = Survivor.find(params[:id])
 
     @appearances = @survivor.appearances
-                            .includes(episode: [:season, :location], appearance_items: :item)
+                            .includes(episode: [{ season: :series }, :location], appearance_items: :item)
                             .order("episodes.air_date NULLS LAST, episodes.id")
 
     base = @survivor.appearances.joins(episode: { season: :series })
