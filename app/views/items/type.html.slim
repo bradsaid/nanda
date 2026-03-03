@@ -94,7 +94,7 @@ script type="application/json" id="item-type-jsonld-data"= data
                 td = recips.join(", ")
                 td
                   - if items.any?
-                    = safe_join(items.map { |it| link_to(it.name, item_path(it)) }, ", ")
+                    = safe_join(items.map { |it| link_to("#{item_icon(it)} #{it.name}", item_path(it)) }, ", ")
                   - else
                     | —
 
@@ -130,7 +130,7 @@ script type="application/json" id="item-type-jsonld-data"= data
                 td = people.join(", ")
                 td
                   - if items.any?
-                    = safe_join(items.map { |it| link_to(it.name, item_path(it)) }, ", ")
+                    = safe_join(items.map { |it| link_to("#{item_icon(it)} #{it.name}", item_path(it)) }, ", ")
                   - else
                     | —
 

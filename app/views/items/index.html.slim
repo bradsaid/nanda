@@ -77,7 +77,7 @@
                 - else
                   - @top_brought.each do |r|
                     tr
-                      td = link_to r.name, item_path(r.id)
+                      td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
                       td.text-end = r.read_attribute(:total).to_i
 
       .col-lg-6
@@ -98,7 +98,7 @@
                 - else
                   - @top_given.each do |r|
                     tr
-                      td = link_to r.name, item_path(r.id)
+                      td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
                       td.text-end = r.read_attribute(:total).to_i
 
 
@@ -121,7 +121,7 @@
             - else
               - @rarest.each do |r|
                 tr
-                  td = link_to r.name, item_path(r.id)
+                  td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
                   td.text-end = r.read_attribute(:total).to_i
                   td.text-end = r.read_attribute(:brought_total).to_i
                   td.text-end = r.read_attribute(:given_total).to_i
@@ -170,7 +170,7 @@
               - season = ep.season
               - survivors = records.map { |r| r.appearance.survivor }.uniq(&:id)
               tr
-                td = link_to first.item.name, item_path(first.item)
+                td = link_to "#{item_icon(first.item)} #{first.item.name}", item_path(first.item)
                 td = link_to "S#{season.number}", season_path(season)
                 td = link_to ep.title, episode_path(ep)
                 td = ep.location&.country

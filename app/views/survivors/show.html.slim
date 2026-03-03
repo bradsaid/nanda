@@ -206,7 +206,7 @@ script type="application/json" id="survivor-jsonld-data"= data
               ul.list-group.list-group-flush
                 - @brought_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
                   li.list-group-item.d-flex.justify-content-between.align-items-center
-                    span.fw-semibold = name
+                    span.fw-semibold = "#{item_icon(name)} #{name}"
                     span.badge.bg-success.rounded-pill = c
             - else
               .text-center.py-5.text-muted
@@ -221,7 +221,7 @@ script type="application/json" id="survivor-jsonld-data"= data
               ul.list-group.list-group-flush
                 - @given_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
                   li.list-group-item.d-flex.justify-content-between.align-items-center
-                    span.fw-semibold = name
+                    span.fw-semibold = "#{item_icon(name)} #{name}"
                     span.badge.bg-primary.rounded-pill = c
             - else
               .text-center.py-5.text-muted
@@ -250,8 +250,8 @@ script type="application/json" id="survivor-jsonld-data"= data
             - @appearances.each do |a|
               - ep = a.episode
               - ser = ep.season&.series
-              - brought = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| ai.item.name }.join(", ")
-              - given   = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| ai.item.name }.join(", ")
+              - brought = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| "#{item_icon(ai.item)} #{ai.item.name}" }.join(", ")
+              - given   = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| "#{item_icon(ai.item)} #{ai.item.name}" }.join(", ")
               tr
                 td = link_to ep.title, episode_path(ep), class: "link-primary fw-medium"
                 td = ser&.name || "—"

@@ -133,13 +133,13 @@ script type="application/json" id="episode-jsonld-data"= data
               - brought_names = brought_items.map do |ai|
                 - q = ai.quantity.to_i
                 - name = ai.item&.name
-                - name ? (q > 1 ? "#{name}×#{q}" : name) : nil
+                - name ? (q > 1 ? "#{item_icon(ai.item)} #{name}×#{q}" : "#{item_icon(ai.item)} #{name}") : nil
               - brought = brought_names.compact.join(", ")
               - given_items = a.appearance_items.select { |ai| ai.source == "given" }
               - given_names = given_items.map do |ai|
                 - q = ai.quantity.to_i
                 - name = ai.item&.name
-                - name ? (q > 1 ? "#{name}×#{q}" : name) : nil
+                - name ? (q > 1 ? "#{item_icon(ai.item)} #{name}×#{q}" : "#{item_icon(ai.item)} #{name}") : nil
               - given = given_names.compact.join(", ")
               tr
                 td
