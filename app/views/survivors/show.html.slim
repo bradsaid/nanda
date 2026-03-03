@@ -138,11 +138,12 @@ script type="application/json" id="survivor-jsonld-data"= data
           - season_appearances = @appearances.select { |ap| ap.episode.season_id == season.id }
           - locations = season_appearances.map { |ap| ap.episode.location }.compact.uniq
           - location_str = locations.map { |l| [l.country, l.region, l.site].compact.join(" / ") }.uniq.join(", ")
-          - challenges << { type: :season, name: label, episode_count: ep_count, season: season, location: location_str }
+          - challenges << { type: :season, name: label, episode_count: ep_count, season: season, location: location_str, year: season.year }
       - else
         - loc = ep.location
         - location_str = loc ? [loc.country, loc.region, loc.site].compact.join(" / ") : nil
-        - challenges << { type: :episode, appearance: a, episode: ep, series_name: series&.name, location: location_str }
+        - ep_year = ep.air_date.present? ? ep.air_date.year : season&.year
+        - challenges << { type: :episode, appearance: a, episode: ep, series_name: series&.name, location: location_str, year: ep_year }
 
     - series_counts = {}
     - challenges.each do |c|
@@ -170,6 +171,8 @@ script type="application/json" id="survivor-jsonld-data"= data
                 .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
                   div
                     = link_to c[:name], season_path(c[:season]), class: "fw-semibold link-primary"
+                    - if c[:year].present?
+                      small.text-muted.ms-2 = "(#{c[:year]})"
                     - if c[:location].present?
                       br
                       small.text-muted = c[:location]
@@ -181,6 +184,8 @@ script type="application/json" id="survivor-jsonld-data"= data
                   div
                     = link_to ep.title, episode_path(ep), class: "fw-semibold link-primary"
                     small.text-muted.ms-2 = c[:series_name]
+                    - if c[:year].present?
+                      small.text-muted.ms-1 = "(#{c[:year]})"
                     - if c[:location].present?
                       br
                       small.text-muted = c[:location]
