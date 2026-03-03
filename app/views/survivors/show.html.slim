@@ -144,11 +144,24 @@ script type="application/json" id="survivor-jsonld-data"= data
         - location_str = loc ? [loc.country, loc.region, loc.site].compact.join(" / ") : nil
         - challenges << { type: :episode, appearance: a, episode: ep, series_name: series&.name, location: location_str }
 
+    - series_counts = {}
+    - challenges.each do |c|
+      - if c[:type] == :season
+        - sname = c[:name].sub(/ Season \d+$/, '')
+        - series_counts[sname] = (series_counts[sname] || 0) + 1
+      - else
+        - sname = c[:series_name] || "Unknown"
+        - series_counts[sname] = (series_counts[sname] || 0) + 1
+
     .card.shadow-sm.mb-4
-      .card-header.d-flex.align-items-center
-        span.me-3.fs-3(aria-hidden="true") 🏆
-        h2.h5.mb-0 Challenge Summary
-        span.badge.bg-secondary.ms-2 = challenges.size
+      .card-header
+        .d-flex.align-items-center.mb-2
+          span.me-3.fs-3(aria-hidden="true") 🏆
+          h2.h5.mb-0 Challenge Summary
+          span.badge.bg-secondary.ms-2 = challenges.size
+        .d-flex.flex-wrap.gap-2
+          - series_counts.each do |sname, count|
+            span.badge.bg-outline-dark.border.text-dark = "#{sname}: #{count}"
       .card-body
         ul.list-group.list-group-flush
           - challenges.each do |c|
