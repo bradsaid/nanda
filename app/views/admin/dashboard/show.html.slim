@@ -190,11 +190,13 @@
           tr
             th Date
             th.text-end Views
+            th.text-end Unique
         tbody
           - @daily_counts.sort_by { |d, _| d }.reverse.each do |date, count|
             tr
               td= date
               td.text-end= count
+              td.text-end= @daily_uniques[date] || 0
 
   / ===== Recent Views =====
   .card.shadow-sm

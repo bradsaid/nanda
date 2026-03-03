@@ -22,6 +22,14 @@ class PageView < ApplicationRecord
       .count
   end
 
+  def self.daily_unique_counts(days = 30)
+    col = where.not(visitor_id: [nil, ""]).exists? ? :visitor_id : :session_id
+    where(created_at: days.days.ago..)
+      .group("DATE(created_at)")
+      .distinct
+      .count(col)
+  end
+
   def self.unique_visitors
     if where.not(visitor_id: [nil, ""]).exists?
       distinct.count(:visitor_id)

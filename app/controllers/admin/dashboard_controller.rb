@@ -15,6 +15,7 @@ module Admin
       @top_pages     = PageView.top_pages(25)
       @top_sections  = PageView.top_sections(20)
       @daily_counts  = PageView.daily_counts(30)
+      @daily_uniques = PageView.daily_unique_counts(30)
       @top_countries = PageView.top_countries(15)
       @top_browsers  = PageView.top_browsers(10)
       @device_breakdown = PageView.device_breakdown
