@@ -1,3 +1,8 @@
+- arrangements = ["Standard", "Solo", "Trio", "Group", "2+2", "3", "3+2", "3+3+3", "3+3+3+2", "3+3+3+3", "3+3+3+3+1", "2+3+3+3+3", "4"]
+- modifiers = ["All-Star", "Abandoned", "Continuous Extraction", "Couple", "Extended", "Fan", "Fan,Couple", "Fan,Next Gen", "Frozen", "Language Barrier", "Men vs Women", "Mentor", "Special,Frozen", "Special,Frozen,All-Star", "Special,Sharks", "Tribes", "Water"]
+- roles = Appearance.roles.keys.map { |r| [r.humanize.titleize, r] }
+- results = Appearance.results.keys.map { |r| [r.humanize.titleize, r] }
+
 = form_with model: [:admin, episode], html: { class: "row g-3" } do |f|
   - if episode.errors.any?
     .col-12
@@ -33,11 +38,11 @@
 
   .col-md-3
     = f.label :participant_arrangement, class: "form-label"
-    = f.text_field :participant_arrangement, class: "form-control"
+    = f.select :participant_arrangement, options_for_select(arrangements, episode.participant_arrangement), { include_blank: "Select..." }, { class: "form-select" }
 
   .col-md-3
     = f.label :type_modifiers, class: "form-label"
-    = f.text_field :type_modifiers, class: "form-control"
+    = f.select :type_modifiers, options_for_select(modifiers, episode.type_modifiers), { include_blank: "None" }, { class: "form-select" }
 
   .col-12
     = f.label :synopsis, class: "form-label"
@@ -47,6 +52,99 @@
     = f.label :notes, class: "form-label"
     = f.text_area :notes, class: "form-control", rows: 2
 
+  / ===== Participants =====
+  .col-12
+    hr.my-2
+    h5.mb-3 Participants
+    - survivors_list = Survivor.order(:full_name).pluck(:full_name, :id)
+
+    table.table.table-sm.table-bordered.mb-2#participants-table
+      thead.table-light
+        tr
+          th Survivor
+          th Role
+          th Start PSR
+          th End PSR
+          th Days
+          th Result
+          th Weight Loss
+          th.text-center
+            abbr title="Partner Replacement" PR
+          th
+      tbody
+        - episode.appearances.each_with_index do |a, i|
+          = f.fields_for :appearances, a, index: i do |af|
+            tr.participant-row
+              td
+                = af.hidden_field :id
+                = af.collection_select :survivor_id, Survivor.order(:full_name), :id, :full_name, { include_blank: "Select survivor..." }, { class: "form-select form-select-sm" }
+              td = af.select :role, roles, { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = af.number_field :starting_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
+              td = af.number_field :ending_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
+              td = af.number_field :days_lasted, class: "form-control form-control-sm", min: 0, style: "width:65px"
+              td = af.select :result, results, { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = af.number_field :weight_loss, class: "form-control form-control-sm", min: 0, style: "width:70px"
+              td.text-center = af.check_box :partner_replacement, class: "form-check-input"
+              td
+                = af.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger type="button" data-action="click->remove-row#remove" &times;
+
+    / Empty row template for adding new participants
+    template#participant-template
+      tr.participant-row
+        td
+          select.form-select.form-select-sm name="episode[appearances_attributes][NEW_IDX][survivor_id]"
+            option value="" Select survivor...
+            - survivors_list.each do |name, id|
+              option value=id = name
+        td
+          select.form-select.form-select-sm name="episode[appearances_attributes][NEW_IDX][role]"
+            option value=""
+            - roles.each do |label, val|
+              option value=val = label
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][starting_psr]" step="0.1" min="0" max="10" style="width:70px"
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][ending_psr]" step="0.1" min="0" max="10" style="width:70px"
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][days_lasted]" min="0" style="width:65px"
+        td
+          select.form-select.form-select-sm name="episode[appearances_attributes][NEW_IDX][result]"
+            option value=""
+            - results.each do |label, val|
+              option value=val = label
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][weight_loss]" min="0" style="width:70px"
+        td.text-center
+          input.form-check-input type="checkbox" name="episode[appearances_attributes][NEW_IDX][partner_replacement]" value="1"
+        td
+          input type="hidden" name="episode[appearances_attributes][NEW_IDX][_destroy]" value="0"
+          button.btn.btn-sm.btn-outline-danger type="button" onclick="this.closest('tr').remove()" &times;
+
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-participant" + Add Participant
+
   .col-12
     = f.submit class: "btn btn-primary"
     = link_to "Cancel", admin_episodes_path, class: "btn btn-outline-secondary ms-2"
+
+javascript:
+  document.getElementById("add-participant")?.addEventListener("click", function() {
+    var tbody = document.querySelector("#participants-table tbody");
+    var tmpl  = document.getElementById("participant-template");
+    var idx   = Date.now();
+    var html  = tmpl.innerHTML.replace(/NEW_IDX/g, idx);
+    tbody.insertAdjacentHTML("beforeend", html);
+  });
+
+  document.getElementById("participants-table")?.addEventListener("click", function(e) {
+    var btn = e.target.closest("[data-action]") || e.target.closest("button.btn-outline-danger");
+    if (!btn) return;
+    var row = btn.closest("tr");
+    var destroyField = row.querySelector("input[name*='_destroy']");
+    if (destroyField && row.querySelector("input[name*='[id]']")) {
+      destroyField.value = "1";
+      row.style.display = "none";
+    } else {
+      row.remove();
+    }
+  });
