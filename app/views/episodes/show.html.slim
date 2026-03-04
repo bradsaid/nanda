@@ -97,7 +97,7 @@ script type="application/json" id="episode-jsonld-data"= data
           span.me-3.fs-3(aria-hidden="true") 📝
           h2.h5.mb-0 Episode Synopsis
       .card-body
-        = simple_format(@episode.synopsis)
+        = linkify_survivors(@episode.synopsis)
 
   - if @episode.notes.present?
     .card.shadow-sm.mb-4

@@ -1,4 +1,17 @@
 module ApplicationHelper
+  def linkify_survivors(text)
+    return "" if text.blank?
+    survivors = Survivor.order(Arel.sql("LENGTH(full_name) DESC")).pluck(:full_name, :slug)
+    html = ERB::Util.html_escape(text)
+    survivors.each do |name, slug|
+      escaped_name = ERB::Util.html_escape(name)
+      pattern = /\b#{Regexp.escape(escaped_name)}\b/
+      link = "<a href=\"#{survivor_path(slug)}\" class=\"link-primary fw-medium\">#{escaped_name}</a>"
+      html = html.gsub(pattern, link)
+    end
+    simple_format(html, {}, sanitize: false)
+  end
+
   def format_duration(seconds)
     return "—" if seconds.blank? || seconds <= 0
     mins = seconds.to_i / 60
