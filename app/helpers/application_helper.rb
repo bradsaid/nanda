@@ -1,6 +1,10 @@
 module ApplicationHelper
   def linkify_survivors(text)
     return "" if text.blank?
+
+    # Auto-paragraph: if text has no double newlines, split into paragraphs
+    text = auto_paragraphs(text) unless text.include?("\n\n")
+
     survivors = Survivor.order(Arel.sql("LENGTH(full_name) DESC")).pluck(:full_name, :slug)
     html = ERB::Util.html_escape(text)
     survivors.each do |name, slug|
@@ -10,6 +14,24 @@ module ApplicationHelper
       html = html.gsub(pattern, link)
     end
     simple_format(html, {}, sanitize: false)
+  end
+
+  def auto_paragraphs(text, target_sentences: 4)
+    sentences = text.scan(/[^.!?]+[.!?]+\s*/)
+    # If very few sentences, return as-is
+    return text if sentences.size <= target_sentences
+
+    paragraphs = []
+    current = []
+    sentences.each do |s|
+      current << s.strip
+      if current.size >= target_sentences
+        paragraphs << current.join(" ")
+        current = []
+      end
+    end
+    paragraphs << current.join(" ") if current.any?
+    paragraphs.join("\n\n")
   end
 
   def format_duration(seconds)
