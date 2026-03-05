@@ -44,7 +44,7 @@ module Admin
     private
 
     def set_episode
-      @episode = Episode.includes(appearances: :survivor).find(params[:id])
+      @episode = Episode.includes(appearances: [:survivor, { appearance_items: :item }]).find(params[:id])
     end
 
     def episode_params
@@ -54,7 +54,10 @@ module Admin
         :location_id, :notes, :synopsis,
         appearances_attributes: [
           :id, :survivor_id, :role, :starting_psr, :ending_psr,
-          :days_lasted, :result, :weight_loss, :partner_replacement, :_destroy
+          :days_lasted, :result, :weight_loss, :partner_replacement, :_destroy,
+          appearance_items_attributes: [
+            :id, :item_id, :source, :quantity, :_destroy
+          ]
         ]
       )
     end
