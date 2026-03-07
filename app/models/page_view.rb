@@ -79,4 +79,19 @@ class PageView < ApplicationRecord
       .limit(limit)
       .count
   end
+
+  # Returns average minutes between new unique visitors over the last 7 days
+  def self.unique_visitor_frequency
+    scope = where(created_at: 7.days.ago..)
+    col = scope.where.not(visitor_id: [nil, ""]).exists? ? :visitor_id : :session_id
+    unique_count = scope.distinct.count(col)
+    return nil if unique_count < 2
+
+    first_visit = scope.minimum(:created_at)
+    last_visit  = scope.maximum(:created_at)
+    return nil unless first_visit && last_visit
+
+    elapsed_minutes = (last_visit - first_visit) / 60.0
+    (elapsed_minutes / unique_count).round(1)
+  end
 end

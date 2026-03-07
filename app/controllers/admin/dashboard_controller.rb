@@ -11,6 +11,7 @@ module Admin
       @unique_month  = PageView.this_month.unique_visitors
 
       @avg_duration  = PageView.avg_duration
+      @visitor_frequency = PageView.unique_visitor_frequency
 
       @top_pages     = PageView.top_pages(25)
       @top_sections  = PageView.top_sections(20)
