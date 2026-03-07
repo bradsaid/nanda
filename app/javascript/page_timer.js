@@ -8,6 +8,7 @@ function initPageTimer() {
   document.cookie = "_pv_id=; path=/; max-age=0";
 
   const IDLE_THRESHOLD = 30000; // 30 seconds of no activity = idle
+  const MAX_DURATION = 1800;    // stop tracking after 30 minutes
   let activeSeconds = 0;
   let lastTick = Date.now();
   let lastActivity = Date.now();
@@ -32,6 +33,11 @@ function initPageTimer() {
       activeSeconds += Math.round((now - lastTick) / 1000);
     }
     lastTick = now;
+    // Stop tracking after max duration
+    if (activeSeconds >= MAX_DURATION) {
+      activeSeconds = MAX_DURATION;
+      cleanup();
+    }
   }, 1000);
 
   function sendPing() {

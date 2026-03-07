@@ -97,7 +97,7 @@ script type="application/json" id="episode-jsonld-data"= data
           span.me-3.fs-3(aria-hidden="true") 📝
           h2.h5.mb-0 Episode Synopsis
       .card-body
-        = linkify_survivors(@episode.synopsis)
+        = simple_format(@episode.synopsis)
 
   - if @episode.notes.present?
     .card.shadow-sm.mb-4
@@ -201,9 +201,7 @@ script type="application/json" id="episode-jsonld-data"= data
           tbody
             - @episode.food_sources.order(:category, :name).each do |fs|
               tr
-                td
-                  span.me-1 = food_icon(fs)
-                  = link_to fs.name.titleize, food_source_path(fs.name)
+                td = link_to fs.name.titleize, food_source_path(fs.name)
                 td
                   - if fs.category_animal?
                     span.badge.bg-danger-subtle.text-danger-emphasis Animal

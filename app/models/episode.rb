@@ -4,7 +4,6 @@ class Episode < ApplicationRecord
   belongs_to :location, optional: true   # ← allow nil for Solo
 
   has_many :appearances, dependent: :destroy
-  accepts_nested_attributes_for :appearances, allow_destroy: true, reject_if: :all_blank
   has_many :appearance_items, through: :appearances
   has_many :survivors, through: :appearances
   has_many :episode_shelters, dependent: :destroy

@@ -5,11 +5,8 @@
 .container.my-4
   .pb-2.mb-3.border-bottom.site-header
     = link_to "← All Food Sources", food_sources_path, class: "small link-primary text-decoration-underline"
+    h1.h3.mb-0.logo = food_name
     - first = @food_sources.first
-    h1.h3.mb-0.logo
-      - if first
-        span.me-1 = food_icon(first)
-      = food_name
     - if first
       p.subtitle
         - if first.category_animal?
