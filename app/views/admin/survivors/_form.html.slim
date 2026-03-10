@@ -14,7 +14,7 @@
   .col-md-6
     = f.label :avatar, class: "form-label"
     = f.file_field :avatar, class: "form-control", accept: "image/*"
-    - if survivor.avatar.attached?
+    - if survivor.persisted? && survivor.avatar.attached?
       .mt-2
         = image_tag url_for(survivor.avatar), class: "img-thumbnail", style: "max-height: 80px;"
 
