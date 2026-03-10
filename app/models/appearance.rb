@@ -5,7 +5,8 @@ class Appearance < ApplicationRecord
   belongs_to :location, optional: true 
   has_many :appearance_items, dependent: :destroy
   has_many :items, through: :appearance_items
-  accepts_nested_attributes_for :appearance_items, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :appearance_items, allow_destroy: true,
+    reject_if: proc { |attrs| attrs['item_id'].blank? }
 
   # Convenience accessors
   has_many :brought_ais,  -> { where(source: "brought") }, class_name: "AppearanceItem"
