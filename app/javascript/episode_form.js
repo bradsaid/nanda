@@ -1,4 +1,33 @@
-// Episode admin form: dynamic add/remove for participants, items, food sources, shelters
+// Episode admin form: dynamic add/remove for participants, items, food sources, traps, shelters
+
+function getEpisodeSurvivors() {
+  var survivors = [];
+  var rows = document.querySelectorAll("#participants-table tbody tr.participant-row");
+  rows.forEach(function(row) {
+    if (row.style.display === "none") return;
+    var select = row.querySelector("select[name*='[survivor_id]']");
+    if (select && select.value) {
+      var opt = select.options[select.selectedIndex];
+      survivors.push({ id: select.value, name: opt.text });
+    }
+  });
+  return survivors;
+}
+
+function populateBuilderCheckboxes(container, survivors, namePrefix, idPrefix) {
+  var html = '';
+  survivors.forEach(function(s) {
+    var cbId = idPrefix + '_builder_' + s.id;
+    var escaped = document.createElement('span');
+    escaped.textContent = s.name;
+    html += '<div class="form-check form-check-inline">';
+    html += '<input type="checkbox" class="form-check-input" name="' + namePrefix + '[builder_ids][]" value="' + s.id + '" id="' + cbId + '">';
+    html += '<label class="form-check-label" for="' + cbId + '">' + escaped.innerHTML + '</label>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
 function initEpisodeForm() {
   var form = document.querySelector("#participants-table");
   if (!form) return;
@@ -28,6 +57,16 @@ function initEpisodeForm() {
     var idx   = Date.now();
     var html  = tmpl.innerHTML.replace(/TRAP_IDX/g, idx);
     tbody.insertAdjacentHTML("beforeend", html);
+    var newRow = tbody.querySelector("tr.trap-row:last-child");
+    var container = newRow.querySelector(".builder-checkboxes");
+    if (container) {
+      populateBuilderCheckboxes(
+        container,
+        getEpisodeSurvivors(),
+        "episode[episode_traps_attributes][" + idx + "]",
+        "trap_" + idx
+      );
+    }
   });
 
   // ===== Add Shelter =====
@@ -37,6 +76,29 @@ function initEpisodeForm() {
     var idx   = Date.now();
     var html  = tmpl.innerHTML.replace(/SH_IDX/g, idx);
     tbody.insertAdjacentHTML("beforeend", html);
+    var newRow = tbody.querySelector("tr.shelter-row:last-child");
+    var container = newRow.querySelector(".builder-checkboxes");
+    if (container) {
+      populateBuilderCheckboxes(
+        container,
+        getEpisodeSurvivors(),
+        "episode[episode_shelters_attributes][" + idx + "]",
+        "shelter_" + idx
+      );
+    }
+  });
+
+  // ===== Toggle trap dropdown on food source method change =====
+  document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("food-source-method")) {
+      var row = e.target.closest("tr.food-source-row");
+      if (!row) return;
+      var trapSelect = row.querySelector(".trap-select");
+      if (trapSelect) {
+        trapSelect.style.display = (e.target.value === "trapped") ? "" : "none";
+        if (e.target.value !== "trapped") trapSelect.value = "";
+      }
+    }
   });
 
   // ===== Event delegation for the whole form area =====
@@ -88,7 +150,7 @@ function initEpisodeForm() {
       return;
     }
 
-    // Remove food source or shelter row
+    // Remove food source, trap, or shelter row
     var removeRowBtn = e.target.closest(".remove-row-btn");
     if (removeRowBtn) {
       var row = removeRowBtn.closest("tr");

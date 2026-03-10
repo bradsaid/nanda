@@ -10,6 +10,7 @@
 - shelter_types = ["A-Frame", "Lean To", "Debris Hut", "Raised Platform", "Tarp Shelter", "Cave", "Tree House", "Hammock", "Teepee", "Dugout"]
 - trap_types = ["Snare", "Deadfall", "Fish Trap"]
 - trap_results = ["Success", "Fail"]
+- episode_survivors = episode.persisted? ? episode.survivors.order(:full_name).to_a : []
 
 = form_with model: [:admin, episode], html: { class: "row g-3" } do |f|
   - if episode.errors.any?
@@ -166,173 +167,195 @@
 
     button.btn.btn-sm.btn-outline-primary type="button" id="add-participant" + Add Participant
 
-  / ===== Food Sources =====
-  .col-12
-    hr.my-2
-    h5.mb-3 Food Sources
+  - if episode.persisted?
+    / ===== Section 2: Traps + Shelters =====
+    / ===== Traps =====
+    .col-12
+      hr.my-2
+      h5.mb-3 Traps
 
-    table.table.table-sm.table-bordered.mb-2#food-sources-table
-      thead.table-light
-        tr
-          th Name
-          th Category
-          th Method
-          th Survivor
-          th Tools Used
-          th Notes
-          th
-      tbody
-        - episode.food_sources.each_with_index do |fs, i|
-          = f.fields_for :food_sources, fs, index: i do |fsf|
-            tr.food-source-row
-              td
-                = fsf.hidden_field :id
-                = fsf.text_field :name, class: "form-control form-control-sm", placeholder: "e.g. iguana"
-              td = fsf.select :category, food_categories, { include_blank: "" }, { class: "form-select form-select-sm" }
-              td = fsf.select :method, food_methods, { include_blank: "" }, { class: "form-select form-select-sm" }
-              td = fsf.collection_select :survivor_id, Survivor.order(:full_name), :id, :full_name, { include_blank: "Team" }, { class: "form-select form-select-sm" }
-              td = fsf.text_field :tools_used, class: "form-control form-control-sm", placeholder: "e.g. spear"
-              td = fsf.text_field :notes, class: "form-control form-control-sm"
-              td
-                = fsf.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+      table.table.table-sm.table-bordered.mb-2#traps-table
+        thead.table-light
+          tr
+            th Type
+            th Built By
+            th Result
+            th Catch
+            th
+        tbody
+          - episode.episode_traps.each_with_index do |et, i|
+            = f.fields_for :episode_traps, et, index: i do |etf|
+              tr.trap-row
+                td
+                  = etf.hidden_field :id
+                  = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+                td
+                  input type="hidden" name="episode[episode_traps_attributes][#{i}][builder_ids][]" value=""
+                  .builder-checkboxes
+                    - episode_survivors.each do |s|
+                      .form-check.form-check-inline
+                        = check_box_tag "episode[episode_traps_attributes][#{i}][builder_ids][]", s.id, et.builder_ids.include?(s.id), class: "form-check-input", id: "trap_#{i}_builder_#{s.id}"
+                        = label_tag "trap_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
+                td = etf.select :result, options_for_select(trap_results, et.result), { include_blank: "" }, { class: "form-select form-select-sm" }
+                td = etf.text_field :notes, class: "form-control form-control-sm", placeholder: "e.g. iguana"
+                td
+                  = etf.hidden_field :_destroy, value: "0"
+                  button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    / Empty food source template
-    template#food-source-template
-      tr.food-source-row
-        td
-          input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][name]" placeholder="e.g. iguana"
-        td
-          select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][category]"
-            option value=""
-            - food_categories.each do |label, val|
-              option value=val = label
-        td
-          select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][method]"
-            option value=""
-            - food_methods.each do |label, val|
-              option value=val = label
-        td
-          select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][survivor_id]"
-            option value="" Team
-            - survivors_list.each do |name, id|
-              option value=id = name
-        td
-          input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][tools_used]" placeholder="e.g. spear"
-        td
-          input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][notes]"
-        td
-          input type="hidden" name="episode[food_sources_attributes][FS_IDX][_destroy]" value="0"
-          button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+      / Empty trap template
+      template#trap-template
+        tr.trap-row
+          td
+            select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][trap_type]"
+              option value="" Select...
+              - trap_types.each do |t|
+                option value=t = t
+          td
+            input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" value=""
+            .builder-checkboxes
+          td
+            select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][result]"
+              option value=""
+              - trap_results.each do |r|
+                option value=r = r
+          td
+            input.form-control.form-control-sm type="text" name="episode[episode_traps_attributes][TRAP_IDX][notes]" placeholder="e.g. iguana"
+          td
+            input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][_destroy]" value="0"
+            button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    button.btn.btn-sm.btn-outline-primary type="button" id="add-food-source" + Add Food Source
+      button.btn.btn-sm.btn-outline-primary type="button" id="add-trap" + Add Trap
 
-  / ===== Traps =====
-  .col-12
-    hr.my-2
-    h5.mb-3 Traps
+    / ===== Shelters =====
+    .col-12
+      hr.my-2
+      h5.mb-3 Shelters
 
-    table.table.table-sm.table-bordered.mb-2#traps-table
-      thead.table-light
-        tr
-          th Type
-          th Built By
-          th Result
-          th Notes
-          th
-      tbody
-        - episode.episode_traps.each_with_index do |et, i|
-          = f.fields_for :episode_traps, et, index: i do |etf|
-            tr.trap-row
-              td
-                = etf.hidden_field :id
-                = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
-              td
-                = etf.hidden_field :builder_ids, value: "", multiple: true
-                = etf.select :builder_ids, options_for_select(survivors_list, et.builder_ids), {}, { class: "form-select form-select-sm", multiple: true, style: "min-width:150px" }
-              td = etf.select :result, options_for_select(trap_results, et.result), { include_blank: "" }, { class: "form-select form-select-sm" }
-              td = etf.text_field :notes, class: "form-control form-control-sm"
-              td
-                = etf.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+      table.table.table-sm.table-bordered.mb-2#shelters-table
+        thead.table-light
+          tr
+            th Type
+            th Built By
+            th Materials
+            th Notes
+            th
+        tbody
+          - episode.episode_shelters.each_with_index do |es, i|
+            = f.fields_for :episode_shelters, es, index: i do |esf|
+              tr.shelter-row
+                td
+                  = esf.hidden_field :id
+                  = esf.select :shelter_type, options_for_select(shelter_types, es.shelter_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+                td
+                  input type="hidden" name="episode[episode_shelters_attributes][#{i}][builder_ids][]" value=""
+                  .builder-checkboxes
+                    - episode_survivors.each do |s|
+                      .form-check.form-check-inline
+                        = check_box_tag "episode[episode_shelters_attributes][#{i}][builder_ids][]", s.id, es.builder_ids.include?(s.id), class: "form-check-input", id: "shelter_#{i}_builder_#{s.id}"
+                        = label_tag "shelter_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
+                td = esf.text_field :materials, class: "form-control form-control-sm", placeholder: "e.g. bamboo, palm fronds"
+                td = esf.text_field :notes, class: "form-control form-control-sm"
+                td
+                  = esf.hidden_field :_destroy, value: "0"
+                  button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    / Empty trap template
-    template#trap-template
-      tr.trap-row
-        td
-          select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][trap_type]"
-            option value="" Select...
-            - trap_types.each do |t|
-              option value=t = t
-        td
-          input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" value=""
-          select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" multiple="" style="min-width:150px"
-            - survivors_list.each do |name, id|
-              option value=id = name
-        td
-          select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][result]"
-            option value=""
-            - trap_results.each do |r|
-              option value=r = r
-        td
-          input.form-control.form-control-sm type="text" name="episode[episode_traps_attributes][TRAP_IDX][notes]"
-        td
-          input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][_destroy]" value="0"
-          button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+      / Empty shelter template
+      template#shelter-template
+        tr.shelter-row
+          td
+            select.form-select.form-select-sm name="episode[episode_shelters_attributes][SH_IDX][shelter_type]"
+              option value="" Select...
+              - shelter_types.each do |t|
+                option value=t = t
+          td
+            input type="hidden" name="episode[episode_shelters_attributes][SH_IDX][builder_ids][]" value=""
+            .builder-checkboxes
+          td
+            input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][materials]" placeholder="e.g. bamboo, palm fronds"
+          td
+            input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][notes]"
+          td
+            input type="hidden" name="episode[episode_shelters_attributes][SH_IDX][_destroy]" value="0"
+            button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    button.btn.btn-sm.btn-outline-primary type="button" id="add-trap" + Add Trap
+      button.btn.btn-sm.btn-outline-primary type="button" id="add-shelter" + Add Shelter
 
-  / ===== Shelters =====
-  .col-12
-    hr.my-2
-    h5.mb-3 Shelters
+    / ===== Section 3: Food Sources =====
+    - episode_traps_list = episode.episode_traps.map { |et| [et.label, et.id] }
+    .col-12
+      hr.my-2
+      h5.mb-3 Food Sources
 
-    table.table.table-sm.table-bordered.mb-2#shelters-table
-      thead.table-light
-        tr
-          th Type
-          th Built By
-          th Materials
-          th Notes
-          th
-      tbody
-        - episode.episode_shelters.each_with_index do |es, i|
-          = f.fields_for :episode_shelters, es, index: i do |esf|
-            tr.shelter-row
-              td
-                = esf.hidden_field :id
-                = esf.select :shelter_type, options_for_select(shelter_types, es.shelter_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
-              td
-                = esf.hidden_field :builder_ids, value: "", multiple: true
-                = esf.select :builder_ids, options_for_select(survivors_list, es.builder_ids), {}, { class: "form-select form-select-sm", multiple: true, style: "min-width:150px" }
-              td = esf.text_field :materials, class: "form-control form-control-sm", placeholder: "e.g. bamboo, palm fronds"
-              td = esf.text_field :notes, class: "form-control form-control-sm"
-              td
-                = esf.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+      table.table.table-sm.table-bordered.mb-2#food-sources-table
+        thead.table-light
+          tr
+            th Name
+            th Category
+            th Method
+            th Trap
+            th Survivor
+            th Tools Used
+            th Notes
+            th
+        tbody
+          - episode.food_sources.each_with_index do |fs, i|
+            = f.fields_for :food_sources, fs, index: i do |fsf|
+              tr.food-source-row
+                td
+                  = fsf.hidden_field :id
+                  = fsf.text_field :name, class: "form-control form-control-sm", placeholder: "e.g. iguana"
+                td = fsf.select :category, food_categories, { include_blank: "" }, { class: "form-select form-select-sm food-source-category" }
+                td = fsf.select :method, food_methods, { include_blank: "" }, { class: "form-select form-select-sm food-source-method" }
+                td
+                  = fsf.select :episode_trap_id, options_for_select(episode_traps_list, fs.episode_trap_id), { include_blank: "None" }, { class: "form-select form-select-sm trap-select", style: (fs.method_trapped? ? "" : "display:none") }
+                td
+                  = fsf.select :survivor_id, options_for_select(episode_survivors.map { |s| [s.full_name, s.id] }, fs.survivor_id), { include_blank: "Team" }, { class: "form-select form-select-sm" }
+                td = fsf.text_field :tools_used, class: "form-control form-control-sm", placeholder: "e.g. spear"
+                td = fsf.text_field :notes, class: "form-control form-control-sm"
+                td
+                  = fsf.hidden_field :_destroy, value: "0"
+                  button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    / Empty shelter template
-    template#shelter-template
-      tr.shelter-row
-        td
-          select.form-select.form-select-sm name="episode[episode_shelters_attributes][SH_IDX][shelter_type]"
-            option value="" Select...
-            - shelter_types.each do |t|
-              option value=t = t
-        td
-          input type="hidden" name="episode[episode_shelters_attributes][SH_IDX][builder_ids][]" value=""
-          select.form-select.form-select-sm name="episode[episode_shelters_attributes][SH_IDX][builder_ids][]" multiple="" style="min-width:150px"
-            - survivors_list.each do |name, id|
-              option value=id = name
-        td
-          input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][materials]" placeholder="e.g. bamboo, palm fronds"
-        td
-          input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][notes]"
-        td
-          input type="hidden" name="episode[episode_shelters_attributes][SH_IDX][_destroy]" value="0"
-          button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+      / Empty food source template
+      template#food-source-template
+        tr.food-source-row
+          td
+            input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][name]" placeholder="e.g. iguana"
+          td
+            select.form-select.form-select-sm.food-source-category name="episode[food_sources_attributes][FS_IDX][category]"
+              option value=""
+              - food_categories.each do |label, val|
+                option value=val = label
+          td
+            select.form-select.form-select-sm.food-source-method name="episode[food_sources_attributes][FS_IDX][method]"
+              option value=""
+              - food_methods.each do |label, val|
+                option value=val = label
+          td
+            select.form-select.form-select-sm.trap-select name="episode[food_sources_attributes][FS_IDX][episode_trap_id]" style="display:none"
+              option value="" None
+              - episode_traps_list.each do |label, id|
+                option value=id = label
+          td
+            select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][survivor_id]"
+              option value="" Team
+              - episode_survivors.each do |s|
+                option value=s.id = s.full_name
+          td
+            input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][tools_used]" placeholder="e.g. spear"
+          td
+            input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][notes]"
+          td
+            input type="hidden" name="episode[food_sources_attributes][FS_IDX][_destroy]" value="0"
+            button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    button.btn.btn-sm.btn-outline-primary type="button" id="add-shelter" + Add Shelter
+      button.btn.btn-sm.btn-outline-primary type="button" id="add-food-source" + Add Food Source
+
+  - else
+    .col-12
+      hr.my-2
+      .alert.alert-info.mb-0
+        | Save the episode and participants first to add Traps, Shelters, and Food Sources.
 
   .col-12
     = f.submit class: "btn btn-primary"

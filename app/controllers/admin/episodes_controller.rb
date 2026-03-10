@@ -20,7 +20,7 @@ module Admin
     def create
       @episode = Episode.new(episode_params)
       if @episode.save
-        redirect_to admin_episodes_path, notice: "Episode created."
+        redirect_to edit_admin_episode_path(@episode), notice: "Episode created. Now add traps, shelters, and food sources."
       else
         render :new, status: :unprocessable_entity
       end
@@ -65,7 +65,7 @@ module Admin
           ]
         ],
         food_sources_attributes: [
-          :id, :name, :category, :method, :survivor_id, :tools_used, :notes, :_destroy
+          :id, :name, :category, :method, :survivor_id, :episode_trap_id, :tools_used, :notes, :_destroy
         ],
         episode_traps_attributes: [
           :id, :trap_type, :result, :notes, :_destroy, builder_ids: []

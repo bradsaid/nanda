@@ -1,6 +1,7 @@
 class FoodSource < ApplicationRecord
   belongs_to :episode
   belongs_to :survivor, optional: true
+  belongs_to :episode_trap, optional: true
 
   enum :category, { animal: "animal", plant: "plant" }, prefix: true
   enum :method, {
