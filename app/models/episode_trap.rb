@@ -1,7 +1,7 @@
-class EpisodeShelter < ApplicationRecord
+class EpisodeTrap < ApplicationRecord
   belongs_to :episode
 
-  validates :shelter_type, presence: true
+  validates :trap_type, presence: true
 
   def builder_ids=(values)
     super(Array(values).reject(&:blank?).map(&:to_i))

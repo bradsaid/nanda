@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_01_150210) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_10_205223) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -87,7 +87,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_150210) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "builder_ids", default: [], array: true
     t.index ["episode_id"], name: "index_episode_shelters_on_episode_id"
+  end
+
+  create_table "episode_traps", force: :cascade do |t|
+    t.bigint "episode_id", null: false
+    t.string "trap_type", null: false
+    t.string "result"
+    t.integer "builder_ids", default: [], array: true
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["episode_id"], name: "index_episode_traps_on_episode_id"
   end
 
   create_table "episodes", force: :cascade do |t|
@@ -235,6 +247,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_150210) do
   add_foreign_key "appearances", "locations"
   add_foreign_key "appearances", "survivors"
   add_foreign_key "episode_shelters", "episodes"
+  add_foreign_key "episode_traps", "episodes"
   add_foreign_key "episodes", "locations"
   add_foreign_key "episodes", "seasons"
   add_foreign_key "food_sources", "episodes"

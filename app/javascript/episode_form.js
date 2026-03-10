@@ -21,6 +21,15 @@ function initEpisodeForm() {
     tbody.insertAdjacentHTML("beforeend", html);
   });
 
+  // ===== Add Trap =====
+  document.getElementById("add-trap")?.addEventListener("click", function() {
+    var tbody = document.querySelector("#traps-table tbody");
+    var tmpl  = document.getElementById("trap-template");
+    var idx   = Date.now();
+    var html  = tmpl.innerHTML.replace(/TRAP_IDX/g, idx);
+    tbody.insertAdjacentHTML("beforeend", html);
+  });
+
   // ===== Add Shelter =====
   document.getElementById("add-shelter")?.addEventListener("click", function() {
     var tbody = document.querySelector("#shelters-table tbody");

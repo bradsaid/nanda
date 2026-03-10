@@ -8,6 +8,8 @@
 - food_categories = FoodSource.categories.keys.map { |c| [c.humanize.titleize, c] }
 - food_methods = FoodSource.defined_enums["method"].keys.map { |m| [m.humanize.titleize, m] }
 - shelter_types = ["A-Frame", "Lean To", "Debris Hut", "Raised Platform", "Tarp Shelter", "Cave", "Tree House", "Hammock", "Teepee", "Dugout"]
+- trap_types = ["Snare", "Deadfall", "Fish Trap"]
+- trap_results = ["Success", "Fail"]
 
 = form_with model: [:admin, episode], html: { class: "row g-3" } do |f|
   - if episode.errors.any?
@@ -225,6 +227,61 @@
 
     button.btn.btn-sm.btn-outline-primary type="button" id="add-food-source" + Add Food Source
 
+  / ===== Traps =====
+  .col-12
+    hr.my-2
+    h5.mb-3 Traps
+
+    table.table.table-sm.table-bordered.mb-2#traps-table
+      thead.table-light
+        tr
+          th Type
+          th Built By
+          th Result
+          th Notes
+          th
+      tbody
+        - episode.episode_traps.each_with_index do |et, i|
+          = f.fields_for :episode_traps, et, index: i do |etf|
+            tr.trap-row
+              td
+                = etf.hidden_field :id
+                = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+              td
+                = etf.hidden_field :builder_ids, value: "", multiple: true
+                = etf.select :builder_ids, options_for_select(survivors_list, et.builder_ids), {}, { class: "form-select form-select-sm", multiple: true, style: "min-width:150px" }
+              td = etf.select :result, options_for_select(trap_results, et.result), { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = etf.text_field :notes, class: "form-control form-control-sm"
+              td
+                = etf.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+    / Empty trap template
+    template#trap-template
+      tr.trap-row
+        td
+          select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][trap_type]"
+            option value="" Select...
+            - trap_types.each do |t|
+              option value=t = t
+        td
+          input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" value=""
+          select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" multiple="" style="min-width:150px"
+            - survivors_list.each do |name, id|
+              option value=id = name
+        td
+          select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][result]"
+            option value=""
+            - trap_results.each do |r|
+              option value=r = r
+        td
+          input.form-control.form-control-sm type="text" name="episode[episode_traps_attributes][TRAP_IDX][notes]"
+        td
+          input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][_destroy]" value="0"
+          button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-trap" + Add Trap
+
   / ===== Shelters =====
   .col-12
     hr.my-2
@@ -234,6 +291,7 @@
       thead.table-light
         tr
           th Type
+          th Built By
           th Materials
           th Notes
           th
@@ -244,6 +302,9 @@
               td
                 = esf.hidden_field :id
                 = esf.select :shelter_type, options_for_select(shelter_types, es.shelter_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+              td
+                = esf.hidden_field :builder_ids, value: "", multiple: true
+                = esf.select :builder_ids, options_for_select(survivors_list, es.builder_ids), {}, { class: "form-select form-select-sm", multiple: true, style: "min-width:150px" }
               td = esf.text_field :materials, class: "form-control form-control-sm", placeholder: "e.g. bamboo, palm fronds"
               td = esf.text_field :notes, class: "form-control form-control-sm"
               td
@@ -258,6 +319,11 @@
             option value="" Select...
             - shelter_types.each do |t|
               option value=t = t
+        td
+          input type="hidden" name="episode[episode_shelters_attributes][SH_IDX][builder_ids][]" value=""
+          select.form-select.form-select-sm name="episode[episode_shelters_attributes][SH_IDX][builder_ids][]" multiple="" style="min-width:150px"
+            - survivors_list.each do |name, id|
+              option value=id = name
         td
           input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][materials]" placeholder="e.g. bamboo, palm fronds"
         td

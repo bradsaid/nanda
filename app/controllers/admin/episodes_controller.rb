@@ -47,6 +47,7 @@ module Admin
       @episode = Episode.includes(
         appearances: [:survivor, { appearance_items: :item }],
         food_sources: :survivor,
+        episode_traps: [],
         episode_shelters: []
       ).find(params[:id])
     end
@@ -66,8 +67,11 @@ module Admin
         food_sources_attributes: [
           :id, :name, :category, :method, :survivor_id, :tools_used, :notes, :_destroy
         ],
+        episode_traps_attributes: [
+          :id, :trap_type, :result, :notes, :_destroy, builder_ids: []
+        ],
         episode_shelters_attributes: [
-          :id, :shelter_type, :materials, :notes, :_destroy
+          :id, :shelter_type, :materials, :notes, :_destroy, builder_ids: []
         ]
       )
     end
