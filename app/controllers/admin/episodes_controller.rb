@@ -14,6 +14,7 @@ module Admin
 
     def new
       @episode = Episode.new
+      @episode.appearances.build
     end
 
     def create
@@ -43,14 +44,31 @@ module Admin
     private
 
     def set_episode
-      @episode = Episode.find(params[:id])
+      @episode = Episode.includes(
+        appearances: [:survivor, { appearance_items: :item }],
+        food_sources: :survivor,
+        episode_shelters: []
+      ).find(params[:id])
     end
 
     def episode_params
       params.require(:episode).permit(
         :season_id, :number_in_season, :title, :air_date,
         :scheduled_days, :participant_arrangement, :type_modifiers,
-        :location_id, :notes, :synopsis
+        :location_id, :notes, :synopsis,
+        appearances_attributes: [
+          :id, :survivor_id, :role, :starting_psr, :ending_psr,
+          :days_lasted, :result, :weight_loss, :partner_replacement, :_destroy,
+          appearance_items_attributes: [
+            :id, :item_id, :source, :quantity, :_destroy
+          ]
+        ],
+        food_sources_attributes: [
+          :id, :name, :category, :method, :survivor_id, :tools_used, :notes, :_destroy
+        ],
+        episode_shelters_attributes: [
+          :id, :shelter_type, :materials, :notes, :_destroy
+        ]
       )
     end
   end

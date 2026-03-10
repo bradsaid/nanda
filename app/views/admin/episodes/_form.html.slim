@@ -1,3 +1,14 @@
+- arrangements = ["Standard", "Solo", "Trio", "Group", "2+2", "3", "3+2", "3+3+3", "3+3+3+2", "3+3+3+3", "3+3+3+3+1", "2+3+3+3+3", "4"]
+- modifiers = ["All-Star", "Abandoned", "Continuous Extraction", "Couple", "Extended", "Fan", "Fan,Couple", "Fan,Next Gen", "Frozen", "Influencer", "Language Barrier", "Men vs Women", "Mentor", "Special,Frozen", "Special,Frozen,All-Star", "Special,Sharks", "Tribes", "Water"]
+- roles = Appearance.roles.keys.map { |r| [r.humanize.titleize, r] }
+- results = Appearance.results.keys.map { |r| [r.humanize.titleize, r] }
+- sources = AppearanceItem.sources.keys.map { |s| [s.humanize.titleize, s] }
+- items_list = Item.order(:name).pluck(:name, :id)
+- survivors_list = Survivor.order(:full_name).pluck(:full_name, :id)
+- food_categories = FoodSource.categories.keys.map { |c| [c.humanize.titleize, c] }
+- food_methods = FoodSource.defined_enums["method"].keys.map { |m| [m.humanize.titleize, m] }
+- shelter_types = ["A-Frame", "Lean To", "Debris Hut", "Raised Platform", "Tarp Shelter", "Cave", "Tree House", "Hammock", "Teepee", "Dugout"]
+
 = form_with model: [:admin, episode], html: { class: "row g-3" } do |f|
   - if episode.errors.any?
     .col-12
@@ -33,11 +44,11 @@
 
   .col-md-3
     = f.label :participant_arrangement, class: "form-label"
-    = f.text_field :participant_arrangement, class: "form-control"
+    = f.select :participant_arrangement, options_for_select(arrangements, episode.participant_arrangement), { include_blank: "Select..." }, { class: "form-select" }
 
   .col-md-3
     = f.label :type_modifiers, class: "form-label"
-    = f.text_field :type_modifiers, class: "form-control"
+    = f.select :type_modifiers, options_for_select(modifiers, episode.type_modifiers), { include_blank: "None" }, { class: "form-select" }
 
   .col-12
     = f.label :synopsis, class: "form-label"
@@ -47,6 +58,326 @@
     = f.label :notes, class: "form-label"
     = f.text_area :notes, class: "form-control", rows: 2
 
+  / ===== Participants =====
+  .col-12
+    hr.my-2
+    h5.mb-3 Participants
+
+    table.table.table-sm.table-bordered.mb-2#participants-table
+      thead.table-light
+        tr
+          th Survivor
+          th Role
+          th Start PSR
+          th End PSR
+          th Days
+          th Result
+          th Weight Loss
+          th.text-center
+            abbr title="Partner Replacement" PR
+          th
+      tbody
+        - episode.appearances.each_with_index do |a, i|
+          = f.fields_for :appearances, a, index: i do |af|
+            tr.participant-row data-appearance-idx=i
+              td
+                = af.hidden_field :id
+                = af.collection_select :survivor_id, Survivor.order(:full_name), :id, :full_name, { include_blank: "Select survivor..." }, { class: "form-select form-select-sm" }
+              td = af.select :role, roles, { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = af.number_field :starting_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
+              td = af.number_field :ending_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
+              td = af.number_field :days_lasted, class: "form-control form-control-sm", min: 0, style: "width:65px"
+              td = af.select :result, results, { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = af.number_field :weight_loss, class: "form-control form-control-sm", min: 0, style: "width:70px"
+              td.text-center = af.check_box :partner_replacement, class: "form-check-input"
+              td
+                = af.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger type="button" data-action="click->remove-row#remove" &times;
+            tr.items-row
+              td colspan="9"
+                .ps-3.pb-2
+                  small.text-muted.fw-bold Items
+                  .items-container data-appearance-idx=i
+                    - a.appearance_items.each_with_index do |ai, j|
+                      = af.fields_for :appearance_items, ai, index: j do |aif|
+                        .d-flex.align-items-center.gap-1.mb-1.item-entry
+                          = aif.hidden_field :id
+                          = aif.collection_select :item_id, Item.order(:name), :id, :name, { include_blank: "Select item..." }, { class: "form-select form-select-sm", style: "width:200px" }
+                          = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm", style: "width:120px" }
+                          = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, value: (ai.quantity || 1), style: "width:60px", placeholder: "Qty"
+                          = aif.hidden_field :_destroy, value: "0"
+                          button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
+                  button.btn.btn-sm.btn-outline-secondary.add-item-btn type="button" data-appearance-idx=i + Item
+
+    / Empty row template for adding new participants
+    template#participant-template
+      tr.participant-row data-appearance-idx="NEW_IDX"
+        td
+          select.form-select.form-select-sm name="episode[appearances_attributes][NEW_IDX][survivor_id]"
+            option value="" Select survivor...
+            - survivors_list.each do |name, id|
+              option value=id = name
+        td
+          select.form-select.form-select-sm name="episode[appearances_attributes][NEW_IDX][role]"
+            option value=""
+            - roles.each do |label, val|
+              option value=val = label
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][starting_psr]" step="0.1" min="0" max="10" style="width:70px"
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][ending_psr]" step="0.1" min="0" max="10" style="width:70px"
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][days_lasted]" min="0" style="width:65px"
+        td
+          select.form-select.form-select-sm name="episode[appearances_attributes][NEW_IDX][result]"
+            option value=""
+            - results.each do |label, val|
+              option value=val = label
+        td
+          input.form-control.form-control-sm type="number" name="episode[appearances_attributes][NEW_IDX][weight_loss]" min="0" style="width:70px"
+        td.text-center
+          input.form-check-input type="checkbox" name="episode[appearances_attributes][NEW_IDX][partner_replacement]" value="1"
+        td
+          input type="hidden" name="episode[appearances_attributes][NEW_IDX][_destroy]" value="0"
+          button.btn.btn-sm.btn-outline-danger type="button" onclick="this.closest('tr').remove()" &times;
+      tr.items-row
+        td colspan="9"
+          .ps-3.pb-2
+            small.text-muted.fw-bold Items
+            .items-container data-appearance-idx="NEW_IDX"
+            button.btn.btn-sm.btn-outline-secondary.add-item-btn type="button" data-appearance-idx="NEW_IDX" + Item
+
+    / Empty item row template
+    template#item-template
+      .d-flex.align-items-center.gap-1.mb-1.item-entry
+        select.form-select.form-select-sm name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][item_id]" style="width:200px"
+          option value="" Select item...
+          - items_list.each do |name, id|
+            option value=id = name
+        select.form-select.form-select-sm name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][source]" style="width:120px"
+          option value="" Source...
+          - sources.each do |label, val|
+            option value=val = label
+        input.form-control.form-control-sm type="number" name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][quantity]" min="1" value="1" style="width:60px" placeholder="Qty"
+        input type="hidden" name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][_destroy]" value="0"
+        button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
+
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-participant" + Add Participant
+
+  / ===== Food Sources =====
+  .col-12
+    hr.my-2
+    h5.mb-3 Food Sources
+
+    table.table.table-sm.table-bordered.mb-2#food-sources-table
+      thead.table-light
+        tr
+          th Name
+          th Category
+          th Method
+          th Survivor
+          th Tools Used
+          th Notes
+          th
+      tbody
+        - episode.food_sources.each_with_index do |fs, i|
+          = f.fields_for :food_sources, fs, index: i do |fsf|
+            tr.food-source-row
+              td
+                = fsf.hidden_field :id
+                = fsf.text_field :name, class: "form-control form-control-sm", placeholder: "e.g. iguana"
+              td = fsf.select :category, food_categories, { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = fsf.select :method, food_methods, { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = fsf.collection_select :survivor_id, Survivor.order(:full_name), :id, :full_name, { include_blank: "Team" }, { class: "form-select form-select-sm" }
+              td = fsf.text_field :tools_used, class: "form-control form-control-sm", placeholder: "e.g. spear"
+              td = fsf.text_field :notes, class: "form-control form-control-sm"
+              td
+                = fsf.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-food-btn type="button" &times;
+
+    / Empty food source template
+    template#food-source-template
+      tr.food-source-row
+        td
+          input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][name]" placeholder="e.g. iguana"
+        td
+          select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][category]"
+            option value=""
+            - food_categories.each do |label, val|
+              option value=val = label
+        td
+          select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][method]"
+            option value=""
+            - food_methods.each do |label, val|
+              option value=val = label
+        td
+          select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][survivor_id]"
+            option value="" Team
+            - survivors_list.each do |name, id|
+              option value=id = name
+        td
+          input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][tools_used]" placeholder="e.g. spear"
+        td
+          input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][notes]"
+        td
+          input type="hidden" name="episode[food_sources_attributes][FS_IDX][_destroy]" value="0"
+          button.btn.btn-sm.btn-outline-danger.remove-food-btn type="button" &times;
+
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-food-source" + Add Food Source
+
+  / ===== Shelters =====
+  .col-12
+    hr.my-2
+    h5.mb-3 Shelters
+
+    table.table.table-sm.table-bordered.mb-2#shelters-table
+      thead.table-light
+        tr
+          th Type
+          th Materials
+          th Notes
+          th
+      tbody
+        - episode.episode_shelters.each_with_index do |es, i|
+          = f.fields_for :episode_shelters, es, index: i do |esf|
+            tr.shelter-row
+              td
+                = esf.hidden_field :id
+                = esf.select :shelter_type, options_for_select(shelter_types, es.shelter_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+              td = esf.text_field :materials, class: "form-control form-control-sm", placeholder: "e.g. bamboo, palm fronds"
+              td = esf.text_field :notes, class: "form-control form-control-sm"
+              td
+                = esf.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-shelter-btn type="button" &times;
+
+    / Empty shelter template
+    template#shelter-template
+      tr.shelter-row
+        td
+          select.form-select.form-select-sm name="episode[episode_shelters_attributes][SH_IDX][shelter_type]"
+            option value="" Select...
+            - shelter_types.each do |t|
+              option value=t = t
+        td
+          input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][materials]" placeholder="e.g. bamboo, palm fronds"
+        td
+          input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][notes]"
+        td
+          input type="hidden" name="episode[episode_shelters_attributes][SH_IDX][_destroy]" value="0"
+          button.btn.btn-sm.btn-outline-danger.remove-shelter-btn type="button" &times;
+
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-shelter" + Add Shelter
+
   .col-12
     = f.submit class: "btn btn-primary"
     = link_to "Cancel", admin_episodes_path, class: "btn btn-outline-secondary ms-2"
+
+javascript:
+  // Add new participant
+  document.getElementById("add-participant")?.addEventListener("click", function() {
+    var tbody = document.querySelector("#participants-table tbody");
+    var tmpl  = document.getElementById("participant-template");
+    var idx   = Date.now();
+    var html  = tmpl.innerHTML.replace(/NEW_IDX/g, idx);
+    tbody.insertAdjacentHTML("beforeend", html);
+  });
+
+  // Remove participant (mark _destroy or remove from DOM)
+  document.getElementById("participants-table")?.addEventListener("click", function(e) {
+    var btn = e.target.closest("[data-action]") || e.target.closest("button.btn-outline-danger:not(.remove-item-btn):not(.add-item-btn)");
+    if (!btn) return;
+    // Don't handle item buttons here
+    if (btn.classList.contains("remove-item-btn") || btn.classList.contains("add-item-btn")) return;
+
+    var row = btn.closest("tr.participant-row");
+    if (!row) return;
+    var itemsRow = row.nextElementSibling;
+    var destroyField = row.querySelector("input[name*='_destroy']");
+    if (destroyField && row.querySelector("input[name*='[id]']")) {
+      destroyField.value = "1";
+      row.style.display = "none";
+      if (itemsRow && itemsRow.classList.contains("items-row")) itemsRow.style.display = "none";
+    } else {
+      if (itemsRow && itemsRow.classList.contains("items-row")) itemsRow.remove();
+      row.remove();
+    }
+  });
+
+  // Add item to a participant
+  document.getElementById("participants-table")?.addEventListener("click", function(e) {
+    var btn = e.target.closest(".add-item-btn");
+    if (!btn) return;
+
+    var appIdx = btn.getAttribute("data-appearance-idx");
+    var container = btn.previousElementSibling;
+    if (!container || !container.classList.contains("items-container")) {
+      container = btn.parentElement.querySelector(".items-container");
+    }
+    if (!container) return;
+
+    var tmpl = document.getElementById("item-template");
+    var itemIdx = Date.now();
+    var html = tmpl.innerHTML.replace(/APP_IDX/g, appIdx).replace(/ITEM_IDX/g, itemIdx);
+    container.insertAdjacentHTML("beforeend", html);
+  });
+
+  // Remove item (mark _destroy or remove from DOM)
+  document.getElementById("participants-table")?.addEventListener("click", function(e) {
+    var btn = e.target.closest(".remove-item-btn");
+    if (!btn) return;
+
+    var entry = btn.closest(".item-entry");
+    if (!entry) return;
+    var destroyField = entry.querySelector("input[name*='_destroy']");
+    var idField = entry.querySelector("input[name*='[id]']");
+    if (destroyField && idField) {
+      destroyField.value = "1";
+      entry.style.display = "none";
+    } else {
+      entry.remove();
+    }
+  });
+
+  // ===== Food Sources =====
+  document.getElementById("add-food-source")?.addEventListener("click", function() {
+    var tbody = document.querySelector("#food-sources-table tbody");
+    var tmpl  = document.getElementById("food-source-template");
+    var idx   = Date.now();
+    var html  = tmpl.innerHTML.replace(/FS_IDX/g, idx);
+    tbody.insertAdjacentHTML("beforeend", html);
+  });
+
+  document.getElementById("food-sources-table")?.addEventListener("click", function(e) {
+    var btn = e.target.closest(".remove-food-btn");
+    if (!btn) return;
+    var row = btn.closest("tr");
+    var destroyField = row.querySelector("input[name*='_destroy']");
+    if (destroyField && row.querySelector("input[name*='[id]']")) {
+      destroyField.value = "1";
+      row.style.display = "none";
+    } else {
+      row.remove();
+    }
+  });
+
+  // ===== Shelters =====
+  document.getElementById("add-shelter")?.addEventListener("click", function() {
+    var tbody = document.querySelector("#shelters-table tbody");
+    var tmpl  = document.getElementById("shelter-template");
+    var idx   = Date.now();
+    var html  = tmpl.innerHTML.replace(/SH_IDX/g, idx);
+    tbody.insertAdjacentHTML("beforeend", html);
+  });
+
+  document.getElementById("shelters-table")?.addEventListener("click", function(e) {
+    var btn = e.target.closest(".remove-shelter-btn");
+    if (!btn) return;
+    var row = btn.closest("tr");
+    var destroyField = row.querySelector("input[name*='_destroy']");
+    if (destroyField && row.querySelector("input[name*='[id]']")) {
+      destroyField.value = "1";
+      row.style.display = "none";
+    } else {
+      row.remove();
+    }
+  });
