@@ -92,7 +92,7 @@
               td.text-center = af.check_box :partner_replacement, class: "form-check-input"
               td
                 = af.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger type="button" onclick="removeParticipant(this)" &times;
+                button.btn.btn-sm.btn-outline-danger.remove-participant-btn type="button" &times;
             tr.items-row
               td colspan="9"
                 .ps-3.pb-2
@@ -106,8 +106,8 @@
                           = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm", style: "width:120px" }
                           = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, value: (ai.quantity || 1), style: "width:60px", placeholder: "Qty"
                           = aif.hidden_field :_destroy, value: "0"
-                          button.btn.btn-sm.btn-outline-danger type="button" onclick="removeItem(this)" &times;
-                  button.btn.btn-sm.btn-outline-secondary type="button" data-appearance-idx=i onclick="addItem(this)" + Item
+                          button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
+                  button.btn.btn-sm.btn-outline-secondary.add-item-btn type="button" data-appearance-idx=i + Item
 
     / Empty row template for adding new participants
     template#participant-template
@@ -139,13 +139,13 @@
           input.form-check-input type="checkbox" name="episode[appearances_attributes][NEW_IDX][partner_replacement]" value="1"
         td
           input type="hidden" name="episode[appearances_attributes][NEW_IDX][_destroy]" value="0"
-          button.btn.btn-sm.btn-outline-danger type="button" onclick="removeParticipant(this)" &times;
+          button.btn.btn-sm.btn-outline-danger.remove-participant-btn type="button" &times;
       tr.items-row
         td colspan="9"
           .ps-3.pb-2
             small.text-muted.fw-bold Items
             .items-container data-appearance-idx="NEW_IDX"
-            button.btn.btn-sm.btn-outline-secondary type="button" data-appearance-idx="NEW_IDX" onclick="addItem(this)" + Item
+            button.btn.btn-sm.btn-outline-secondary.add-item-btn type="button" data-appearance-idx="NEW_IDX" + Item
 
     / Empty item row template
     template#item-template
@@ -160,9 +160,9 @@
             option value=val = label
         input.form-control.form-control-sm type="number" name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][quantity]" min="1" value="1" style="width:60px" placeholder="Qty"
         input type="hidden" name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][_destroy]" value="0"
-        button.btn.btn-sm.btn-outline-danger type="button" onclick="removeItem(this)" &times;
+        button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
 
-    button.btn.btn-sm.btn-outline-primary type="button" onclick="addParticipant()" + Add Participant
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-participant" + Add Participant
 
   / ===== Food Sources =====
   .col-12
@@ -193,7 +193,7 @@
               td = fsf.text_field :notes, class: "form-control form-control-sm"
               td
                 = fsf.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger type="button" onclick="removeRow(this)" &times;
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
     / Empty food source template
     template#food-source-template
@@ -221,9 +221,9 @@
           input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][notes]"
         td
           input type="hidden" name="episode[food_sources_attributes][FS_IDX][_destroy]" value="0"
-          button.btn.btn-sm.btn-outline-danger type="button" onclick="removeRow(this)" &times;
+          button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    button.btn.btn-sm.btn-outline-primary type="button" onclick="addFoodSource()" + Add Food Source
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-food-source" + Add Food Source
 
   / ===== Shelters =====
   .col-12
@@ -248,7 +248,7 @@
               td = esf.text_field :notes, class: "form-control form-control-sm"
               td
                 = esf.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger type="button" onclick="removeRow(this)" &times;
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
     / Empty shelter template
     template#shelter-template
@@ -264,84 +264,10 @@
           input.form-control.form-control-sm type="text" name="episode[episode_shelters_attributes][SH_IDX][notes]"
         td
           input type="hidden" name="episode[episode_shelters_attributes][SH_IDX][_destroy]" value="0"
-          button.btn.btn-sm.btn-outline-danger type="button" onclick="removeRow(this)" &times;
+          button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
-    button.btn.btn-sm.btn-outline-primary type="button" onclick="addShelter()" + Add Shelter
+    button.btn.btn-sm.btn-outline-primary type="button" id="add-shelter" + Add Shelter
 
   .col-12
     = f.submit class: "btn btn-primary"
     = link_to "Cancel", admin_episodes_path, class: "btn btn-outline-secondary ms-2"
-
-javascript:
-  function addParticipant() {
-    var tbody = document.querySelector("#participants-table tbody");
-    var tmpl  = document.getElementById("participant-template");
-    var idx   = Date.now();
-    var html  = tmpl.innerHTML.replace(/NEW_IDX/g, idx);
-    tbody.insertAdjacentHTML("beforeend", html);
-  }
-
-  function removeParticipant(btn) {
-    var row = btn.closest("tr.participant-row");
-    if (!row) return;
-    var itemsRow = row.nextElementSibling;
-    var destroyField = row.querySelector("input[name*='_destroy']");
-    if (destroyField && row.querySelector("input[name*='[id]']")) {
-      destroyField.value = "1";
-      row.style.display = "none";
-      if (itemsRow && itemsRow.classList.contains("items-row")) itemsRow.style.display = "none";
-    } else {
-      if (itemsRow && itemsRow.classList.contains("items-row")) itemsRow.remove();
-      row.remove();
-    }
-  }
-
-  function addItem(btn) {
-    var appIdx = btn.getAttribute("data-appearance-idx");
-    var container = btn.parentElement.querySelector(".items-container");
-    if (!container) return;
-    var tmpl = document.getElementById("item-template");
-    var itemIdx = Date.now();
-    var html = tmpl.innerHTML.replace(/APP_IDX/g, appIdx).replace(/ITEM_IDX/g, itemIdx);
-    container.insertAdjacentHTML("beforeend", html);
-  }
-
-  function removeItem(btn) {
-    var entry = btn.closest(".item-entry");
-    if (!entry) return;
-    var destroyField = entry.querySelector("input[name*='_destroy']");
-    var idField = entry.querySelector("input[name*='[id]']");
-    if (destroyField && idField) {
-      destroyField.value = "1";
-      entry.style.display = "none";
-    } else {
-      entry.remove();
-    }
-  }
-
-  function addFoodSource() {
-    var tbody = document.querySelector("#food-sources-table tbody");
-    var tmpl  = document.getElementById("food-source-template");
-    var idx   = Date.now();
-    var html  = tmpl.innerHTML.replace(/FS_IDX/g, idx);
-    tbody.insertAdjacentHTML("beforeend", html);
-  }
-
-  function addShelter() {
-    var tbody = document.querySelector("#shelters-table tbody");
-    var tmpl  = document.getElementById("shelter-template");
-    var idx   = Date.now();
-    var html  = tmpl.innerHTML.replace(/SH_IDX/g, idx);
-    tbody.insertAdjacentHTML("beforeend", html);
-  }
-
-  function removeRow(btn) {
-    var row = btn.closest("tr");
-    var destroyField = row.querySelector("input[name*='_destroy']");
-    if (destroyField && row.querySelector("input[name*='[id]']")) {
-      destroyField.value = "1";
-      row.style.display = "none";
-    } else {
-      row.remove();
-    }
-  }
