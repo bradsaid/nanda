@@ -6,6 +6,18 @@ module ApplicationHelper
     mins > 0 ? "#{mins}m #{secs}s" : "#{secs}s"
   end
 
+  def linkify_survivors(text, survivors)
+    return text if text.blank? || survivors.blank?
+    escaped = ERB::Util.html_escape(text)
+    # Sort by name length descending to match longer names first (e.g. "Jeff Zausch" before "Jeff")
+    survivors.sort_by { |s| -s.full_name.length }.each do |s|
+      escaped = escaped.gsub(/\b#{Regexp.escape(s.full_name)}\b/i) do |match|
+        "<a href=\"#{survivor_path(s)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
+      end
+    end
+    simple_format(escaped.html_safe)
+  end
+
   def item_icon(item)
     name = item.is_a?(String) ? item : item&.name.to_s
     case name
