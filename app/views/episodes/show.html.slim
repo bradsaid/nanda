@@ -168,6 +168,37 @@ script type="application/json" id="episode-jsonld-data"= data
       .card-body
         p.text-muted.mb-0 No participants recorded.
 
+  / ===== Traps =====
+  - if @episode.episode_traps.any?
+    .card.shadow-sm.mt-4
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 🪤
+        h2.h5.mb-0 Traps
+      .table-responsive
+        table.table.table-sm.table-hover.mb-0
+          thead.table-light
+            tr
+              th Type
+              th Built By
+              th Result
+              th Notes
+          tbody
+            - @episode.episode_traps.each do |trap|
+              tr
+                td.fw-semibold = trap.trap_type
+                td
+                  - if trap.builders&.any?
+                    = safe_join(trap.builders.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                  - else
+                    span.text-muted —
+                td
+                  - if trap.result.present?
+                    - ok = (trap.result == "Success")
+                    span.badge class=(ok ? "bg-success" : "bg-danger") = trap.result
+                  - else
+                    span.text-muted —
+                td = trap.notes.presence || "—"
+
   / ===== Shelter =====
   - if @episode.episode_shelters.any?
     .card.shadow-sm.mt-4
@@ -196,6 +227,7 @@ script type="application/json" id="episode-jsonld-data"= data
               th Name
               th Category
               th Method
+              th Trap
               th Obtained By
               th.d-none.d-md-table-cell Tools Used
           tbody
@@ -208,6 +240,7 @@ script type="application/json" id="episode-jsonld-data"= data
                   - else
                     span.badge.bg-success-subtle.text-success-emphasis Plant
                 td = fs.method&.humanize || "—"
+                td = fs.episode_trap ? fs.episode_trap.trap_type : "—"
                 td
                   - if fs.survivors&.any?
                     = safe_join(fs.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
