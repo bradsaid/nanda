@@ -83,34 +83,34 @@
         = f.fields_for :appearances do |af|
           - a = af.object
           - i = af.object_name[/\[(\d+)\]\z/, 1]
-            tr.participant-row data-appearance-idx=i
-              td
-                = af.hidden_field :id
-                = af.collection_select :survivor_id, Survivor.order(:full_name), :id, :full_name, { include_blank: "Select survivor..." }, { class: "form-select form-select-sm" }
-              td = af.select :role, roles, { include_blank: "" }, { class: "form-select form-select-sm" }
-              td = af.number_field :starting_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
-              td = af.number_field :ending_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
-              td = af.number_field :days_lasted, class: "form-control form-control-sm", min: 0, style: "width:65px"
-              td = af.select :result, results, { include_blank: "" }, { class: "form-select form-select-sm" }
-              td = af.number_field :weight_loss, class: "form-control form-control-sm", min: 0, style: "width:70px"
-              td.text-center = af.check_box :partner_replacement, class: "form-check-input"
-              td
-                = af.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger.remove-participant-btn type="button" &times;
-            tr.items-row
-              td colspan="9"
-                .ps-3.pb-2
-                  small.text-muted.fw-bold Items
-                  .items-container data-appearance-idx=i
-                    = af.fields_for :appearance_items do |aif|
-                      .d-flex.align-items-center.gap-1.mb-1.item-entry
-                        = aif.hidden_field :id
-                        = aif.collection_select :item_id, Item.order(:name), :id, :name, { include_blank: "Select item..." }, { class: "form-select form-select-sm", style: "width:200px" }
-                        = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm", style: "width:120px" }
-                        = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, style: "width:60px", placeholder: "Qty"
-                        = aif.hidden_field :_destroy, value: "0"
-                        button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
-                  button.btn.btn-sm.btn-outline-secondary.add-item-btn type="button" data-appearance-idx=i + Item
+          tr.participant-row data-appearance-idx=i
+            td
+              = af.hidden_field :id
+              = af.collection_select :survivor_id, Survivor.order(:full_name), :id, :full_name, { include_blank: "Select survivor..." }, { class: "form-select form-select-sm" }
+            td = af.select :role, roles, { include_blank: "" }, { class: "form-select form-select-sm" }
+            td = af.number_field :starting_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
+            td = af.number_field :ending_psr, class: "form-control form-control-sm", step: 0.1, min: 0, max: 10, style: "width:70px"
+            td = af.number_field :days_lasted, class: "form-control form-control-sm", min: 0, style: "width:65px"
+            td = af.select :result, results, { include_blank: "" }, { class: "form-select form-select-sm" }
+            td = af.number_field :weight_loss, class: "form-control form-control-sm", min: 0, style: "width:70px"
+            td.text-center = af.check_box :partner_replacement, class: "form-check-input"
+            td
+              = af.hidden_field :_destroy, value: "0"
+              button.btn.btn-sm.btn-outline-danger.remove-participant-btn type="button" &times;
+          tr.items-row
+            td colspan="9"
+              .ps-3.pb-2
+                small.text-muted.fw-bold Items
+                .items-container data-appearance-idx=i
+                  = af.fields_for :appearance_items do |aif|
+                    .d-flex.align-items-center.gap-1.mb-1.item-entry
+                      = aif.hidden_field :id
+                      = aif.collection_select :item_id, Item.order(:name), :id, :name, { include_blank: "Select item..." }, { class: "form-select form-select-sm", style: "width:200px" }
+                      = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm", style: "width:120px" }
+                      = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, style: "width:60px", placeholder: "Qty"
+                      = aif.hidden_field :_destroy, value: "0"
+                      button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
+                button.btn.btn-sm.btn-outline-secondary.add-item-btn type="button" data-appearance-idx=i + Item
 
     / Empty row template for adding new participants
     template#participant-template
@@ -186,22 +186,22 @@
           = f.fields_for :episode_traps do |etf|
             - et = etf.object
             - i = etf.object_name[/\[(\d+)\]\z/, 1]
-              tr.trap-row
-                td
-                  = etf.hidden_field :id
-                  = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
-                td
-                  input type="hidden" name="episode[episode_traps_attributes][#{i}][builder_ids][]" value=""
-                  .builder-checkboxes
-                    - episode_survivors.each do |s|
-                      .form-check.form-check-inline
-                        = check_box_tag "episode[episode_traps_attributes][#{i}][builder_ids][]", s.id, et.builder_ids.include?(s.id), class: "form-check-input", id: "trap_#{i}_builder_#{s.id}"
-                        = label_tag "trap_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
-                td = etf.select :result, options_for_select(trap_results, et.result), { include_blank: "" }, { class: "form-select form-select-sm" }
-                td = etf.text_field :notes, class: "form-control form-control-sm", placeholder: "e.g. iguana"
-                td
-                  = etf.hidden_field :_destroy, value: "0"
-                  button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+            tr.trap-row
+              td
+                = etf.hidden_field :id
+                = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+              td
+                input type="hidden" name="episode[episode_traps_attributes][#{i}][builder_ids][]" value=""
+                .builder-checkboxes
+                  - episode_survivors.each do |s|
+                    .form-check.form-check-inline
+                      = check_box_tag "episode[episode_traps_attributes][#{i}][builder_ids][]", s.id, et.builder_ids.include?(s.id), class: "form-check-input", id: "trap_#{i}_builder_#{s.id}"
+                      = label_tag "trap_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
+              td = etf.select :result, options_for_select(trap_results, et.result), { include_blank: "" }, { class: "form-select form-select-sm" }
+              td = etf.text_field :notes, class: "form-control form-control-sm", placeholder: "e.g. iguana"
+              td
+                = etf.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
       / Empty trap template
       template#trap-template
@@ -244,22 +244,22 @@
           = f.fields_for :episode_shelters do |esf|
             - es = esf.object
             - i = esf.object_name[/\[(\d+)\]\z/, 1]
-              tr.shelter-row
-                td
-                  = esf.hidden_field :id
-                  = esf.select :shelter_type, options_for_select(shelter_types, es.shelter_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
-                td
-                  input type="hidden" name="episode[episode_shelters_attributes][#{i}][builder_ids][]" value=""
-                  .builder-checkboxes
-                    - episode_survivors.each do |s|
-                      .form-check.form-check-inline
-                        = check_box_tag "episode[episode_shelters_attributes][#{i}][builder_ids][]", s.id, es.builder_ids.include?(s.id), class: "form-check-input", id: "shelter_#{i}_builder_#{s.id}"
-                        = label_tag "shelter_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
-                td = esf.text_field :materials, class: "form-control form-control-sm", placeholder: "e.g. bamboo, palm fronds"
-                td = esf.text_field :notes, class: "form-control form-control-sm"
-                td
-                  = esf.hidden_field :_destroy, value: "0"
-                  button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+            tr.shelter-row
+              td
+                = esf.hidden_field :id
+                = esf.select :shelter_type, options_for_select(shelter_types, es.shelter_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+              td
+                input type="hidden" name="episode[episode_shelters_attributes][#{i}][builder_ids][]" value=""
+                .builder-checkboxes
+                  - episode_survivors.each do |s|
+                    .form-check.form-check-inline
+                      = check_box_tag "episode[episode_shelters_attributes][#{i}][builder_ids][]", s.id, es.builder_ids.include?(s.id), class: "form-check-input", id: "shelter_#{i}_builder_#{s.id}"
+                      = label_tag "shelter_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
+              td = esf.text_field :materials, class: "form-control form-control-sm", placeholder: "e.g. bamboo, palm fronds"
+              td = esf.text_field :notes, class: "form-control form-control-sm"
+              td
+                = esf.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
       / Empty shelter template
       template#shelter-template
@@ -303,26 +303,26 @@
           = f.fields_for :food_sources do |fsf|
             - fs = fsf.object
             - i = fsf.object_name[/\[(\d+)\]\z/, 1]
-              tr.food-source-row
-                td
-                  = fsf.hidden_field :id
-                  = fsf.text_field :name, class: "form-control form-control-sm", placeholder: "e.g. iguana"
-                td = fsf.select :category, food_categories, { include_blank: "" }, { class: "form-select form-select-sm food-source-category" }
-                td = fsf.select :method, food_methods, { include_blank: "" }, { class: "form-select form-select-sm food-source-method" }
-                td
-                  = fsf.select :episode_trap_id, options_for_select(episode_traps_list, fs.episode_trap_id), { include_blank: "None" }, { class: "form-select form-select-sm trap-select", style: (fs.method_trapped? ? "" : "display:none") }
-                td
-                  input type="hidden" name="episode[food_sources_attributes][#{i}][survivor_ids][]" value=""
-                  .survivor-checkboxes
-                    - episode_survivors.each do |s|
-                      .form-check.form-check-inline
-                        = check_box_tag "episode[food_sources_attributes][#{i}][survivor_ids][]", s.id, fs.survivor_ids.include?(s.id), class: "form-check-input", id: "fs_#{i}_survivor_#{s.id}"
-                        = label_tag "fs_#{i}_survivor_#{s.id}", s.full_name, class: "form-check-label"
-                td = fsf.text_field :tools_used, class: "form-control form-control-sm", placeholder: "e.g. spear"
-                td = fsf.text_field :notes, class: "form-control form-control-sm"
-                td
-                  = fsf.hidden_field :_destroy, value: "0"
-                  button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+            tr.food-source-row
+              td
+                = fsf.hidden_field :id
+                = fsf.text_field :name, class: "form-control form-control-sm", placeholder: "e.g. iguana"
+              td = fsf.select :category, food_categories, { include_blank: "" }, { class: "form-select form-select-sm food-source-category" }
+              td = fsf.select :method, food_methods, { include_blank: "" }, { class: "form-select form-select-sm food-source-method" }
+              td
+                = fsf.select :episode_trap_id, options_for_select(episode_traps_list, fs.episode_trap_id), { include_blank: "None" }, { class: "form-select form-select-sm trap-select", style: (fs.method_trapped? ? "" : "display:none") }
+              td
+                input type="hidden" name="episode[food_sources_attributes][#{i}][survivor_ids][]" value=""
+                .survivor-checkboxes
+                  - episode_survivors.each do |s|
+                    .form-check.form-check-inline
+                      = check_box_tag "episode[food_sources_attributes][#{i}][survivor_ids][]", s.id, fs.survivor_ids.include?(s.id), class: "form-check-input", id: "fs_#{i}_survivor_#{s.id}"
+                      = label_tag "fs_#{i}_survivor_#{s.id}", s.full_name, class: "form-check-label"
+              td = fsf.text_field :tools_used, class: "form-control form-control-sm", placeholder: "e.g. spear"
+              td = fsf.text_field :notes, class: "form-control form-control-sm"
+              td
+                = fsf.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
       / Empty food source template
       template#food-source-template
