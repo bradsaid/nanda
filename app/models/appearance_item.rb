@@ -16,12 +16,5 @@ class AppearanceItem < ApplicationRecord
 
   validates :quantity, numericality: { greater_than: 0 }
   validates :source, presence: true
-
-  # Allow multiple brought items for Solo and XL/Frozen; keep the rule for others.
-  validates :appearance_id, uniqueness: {
-    scope: :source,
-    conditions: -> { where(source: "brought") },
-    message: "already has a brought item"
-  }, unless: -> { source_brought? && appearance&.role.in?(%w[solo xl_team frozen]) }
 end
 
