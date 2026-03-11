@@ -181,7 +181,7 @@ script type="application/json" id="episode-jsonld-data"= data
               th Type
               th Built By
               th Result
-              th Notes
+              th Caught
           tbody
             - @episode.episode_traps.each do |trap|
               tr
@@ -197,7 +197,9 @@ script type="application/json" id="episode-jsonld-data"= data
                     span.badge class=(ok ? "bg-success" : "bg-danger") = trap.result
                   - else
                     span.text-muted —
-                td = trap.notes.presence || "—"
+                td
+                  - catches = trap.food_sources.map { |fs| fs.name.titleize }
+                  = catches.any? ? catches.join(", ") : "—"
 
   / ===== Shelter =====
   - if @episode.episode_shelters.any?
