@@ -229,7 +229,6 @@ script type="application/json" id="episode-jsonld-data"= data
               th Name
               th Category
               th Method
-              th Trap
               th Obtained By
               th.d-none.d-md-table-cell Tools Used
           tbody
@@ -242,10 +241,13 @@ script type="application/json" id="episode-jsonld-data"= data
                   - else
                     span.badge.bg-success-subtle.text-success-emphasis Plant
                 td = fs.method&.humanize || "—"
-                td = fs.episode_trap ? fs.episode_trap.trap_type : "—"
                 td
                   - if fs.survivors&.any?
                     = safe_join(fs.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     | Team
-                td.d-none.d-md-table-cell = fs.tools_used.presence || "—"
+                td.d-none.d-md-table-cell
+                  - parts = []
+                  - parts << "#{fs.episode_trap.trap_type} Trap" if fs.episode_trap
+                  - parts << fs.tools_used if fs.tools_used.present?
+                  = parts.any? ? parts.join(" with ") : "—"
