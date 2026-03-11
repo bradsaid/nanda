@@ -80,8 +80,9 @@
             abbr title="Partner Replacement" PR
           th
       tbody
-        - episode.appearances.each_with_index do |a, i|
-          = f.fields_for :appearances, a, index: i do |af|
+        = f.fields_for :appearances do |af|
+          - a = af.object
+          - i = af.object_name[/\[(\d+)\]\z/, 1]
             tr.participant-row data-appearance-idx=i
               td
                 = af.hidden_field :id
@@ -101,15 +102,14 @@
                 .ps-3.pb-2
                   small.text-muted.fw-bold Items
                   .items-container data-appearance-idx=i
-                    - a.appearance_items.each_with_index do |ai, j|
-                      = af.fields_for :appearance_items, ai, index: j do |aif|
-                        .d-flex.align-items-center.gap-1.mb-1.item-entry
-                          = aif.hidden_field :id
-                          = aif.collection_select :item_id, Item.order(:name), :id, :name, { include_blank: "Select item..." }, { class: "form-select form-select-sm", style: "width:200px" }
-                          = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm", style: "width:120px" }
-                          = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, value: (ai.quantity || 1), style: "width:60px", placeholder: "Qty"
-                          = aif.hidden_field :_destroy, value: "0"
-                          button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
+                    = af.fields_for :appearance_items do |aif|
+                      .d-flex.align-items-center.gap-1.mb-1.item-entry
+                        = aif.hidden_field :id
+                        = aif.collection_select :item_id, Item.order(:name), :id, :name, { include_blank: "Select item..." }, { class: "form-select form-select-sm", style: "width:200px" }
+                        = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm", style: "width:120px" }
+                        = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, style: "width:60px", placeholder: "Qty"
+                        = aif.hidden_field :_destroy, value: "0"
+                        button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
                   button.btn.btn-sm.btn-outline-secondary.add-item-btn type="button" data-appearance-idx=i + Item
 
     / Empty row template for adding new participants
@@ -183,8 +183,9 @@
             th Catch
             th
         tbody
-          - episode.episode_traps.each_with_index do |et, i|
-            = f.fields_for :episode_traps, et, index: i do |etf|
+          = f.fields_for :episode_traps do |etf|
+            - et = etf.object
+            - i = etf.object_name[/\[(\d+)\]\z/, 1]
               tr.trap-row
                 td
                   = etf.hidden_field :id
@@ -240,8 +241,9 @@
             th Notes
             th
         tbody
-          - episode.episode_shelters.each_with_index do |es, i|
-            = f.fields_for :episode_shelters, es, index: i do |esf|
+          = f.fields_for :episode_shelters do |esf|
+            - es = esf.object
+            - i = esf.object_name[/\[(\d+)\]\z/, 1]
               tr.shelter-row
                 td
                   = esf.hidden_field :id
@@ -298,8 +300,9 @@
             th Notes
             th
         tbody
-          - episode.food_sources.each_with_index do |fs, i|
-            = f.fields_for :food_sources, fs, index: i do |fsf|
+          = f.fields_for :food_sources do |fsf|
+            - fs = fsf.object
+            - i = fsf.object_name[/\[(\d+)\]\z/, 1]
               tr.food-source-row
                 td
                   = fsf.hidden_field :id
