@@ -209,8 +209,8 @@ script type="application/json" id="episode-jsonld-data"= data
                     span.badge.bg-success-subtle.text-success-emphasis Plant
                 td = fs.method&.humanize || "—"
                 td
-                  - if fs.survivor
-                    = link_to fs.survivor.full_name, survivor_path(fs.survivor)
+                  - if fs.survivors&.any?
+                    = safe_join(fs.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     | Team
                 td.d-none.d-md-table-cell = fs.tools_used.presence || "—"

@@ -46,7 +46,7 @@ module Admin
     def set_episode
       @episode = Episode.includes(
         appearances: [:survivor, { appearance_items: :item }],
-        food_sources: :survivor,
+        food_sources: [],
         episode_traps: [],
         episode_shelters: []
       ).find(params[:id])
@@ -65,7 +65,7 @@ module Admin
           ]
         ],
         food_sources_attributes: [
-          :id, :name, :category, :method, :survivor_id, :episode_trap_id, :tools_used, :notes, :_destroy
+          :id, :name, :category, :method, :episode_trap_id, :tools_used, :notes, :_destroy, survivor_ids: []
         ],
         episode_traps_attributes: [
           :id, :trap_type, :result, :notes, :_destroy, builder_ids: []

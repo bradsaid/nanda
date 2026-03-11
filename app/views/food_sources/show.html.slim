@@ -45,8 +45,8 @@
                 td = link_to "S#{season.number}", season_path(season)
                 td.d-none.d-md-table-cell = ep.location&.country || "—"
                 td
-                  - if fs.survivor
-                    = link_to fs.survivor.full_name, survivor_path(fs.survivor)
+                  - if fs.survivors&.any?
+                    = safe_join(fs.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     | Team
                 td = fs.method&.humanize || "—"

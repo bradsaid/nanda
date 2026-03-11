@@ -293,7 +293,7 @@
             th Category
             th Method
             th Trap
-            th Survivor
+            th Survivors
             th Tools Used
             th Notes
             th
@@ -309,7 +309,12 @@
                 td
                   = fsf.select :episode_trap_id, options_for_select(episode_traps_list, fs.episode_trap_id), { include_blank: "None" }, { class: "form-select form-select-sm trap-select", style: (fs.method_trapped? ? "" : "display:none") }
                 td
-                  = fsf.select :survivor_id, options_for_select(episode_survivors.map { |s| [s.full_name, s.id] }, fs.survivor_id), { include_blank: "Team" }, { class: "form-select form-select-sm" }
+                  input type="hidden" name="episode[food_sources_attributes][#{i}][survivor_ids][]" value=""
+                  .survivor-checkboxes
+                    - episode_survivors.each do |s|
+                      .form-check.form-check-inline
+                        = check_box_tag "episode[food_sources_attributes][#{i}][survivor_ids][]", s.id, fs.survivor_ids.include?(s.id), class: "form-check-input", id: "fs_#{i}_survivor_#{s.id}"
+                        = label_tag "fs_#{i}_survivor_#{s.id}", s.full_name, class: "form-check-label"
                 td = fsf.text_field :tools_used, class: "form-control form-control-sm", placeholder: "e.g. spear"
                 td = fsf.text_field :notes, class: "form-control form-control-sm"
                 td
@@ -337,10 +342,8 @@
               - episode_traps_list.each do |label, id|
                 option value=id = label
           td
-            select.form-select.form-select-sm name="episode[food_sources_attributes][FS_IDX][survivor_id]"
-              option value="" Team
-              - episode_survivors.each do |s|
-                option value=s.id = s.full_name
+            input type="hidden" name="episode[food_sources_attributes][FS_IDX][survivor_ids][]" value=""
+            .survivor-checkboxes
           td
             input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][tools_used]" placeholder="e.g. spear"
           td

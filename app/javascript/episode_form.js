@@ -14,14 +14,15 @@ function getEpisodeSurvivors() {
   return survivors;
 }
 
-function populateBuilderCheckboxes(container, survivors, namePrefix, idPrefix) {
+function populateBuilderCheckboxes(container, survivors, namePrefix, idPrefix, fieldName) {
+  fieldName = fieldName || 'builder_ids';
   var html = '';
   survivors.forEach(function(s) {
-    var cbId = idPrefix + '_builder_' + s.id;
+    var cbId = idPrefix + '_' + fieldName.replace('_ids', '') + '_' + s.id;
     var escaped = document.createElement('span');
     escaped.textContent = s.name;
     html += '<div class="form-check form-check-inline">';
-    html += '<input type="checkbox" class="form-check-input" name="' + namePrefix + '[builder_ids][]" value="' + s.id + '" id="' + cbId + '">';
+    html += '<input type="checkbox" class="form-check-input" name="' + namePrefix + '[' + fieldName + '][]" value="' + s.id + '" id="' + cbId + '">';
     html += '<label class="form-check-label" for="' + cbId + '">' + escaped.innerHTML + '</label>';
     html += '</div>';
   });
@@ -48,6 +49,17 @@ function initEpisodeForm() {
     var idx   = Date.now();
     var html  = tmpl.innerHTML.replace(/FS_IDX/g, idx);
     tbody.insertAdjacentHTML("beforeend", html);
+    var newRow = tbody.querySelector("tr.food-source-row:last-child");
+    var container = newRow.querySelector(".survivor-checkboxes");
+    if (container) {
+      populateBuilderCheckboxes(
+        container,
+        getEpisodeSurvivors(),
+        "episode[food_sources_attributes][" + idx + "]",
+        "fs_" + idx,
+        "survivor_ids"
+      );
+    }
   });
 
   // ===== Add Trap =====

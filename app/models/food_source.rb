@@ -1,6 +1,5 @@
 class FoodSource < ApplicationRecord
   belongs_to :episode
-  belongs_to :survivor, optional: true
   belongs_to :episode_trap, optional: true
 
   enum :category, { animal: "animal", plant: "plant" }, prefix: true
@@ -20,8 +19,16 @@ class FoodSource < ApplicationRecord
   scope :animals, -> { where(category: "animal") }
   scope :plants,  -> { where(category: "plant") }
 
+  def survivor_ids=(values)
+    super(Array(values).reject(&:blank?).map(&:to_i))
+  end
+
+  def survivors
+    Survivor.where(id: survivor_ids) if survivor_ids.present?
+  end
+
   def obtained_by_label
-    survivor&.full_name || "Team"
+    survivors&.pluck(:full_name)&.join(", ").presence || "Team"
   end
 
   private
