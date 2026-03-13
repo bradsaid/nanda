@@ -21,6 +21,7 @@ module Admin
       @top_browsers  = PageView.top_browsers(10)
       @device_breakdown = PageView.device_breakdown
       @top_referrers = PageView.top_referrer_domains(10)
+      @direct_views  = PageView.where(referrer_domain: [nil, ""]).count
       @time_by_page  = PageView.avg_duration_by_page(25)
       @recent_views  = PageView.recent(50)
     end

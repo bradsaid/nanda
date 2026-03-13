@@ -180,20 +180,22 @@
                 td.text-end= row.views
 
   / ===== Top Referrer Domains =====
-  - if @top_referrers.any?
-    .card.shadow-sm.mb-4
-      .card-header Top Referrer Domains
-      .table-responsive
-        table.table.table-sm.table-striped.mb-0
-          thead
+  .card.shadow-sm.mb-4
+    .card-header Traffic Sources
+    .table-responsive
+      table.table.table-sm.table-striped.mb-0
+        thead
+          tr
+            th Source
+            th.text-end Views
+        tbody
+          tr.table-light
+            td.fw-semibold Direct / Bookmarked
+            td.text-end.fw-semibold= @direct_views
+          - @top_referrers.each do |domain, count|
             tr
-              th Domain
-              th.text-end Views
-          tbody
-            - @top_referrers.each do |domain, count|
-              tr
-                td= domain
-                td.text-end= count
+              td= domain
+              td.text-end= count
 
   / ===== Daily Views (Last 30 Days) =====
   .card.shadow-sm.mb-4
