@@ -74,6 +74,7 @@ class PageView < ApplicationRecord
 
   def self.top_referrer_domains(limit = 10)
     where.not(referrer_domain: [nil, ""])
+      .where.not(referrer_domain: "nakedandafraidfan.com")
       .group(:referrer_domain)
       .order("count_all desc")
       .limit(limit)
