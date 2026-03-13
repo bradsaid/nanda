@@ -15,17 +15,19 @@ class PageView < ApplicationRecord
       .limit(limit)
   end
 
+  CST_DATE_SQL = "DATE(created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Chicago')"
+
   def self.daily_counts(days = 30)
     where(created_at: days.days.ago..)
-      .group("DATE(created_at)")
-      .order("date_created_at")
+      .group(Arel.sql(CST_DATE_SQL))
+      .order(Arel.sql("#{CST_DATE_SQL} ASC"))
       .count
   end
 
   def self.daily_unique_counts(days = 30)
     col = where.not(visitor_id: [nil, ""]).exists? ? :visitor_id : :session_id
     where(created_at: days.days.ago..)
-      .group("DATE(created_at)")
+      .group(Arel.sql(CST_DATE_SQL))
       .distinct
       .count(col)
   end

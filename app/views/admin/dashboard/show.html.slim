@@ -229,7 +229,7 @@
         tbody
           - @recent_views.each do |pv|
             tr
-              td.text-nowrap= pv.created_at.strftime("%b %-d %H:%M")
+              td.text-nowrap= pv.created_at.in_time_zone("Central Time (US & Canada)").strftime("%b %-d %-I:%M %p")
               td= link_to pv.path, pv.path, class: "link-primary"
               td= pv.country || "—"
               td= pv.device_type || "—"
