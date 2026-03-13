@@ -24,6 +24,8 @@ module TrackPageViews
     ua  = UserAgent.parse(request.user_agent.to_s)
     geo = geocode_ip(request.remote_ip)
     ref = request.referrer
+    ref_domain = extract_domain(ref)
+    is_self = ref_domain&.sub(/\Awww\./, "")&.downcase == "nakedandafraidfan.com"
 
     pv = PageView.create!(
       path:            request.path,
@@ -32,13 +34,13 @@ module TrackPageViews
       method:          request.method,
       ip_address:      request.remote_ip,
       user_agent:      request.user_agent&.truncate(500),
-      referrer:        ref&.truncate(500),
+      referrer:        is_self ? nil : ref&.truncate(500),
       browser:         "#{ua.browser} #{ua.version}".strip.presence,
       os:              ua.os.to_s.presence,
       device_type:     ua.mobile? ? "Mobile" : "Desktop",
       visitor_id:      persistent_visitor_id,
       session_id:      page_view_session_id,
-      referrer_domain: extract_domain(ref),
+      referrer_domain: is_self ? nil : ref_domain,
       country:         geo&.dig(:country),
       city:            geo&.dig(:city)
     )
