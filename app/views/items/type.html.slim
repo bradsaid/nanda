@@ -28,6 +28,17 @@ script type="application/json" id="item-type-jsonld-data"= data
     h1.h3.mb-0.logo = @item_type
     p.subtitle = "#{@items_in_type_count} item(s) in this type. Analytics across all appearances."
 
+  / ===== Category Summary =====
+  - type_descriptions = { "blade" => "Cutting tools and edged weapons used for processing game, building shelter, and general survival tasks.", "pot" => "Cooking vessels used to boil water, prepare food, and store supplies.", "fire starting tool" => "Tools and materials used to create fire for warmth, cooking, water purification, and signaling.", "hunting weapon" => "Weapons used to hunt animals for food, including ranged and melee options.", "fishing tool" => "Equipment used to catch fish and aquatic animals.", "cordage" => "Rope, cord, and string used for binding, building, trapping, and crafting.", "comfort item" => "Gear that provides shelter, protection from elements, or improved living conditions.", "digging tool" => "Tools used for excavation, digging fire pits, or harvesting root vegetables.", "animal" => "Animals encountered, hunted, or caught during episodes.", "plant" => "Plants foraged, harvested, or used during episodes.", "other" => "Miscellaneous items that don't fall into a specific category." }
+  - desc = type_descriptions[@item_type] || "Items categorized as #{@item_type}."
+  .card.shadow-sm.mb-4
+    .card-body
+      p.mb-3 = desc
+      .d-flex.flex-wrap.gap-2
+        - @items_in_type.each do |item|
+          = link_to item_path(item), class: "badge bg-light text-dark border text-decoration-none" do
+            = "#{item_icon(item)} #{item.name}"
+
   / Country filter
   = form_with url: type_items_path(@item_type), method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center

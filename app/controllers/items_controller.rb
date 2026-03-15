@@ -184,7 +184,8 @@ class ItemsController < ApplicationController
       .group("locations.country")
       .order("total DESC")
 
-    @items_in_type_count = Item.where(item_type: @item_type).count
+    @items_in_type = Item.where(item_type: @item_type).order(:name)
+    @items_in_type_count = @items_in_type.size
   end
 
   private
