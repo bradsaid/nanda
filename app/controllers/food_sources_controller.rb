@@ -17,7 +17,7 @@ class FoodSourcesController < ApplicationController
     @name = params[:name].to_s.strip.downcase
     @food_sources = FoodSource
       .where(name: @name)
-      .includes(:survivor, episode: [:location, { season: :series }])
+      .includes(episode: [:location, { season: :series }])
       .order("episodes.air_date DESC NULLS LAST")
     @episode_count = @food_sources.distinct.count(:episode_id)
   end
