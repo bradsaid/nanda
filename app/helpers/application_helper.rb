@@ -76,4 +76,60 @@ module ApplicationHelper
       end
     end
   end
+
+  def food_icon(food_source)
+    food_icon_by_name(food_source.name, food_source.category)
+  end
+
+  def food_icon_by_name(name, category)
+    n = name.to_s.downcase
+    case n
+    when /snake/                          then "🐍"
+    when /lizard|iguana/                  then "🦎"
+    when /caiman|crocodile|alligator/     then "🐊"
+    when /turtle|tortoise/                then "🐢"
+    when /frog|toad/                      then "🐸"
+    when /crab/                           then "🦀"
+    when /lobster|crayfish|crawfish/      then "🦞"
+    when /shrimp|prawn/                   then "🦐"
+    when /clam|mussel|oyster|shellfish/   then "🐚"
+    when /snail|conch/                    then "🐌"
+    when /fish|piranha|catfish|trout|bass|tilapia|perch|minnow/ then "🐟"
+    when /eel/                            then "🐍"
+    when /bird|chicken|duck|goose|pigeon|dove|parrot/ then "🐦"
+    when /pig|boar|hog|peccary/           then "🐗"
+    when /deer|elk|moose/                 then "🦌"
+    when /goat/                           then "🐐"
+    when /rabbit|hare/                    then "🐇"
+    when /rat|mouse/                      then "🐀"
+    when /monkey/                         then "🐒"
+    when /scorpion/                       then "🦂"
+    when /spider/                         then "🕷️"
+    when /ant|termite/                    then "🐜"
+    when /beetle|cricket|grasshopper/     then "🦗"
+    when /worm|grub|larva|maggot/         then "🪱"
+    when /shark/                          then "🦈"
+    when /octopus|squid/                  then "🐙"
+    when /jellyfish/                      then "🪼"
+    when /urchin/                         then "🟣"
+    when /coconut/                        then "🥥"
+    when /banana/                         then "🍌"
+    when /mango/                          then "🥭"
+    when /papaya/                         then "🍈"
+    when /pineapple/                      then "🍍"
+    when /berry|berries/                  then "🫐"
+    when /fruit/                          then "🍇"
+    when /yam|potato|tuber|taro|cassava/  then "🍠"
+    when /mushroom|fungus|fungi/          then "🍄"
+    when /corn/                           then "🌽"
+    when /rice/                           then "🍚"
+    when /nut/                            then "🥜"
+    when /bamboo/                         then "🎋"
+    when /cactus/                         then "🌵"
+    when /seaweed|kelp|algae/             then "🌿"
+    when /herb|mint|basil|sage/           then "🌿"
+    else
+      category.to_s == "animal" ? "🍖" : "🌱"
+    end
+  end
 end
