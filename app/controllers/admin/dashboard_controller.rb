@@ -5,7 +5,7 @@ module Admin
       @today_views   = PageView.today.count
       @week_views    = PageView.this_week.count
       @month_views   = PageView.this_month.count
-      @avg_per_week  = PageView.avg_views_per_week
+      @avg_per_day   = PageView.avg_views_per_day
 
       @unique_today  = PageView.today.unique_visitors
       @unique_week   = PageView.this_week.unique_visitors

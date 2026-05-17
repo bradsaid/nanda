@@ -66,12 +66,12 @@ class PageView < ApplicationRecord
     where("duration_seconds > 0").average(:duration_seconds)&.round(1)
   end
 
-  def self.avg_views_per_week
+  def self.avg_views_per_day
     first_ts = minimum(:created_at)
     return 0 if first_ts.nil?
-    weeks = ((Time.current - first_ts) / 1.week.to_f)
-    weeks = 1.0 if weeks < 1.0
-    (count / weeks).round
+    days = ((Time.current - first_ts) / 1.day.to_f)
+    days = 1.0 if days < 1.0
+    (count / days).round
   end
 
   def self.avg_duration_by_page(limit = 25)
