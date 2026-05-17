@@ -6,7 +6,17 @@
 @import "vendor/bootstrap.min.css";
 
 /* your overrides below */
-:root { --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+:root {
+  --bs-body-font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bs-body-bg: #ece4e7; /* very light mauve grey */
+}
+
+body {
+  background-color: var(--bs-body-bg) !important;
+  font-family: var(--bs-body-font-family);
+  font-weight: 500;
+  letter-spacing: .1px;
+}
 
 /* util width + map height */
 .w-32px { width: 32px; }
@@ -14,57 +24,98 @@
   height: 420px;  
 }
 
-/* Header container */
+/* Page-section header (used at the top of every tab) */
 .site-header {
-  border-bottom: 3px solid #2f5233; /* deep forest green */
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7); /* light green tint */
+  background: linear-gradient(135deg, #8a3f2c, #aa553a) !important; /* deeper orange-red terra cotta */
+  border: none !important;
+  border-radius: .5rem;
+  padding: .65rem 1rem !important;
+  margin-bottom: 1rem !important;
+  color: #fff;
+  box-shadow: 0 1px 6px rgba(0,0,0,.12);
+  text-align: center;
 }
 
-/* Logo text */
+/* All text inside the site header is light by default */
+.site-header,
+.site-header p,
+.site-header .text-secondary,
+.site-header .text-muted,
+.site-header small {
+  color: #f3e0d6 !important;
+  margin-bottom: 0;
+}
+
+/* Logo text — white, bold, Montserrat, tighter, centered */
 .site-header .logo {
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-  font-weight: bold;
-  font-size: 1.8rem;
-  color: #14532d; /* dark forest green */
-  letter-spacing: 1px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
-  background: linear-gradient(to right, #166534, #4ade80);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: .4px;
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: initial !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.2);
+  text-transform: uppercase;
+  margin-bottom: 0;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  align-self: center;
+  text-align: center;
 }
 
-/* Optional: subtle leaf-like underline effect */
+/* Underline accent — soft warm cream, full text width */
 .site-header .logo::after {
   content: "";
   display: block;
-  margin-top: 6px;
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(to right, #22c55e, #15803d);
+  margin-top: 4px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, #f3d2bc, #d4a690);
   border-radius: 2px;
 }
 
 /* Subtitle styling */
 .site-header .subtitle {
-  font-family: "Georgia", "Times New Roman", serif;
-  font-size: 1.05rem;
-  color: #374151; /* deep gray for readability */
-  margin-top: 0.25rem;
-  letter-spacing: 0.3px;
-  font-style: italic;
-  position: relative;
-  padding-left: 12px;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  color: #f3e0d6 !important;
+  margin-top: .15rem;
+  margin-bottom: 0;
+  letter-spacing: .15px;
+  padding-left: 0;
 }
 
-/* Subtle vine-like accent on the left */
-.site-header .subtitle::before {
-  content: "🌿";
-  position: relative; /* no need for absolute now */
-  margin-right: 0.5rem; /* <-- adds spacing */
-  font-size: 1rem;
-  color: #15803d;
+/* Drop the leaf emoji prefix — cleaner contemporary look */
+.site-header .subtitle::before { content: none; }
+
+/* Buttons sitting in the header (e.g. "All locations") */
+.site-header .btn-outline-primary,
+.site-header .btn-outline-secondary,
+.site-header .btn-outline-success {
+  color: #fff;
+  border-color: rgba(255,255,255,.55);
+  background: transparent;
+}
+.site-header .btn-outline-primary:hover,
+.site-header .btn-outline-secondary:hover,
+.site-header .btn-outline-success:hover {
+  background: rgba(255,255,255,.15);
+  border-color: #fff;
+  color: #fff;
+}
+
+/* Links inside the header (e.g. "← All Food Sources") */
+.site-header a:not(.btn) {
+  color: #fbe1d2 !important;
+  text-decoration-color: rgba(255,255,255,.5);
+}
+.site-header a:not(.btn):hover {
+  color: #fff !important;
 }
 
 /* Force nav to be horizontal */
@@ -76,8 +127,7 @@
 
 /* Links */
 .site-nav .nav-link {
-  /*font-family: "Trebuchet MS", "Segoe UI", sans-serif;*/
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-weight: 700;
   color: #14532d; /* forest green */
   text-transform: uppercase;
@@ -89,7 +139,7 @@
 }
 
 .site-nav .nav-link:hover {
-  color: #22c55e; /* lighter green */
+  color: #1ec474; /* bright pine — same hue family as #0e3f24 */
   text-decoration: none;
 }
 
@@ -111,11 +161,11 @@
 
 /* Card header styling */
 .card-header {
-  background: linear-gradient(to right, #166534, #22c55e); /* forest gradient */
+  background: linear-gradient(to right, #06291a, #0e3f24); /* deep forest gradient */
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 0.5px;
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
   border-bottom: none;
   padding: 0.75rem 1rem;
   text-transform: uppercase;
@@ -147,7 +197,7 @@
 
 /* Numbers */
 .card .h4 {
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: 1.8rem;
   color: #14532d; /* forest green */
@@ -157,12 +207,12 @@
 
 /* Numbers turn brighter green on hover */
 .card.text-center.shadow-sm:hover .h4 {
-  color: #22c55e; /* lighter leaf green */
+  color: #1ec474; /* bright pine — same hue family as #0e3f24 */
 }
 
 /* Labels */
 .card small {
-  font-family: "Georgia", serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-size: 0.9rem;
   color: #374151;
   letter-spacing: 0.5px;
@@ -170,7 +220,7 @@
 
 /* Page title */
 .container.my-4 > h1.h3 {
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-weight: 800;
   letter-spacing: .3px;
   margin-bottom: 1rem;
@@ -181,9 +231,10 @@
 
 /* Card headers (global) */
 .card-header {
-  background: linear-gradient(to right, #166534, #22c55e);
+  background: linear-gradient(to right, #06291a, #0e3f24); /* deep forest gradient */
   color: #fff;
-  font-weight: 700;
+  font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-weight: 800;
   letter-spacing: .4px;
   text-transform: uppercase;
   border-bottom: none;
@@ -227,15 +278,17 @@
 
 /* Header row */
 table.table thead.table-light {
-  background: linear-gradient(to right, #166534, #22c55e);
+  background: linear-gradient(to right, #06291a, #0e3f24); /* deep forest gradient */
   color: #fff;
 }
 table.table thead th {
   border: none !important;
-  font-weight: 700;
+  font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-weight: 800;
   letter-spacing: .4px;
   text-transform: uppercase;
   font-size: .8rem;
+  color: #fff;
 }
 
 /* Body rows */
@@ -267,7 +320,7 @@ td.text-end { font-variant-numeric: tabular-nums; }
   padding: 1.5rem 1.25rem;
 }
 .card.bg-success.text-white h1.h2 {
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-weight: 800;
   letter-spacing: .3px;
   margin-bottom: .25rem;
@@ -296,7 +349,7 @@ td.text-end { font-variant-numeric: tabular-nums; }
   border-radius: .6rem;
 }
 .card-header {
-  background: linear-gradient(to right, #166534, #22c55e);
+  background: linear-gradient(to right, #06291a, #0e3f24);
   color: #fff;
   font-weight: 700;
   letter-spacing: .4px;
@@ -314,7 +367,7 @@ td.text-end { font-variant-numeric: tabular-nums; }
   overflow: hidden;
 }
 table.table thead {
-  background: linear-gradient(to right, #166534, #22c55e);
+  background: linear-gradient(to right, #06291a, #0e3f24);
   color: #fff;
 }
 table.table thead th {
@@ -385,7 +438,7 @@ a.link-primary:hover, .card a:hover {
   border-bottom: 3px solid #2f5233;
 }
 .site-header .logo {
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-weight: 800;
   letter-spacing: .3px;
   background: linear-gradient(to right, #166534, #4ade80);
@@ -393,7 +446,7 @@ a.link-primary:hover, .card a:hover {
   -webkit-text-fill-color: transparent;
 }
 .site-header .subtitle {
-  font-family: "Georgia","Times New Roman",serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-size: 1.02rem;
   color: #374151;
   margin-top: .25rem;
@@ -402,16 +455,12 @@ a.link-primary:hover, .card a:hover {
   padding-left: 0.9rem;
 }
 .site-header .subtitle::before {
-  content: "🌿";
-  margin-right: .5rem;
-  position: absolute;
-  left: 0;
-  top: 0;
+  content: none;
 }
 
 /* ===== Card headers (global) ===== */
 .card-header {
-  background: linear-gradient(to right, #166534, #22c55e);
+  background: linear-gradient(to right, #06291a, #0e3f24);
   color: #fff;
   font-weight: 700;
   letter-spacing: .4px;
@@ -429,7 +478,7 @@ a.link-primary:hover, .card a:hover {
   box-shadow: 0 2px 10px rgba(0,0,0,.05);
 }
 table.table thead.table-light {
-  background: linear-gradient(to right, #166534, #22c55e);
+  background: linear-gradient(to right, #06291a, #0e3f24);
   color: #fff;
 }
 table.table thead th {
@@ -529,7 +578,7 @@ html { scroll-behavior: smooth; }
 
 /* Make meta cards consistent with forest theme */
 .card.shadow-sm .card-header {
-  background: linear-gradient(to right, #166534, #22c55e);
+  background: linear-gradient(to right, #06291a, #0e3f24);
   color: #fff;
   font-weight: 700;
   letter-spacing: .35px;
@@ -541,7 +590,7 @@ html { scroll-behavior: smooth; }
 
 /* Table polish */
 .table-responsive { border: 1px solid #e5f7ea; border-radius: .5rem; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
-table.table thead.table-light { background: linear-gradient(to right, #166534, #22c55e); color: #fff; }
+table.table thead.table-light { background: linear-gradient(to right, #06291a, #0e3f24); color: #fff; }
 table.table thead th { border: none !important; font-weight: 700; letter-spacing: .35px; text-transform: uppercase; font-size: .8rem; }
 table.table tbody tr:hover { background: #f0fdf4 !important; }
 .text-end { font-variant-numeric: tabular-nums; }
@@ -586,7 +635,7 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 }
 
 .survivor-name {
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   font-weight: 900;
   font-size: 2.25rem;          /* bigger than default h2 */
   letter-spacing: .5px;
@@ -643,7 +692,72 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 }
 
 @media (max-width: 576px) {
-  .avatar-lg { width: 120px; height: 120px; } 
+  .avatar-lg { width: 120px; height: 120px; }
+}
+
+/* Stacked first/last name under top-survivor avatars */
+.survivor-name-stack {
+  display: block;
+  text-align: center;
+  margin-top: .25rem;
+  line-height: 1.15;
+  font-size: 1.4rem; /* 40% larger than default body size */
+  min-height: 2.6em; /* reserve 2 lines so cards align even if last name is empty */
+}
+.survivor-name-stack .first-name,
+.survivor-name-stack .last-name {
+  display: block;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.survivor-name-stack .last-name { font-weight: 600; }
+
+/* Quick Stats labels (Series / Seasons / Episodes / etc.) */
+.card-body.py-3 .h4.mb-0 + small.text-muted {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Justify items-table content closer to the center of the card */
+table.items-compact {
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Green gradient on the Name | Total header bar */
+table.items-compact thead tr {
+  background: linear-gradient(to right, #06291a, #0e3f24);
+}
+table.items-compact thead th {
+  background: transparent !important;
+  color: #fff !important;
+  font-family: "Montserrat", system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  font-size: .8rem;
+  border: none !important;
+}
+
+/* Portrait-style avatar for Top Survivors grids */
+.avatar-portrait {
+  width: 130px;
+  height: 170px;
+  object-fit: cover;
+  border: 3px solid #b88070; /* terra cotta faded 30% lighter */
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  background: #fff;
+  transition: transform .2s ease;
+}
+
+.avatar-portrait:hover {
+  transform: scale(1.03);
+}
+
+@media (max-width: 576px) {
+  .avatar-portrait { width: 100px; height: 130px; }
 }
 
 [id^="series-"] { scroll-margin-top: 80px; }
@@ -656,3 +770,13 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
   overflow-wrap: normal;   /* don't force mid-word wraps */
   hyphens: manual;         /* no auto hyphenation */
 }
+/* ===== Header bar font + color overrides (final) ===== */
+.card-header,
+table.table thead.table-light,
+table.table thead th {
+  font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  font-weight: 800 !important;
+  background: linear-gradient(to right, #06291a, #0e3f24) !important;
+  color: #fff !important;
+}
+table.table thead.table-light { background: linear-gradient(to right, #06291a, #0e3f24) !important; }

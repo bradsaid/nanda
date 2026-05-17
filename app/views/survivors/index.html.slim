@@ -24,17 +24,19 @@ script type="application/json" id="survivors-index-jsonld-data"= data
         .row.g-3
           - @top_survivors.each do |s|
             - name = s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}"
+            - parts = name.to_s.split(" ", 2)
             - total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : (s.respond_to?(:episodes_count) ? s.episodes_count.to_i : s.appearances.select(:episode_id).distinct.count)
             - collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
             .col-6.col-md-4.col-lg-2
               = link_to survivor_path(s), class: "card h-100 text-center border-0 text-decoration-none" do
-                .card-body.py-3
+                .card-body.py-3.d-flex.flex-column.align-items-center
                   = image_tag avatar_src(s, name: name),
                               alt: name,
-                              class: "avatar-lg rounded-circle shadow img-thumbnail mx-auto d-block mb-2"
-                  / Name: prevent mid-word breaks; CSS targets .wrap-name
-                  .fw-semibold.mt-2.wrap-name = name
-                  small.text-muted Challenges: #{collapsed}
+                              class: "avatar-portrait shadow img-thumbnail d-block mb-2"
+                  .survivor-name-stack
+                    .first-name = parts[0]
+                    .last-name = parts[1].to_s
+                  small.text-muted.mt-1 Challenges: #{collapsed}
   - else
     .mb-3.text-muted No survivor data yet.
 

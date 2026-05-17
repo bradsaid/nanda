@@ -126,10 +126,10 @@ module ApplicationHelper
     when /nut/                            then "🥜"
     when /bamboo/                         then "🎋"
     when /cactus/                         then "🌵"
-    when /seaweed|kelp|algae/             then "🌿"
-    when /herb|mint|basil|sage/           then "🌿"
+    when /seaweed|kelp|algae/             then "🌊"
+    when /herb|mint|basil|sage/           then "🥗"
     else
-      category.to_s == "animal" ? "🍖" : "🌱"
+      category.to_s == "animal" ? "🍖" : "🥕"
     end
   end
 end
