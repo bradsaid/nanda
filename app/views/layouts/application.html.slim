@@ -117,5 +117,7 @@ html
           = link_to "Where to Watch", seasons_path(anchor: "content"), class: "nav-link"
           = link_to "About", about_path(anchor: "content"), class: "nav-link"
 
+      - if controller.controller_path.start_with?("admin")
+        = render "admin/nav"
       #content= yield
       = render "layouts/footer"
