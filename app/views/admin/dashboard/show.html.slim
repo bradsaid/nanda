@@ -8,26 +8,31 @@
 
   / ===== Summary Cards =====
   .row.g-3.mb-4
-    .col-6.col-md-3
+    .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
           div.h4.mb-0= @total_views
           small.text-muted Total Views
-    .col-6.col-md-3
+    .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
           div.h4.mb-0= @today_views
           small.text-muted Today
-    .col-6.col-md-3
+    .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
           div.h4.mb-0= @week_views
           small.text-muted This Week
-    .col-6.col-md-3
+    .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
           div.h4.mb-0= @month_views
           small.text-muted This Month
+    .col-6.col-md
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0= @avg_per_week
+          small.text-muted Avg / Week
 
   / ===== Unique Visitors + Avg Time =====
   .row.g-3.mb-4
