@@ -65,7 +65,7 @@ module Admin
           ]
         ],
         food_sources_attributes: [
-          :id, :name, :category, :method, :episode_trap_id, :tools_used, :notes, :_destroy, survivor_ids: []
+          :id, :name, :category, :method, :quantity, :episode_trap_id, :tools_used, :notes, :_destroy, survivor_ids: []
         ],
         episode_traps_attributes: [
           :id, :trap_type, :result, :notes, :_destroy, builder_ids: []

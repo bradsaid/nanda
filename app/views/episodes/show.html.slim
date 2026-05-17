@@ -198,7 +198,7 @@ script type="application/json" id="episode-jsonld-data"= data
                   - else
                     span.text-muted —
                 td
-                  - catches = trap.food_sources.map { |fs| fs.name.titleize }
+                  - catches = trap.food_sources.map { |fs| fs.quantity.to_i > 1 ? "#{fs.name.titleize} ×#{fs.quantity}" : fs.name.titleize }
                   = catches.any? ? catches.join(", ") : "—"
 
   / ===== Shelter =====
@@ -234,7 +234,10 @@ script type="application/json" id="episode-jsonld-data"= data
           tbody
             - @episode.food_sources.order(:category, :name).each do |fs|
               tr
-                td = link_to fs.name.titleize, food_source_path(fs.name)
+                td
+                  = link_to fs.name.titleize, food_source_path(fs.name)
+                  - if fs.quantity.to_i > 1
+                    span.badge.bg-secondary.ms-1 = "×#{fs.quantity}"
                 td
                   - if fs.category_animal?
                     span.badge.bg-danger-subtle.text-danger-emphasis Animal

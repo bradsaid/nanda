@@ -13,6 +13,7 @@ class FoodSource < ApplicationRecord
 
   validates :name, presence: true
   validates :category, presence: true
+  validates :quantity, numericality: { only_integer: true, greater_than: 0 }
 
   before_validation :normalize_name
 

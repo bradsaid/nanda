@@ -28,6 +28,7 @@
           tr
             th Episode
             th Season
+            th.text-end Qty
             th.d-none.d-md-table-cell Location
             th Obtained By
             th Method
@@ -35,7 +36,7 @@
         tbody
           - if @food_sources.blank?
             tr
-              td.text-muted.py-4(colspan="6") No data
+              td.text-muted.py-4(colspan="7") No data
           - else
             - @food_sources.each do |fs|
               - ep = fs.episode
@@ -43,6 +44,7 @@
               tr
                 td = link_to ep.title, episode_path(ep)
                 td = link_to "S#{season.number}", season_path(season)
+                td.text-end = fs.quantity.to_i
                 td.d-none.d-md-table-cell = ep.location&.country || "—"
                 td
                   - if fs.survivors&.any?

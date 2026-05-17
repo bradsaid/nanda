@@ -314,6 +314,7 @@
         thead.table-light
           tr
             th Name
+            th Qty
             th Category
             th Method
             th Trap
@@ -329,6 +330,7 @@
               td
                 = fsf.hidden_field :id
                 = fsf.text_field :name, class: "form-control form-control-sm", placeholder: "e.g. iguana"
+              td = fsf.number_field :quantity, class: "form-control form-control-sm", min: 1, style: "width:70px", value: (fs.quantity.presence || 1)
               td = fsf.select :category, food_categories, { include_blank: "" }, { class: "form-select form-select-sm food-source-category" }
               td = fsf.select :method, food_methods, { include_blank: "" }, { class: "form-select form-select-sm food-source-method" }
               td
@@ -351,6 +353,8 @@
         tr.food-source-row
           td
             input.form-control.form-control-sm type="text" name="episode[food_sources_attributes][FS_IDX][name]" placeholder="e.g. iguana"
+          td
+            input.form-control.form-control-sm type="number" name="episode[food_sources_attributes][FS_IDX][quantity]" min="1" value="1" style="width:70px"
           td
             select.form-select.form-select-sm.food-source-category name="episode[food_sources_attributes][FS_IDX][category]"
               option value=""
