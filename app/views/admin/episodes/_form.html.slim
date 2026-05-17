@@ -7,7 +7,7 @@
 - survivors_list = Survivor.order(:full_name).pluck(:full_name, :id)
 - food_categories = FoodSource.categories.keys.map { |c| [c.humanize.titleize, c] }
 - food_methods = FoodSource.defined_enums["method"].keys.map { |m| [m.humanize.titleize, m] }
-- shelter_types = ["A-Frame", "Lean To", "Debris Hut", "Raised Platform", "Tarp Shelter", "Cave", "Tree House", "Hammock", "Teepee", "Dugout"]
+- shelter_types = ["A-Frame", "Lean To", "Debris Hut", "Raised Platform", "Tarp Shelter", "Cave", "Tree House", "Hammock", "Teepee", "Dugout", "Boma"]
 - trap_types = ["Snare", "Deadfall", "Fish Trap"]
 - trap_results = ["Success", "Fail"]
 - episode_survivors = episode.persisted? ? episode.survivors.order(:full_name).to_a : []
