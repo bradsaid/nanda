@@ -167,6 +167,28 @@
 
     button.btn.btn-sm.btn-outline-primary type="button" id="add-participant" + Add Participant
 
+    / ===== Quick Add Given Item =====
+    .card.shadow-sm.mt-3#bulk-given-card
+      .card-header.py-2.small Quick Add Given Item — to multiple survivors
+      .card-body.py-2
+        .row.g-2.align-items-end
+          .col-md-4
+            label.form-label.mb-1.small Item
+            select.form-select.form-select-sm#bulk-given-item
+              option value="" Select item...
+              - items_list.each do |name, id|
+                option value=id = name
+          .col-md-1
+            label.form-label.mb-1.small Qty
+            input.form-control.form-control-sm#bulk-given-qty type="number" min="1" value="1"
+          .col-md-6
+            label.form-label.mb-1.small Given to
+            #bulk-given-recipients.d-flex.flex-wrap.gap-2.align-items-center
+              span.text-muted.small No participants yet
+          .col-md-1
+            button.btn.btn-sm.btn-success.w-100 type="button" id="bulk-given-add" Add
+        small.text-muted.d-block.mt-1 Creates a "given" item entry on each selected survivor — edit or remove individually below if needed.
+
   - if episode.persisted?
     / ===== Section 2: Traps + Shelters =====
     / ===== Traps =====

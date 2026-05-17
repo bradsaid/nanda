@@ -14,6 +14,51 @@ function getEpisodeSurvivors() {
   return survivors;
 }
 
+function getEpisodeAppearances() {
+  var list = [];
+  var rows = document.querySelectorAll("#participants-table tbody tr.participant-row");
+  rows.forEach(function(row) {
+    if (row.style.display === "none") return;
+    var idx = row.getAttribute("data-appearance-idx");
+    var select = row.querySelector("select[name*='[survivor_id]']");
+    if (idx && select && select.value) {
+      var opt = select.options[select.selectedIndex];
+      list.push({ idx: idx, id: select.value, name: opt.text });
+    }
+  });
+  return list;
+}
+
+function updateBulkGivenRecipients() {
+  var container = document.getElementById("bulk-given-recipients");
+  if (!container) return;
+  var prevChecked = {};
+  container.querySelectorAll(".bulk-given-recipient:checked").forEach(function(cb) {
+    prevChecked[cb.value] = true;
+  });
+  var appearances = getEpisodeAppearances();
+  if (appearances.length === 0) {
+    container.innerHTML = '<span class="text-muted small">No participants yet</span>';
+    return;
+  }
+  var html = '';
+  html += '<div class="form-check form-check-inline me-2">';
+  html += '<input type="checkbox" class="form-check-input" id="bulk-given-all">';
+  html += '<label class="form-check-label small fw-bold" for="bulk-given-all">All</label>';
+  html += '</div>';
+  appearances.forEach(function(a) {
+    var cbId = 'bulk_given_app_' + a.idx;
+    var span = document.createElement('span');
+    span.textContent = a.name;
+    var checkedAttr = prevChecked[a.idx] ? ' checked' : '';
+    html += '<div class="form-check form-check-inline">';
+    html += '<input type="checkbox" class="form-check-input bulk-given-recipient" value="' + a.idx + '" id="' + cbId + '"' + checkedAttr + '>';
+    html += '<label class="form-check-label small" for="' + cbId + '">' + span.innerHTML + '</label>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
 function populateBuilderCheckboxes(container, survivors, namePrefix, idPrefix, fieldName) {
   fieldName = fieldName || 'builder_ids';
   var html = '';
@@ -40,6 +85,55 @@ function initEpisodeForm() {
     var idx   = Date.now();
     var html  = tmpl.innerHTML.replace(/NEW_IDX/g, idx);
     tbody.insertAdjacentHTML("beforeend", html);
+    updateBulkGivenRecipients();
+  });
+
+  // ===== Quick Add Given Item — fan one item out to multiple survivors =====
+  updateBulkGivenRecipients();
+
+  document.getElementById("bulk-given-add")?.addEventListener("click", function() {
+    var itemSelect = document.getElementById("bulk-given-item");
+    var qtyInput   = document.getElementById("bulk-given-qty");
+    if (!itemSelect || !itemSelect.value) {
+      alert("Pick an item first.");
+      return;
+    }
+    var qty = parseInt(qtyInput.value, 10) || 1;
+    var itemId = itemSelect.value;
+    var checked = document.querySelectorAll(".bulk-given-recipient:checked");
+    if (checked.length === 0) {
+      alert("Pick at least one survivor.");
+      return;
+    }
+    var tmpl = document.getElementById("item-template");
+    checked.forEach(function(cb, i) {
+      var appIdx = cb.value;
+      var container = document.querySelector(".items-container[data-appearance-idx='" + appIdx + "']");
+      if (!container) return;
+      var itemIdx = Date.now() + i;
+      var html = tmpl.innerHTML.replace(/APP_IDX/g, appIdx).replace(/ITEM_IDX/g, itemIdx);
+      container.insertAdjacentHTML("beforeend", html);
+      var entry  = container.lastElementChild;
+      var itemFld = entry.querySelector("select[name*='[item_id]']");
+      var srcFld  = entry.querySelector("select[name*='[source]']");
+      var qtyFld  = entry.querySelector("input[name*='[quantity]']");
+      if (itemFld) itemFld.value = itemId;
+      if (srcFld)  srcFld.value  = "given";
+      if (qtyFld)  qtyFld.value  = qty;
+    });
+    itemSelect.value = "";
+  });
+
+  // Toggle all recipients
+  document.addEventListener("change", function(e) {
+    if (e.target.id === "bulk-given-all") {
+      var checked = e.target.checked;
+      document.querySelectorAll(".bulk-given-recipient").forEach(function(cb) { cb.checked = checked; });
+    }
+    // Refresh recipient list when a participant's survivor changes
+    if (e.target.matches("select[name*='[survivor_id]']")) {
+      updateBulkGivenRecipients();
+    }
   });
 
   // ===== Add Food Source =====
@@ -159,6 +253,7 @@ function initEpisodeForm() {
         if (itemsRow && itemsRow.classList.contains("items-row")) itemsRow.remove();
         row.remove();
       }
+      updateBulkGivenRecipients();
       return;
     }
 
