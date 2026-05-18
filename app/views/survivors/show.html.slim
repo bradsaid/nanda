@@ -261,8 +261,8 @@ script type="application/json" id="survivor-jsonld-data"= data
                 td = [a.starting_psr, a.ending_psr].compact.join(" → ").presence || "—"
                 td
                   - if a.result.present?
-                    - ok = (a.result == "Completed")
-                    span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
+                    - ok = (a.result == "success")
+                    span.badge class=(ok ? "bg-success" : "bg-danger") = a.result.humanize
                   - else
                     span.text-muted —
                 td

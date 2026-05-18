@@ -151,7 +151,7 @@ script type="application/json" id="episode-jsonld-data"= data
                 td.text-end = (days_cell.presence || "—")
                 td
                   - if a.result.present?
-                    - ok = (a.result == "Completed")
+                    - ok = (a.result == "success")
                     span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
                   - else
                     span.text-muted —
