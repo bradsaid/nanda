@@ -1,5 +1,6 @@
 module Admin
   class EpisodesController < BaseController
+    before_action :require_full_admin!, only: %i[new create destroy]
     before_action :set_episode, only: %i[show edit update destroy]
 
     def index

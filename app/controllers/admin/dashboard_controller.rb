@@ -1,5 +1,7 @@
 module Admin
   class DashboardController < BaseController
+    before_action :require_full_admin!
+
     def show
       @total_views   = PageView.count
       @today_views   = PageView.today.count

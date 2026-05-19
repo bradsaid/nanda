@@ -1,5 +1,6 @@
 module Admin
   class SeasonsController < BaseController
+    before_action :require_full_admin!
     before_action :set_season, only: %i[show edit update destroy]
 
     def index
