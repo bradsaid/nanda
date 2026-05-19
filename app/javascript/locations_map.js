@@ -20,11 +20,19 @@ document.addEventListener("turbo:load", () => {
   const L = window.L;
   if (!L) return console.error("[map] Leaflet missing");
 
-  const map = L.map(el, { scrollWheelZoom: true });
+  const map = L.map(el, {
+    scrollWheelZoom: true,
+    worldCopyJump: false,
+    maxBounds: [[-85, -180], [85, 180]],
+    maxBoundsViscosity: 1.0,
+    minZoom: 2,
+  });
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
     maxZoom: 18,
+    noWrap: true,
+    bounds: [[-85, -180], [85, 180]],
   }).addTo(map);
 
   fetch(url, { headers: { Accept: "application/json" } })
