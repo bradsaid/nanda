@@ -93,20 +93,28 @@ body {
 /* Drop the leaf emoji prefix — cleaner contemporary look */
 .site-header .subtitle::before { content: none; }
 
-/* Buttons sitting in the header (e.g. "All locations") */
+/* Buttons sitting in the header (e.g. "All locations", "View Season") */
+.site-header .btn,
 .site-header .btn-outline-primary,
 .site-header .btn-outline-secondary,
-.site-header .btn-outline-success {
-  color: #fff;
-  border-color: rgba(255,255,255,.55);
-  background: transparent;
+.site-header .btn-outline-success,
+.site-header .btn.btn-outline-primary.btn-sm,
+.site-header .btn.btn-outline-secondary.btn-sm,
+.site-header .btn.btn-outline-success.btn-sm {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.6) !important;
+  background: transparent !important;
 }
+.site-header .btn:hover,
 .site-header .btn-outline-primary:hover,
 .site-header .btn-outline-secondary:hover,
-.site-header .btn-outline-success:hover {
-  background: rgba(255,255,255,.15);
-  border-color: #fff;
-  color: #fff;
+.site-header .btn-outline-success:hover,
+.site-header .btn.btn-outline-primary.btn-sm:hover,
+.site-header .btn.btn-outline-secondary.btn-sm:hover,
+.site-header .btn.btn-outline-success.btn-sm:hover {
+  background: rgba(255,255,255,.18) !important;
+  border-color: #fff !important;
+  color: #fff !important;
 }
 
 /* Links inside the header (e.g. "← All Food Sources") */
