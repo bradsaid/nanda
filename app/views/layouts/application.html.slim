@@ -99,11 +99,10 @@ html
     / End Google Tag Manager (noscript)
 
     / ===== Header Image =====
-    - is_home = (controller.controller_name == "home")
-    .container.text-center class=(is_home ? "my-4" : "my-2")
+    .container.text-center.my-2
       = image_tag "NAKED.png",
         alt: "Naked and Afraid Fan Database",
-        class: (is_home ? "site-banner site-banner-lg" : "site-banner site-banner-sm")
+        class: "site-banner"
 
     main.container.mx-auto.mt-8.px-5.flex
       .container.my-4
