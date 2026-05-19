@@ -26,15 +26,15 @@
     .legend-dot
     span Pins show unique locations. Popups include a link to filter Episodes by that location.
  
-  / ===== Countries by Episodes (continuous collapsed) =====
+  / ===== Countries by Challenge (continuous seasons collapsed) =====
   .card.shadow-sm.mt-4
-    .card-header.fw-medium Countries by Episodes
+    .card-header.fw-medium Countries by Challenge
     .table-responsive
       table.table.table-sm.table-hover.mb-0
         thead.table-light
           tr
             th Country
-            th.text-end Episodes
+            th.text-end Challenges
         tbody
           - if (@countries_by_eps_adj || []).blank?
             tr
