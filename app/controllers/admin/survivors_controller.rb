@@ -1,6 +1,6 @@
 module Admin
   class SurvivorsController < BaseController
-    before_action :require_full_admin!, only: %i[new create edit update destroy]
+    before_action :require_full_admin!, only: %i[destroy]
     before_action :set_survivor, only: %i[show edit update destroy]
 
     def index
