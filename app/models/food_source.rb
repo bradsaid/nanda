@@ -9,7 +9,8 @@ class FoodSource < ApplicationRecord
     foraged: "foraged",
     fished: "fished",
     trapped: "trapped",
-    caught: "caught"
+    caught: "caught",
+    found: "found"
   }, prefix: true
 
   validates :name, presence: true
