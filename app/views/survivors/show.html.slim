@@ -159,10 +159,10 @@ script type="application/json" id="survivor-jsonld-data"= data
         .d-flex.align-items-center.mb-2
           span.me-3.fs-3(aria-hidden="true") 🏆
           h2.h5.mb-0 Challenge Summary
-          span.badge.bg-secondary.ms-2 = challenges.size
+          span.badge.bg-light.text-dark.ms-2 = challenges.size
         .d-flex.flex-wrap.gap-2
           - series_counts.each do |sname, count|
-            span.badge.bg-outline-dark.border.text-dark = "#{sname}: #{count}"
+            span.badge.bg-light.text-dark.border = "#{sname}: #{count}"
       .card-body
         ul.list-group.list-group-flush
           - challenges.each do |c|
