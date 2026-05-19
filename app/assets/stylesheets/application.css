@@ -719,7 +719,7 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
   max-width: 1200px;
   height: 300px;
   object-fit: cover;
-  object-position: center;
+  object-position: 50% 80%; /* anchor toward bottom so tagline isn't clipped */
 }
 @media (max-width: 576px) {
   .site-banner { height: 140px; }
