@@ -41,7 +41,7 @@ module ApplicationHelper
     when /cast.*net/                         then "🕸️"
     when /snorkel|diving mask|scuba/         then "🤿"
     when /goggle/                            then "🥽"
-    when /\bfins?\b/                         then "🤿"
+    when /\bfins?\b/                         then "🩴"
     when /slack\s*line/                      then "🪢"
     when /fish|line(?!n)/                    then "🎣"
     when /rope/                              then "🪢"
