@@ -712,6 +712,14 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 }
 .survivor-name-stack .last-name { font-weight: 600; }
 
+/* Header banner — large on home, compact on inner pages */
+.site-banner { width: 100%; height: auto; display: inline-block; }
+.site-banner-lg { max-width: 1200px; }
+.site-banner-sm { max-width: 460px; }
+@media (max-width: 576px) {
+  .site-banner-sm { max-width: 320px; }
+}
+
 /* Quick Stats labels (Series / Seasons / Episodes / etc.) */
 .card-body.py-3 .h4.mb-0 + small.text-muted {
   font-size: 1rem;
