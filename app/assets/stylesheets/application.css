@@ -717,12 +717,12 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
   display: inline-block;
   width: 100%;
   max-width: 1200px;
-  height: 300px;
+  height: 380px;
   object-fit: cover;
-  object-position: 50% 80%; /* anchor toward bottom so tagline isn't clipped */
+  object-position: 50% 100%; /* anchor at bottom so all text is visible */
 }
 @media (max-width: 576px) {
-  .site-banner { height: 140px; }
+  .site-banner { height: 170px; }
 }
 
 /* Quick Stats labels (Series / Seasons / Episodes / etc.) */
