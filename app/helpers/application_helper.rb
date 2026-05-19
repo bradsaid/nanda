@@ -53,6 +53,7 @@ module ApplicationHelper
     when /duct/                              then "🩹"
     when /mosquito/                          then "🦟"
     when /beaver/                            then "🦫"
+    when /buffalo|bison/                     then "🦬"
     when /\bhide\b|pelt|skin|\bfurs?\b/      then "🦌"
     when /shovel/                            then "⛏️"
     when /boat/                              then "🛶"
