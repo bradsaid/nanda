@@ -66,6 +66,9 @@ module SeasonsHelper
           1 => { discovery_plus: "https://www.discoveryplus.com/",
                  hulu:           "https://www.hulu.com/",
                  max:            "https://play.hbomax.com/" }
+        },
+        "Naked and Afraid: Global Showdown" => {
+          1 => { discovery_go: "https://go.discovery.com/" }
         }
       }.freeze
     end
