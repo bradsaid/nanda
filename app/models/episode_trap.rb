@@ -1,4 +1,5 @@
 class EpisodeTrap < ApplicationRecord
+  has_paper_trail
   belongs_to :episode
   has_many :food_sources, dependent: :nullify
 

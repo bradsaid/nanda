@@ -1,4 +1,5 @@
 class FoodSource < ApplicationRecord
+  has_paper_trail
   belongs_to :episode
   belongs_to :episode_trap, optional: true
 

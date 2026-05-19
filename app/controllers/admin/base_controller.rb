@@ -3,7 +3,12 @@ module Admin
     skip_after_action :record_page_view
 
     before_action :require_admin_user
+    before_action :set_paper_trail_whodunnit
     helper_method :current_admin, :full_admin?, :episode_editor?
+
+    def user_for_paper_trail
+      @current_admin&.email_address
+    end
 
     private
 

@@ -1,5 +1,6 @@
 # app/models/appearance.rb
 class Appearance < ApplicationRecord
+  has_paper_trail
   belongs_to :survivor
   belongs_to :episode
   belongs_to :location, optional: true 

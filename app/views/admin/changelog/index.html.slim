@@ -1,0 +1,56 @@
+- content_for :title, "Admin — Changelog"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  = render "shared/flash"
+
+  h1.h3.mb-4 Changelog
+  p.text-muted.small
+    | Most recent 300 changes to episodes, appearances, items, food sources, traps and shelters. Revert restores the previous values for that record.
+
+  .card.shadow-sm
+    .table-responsive
+      table.table.table-sm.table-striped.mb-0
+        thead.table-light
+          tr
+            th When
+            th Who
+            th Record
+            th Event
+            th Changes
+            th.text-end Actions
+        tbody
+          - if @versions.empty?
+            tr
+              td.text-muted.text-center.py-4(colspan="6") No changes recorded yet.
+          - else
+            - @versions.each do |v|
+              tr
+                td.text-nowrap = v.created_at.in_time_zone("Central Time (US & Canada)").strftime("%b %-d, %-I:%M %p")
+                td.text-nowrap = v.whodunnit.presence || "—"
+                td
+                  span.fw-semibold = v.item_type
+                  span.text-muted.ms-1 = "##{v.item_id}"
+                td
+                  - badge_class = case v.event
+                  - when "create" then "bg-success-subtle text-success-emphasis"
+                  - when "update" then "bg-warning-subtle text-warning-emphasis"
+                  - when "destroy" then "bg-danger-subtle text-danger-emphasis"
+                  - else "bg-secondary-subtle text-secondary-emphasis"
+                  span.badge class=badge_class = v.event
+                td.small
+                  - changes = (v.respond_to?(:object_changes) && v.object_changes.present?) ? (YAML.safe_load(v.object_changes, permitted_classes: [Time, Date, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, Symbol, BigDecimal]) rescue nil) : nil
+                  - if changes.is_a?(Hash) && changes.any?
+                    - changes.each do |field, (old_val, new_val)|
+                      div
+                        span.fw-semibold = "#{field}:"
+                        span.text-muted.ms-1 = old_val.inspect.truncate(50)
+                        span.mx-1 →
+                        = new_val.inspect.truncate(50)
+                  - else
+                    span.text-muted —
+                td.text-end.text-nowrap
+                  - if v.event == "update"
+                    = button_to "Revert", revert_admin_changelog_path(v), method: :post, class: "btn btn-sm btn-outline-warning", data: { turbo_confirm: "Revert #{v.item_type} ##{v.item_id} to previous values?" }
+                  - else
+                    span.text-muted —

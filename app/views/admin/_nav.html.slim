@@ -4,3 +4,5 @@
     = link_to "Survivors", admin_survivors_path, class: "btn btn-outline-dark btn-sm"
     = link_to "Seasons", admin_seasons_path, class: "btn btn-outline-dark btn-sm"
     = link_to "Episodes", admin_episodes_path, class: "btn btn-outline-dark btn-sm"
+    - if full_admin?
+      = link_to "Changelog", admin_changelog_index_path, class: "btn btn-outline-dark btn-sm"

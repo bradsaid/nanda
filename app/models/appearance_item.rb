@@ -1,5 +1,6 @@
 # app/models/appearance_item.rb
 class AppearanceItem < ApplicationRecord
+  has_paper_trail
   belongs_to :appearance
   belongs_to :item
 

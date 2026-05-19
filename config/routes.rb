@@ -11,6 +11,11 @@ Rails.application.routes.draw do
     resources :survivors
     resources :seasons
     resources :episodes
+    resources :changelog, only: [:index] do
+      member do
+        post :revert
+      end
+    end
   end
 
   resources :survivors, only: [:index, :show]

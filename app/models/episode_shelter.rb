@@ -1,4 +1,5 @@
 class EpisodeShelter < ApplicationRecord
+  has_paper_trail
   belongs_to :episode
 
   validates :shelter_type, presence: true

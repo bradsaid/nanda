@@ -1,5 +1,6 @@
 # app/models/episode.rb
 class Episode < ApplicationRecord
+  has_paper_trail
   belongs_to :season
   belongs_to :location, optional: true   # ← allow nil for Solo
 
