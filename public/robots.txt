@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /session
+Disallow: /passwords
+Disallow: /page_view_ping
 
-Sitemap: #{ENV.fetch("SITEMAPS_HOST", ENV.fetch("APP_HOST", "https://www.nakedandafraidfan.com"))}/sitemaps/sitemap.xml.gz
+Sitemap: https://www.nakedandafraidfan.com/sitemap.xml.gz
