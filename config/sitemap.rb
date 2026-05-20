@@ -76,6 +76,23 @@ SitemapGenerator::Sitemap.create do
     add series_path(series), lastmod: series.updated_at, priority: 0.6, changefreq: "monthly"
   end
 
-  # Optional: ping search engines after create
-  # SitemapGenerator::Sitemap.ping_search_engines
+  # ---------- Food Sources (by name) ----------
+  add food_sources_path, changefreq: "weekly", priority: 0.6
+  FoodSource.distinct.pluck(:name).compact.each do |name|
+    next if name.strip.empty?
+    add food_source_path(name: name), priority: 0.5, changefreq: "monthly"
+  end
+
+  # ---------- Shelters (by type) ----------
+  add shelters_path, changefreq: "weekly", priority: 0.6
+  EpisodeShelter.distinct.pluck(:shelter_type).compact.each do |t|
+    next if t.strip.empty?
+    add shelter_path(shelter_type: t), priority: 0.5, changefreq: "monthly"
+  end
+
+  # ---------- Locations index ----------
+  add locations_path, changefreq: "weekly", priority: 0.6
 end
+
+# rake sitemap:refresh runs create then pings search engines (Bing still listens;
+# Google deprecated the ping endpoint mid-2023 but the call is harmless).
