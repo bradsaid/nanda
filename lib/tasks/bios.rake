@@ -26,8 +26,26 @@ namespace :bios do
     }
 
     series_link = ->(name) {
-      next nil unless Series.find_by(name: name)
-      %(<a href="/seasons">#{name}</a>)
+      # Try exact, then a few common variants
+      candidates = [name, name.sub(/: /, " "), name.sub(/ /, ": "), name.gsub(":", "")]
+      candidates.each do |c|
+        if Series.find_by(name: c)
+          return %(<a href="/seasons">#{name}</a>)
+        end
+      end
+      # Loose ILIKE fallback
+      if Series.where("name ILIKE ?", "%#{name.gsub(":", "").strip}%").exists?
+        return %(<a href="/seasons">#{name}</a>)
+      end
+      nil
+    }
+
+    survivor_link = ->(name) {
+      s = Survivor.find_by(full_name: name)
+      s ||= Survivor.where("full_name ILIKE ?", name).first
+      next nil unless s
+      slug = s.slug.presence || s.id.to_s
+      %(<a href="/survivors/#{slug}">#{name}</a>)
     }
 
     resolve = ->(bio) {
@@ -38,6 +56,9 @@ namespace :bios do
       end.gsub(/\{\{series:([^}]+)\}\}/) do
         n = $1.strip
         if (l = series_link.call(n)); l; else unresolved_srs << n; %(<em>#{n}</em>); end
+      end.gsub(/\{\{survivor:([^}]+)\}\}/) do
+        n = $1.strip
+        if (l = survivor_link.call(n)); l; else n; end
       end
     }
 

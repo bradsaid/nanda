@@ -251,6 +251,8 @@ script type="application/json" id="episode-jsonld-data"= data
                     | Team
                 td.d-none.d-md-table-cell
                   - parts = []
-                  - parts << "#{fs.episode_trap.trap_type} Trap" if fs.episode_trap
+                  - if fs.episode_trap
+                    - tname = fs.episode_trap.trap_type.to_s
+                    - parts << (tname =~ /trap\z/i ? tname : "#{tname} Trap")
                   - parts << fs.tools_used if fs.tools_used.present?
                   = parts.any? ? parts.join(" with ") : "—"
