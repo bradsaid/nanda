@@ -193,66 +193,7 @@
         small.text-muted.d-block.mt-1 Creates a "given" item entry on each selected survivor — edit or remove individually below if needed.
 
   - if episode.persisted?
-    / ===== Section 2: Traps + Shelters =====
-    / ===== Traps =====
-    .col-12
-      hr.my-2
-      h5.mb-3 Traps
-
-      table.table.table-sm.table-bordered.mb-2#traps-table
-        thead.table-light
-          tr
-            th Type
-            th Built By
-            th Result
-            th Catch
-            th
-        tbody
-          = f.fields_for :episode_traps do |etf|
-            - et = etf.object
-            - i = etf.object_name[/\[(\d+)\]\z/, 1]
-            tr.trap-row
-              td
-                = etf.hidden_field :id
-                = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
-              td
-                input type="hidden" name="episode[episode_traps_attributes][#{i}][builder_ids][]" value=""
-                .builder-checkboxes
-                  - episode_survivors.each do |s|
-                    .form-check.form-check-inline
-                      = check_box_tag "episode[episode_traps_attributes][#{i}][builder_ids][]", s.id, et.builder_ids.include?(s.id), class: "form-check-input", id: "trap_#{i}_builder_#{s.id}"
-                      = label_tag "trap_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
-              td = etf.select :result, options_for_select(trap_results, et.result), { include_blank: "" }, { class: "form-select form-select-sm" }
-              td = etf.text_field :notes, class: "form-control form-control-sm", placeholder: "e.g. iguana"
-              td
-                = etf.hidden_field :_destroy, value: "0"
-                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
-
-      / Empty trap template
-      template#trap-template
-        tr.trap-row
-          td
-            select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][trap_type]"
-              option value="" Select...
-              - trap_types.each do |t|
-                option value=t = t
-          td
-            input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" value=""
-            .builder-checkboxes
-          td
-            select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][result]"
-              option value=""
-              - trap_results.each do |r|
-                option value=r = r
-          td
-            input.form-control.form-control-sm type="text" name="episode[episode_traps_attributes][TRAP_IDX][notes]" placeholder="e.g. iguana"
-          td
-            input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][_destroy]" value="0"
-            button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
-
-      button.btn.btn-sm.btn-outline-primary type="button" id="add-trap" + Add Trap
-
-    / ===== Shelters =====
+    / ===== Section 2: Shelters =====
     .col-12
       hr.my-2
       h5.mb-3 Shelters
@@ -385,6 +326,69 @@
             button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
       button.btn.btn-sm.btn-outline-primary type="button" id="add-food-source" + Add Food Source
+
+    / ===== Section 4: Traps =====
+    .col-12#traps-section
+      hr.my-2
+      .d-flex.justify-content-between.align-items-center.mb-3
+        h5.mb-0 Traps
+        .form-check.form-switch
+          = f.check_box :no_traps, class: "form-check-input", id: "episode_no_traps"
+          = f.label :no_traps, "No traps in this episode", class: "form-check-label small ms-1", for: "episode_no_traps"
+
+      #traps-section-body(style=(episode.try(:no_traps) ? "display:none" : ""))
+        table.table.table-sm.table-bordered.mb-2#traps-table
+          thead.table-light
+            tr
+              th Type
+              th Built By
+              th Result
+              th Catch
+              th
+          tbody
+            = f.fields_for :episode_traps do |etf|
+              - et = etf.object
+              - i = etf.object_name[/\[(\d+)\]\z/, 1]
+              tr.trap-row
+                td
+                  = etf.hidden_field :id
+                  = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+                td
+                  input type="hidden" name="episode[episode_traps_attributes][#{i}][builder_ids][]" value=""
+                  .builder-checkboxes
+                    - episode_survivors.each do |s|
+                      .form-check.form-check-inline
+                        = check_box_tag "episode[episode_traps_attributes][#{i}][builder_ids][]", s.id, et.builder_ids.include?(s.id), class: "form-check-input", id: "trap_#{i}_builder_#{s.id}"
+                        = label_tag "trap_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
+                td = etf.select :result, options_for_select(trap_results, et.result), { include_blank: "" }, { class: "form-select form-select-sm" }
+                td = etf.text_field :notes, class: "form-control form-control-sm", placeholder: "e.g. iguana"
+                td
+                  = etf.hidden_field :_destroy, value: "0"
+                  button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+        / Empty trap template
+        template#trap-template
+          tr.trap-row
+            td
+              select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][trap_type]"
+                option value="" Select...
+                - trap_types.each do |t|
+                  option value=t = t
+            td
+              input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" value=""
+              .builder-checkboxes
+            td
+              select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][result]"
+                option value=""
+                - trap_results.each do |r|
+                  option value=r = r
+            td
+              input.form-control.form-control-sm type="text" name="episode[episode_traps_attributes][TRAP_IDX][notes]" placeholder="e.g. iguana"
+            td
+              input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][_destroy]" value="0"
+              button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+        button.btn.btn-sm.btn-outline-primary type="button" id="add-trap" + Add Trap
 
   - else
     .col-12

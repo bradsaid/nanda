@@ -78,6 +78,16 @@ function initEpisodeForm() {
   var form = document.querySelector("#participants-table");
   if (!form) return;
 
+  // ===== No-Traps toggle =====
+  var noTrapsCb   = document.getElementById("episode_no_traps");
+  var trapsBody   = document.getElementById("traps-section-body");
+  function syncTrapsVisibility() {
+    if (!noTrapsCb || !trapsBody) return;
+    trapsBody.style.display = noTrapsCb.checked ? "none" : "";
+  }
+  syncTrapsVisibility();
+  noTrapsCb?.addEventListener("change", syncTrapsVisibility);
+
   // ===== Add Participant =====
   document.getElementById("add-participant")?.addEventListener("click", function() {
     var tbody = document.querySelector("#participants-table tbody");

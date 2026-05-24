@@ -57,7 +57,7 @@ module Admin
       params.require(:episode).permit(
         :season_id, :number_in_season, :title, :air_date,
         :scheduled_days, :participant_arrangement, :type_modifiers,
-        :location_id, :notes, :synopsis,
+        :location_id, :notes, :synopsis, :no_traps,
         appearances_attributes: [
           :id, :survivor_id, :role, :starting_psr, :ending_psr,
           :days_lasted, :result, :weight_loss, :partner_replacement, :_destroy,

@@ -20,6 +20,7 @@
             th Title
             th Air Date
             th Location
+            th.text-center Traps?
             th.text-end Actions
         tbody
           - if @episodes.empty?
@@ -34,6 +35,7 @@
                 td= episode.title
                 td= episode.air_date&.strftime("%b %-d, %Y") || "—"
                 td= episode.location&.full_address || "—"
+                td.text-center = episode.no_traps? ? "F" : (episode.episode_traps.any? ? "T" : "—")
                 td.text-end.text-nowrap
                   = link_to "Edit", edit_admin_episode_path(episode), class: "btn btn-sm btn-outline-primary me-1"
                   - if full_admin?
