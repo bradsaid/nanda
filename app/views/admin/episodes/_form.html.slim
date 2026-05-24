@@ -23,7 +23,10 @@
 
   .col-md-6
     = f.label :season_id, "Season", class: "form-label"
-    = f.grouped_collection_select :season_id, Series.order(:name).includes(:seasons), :seasons, :name, :id, ->(s) { "Season #{s.number}" }, { prompt: "Select a season" }, { class: "form-select", required: true }
+    = f.grouped_collection_select :season_id, Series.order(:name).includes(:seasons), :seasons, :name, :id, ->(s) { "Season #{s.number}" }, { prompt: "Select a season" }, { class: "form-select", required: true, id: "episode_season_id_select" }
+    .mt-2#copy-participants-controls(style="display:none")
+      button.btn.btn-sm.btn-outline-secondary type="button" id="copy-prev-participants" Copy participants from previous episode in this season
+      small.text-muted.ms-2.d-block (continuous-story seasons only)
 
   .col-md-6
     = f.label :location_id, "Location", class: "form-label"

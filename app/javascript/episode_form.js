@@ -88,6 +88,65 @@ function initEpisodeForm() {
     updateBulkGivenRecipients();
   });
 
+  // ===== Copy participants from previous episode in this season =====
+  var seasonSelect = document.getElementById("episode_season_id_select");
+  var copyControls = document.getElementById("copy-participants-controls");
+  var copyBtn      = document.getElementById("copy-prev-participants");
+
+  function toggleCopyControls() {
+    if (!copyControls) return;
+    copyControls.style.display = (seasonSelect && seasonSelect.value) ? "" : "none";
+  }
+  toggleCopyControls();
+  seasonSelect?.addEventListener("change", toggleCopyControls);
+
+  copyBtn?.addEventListener("click", async function() {
+    if (!seasonSelect || !seasonSelect.value) return;
+    copyBtn.disabled = true;
+    var original_label = copyBtn.textContent;
+    copyBtn.textContent = "Loading…";
+    try {
+      var res = await fetch("/admin/seasons/" + seasonSelect.value + "/latest_episode_participants.json", {
+        headers: { "Accept": "application/json" }
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      var data = await res.json();
+      var participants = data.participants || [];
+      if (participants.length === 0) {
+        alert(data.note || "No previous episode in this season.");
+        return;
+      }
+
+      var tbody = document.querySelector("#participants-table tbody");
+      var tmpl  = document.getElementById("participant-template");
+      participants.forEach(function(p, i) {
+        var idx  = Date.now() + i;
+        var html = tmpl.innerHTML.replace(/NEW_IDX/g, idx);
+        tbody.insertAdjacentHTML("beforeend", html);
+        var newRow = tbody.lastElementChild.previousElementSibling || tbody.lastElementChild;
+        // The template renders TWO rows (participant + items-row). Walk back to the participant-row.
+        var participantRow = tbody.querySelector("tr.participant-row[data-appearance-idx='" + idx + "']");
+        if (!participantRow) return;
+        var survivorSelect = participantRow.querySelector("select[name*='[survivor_id]']");
+        if (survivorSelect) survivorSelect.value = String(p.survivor_id);
+        var roleSelect = participantRow.querySelector("select[name*='[role]']");
+        if (roleSelect && p.role) roleSelect.value = String(p.role);
+        var startInput = participantRow.querySelector("input[name*='[starting_psr]']");
+        if (startInput && p.starting_psr != null) startInput.value = String(p.starting_psr);
+      });
+
+      updateBulkGivenRecipients();
+      var note = data.from_episode ? ("Copied " + participants.length + " participants from \"" + data.from_episode.title + "\".") : ("Copied " + participants.length + " participants.");
+      copyBtn.textContent = "✓ " + note;
+      setTimeout(function() { copyBtn.textContent = original_label; copyBtn.disabled = false; }, 3500);
+    } catch (e) {
+      console.error("[copy-participants]", e);
+      alert("Could not load previous participants.");
+      copyBtn.textContent = original_label;
+      copyBtn.disabled = false;
+    }
+  });
+
   // ===== Quick Add Given Item — fan one item out to multiple survivors =====
   updateBulkGivenRecipients();
 

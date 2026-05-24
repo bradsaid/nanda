@@ -9,7 +9,11 @@ Rails.application.routes.draw do
     root to: "dashboard#show"
     get "dashboard", to: "dashboard#show"
     resources :survivors
-    resources :seasons
+    resources :seasons do
+      member do
+        get :latest_episode_participants
+      end
+    end
     resources :episodes
     resources :changelog, only: [:index] do
       member do
