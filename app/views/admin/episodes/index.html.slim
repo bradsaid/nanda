@@ -21,6 +21,7 @@
             th Air Date
             th Location
             th.text-center Traps?
+            th.text-center Trap Result
             th.text-end Actions
         tbody
           - if @episodes.empty?
@@ -36,6 +37,19 @@
                 td= episode.air_date&.strftime("%b %-d, %Y") || "—"
                 td= episode.location&.full_address || "—"
                 td.text-center = episode.no_traps? ? "F" : (episode.episode_traps.any? ? "T" : "—")
+                td.text-center.text-nowrap.small
+                  - traps = episode.episode_traps
+                  - if traps.any?
+                    - successes = traps.count { |t| t.result.to_s.downcase == "success" }
+                    - failures  = traps.count { |t| t.result.to_s.downcase == "fail" }
+                    - pending   = traps.count - successes - failures
+                    span.text-success = "#{successes}✓"
+                    |  /
+                    span.text-danger = "#{failures}✗"
+                    - if pending > 0
+                      span.text-muted.ms-1 = "(#{pending}?)"
+                  - else
+                    span.text-muted —
                 td.text-end.text-nowrap
                   = link_to "Edit", edit_admin_episode_path(episode), class: "btn btn-sm btn-outline-primary me-1"
                   - if full_admin?

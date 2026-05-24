@@ -4,7 +4,7 @@ module Admin
     before_action :set_episode, only: %i[show edit update destroy]
 
     def index
-      @episodes = Episode.includes(season: :series).includes(:location)
+      @episodes = Episode.includes(season: :series).includes(:location, :episode_traps)
                          .joins(season: :series)
                          .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
     end
