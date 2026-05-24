@@ -42,6 +42,10 @@ script type="application/json" id="seasons-index-jsonld-data"= data
           tr.series-header
             td(colspan="3") = series&.name || "Unknown Series"
 
+          - if (syn = series_synopsis(series)).present?
+            tr.series-synopsis
+              td.text-muted.fst-italic.small.py-2(colspan="3") = syn
+
           / Per-series column headers
           tr.table-light.subhead-row
             th(scope="col") Season

@@ -9,8 +9,25 @@ module SeasonsHelper
     discovery_go:   "Discovery GO"
   }.freeze
 
+  SERIES_SYNOPSES = {
+    "Naked and Afraid"                    => "The original series. Two strangers, naked and alone, are dropped into a remote and unforgiving environment for a 21-day primitive survival challenge with nothing but one personal item each.",
+    "Naked and Afraid: Solo"              => "A solo spin-off where individual survivalists are stripped of partners — and clothes — to face 21 days of wilderness alone, with no team to lean on.",
+    "Naked and Afraid XL"                 => "Extended-format spin-off pitting a group of returning, battle-tested survivalists against the wild for 40 days (and in later runs, 60).",
+    "Naked and Afraid: Alone"             => "Veteran cast members take on solo challenges across multiple remote locations, each survivalist facing the wilderness entirely on their own.",
+    "Naked And Afraid Savage"             => "Returning survivalists pushed into the most savage and unforgiving environments the franchise has ever filmed.",
+    "Naked and Afraid Castaways"          => "Survivalists are stranded on remote islands without preselected partners — they have to find each other, organize, and survive as a group.",
+    "Naked and Afraid Last One Standing"  => "Elimination-style competition: survivalists compete head-to-head in the wild, and the last person to tap out wins a $100,000 prize.",
+    "Naked and Afraid Apocalypse"         => "A post-apocalyptic scenario test. Survivalists tackle a 35-day challenge in a wasteland staged to mimic end-of-the-world conditions.",
+    "Naked and Afraid: Global Showdown"   => "Seven international teams of two compete in a 40-day, $200,000 prize, points-based survival tournament — each team representing a different region of the world."
+  }.freeze
+
   def streaming_label(key)
     SERVICE_LABELS[key.to_sym] || key.to_s.titleize
+  end
+
+  def series_synopsis(series)
+    return nil unless series
+    SERIES_SYNOPSES[series.name]
   end
 
   # { "Series Name" => { season_number => { service => url } } }
