@@ -10,15 +10,15 @@ module SeasonsHelper
   }.freeze
 
   SERIES_SYNOPSES = {
-    "Naked and Afraid"                    => "The original series. Two strangers, naked and alone, are dropped into a remote and unforgiving environment for a 21-day primitive survival challenge with nothing but one personal item each.",
-    "Naked and Afraid: Solo"              => "A solo spin-off where individual survivalists are stripped of partners — and clothes — to face 21 days of wilderness alone, with no team to lean on.",
-    "Naked and Afraid XL"                 => "Extended-format spin-off pitting a group of returning, battle-tested survivalists against the wild for 40 days (and in later runs, 60).",
-    "Naked and Afraid: Alone"             => "Veteran cast members take on solo challenges across multiple remote locations, each survivalist facing the wilderness entirely on their own.",
+    "Naked and Afraid"                    => "The original series. Two strangers, naked and alone, get dropped into a remote, unforgiving environment for a 21-day primitive survival challenge with nothing but one personal item each.",
+    "Naked and Afraid: Solo"              => "A solo spin-off. Individual survivalists face 21 days of wilderness alone, with no partner or team.",
+    "Naked and Afraid XL"                 => "Extended-format spin-off pitting a group of returning, battle-tested survivalists against the wild for 40 days, or 60 in later runs.",
+    "Naked and Afraid: Alone"             => "Veteran cast members take on solo challenges across multiple remote locations. Each survivalist faces the wilderness entirely on their own.",
     "Naked And Afraid Savage"             => "Returning survivalists pushed into the most savage and unforgiving environments the franchise has ever filmed.",
-    "Naked and Afraid Castaways"          => "Survivalists are stranded on remote islands without preselected partners — they have to find each other, organize, and survive as a group.",
-    "Naked and Afraid Last One Standing"  => "Elimination-style competition: survivalists compete head-to-head in the wild, and the last person to tap out wins a $100,000 prize.",
+    "Naked and Afraid Castaways"          => "Survivalists are stranded on remote islands without preselected partners. They have to find each other, organize, and survive as a group.",
+    "Naked and Afraid Last One Standing"  => "Elimination-style competition. Survivalists compete head to head in the wild, and the last person to tap out wins a $100,000 prize.",
     "Naked and Afraid Apocalypse"         => "A post-apocalyptic scenario test. Survivalists tackle a 35-day challenge in a wasteland staged to mimic end-of-the-world conditions.",
-    "Naked and Afraid: Global Showdown"   => "Seven international teams of two compete in a 40-day, $200,000 prize, points-based survival tournament — each team representing a different region of the world."
+    "Naked and Afraid: Global Showdown"   => "Seven international teams of two compete in a 40-day, points-based survival tournament for a $200,000 prize. Each team represents a different region of the world."
   }.freeze
 
   def streaming_label(key)

@@ -801,3 +801,16 @@ table.table thead th {
   color: #fff !important;
 }
 table.table thead.table-light { background: linear-gradient(to right, #06291a, #0e3f24) !important; }
+
+/* Make links inside survivor bios visibly clickable */
+.survivor-bio a {
+  color: #14532d;
+  text-decoration: underline;
+  text-decoration-color: #1ec474;
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+.survivor-bio a:hover {
+  color: #1ec474;
+  text-decoration-color: #14532d;
+}
