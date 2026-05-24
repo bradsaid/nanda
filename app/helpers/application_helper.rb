@@ -74,6 +74,7 @@ module ApplicationHelper
       when "cordage"            then "🪢"
       when "comfort item"       then "🛖"
       when "digging tool"       then "⛏️"
+      when "cotton"             then "🧺"
       else "🔧"
       end
     end

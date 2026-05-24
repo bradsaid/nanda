@@ -32,6 +32,8 @@ class Item < ApplicationRecord
       self.item_type = "comfort item"
     when /shovel/
       self.item_type = "digging tool"
+    when /cotton/
+      self.item_type = "cotton"
     when /snake|lizard|iguana|caiman|crocodile|alligator|turtle|tortoise|frog|toad|
           crab|lobster|shrimp|clam|mussel|oyster|snail|slug|conch|
           fish|eel|catfish|piranha|trout|bass|tilapia|perch|
