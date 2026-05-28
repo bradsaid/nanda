@@ -9,9 +9,28 @@ module ApplicationHelper
   def linkify_survivors(text, survivors)
     return text if text.blank? || survivors.blank?
     escaped = ERB::Util.html_escape(text)
-    # Sort by name length descending to match longer names first (e.g. "Jeff Zausch" before "Jeff")
-    survivors.sort_by { |s| -s.full_name.length }.each do |s|
-      escaped = escaped.gsub(/\b#{Regexp.escape(s.full_name)}\b/i) do |match|
+
+    # First-name aliases — only when the first name is unambiguous within
+    # the episode's cast (so we don't mislink the wrong "Dan").
+    first_name_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
+      h[s.full_name.to_s.split.first.to_s.downcase] += 1
+    end
+
+    # Build (pattern, survivor) pairs: full name + last name + unambiguous first name.
+    aliases = []
+    survivors.each do |s|
+      parts = s.full_name.to_s.split
+      next if parts.empty?
+      aliases << [s.full_name, s]
+      aliases << [parts.last, s] if parts.size > 1
+      if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
+        aliases << [parts.first, s]
+      end
+    end
+
+    # Match longer aliases first so "Jeff Zausch" wins over "Jeff".
+    aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, s|
+      escaped = escaped.gsub(/\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i) do |match|
         "<a href=\"#{survivor_path(s)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
       end
     end
