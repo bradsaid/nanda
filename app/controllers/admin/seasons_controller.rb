@@ -46,12 +46,12 @@ module Admin
     def latest_episode_participants
       season = Season.find(params[:id])
       latest = season.episodes
-                     .includes(appearances: :survivor)
+                     .includes(:location, appearances: :survivor)
                      .order("air_date DESC NULLS LAST, number_in_season DESC, id DESC")
                      .first
 
       if latest.nil?
-        render json: { season_id: season.id, participants: [], note: "No previous episode in this season yet." }
+        render json: { season_id: season.id, participants: [], location_id: nil, note: "No previous episode in this season yet." }
         return
       end
 
@@ -68,9 +68,14 @@ module Admin
       end.compact
 
       render json: {
-        season_id:     season.id,
-        from_episode:  { id: latest.id, title: latest.title, number_in_season: latest.number_in_season },
-        participants:  participants
+        season_id:               season.id,
+        continuous_story:        season.continuous_story_effective?,
+        from_episode:            { id: latest.id, title: latest.title, number_in_season: latest.number_in_season },
+        location_id:             latest.location_id,
+        scheduled_days:          latest.scheduled_days,
+        participant_arrangement: latest.participant_arrangement,
+        type_modifiers:          latest.type_modifiers,
+        participants:            participants
       }
     end
 

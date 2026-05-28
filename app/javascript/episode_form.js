@@ -108,7 +108,42 @@ function initEpisodeForm() {
     copyControls.style.display = (seasonSelect && seasonSelect.value) ? "" : "none";
   }
   toggleCopyControls();
-  seasonSelect?.addEventListener("change", toggleCopyControls);
+
+  // On season change, auto-fill metadata fields (only for continuous-story seasons
+  // and only when the target field is empty — so we don't overwrite admin edits).
+  async function autoFillFromSeason() {
+    if (!seasonSelect || !seasonSelect.value) return;
+    try {
+      var res = await fetch("/admin/seasons/" + seasonSelect.value + "/latest_episode_participants.json", {
+        headers: { "Accept": "application/json" }
+      });
+      if (!res.ok) return;
+      var data = await res.json();
+      if (!data || !data.continuous_story) return;
+
+      function setIfEmpty(elId, value) {
+        if (value == null) return;
+        var el = document.getElementById(elId);
+        if (!el) return;
+        var current = (el.value || "").trim();
+        if (current === "") {
+          el.value = String(value);
+        }
+      }
+
+      setIfEmpty("episode_location_id",             data.location_id);
+      setIfEmpty("episode_scheduled_days",          data.scheduled_days);
+      setIfEmpty("episode_participant_arrangement", data.participant_arrangement);
+      setIfEmpty("episode_type_modifiers",          data.type_modifiers);
+    } catch (e) {
+      console.warn("[auto-fill from season]", e);
+    }
+  }
+
+  seasonSelect?.addEventListener("change", function() {
+    toggleCopyControls();
+    autoFillFromSeason();
+  });
 
   copyBtn?.addEventListener("click", async function() {
     if (!seasonSelect || !seasonSelect.value) return;
