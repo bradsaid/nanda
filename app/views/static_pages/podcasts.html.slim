@@ -100,3 +100,22 @@ script type="application/json" id="podcasts-books-jsonld-data"= data
         .d-flex.justify-content-between.align-items-center
           span Girl's Own Survival Guide - Signed Copy
           = link_to "Buy on Ky's Website", "https://kyfurneaux.com/product/girls-own-survival-guide-signed/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Shane Lewis section
+.pb-2.mb-3.border-bottom.site-header.site-header-faded
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Books by Shane Lewis
+  p.subtitle.mb-0.text-muted
+    | Memoir by Naked & Afraid survivalist&nbsp;
+    = link_to "Shane Lewis", survivor_path(Survivor.find_by(full_name: "Shane Lewis")), class: "text-primary"
+    | .
+
+.card.shadow-sm.mb-3
+  .card-header
+    .fw-semibold Recommended Book
+  .card-body
+    ul.list-group.list-group-flush
+      li.list-group-item
+        .d-flex.justify-content-between.align-items-center
+          span Growing Up: Institutionalized to Globetrotting
+          = link_to "Buy on Amazon", "https://www.amazon.com/Growing-Institutionalized-globetrotting-Shane-Lewis/dp/061563544X", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
