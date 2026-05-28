@@ -607,6 +607,20 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 
 /* Card header: reuses global gradient if already set for .card-header */
 
+/* Season card synopsis (lives inside dark green card-header) */
+.card-header .season-synopsis {
+  color: rgba(255, 255, 255, .85);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.4;
+}
+.card-header .text-transform-none {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
 /* Map frame */
 .map-frame {
   height: 540px;           /* adjust as needed */

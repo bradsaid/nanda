@@ -153,11 +153,11 @@ script type="application/json" id="episodes-index-jsonld-data"= data
         / debug line to verify sort result (use raw attribute from SELECT)
         - fad = season['first_air_date'] || (season.respond_to?(:first_air_date) ? season.first_air_date : nil)
         - if fad.present?
-          .small.text-muted.mt-1 = "First airdate: #{fad.to_date.strftime('%b %-d, %Y')}"
+          .small.mt-1.text-white-50.text-transform-none = "First airdate: #{fad.to_date.strftime('%b %-d, %Y')}"
         - if @all_episodes_by_season
           - synopsis = season_synopsis(season, episodes: @all_episodes_by_season[season.id] || [], survivor_count: (@survivor_counts_by_season || {})[season.id].to_i)
           - if synopsis.present?
-            .small.text-muted.mt-1 = synopsis
+            .small.mt-1.season-synopsis = synopsis
 
       - if @episodes_by_season[season].present?
         .list-group.list-group-flush
