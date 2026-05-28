@@ -74,6 +74,14 @@ class EpisodesController < ApplicationController
       end
       @episode_counts = Episode.group(:season_id).count
 
+      season_ids = @seasons.map(&:id)
+      @all_episodes_by_season = Episode.where(season_id: season_ids).includes(:location).group_by(&:season_id)
+      @survivor_counts_by_season = Appearance.joins(:episode)
+                                              .where(episodes: { season_id: season_ids })
+                                              .distinct
+                                              .group("episodes.season_id")
+                                              .count(:survivor_id)
+
       @episodes = Episode.joins(season: :series)
                         .includes(:location, season: :series, appearances: :survivor)
                         .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")

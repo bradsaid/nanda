@@ -21,6 +21,10 @@ script type="application/json" id="season-jsonld-data"= data
   = link_to "← All seasons", episodes_path, class: "small link-primary text-decoration-underline"
   h1.h3.mt-2.mb-4 = "#{@season.series&.name} — Season #{@season.number}"
 
+  - synopsis = season_synopsis(@season)
+  - if synopsis.present?
+    p.text-muted.mb-4 = synopsis
+
   - if @survivors.any?
     .card.shadow-sm.mb-4
       .card-header

@@ -94,4 +94,47 @@ module SeasonsHelper
   def services_for(series_name, season_number)
     SeasonsHelper.season_services.dig(series_name, season_number.to_i) || {}
   end
+
+  # Brief auto-generated synopsis of a season — survivor count, episode count,
+  # locations (regular) or days + single location (continuous-story), plus any
+  # special-format modifiers like Fan, Extended, Mentor.
+  def season_synopsis(season, episodes: nil, survivor_count: nil)
+    return nil unless season
+
+    eps        = episodes || season.episodes.includes(:location).to_a
+    return nil if eps.empty?
+
+    ep_count   = eps.size
+    surv_count = survivor_count || Appearance.joins(:episode)
+                                              .where(episodes: { season_id: season.id })
+                                              .distinct
+                                              .count(:survivor_id)
+
+    if season.continuous_story_effective?
+      countries = eps.map { |ep| ep.location&.country }.compact_blank.uniq
+      where     = countries.empty? ? "an undisclosed location" : countries.to_sentence
+      days      = eps.map(&:scheduled_days).compact.max
+      day_part  = days ? "#{days}-day " : ""
+      "#{surv_count} survivalists attempt a #{day_part}continuous challenge in #{where}, chronicled across #{ep_count} #{'episode'.pluralize(ep_count)}."
+    else
+      countries = eps.map { |ep| ep.location&.country }.compact_blank.uniq
+      where     = countries.empty? ? "various locations" : countries.to_sentence
+      base      = "#{surv_count} survivalists test their survival skills across #{ep_count} #{'episode'.pluralize(ep_count)} filmed in #{where}."
+
+      mod_tokens = eps.flat_map do |ep|
+        ep.type_modifiers.to_s.split(",").map(&:strip).reject(&:empty?)
+      end
+      return base if mod_tokens.empty?
+
+      mod_counts  = mod_tokens.tally.sort_by { |_, c| -c }
+      if mod_tokens.size == 1
+        label = mod_counts.first.first
+        article = label.to_s.match?(/\A[AEIOUaeiou]/) ? "an" : "a"
+        "#{base} Includes #{article} #{label} challenge episode."
+      else
+        mod_phrases = mod_counts.map { |label, count| count > 1 ? "#{count} #{label}" : label }
+        "#{base} Includes #{mod_phrases.to_sentence} challenge episodes."
+      end
+    end
+  end
 end

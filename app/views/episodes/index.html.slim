@@ -154,6 +154,10 @@ script type="application/json" id="episodes-index-jsonld-data"= data
         - fad = season['first_air_date'] || (season.respond_to?(:first_air_date) ? season.first_air_date : nil)
         - if fad.present?
           .small.text-muted.mt-1 = "First airdate: #{fad.to_date.strftime('%b %-d, %Y')}"
+        - if @all_episodes_by_season
+          - synopsis = season_synopsis(season, episodes: @all_episodes_by_season[season.id] || [], survivor_count: (@survivor_counts_by_season || {})[season.id].to_i)
+          - if synopsis.present?
+            .small.text-muted.mt-1 = synopsis
 
       - if @episodes_by_season[season].present?
         .list-group.list-group-flush
