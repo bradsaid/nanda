@@ -5,12 +5,15 @@ class SeasonsController < ApplicationController
     @episodes = @season.episodes
                        .includes(:location)
                        .order("number_in_season ASC NULLS LAST, id ASC")
+    survivor_ids = Appearance
+                     .joins(:episode)
+                     .where(episodes: { season_id: @season.id })
+                     .distinct
+                     .pluck(:survivor_id)
     @survivors = Survivor
-                   .joins(appearances: :episode)
-                   .where(episodes: { season_id: @season.id })
+                   .where(id: survivor_ids)
                    .with_attached_avatar
-                   .distinct
-                   .order(Arel.sql("LOWER(full_name) ASC"))
+                   .order(:full_name)
   end
 
   def index
