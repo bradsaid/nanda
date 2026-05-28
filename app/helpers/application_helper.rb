@@ -72,6 +72,19 @@ module ApplicationHelper
         "<a href=\"#{survivor_path(s)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
       end
     end
+
+    # Auto-link quoted episode titles. Quoted-only to avoid false positives
+    # on short titles like "Threesome" or "Frozen". Matches both straight
+    # and curly quotes; preserves whichever quote style the admin wrote.
+    episode_titles = Episode.where.not(title: [nil, ""]).pluck(:id, :title)
+    episode_titles.sort_by { |_, t| -t.length }.each do |ep_id, title|
+      escaped_title = Regexp.escape(title)
+      pattern = /["“]#{escaped_title}["”](?![^<]*<\/a>)/i
+      result = result.gsub(pattern) do |match|
+        "<a href=\"#{episode_path(ep_id)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
+      end
+    end
+
     result.html_safe
   end
 
