@@ -26,7 +26,7 @@ body {
 
 /* Page-section header (used at the top of every tab) */
 .site-header {
-  background: linear-gradient(135deg, #8a3f2c, #aa553a) !important; /* deeper orange-red terra cotta */
+  background: linear-gradient(135deg, #1f1903, #2f2706) !important; /* very dark olive-brown */
   border: none !important;
   border-radius: .5rem;
   padding: .65rem 1rem !important;
@@ -656,8 +656,8 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 }
 
 .series-header td {
-  background-color: #228B22 !important; /* forest green */
-  color: #fff !important;               /* white font */
+  background: linear-gradient(to right, #06291a, #0e3f24) !important; /* deep forest — matches card headers */
+  color: #fff !important;
   font-weight: bold;
 }
 
@@ -813,4 +813,9 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
 .survivor-bio a:hover {
   color: #1ec474;
   text-decoration-color: #14532d;
+}
+
+/* Warm amber/honey variant — complements the dark forest green */
+.site-header.site-header-faded {
+  background: linear-gradient(135deg, #b8893d, #cda04a) !important;
 }
