@@ -22,121 +22,361 @@ script type="application/json" id="podcasts-books-jsonld-data"= data
 
 / Podcast Cards
 / Oh Heck NAA
+- malu = Survivor.find_by(full_name: "MaLu Beyonce")
 .card.shadow-sm.mb-3
   .card-header
     .d-flex.align-items-center.justify-content-between
       .fw-semibold Oh Heck NAA - A Naked and Afraid Podcast
   .card-body
-    p.text-muted The Naked and Afraid Podcast: Oh Heck NAA! is hosted by armchair survivalists MaLu Beyonce and Debbie V. They break down episodes of the Discovery reality TV show Naked and Afraid from the comfort of their couches, offering entertaining opinions and reviews for fans.
+    .d-flex.gap-3.align-items-start
+      - if malu
+        .flex-shrink-0
+          = link_to survivor_path(malu) do
+            = image_tag avatar_src(malu, name: malu.full_name), class: "podcast-host-avatar shadow", alt: malu.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | The Naked and Afraid Podcast: Oh Heck NAA! is hosted by armchair survivalists&nbsp;
+          - if malu
+            = link_to "MaLu Beyonce", survivor_path(malu), class: "text-primary"
+          - else
+            | MaLu Beyonce
+          |  and Debbie V. They break down episodes of the Discovery reality TV show Naked and Afraid from the comfort of their couches, offering entertaining opinions and reviews for fans.
   .px-3.pb-3
     .d-flex.flex-wrap.gap-2
-        = link_to "Listen now - Spotify", "https://open.spotify.com/show/2q2ZfSDQiL6u26dV4o2fNN", class: "btn btn-outline-primary btn-sm"
-        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/a-naked-and-afraid-podcast-oh-heck-naa/id1637024575", class: "btn btn-outline-primary btn-sm"
+        = link_to "Listen now - Spotify", "https://open.spotify.com/show/2q2ZfSDQiL6u26dV4o2fNN", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/a-naked-and-afraid-podcast-oh-heck-naa/id1637024575", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
 
 / Jaked and Afraid
+- jake = Survivor.find_by(full_name: "Jake Nodar")
 .card.shadow-sm.mb-3
   .card-header
     .d-flex.align-items-center.justify-content-between
       .fw-semibold Jaked and Afraid
   .card-body
-    p.text-muted Hosted by four-time Naked and Afraid survivalist Jake Nodar, this podcast recaps each new episode of the show. It features guest hosts from the show's favorite alumni, providing insider recaps, insights, and discussions on challenges and strategies.
+    .d-flex.gap-3.align-items-start
+      - if jake
+        .flex-shrink-0
+          = link_to survivor_path(jake) do
+            = image_tag avatar_src(jake, name: jake.full_name), class: "podcast-host-avatar shadow", alt: jake.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | Hosted by four-time Naked and Afraid survivalist&nbsp;
+          - if jake
+            = link_to "Jake Nodar", survivor_path(jake), class: "text-primary"
+          - else
+            | Jake Nodar
+          | , this podcast recaps each new episode of the show. It features guest hosts from the show's favorite alumni, providing insider recaps, insights, and discussions on challenges and strategies.
   .px-3.pb-3
     .d-flex.flex-wrap.gap-2
-        = link_to "Listen now - Spotify", "https://open.spotify.com/show/1jl5pP0rmBlo5Ra2G3sDmQ", class: "btn btn-outline-primary btn-sm"
-        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/jaked-and-afraid/id1673801964", class: "btn btn-outline-primary btn-sm"
+        = link_to "Listen now - Spotify", "https://open.spotify.com/show/1jl5pP0rmBlo5Ra2G3sDmQ", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/jaked-and-afraid/id1673801964", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
 
 / The Survival Debrief Podcast with Steven Kelly
+- steven = Survivor.find_by(full_name: "Steven Kelly")
 .card.shadow-sm.mb-3
   .card-header
     .d-flex.align-items-center.justify-content-between
       .fw-semibold The Survival Debrief Podcast with Steven Kelly
   .card-body
-    p.text-muted Hosted by British Commando and Naked and Afraid survivalist Steven Kelly, this podcast sits down with fellow survivalists to unpack what TV can't show — split-second decisions, partner dynamics, water/fire/shelter trade-offs, and recovery back home. Each episode ends with three practical takeaways.
+    .d-flex.gap-3.align-items-start
+      - if steven
+        .flex-shrink-0
+          = link_to survivor_path(steven) do
+            = image_tag avatar_src(steven, name: steven.full_name), class: "podcast-host-avatar shadow", alt: steven.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | Hosted by British Commando and Naked and Afraid survivalist&nbsp;
+          - if steven
+            = link_to "Steven Kelly", survivor_path(steven), class: "text-primary"
+          - else
+            | Steven Kelly
+          | , this podcast sits down with fellow survivalists to unpack what TV can't show — split-second decisions, partner dynamics, water/fire/shelter trade-offs, and recovery back home. Each episode ends with three practical takeaways.
   .px-3.pb-3
     .d-flex.flex-wrap.gap-2
         = link_to "Listen now - Spotify", "https://open.spotify.com/show/0tEywXoYZsNr3De4cdLQ1U", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/the-survival-debrief-podcast-with-steven-kelly/id1844233698", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Watch on YouTube", "https://www.youtube.com/playlist?list=PL-rLu7--JuCa7SACj9JFUJzIIr2tjzkWY", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
 
+/ Against the Odds with Cassie DePecol
+- cassie = Survivor.find_by(full_name: "Cassie DePecol")
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Against the Odds
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if cassie
+        .flex-shrink-0
+          = link_to survivor_path(cassie) do
+            = image_tag avatar_src(cassie, name: cassie.full_name), class: "podcast-host-avatar shadow", alt: cassie.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | Hosted by Naked and Afraid alum&nbsp;
+          - if cassie
+            = link_to "Cassie DePecol", survivor_path(cassie), class: "text-primary"
+          - else
+            | Cassie DePecol
+          |  alongside Mike Corey, this Wondery podcast tells real-life stories of survival against impossible odds — cave rescues, mountain disasters, animal attacks, and more.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Listen now - Wondery", "https://wondery.com/shows/against-the-odds/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/against-the-odds/id1553335461", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Fringe with Benefits with Stacey Osorio
+- stacey = Survivor.find_by(full_name: "Stacey Osorio")
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Fringe with Benefits
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if stacey
+        .flex-shrink-0
+          = link_to survivor_path(stacey) do
+            = image_tag avatar_src(stacey, name: stacey.full_name), class: "podcast-host-avatar shadow", alt: stacey.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | Hosted by Naked and Afraid survivalist&nbsp;
+          - if stacey
+            = link_to "Stacey Osorio", survivor_path(stacey), class: "text-primary"
+          - else
+            | Stacey Osorio
+          |  (Golden Valkyrie), exploring everything fringe, creepy, weird and paranormal — strange phenomena, mysterious experiences, and motivational musings.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/fringe-with-benefits/id1525158139", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Blood and Breakthrough with Tawny Lynn
+- tawny = Survivor.find_by(full_name: "Tawny Lynn")
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Blood and Breakthrough
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if tawny
+        .flex-shrink-0
+          = link_to survivor_path(tawny) do
+            = image_tag avatar_src(tawny, name: tawny.full_name), class: "podcast-host-avatar shadow", alt: tawny.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | Hosted by Naked and Afraid survivalist&nbsp;
+          - if tawny
+            = link_to "Tawny Lynn", survivor_path(tawny), class: "text-primary"
+          - else
+            | Tawny Lynn
+          |  and Clarke Payne, this podcast dives into the raw realities of addiction, life struggles, and the power of faith, with guests sharing their own stories of overcoming challenges.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Listen now - Spotify", "https://open.spotify.com/show/75y83ZGICJrJWfwEQQRAGj", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/blood-and-breakthrough/id1800337727", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = link_to "Watch on YouTube", "https://www.youtube.com/@BloodandBreakthrough", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Little Ritual with Jena Ocean
+- jena = Survivor.find_by(full_name: "Jena Ocean")
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Little Ritual
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if jena
+        .flex-shrink-0
+          = link_to survivor_path(jena) do
+            = image_tag avatar_src(jena, name: jena.full_name), class: "podcast-host-avatar shadow", alt: jena.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | Hosted by Naked and Afraid survivalist and storyteller&nbsp;
+          - if jena
+            = link_to "Jena Ocean", survivor_path(jena), class: "text-primary"
+          - else
+            | Jena Ocean
+          | , a show that gathers around the metaphorical fire to share rituals, intuition, and post-Evangelical spirituality.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Listen now - Spotify", "https://open.spotify.com/show/1xO7RaVb1miNxQMRbdretX", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
 / Books Section
 .pb-2.mb-3.border-bottom.site-header.site-header-faded
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
     h1.h3.mb-0.logo Books by Ky Furneaux
   p.subtitle.mb-0.text-muted
-    | Discover survival guides and adventure books written by Naked & Afraid survivor 
-    = link_to "Ky Furneaux", survivor_path(Survivor.find_by(full_name: "Ky Furneaux")), class: "text-primary"
+    | Discover survival guides and adventure books written by Naked & Afraid survivor&nbsp;
+    = link_to "Ky Furneaux", survivor_path(ky), class: "text-primary"
     | .
 
 .card.shadow-sm.mb-3
   .card-header
     .fw-semibold Recommended Books
   .card-body
-    ul.list-group.list-group-flush
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span The Superwoman's Survival Guide
-          = link_to "Buy on Amazon", "https://a.co/d/dJEVpqL", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span Survive: The All-In-One Guide to Staying Alive in Extreme Conditions
-          = link_to "Buy on Amazon", "https://a.co/d/aCuVK7B", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span When the Grid Fails: Easy Action Steps When Facing Hurricanes, ...
-          = link_to "Buy on Amazon", "https://a.co/d/cWj7nxr", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span Surviving the First 36 Hours
-          = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival
-          = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
-      li.list-group-item  
-        .d-flex.justify-content-between.align-items-center
-          span Adventure Awaits: The Beginner's Guide to the Great Outdoors
-          = link_to "Buy on Amazon", "https://a.co/d/iNGF8CS", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"   
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span Girl's Own Survival Guide - Signed Copy
-          = link_to "Buy on Ky's Website", "https://kyfurneaux.com/product/girls-own-survival-guide-signed/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+    .d-flex.gap-3.align-items-start
+      - if ky
+        .flex-shrink-0
+          = link_to survivor_path(ky) do
+            = image_tag avatar_src(ky, name: ky.full_name), class: "podcast-host-avatar shadow", alt: ky.full_name
+      .flex-grow-1
+        ul.list-group.list-group-flush.mb-0
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span The Superwoman's Survival Guide
+              = link_to "Buy on Amazon", "https://a.co/d/dJEVpqL", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Survive: The All-In-One Guide to Staying Alive in Extreme Conditions
+              = link_to "Buy on Amazon", "https://a.co/d/aCuVK7B", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span When the Grid Fails: Easy Action Steps When Facing Hurricanes, ...
+              = link_to "Buy on Amazon", "https://a.co/d/cWj7nxr", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Surviving the First 36 Hours
+              = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival
+              = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Adventure Awaits: The Beginner's Guide to the Great Outdoors
+              = link_to "Buy on Amazon", "https://a.co/d/iNGF8CS", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Girl's Own Survival Guide - Signed Copy
+              = link_to "Buy on Ky's Website", "https://kyfurneaux.com/product/girls-own-survival-guide-signed/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
 
 / Shane Lewis section
+- shane = Survivor.find_by(full_name: "Shane Lewis")
 .pb-2.mb-3.border-bottom.site-header.site-header-faded
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
     h1.h3.mb-0.logo Books by Shane Lewis
   p.subtitle.mb-0.text-muted
     | Memoir by Naked & Afraid survivalist&nbsp;
-    = link_to "Shane Lewis", survivor_path(Survivor.find_by(full_name: "Shane Lewis")), class: "text-primary"
+    = link_to "Shane Lewis", survivor_path(shane), class: "text-primary"
     | .
 
 .card.shadow-sm.mb-3
   .card-header
     .fw-semibold Recommended Book
   .card-body
-    ul.list-group.list-group-flush
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span Growing Up: Institutionalized to Globetrotting
-          = link_to "Buy on Amazon", "https://www.amazon.com/Growing-Institutionalized-globetrotting-Shane-Lewis/dp/061563544X", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+    .d-flex.gap-3.align-items-start
+      - if shane
+        .flex-shrink-0
+          = link_to survivor_path(shane) do
+            = image_tag avatar_src(shane, name: shane.full_name), class: "podcast-host-avatar shadow", alt: shane.full_name
+      .flex-grow-1
+        ul.list-group.list-group-flush.mb-0
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Growing Up: Institutionalized to Globetrotting
+              = link_to "Buy on Amazon", "https://www.amazon.com/Growing-Institutionalized-globetrotting-Shane-Lewis/dp/061563544X", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
 
 / Wild Twins section
+- amber = Survivor.find_by(full_name: "Amber Shine")
+- serena = Survivor.find_by(full_name: "Serena Shine")
 .pb-2.mb-3.border-bottom.site-header.site-header-faded
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
     h1.h3.mb-0.logo Books by the Wild Twins
   p.subtitle.mb-0.text-muted
     | Memoir co-authored by Naked & Afraid survivalists&nbsp;
-    = link_to "Amber Shine", survivor_path(Survivor.find_by(full_name: "Amber Shine")), class: "text-primary"
+    = link_to "Amber Shine", survivor_path(amber), class: "text-primary"
     |  and&nbsp;
-    = link_to "Serena Shine", survivor_path(Survivor.find_by(full_name: "Serena Shine")), class: "text-primary"
+    = link_to "Serena Shine", survivor_path(serena), class: "text-primary"
     | .
 
 .card.shadow-sm.mb-3
   .card-header
     .fw-semibold Recommended Book
   .card-body
-    ul.list-group.list-group-flush
-      li.list-group-item
-        .d-flex.justify-content-between.align-items-center
-          span The Wild Twins: Tales of Strength and Survival
-          = link_to "Buy on Amazon", "https://www.amazon.com/Wild-Twins-Tales-Strength-Survival/dp/1775541762", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+    .d-flex.gap-3.align-items-start
+      .flex-shrink-0.d-flex.flex-column.gap-2
+        - if amber
+          = link_to survivor_path(amber) do
+            = image_tag avatar_src(amber, name: amber.full_name), class: "podcast-host-avatar shadow", alt: amber.full_name
+        - if serena
+          = link_to survivor_path(serena) do
+            = image_tag avatar_src(serena, name: serena.full_name), class: "podcast-host-avatar shadow", alt: serena.full_name
+      .flex-grow-1
+        ul.list-group.list-group-flush.mb-0
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span The Wild Twins: Tales of Strength and Survival
+              = link_to "Buy on Amazon", "https://www.amazon.com/Wild-Twins-Tales-Strength-Survival/dp/1775541762", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Forrest Galante section
+- forrest = Survivor.find_by(full_name: "Forrest Galante")
+.pb-2.mb-3.border-bottom.site-header.site-header-faded
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Books by Forrest Galante
+  p.subtitle.mb-0.text-muted
+    | Memoir by Naked & Afraid alum, wildlife biologist and Animal Planet host&nbsp;
+    = link_to "Forrest Galante", survivor_path(forrest), class: "text-primary"
+    | .
+
+.card.shadow-sm.mb-3
+  .card-header
+    .fw-semibold Recommended Book
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if forrest
+        .flex-shrink-0
+          = link_to survivor_path(forrest) do
+            = image_tag avatar_src(forrest, name: forrest.full_name), class: "podcast-host-avatar shadow", alt: forrest.full_name
+      .flex-grow-1
+        ul.list-group.list-group-flush.mb-0
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Still Alive: A Wild Life of Rediscovery
+              = link_to "Buy on Amazon", "https://www.amazon.com/Still-Alive-Wild-Life-Rediscovery/dp/0306924250", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Laura Zerra section
+- laura = Survivor.find_by(full_name: "Laura Zerra")
+.pb-2.mb-3.border-bottom.site-header.site-header-faded
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Books by Laura Zerra
+  p.subtitle.mb-0.text-muted
+    | Knifemaking guide by Naked & Afraid survivalist and bladesmith&nbsp;
+    = link_to "Laura Zerra", survivor_path(laura), class: "text-primary"
+    | .
+
+.card.shadow-sm.mb-3
+  .card-header
+    .fw-semibold Recommended Book
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if laura
+        .flex-shrink-0
+          = link_to survivor_path(laura) do
+            = image_tag avatar_src(laura, name: laura.full_name), class: "podcast-host-avatar shadow", alt: laura.full_name
+      .flex-grow-1
+        ul.list-group.list-group-flush.mb-0
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span A Modern Guide to Knifemaking
+              = link_to "Buy on Amazon", "https://www.amazon.com/Modern-Guide-Knifemaking-Step-step/dp/1631595059", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Quince Mountain section
+- quince = Survivor.find_by(full_name: "Quince Mountain")
+.pb-2.mb-3.border-bottom.site-header.site-header-faded
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Books by Quince Mountain
+  p.subtitle.mb-0.text-muted
+    | Mushing memoir co-authored by Naked & Afraid survivalist and Iditarod racer&nbsp;
+    = link_to "Quince Mountain", survivor_path(quince), class: "text-primary"
+    |  with his wife Blair Braverman.
+
+.card.shadow-sm.mb-3
+  .card-header
+    .fw-semibold Recommended Book
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if quince
+        .flex-shrink-0
+          = link_to survivor_path(quince) do
+            = image_tag avatar_src(quince, name: quince.full_name), class: "podcast-host-avatar shadow", alt: quince.full_name
+      .flex-grow-1
+        ul.list-group.list-group-flush.mb-0
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Dogs on the Trail: A Year in the Life
+              = link_to "Buy on Amazon", "https://www.amazon.com/Dogs-Trail-Year-Blair-Braverman/dp/0063066262", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
