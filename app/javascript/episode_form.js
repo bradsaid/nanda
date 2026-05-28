@@ -77,6 +77,8 @@ function populateBuilderCheckboxes(container, survivors, namePrefix, idPrefix, f
 function initEpisodeForm() {
   var form = document.querySelector("#participants-table");
   if (!form) return;
+  if (form.dataset.epFormInit === "1") return;
+  form.dataset.epFormInit = "1";
 
   // ===== No-Traps toggle =====
   var noTrapsCb   = document.getElementById("episode_no_traps");

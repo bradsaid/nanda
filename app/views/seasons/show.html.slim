@@ -21,6 +21,25 @@ script type="application/json" id="season-jsonld-data"= data
   = link_to "← All seasons", episodes_path, class: "small link-primary text-decoration-underline"
   h1.h3.mt-2.mb-4 = "#{@season.series&.name} — Season #{@season.number}"
 
+  - if @survivors.any?
+    .card.shadow-sm.mb-4
+      .card-header
+        .d-flex.justify-content-between.align-items-center
+          span.fw-semibold = "Survivalists (#{@survivors.size})"
+      .card-body
+        .row.g-3
+          - @survivors.each do |s|
+            - parts = s.full_name.to_s.split(" ", 2)
+            .col-6.col-md-4.col-lg-3.col-xl-2
+              .card.text-center.shadow-sm.h-100
+                .card-body.py-3.d-flex.flex-column.align-items-center
+                  - if s.avatar.attached?
+                    = link_to survivor_path(s) do
+                      = image_tag url_for(s.avatar), alt: s.full_name, class: "avatar-portrait shadow img-thumbnail d-block mb-2"
+                  = link_to survivor_path(s), class: "survivor-name-stack text-decoration-none text-dark" do
+                    .first-name = parts[0]
+                    .last-name = parts[1].to_s
+
   - if @episodes.empty?
     p.text-muted.mb-0 No episodes in this season yet.
   - else
