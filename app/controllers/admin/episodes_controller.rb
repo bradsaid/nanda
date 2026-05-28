@@ -30,7 +30,8 @@ module Admin
     def edit; end
 
     def update
-      if @episode.update(episode_params)
+      attrs = dedupe_appearance_items(episode_params)
+      if @episode.update(attrs)
         redirect_to admin_episodes_path, notice: "Episode updated."
       else
         render :edit, status: :unprocessable_entity
@@ -51,6 +52,38 @@ module Admin
         episode_traps: [],
         episode_shelters: []
       ).find(params[:id])
+    end
+
+    # Drop any new appearance_items rows that would collide with an existing
+    # (appearance_id, item_id, source) — the DB has a unique index on that
+    # triple. This guards against the Quick Add Given Item button being used
+    # to fan out an item to a survivor who already has it.
+    def dedupe_appearance_items(attrs)
+      apps = attrs[:appearances_attributes]
+      return attrs unless apps.is_a?(ActionController::Parameters) || apps.is_a?(Hash)
+
+      apps.each do |_ap_key, ap|
+        items = ap[:appearance_items_attributes]
+        next unless items.is_a?(ActionController::Parameters) || items.is_a?(Hash)
+
+        seen = {}
+        items.to_h.each do |item_key, row|
+          next if row[:_destroy].to_s == "1"
+          item_id = row[:item_id].to_s
+          source  = row[:source].to_s
+          next if item_id.empty?
+          key = [item_id, source]
+          if row[:id].present?
+            seen[key] = item_key
+          elsif seen.key?(key)
+            items.delete(item_key)
+          else
+            seen[key] = item_key
+          end
+        end
+      end
+
+      attrs
     end
 
     def episode_params

@@ -212,10 +212,28 @@ function initEpisodeForm() {
       return;
     }
     var tmpl = document.getElementById("item-template");
+    var skipped = 0;
     checked.forEach(function(cb, i) {
       var appIdx = cb.value;
       var container = document.querySelector(".items-container[data-appearance-idx='" + appIdx + "']");
       if (!container) return;
+
+      // Skip if this survivor already has the same (item, source) — the DB
+      // has a unique index on (appearance_id, item_id, source).
+      var existing = container.querySelectorAll(".item-entry");
+      var alreadyHas = false;
+      existing.forEach(function(entry) {
+        if (entry.style.display === "none") return;
+        var destroyFld = entry.querySelector("input[name*='_destroy']");
+        if (destroyFld && destroyFld.value === "1") return;
+        var existItem = entry.querySelector("select[name*='[item_id]']");
+        var existSrc  = entry.querySelector("select[name*='[source]']");
+        if (existItem && existSrc && existItem.value === String(itemId) && existSrc.value === "given") {
+          alreadyHas = true;
+        }
+      });
+      if (alreadyHas) { skipped++; return; }
+
       var itemIdx = Date.now() + i;
       var html = tmpl.innerHTML.replace(/APP_IDX/g, appIdx).replace(/ITEM_IDX/g, itemIdx);
       container.insertAdjacentHTML("beforeend", html);
@@ -227,6 +245,9 @@ function initEpisodeForm() {
       if (srcFld)  srcFld.value  = "given";
       if (qtyFld)  qtyFld.value  = qty;
     });
+    if (skipped > 0) {
+      console.log("[bulk-given-add] skipped " + skipped + " survivor(s) that already had this item");
+    }
     itemSelect.value = "";
   });
 
