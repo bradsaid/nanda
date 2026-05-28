@@ -37,6 +37,44 @@ module ApplicationHelper
     simple_format(escaped.html_safe)
   end
 
+  # Linkify survivor names mentioned in a bio. Unlike linkify_survivors,
+  # this takes already-sanitized HTML (the bio may contain admin-authored
+  # <a>, <em>, etc.) and the corpus is every survivor in the DB, minus the
+  # subject of the bio. Full names always link; first names only link when
+  # unambiguous franchise-wide. Last names are skipped to avoid collisions
+  # with common words.
+  def linkify_bio(sanitized_html, exclude_survivor: nil)
+    return sanitized_html if sanitized_html.blank?
+
+    all_survivors = Survivor.select(:id, :full_name, :slug).to_a
+
+    # Count first names across the *full* corpus so excluding the bio's
+    # subject doesn't artificially make their first name unambiguous.
+    first_name_counts = all_survivors.each_with_object(Hash.new(0)) do |s, h|
+      h[s.full_name.to_s.split.first.to_s.downcase] += 1
+    end
+
+    survivors = exclude_survivor ? all_survivors.reject { |s| s.id == exclude_survivor.id } : all_survivors
+
+    aliases = []
+    survivors.each do |s|
+      parts = s.full_name.to_s.split
+      next if parts.empty?
+      aliases << [s.full_name, s]
+      if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
+        aliases << [parts.first, s]
+      end
+    end
+
+    result = sanitized_html.to_s.dup
+    aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, s|
+      result = result.gsub(/\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i) do |match|
+        "<a href=\"#{survivor_path(s)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
+      end
+    end
+    result.html_safe
+  end
+
   def item_icon(item)
     name = item.is_a?(String) ? item : item&.name.to_s
     case name

@@ -156,7 +156,7 @@ script type="application/json" id="survivor-jsonld-data"= data
         - if @survivor.bio.present?
           .card.bg-white.bg-opacity-10.border-0.mt-3
             .card-body
-              p.lead.mb-0.survivor-bio = sanitize @survivor.bio, tags: %w[a strong em br], attributes: %w[href target rel title]
+              p.lead.mb-0.survivor-bio = linkify_bio(sanitize(@survivor.bio, tags: %w[a strong em br], attributes: %w[href target rel title]), exclude_survivor: @survivor)
 
     / ===== Challenge Summary =====
     - challenges = []
