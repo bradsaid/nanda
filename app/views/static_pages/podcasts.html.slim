@@ -196,6 +196,68 @@ script type="application/json" id="podcasts-books-jsonld-data"= data
     .d-flex.flex-wrap.gap-2
         = link_to "Listen now - Spotify", "https://open.spotify.com/show/1xO7RaVb1miNxQMRbdretX", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
 
+/ ===== Shows Section =====
+- laura_show = Survivor.find_by(full_name: "Laura Zerra")
+.pb-2.mb-3.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Naked & Afraid Survivalist Shows
+  p.subtitle.mb-0.text-muted Survival series and YouTube channels produced by Naked & Afraid alumni.
+
+/ Decivilized on CarbonTV
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Decivilized
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if laura_show
+        .flex-shrink-0
+          = link_to survivor_path(laura_show) do
+            = image_tag avatar_src(laura_show, name: laura_show.full_name), class: "podcast-host-avatar shadow", alt: laura_show.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | Hosted by Naked and Afraid survivalist&nbsp;
+          - if laura_show
+            = link_to "Laura Zerra", survivor_path(laura_show), class: "text-primary"
+          - else
+            | Laura Zerra
+          | , this CarbonTV original series follows her completely off-grid as she demonstrates primitive survival skills, foraging, fire-starting, shelter, and how to handle natural disasters. Multiple seasons available, free to stream.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Watch on CarbonTV", "https://www.carbontv.com/shows/decivilized/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Ky and Laura Survival on YouTube
+- ky_show = Survivor.find_by(full_name: "Ky Furneaux")
+.card.shadow-sm.mb-3
+  .card-header
+    .d-flex.align-items-center.justify-content-between
+      .fw-semibold Ky and Laura Survival
+  .card-body
+    .d-flex.gap-3.align-items-start
+      .flex-shrink-0.d-flex.flex-column.gap-2
+        - if ky_show
+          = link_to survivor_path(ky_show) do
+            = image_tag avatar_src(ky_show, name: ky_show.full_name), class: "podcast-host-avatar shadow", alt: ky_show.full_name
+        - if laura_show
+          = link_to survivor_path(laura_show) do
+            = image_tag avatar_src(laura_show, name: laura_show.full_name), class: "podcast-host-avatar shadow", alt: laura_show.full_name
+      .flex-grow-1
+        p.text-muted.mb-0
+          | YouTube channel co-hosted by Naked and Afraid veterans&nbsp;
+          - if ky_show
+            = link_to "Ky Furneaux", survivor_path(ky_show), class: "text-primary"
+          - else
+            | Ky Furneaux
+          |  and&nbsp;
+          - if laura_show
+            = link_to "Laura Zerra", survivor_path(laura_show), class: "text-primary"
+          - else
+            | Laura Zerra
+          | , combining over 35 years of survival expertise to walk through real-world bushcraft, foraging, and primitive skills.
+  .px-3.pb-3
+    .d-flex.flex-wrap.gap-2
+        = link_to "Watch on YouTube", "https://www.youtube.com/channel/UCgcWJJeJu3JCCUEfac47jzg", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
 / Books Section
 .pb-2.mb-3.border-bottom.site-header.site-header-faded
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
