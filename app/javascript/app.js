@@ -6,4 +6,5 @@ import "locations_map";   // when you're ready
 import "gtag";
 import "page_timer";
 import "episode_form";
+import "survivors_search";
 Turbo.session.progressBarDelay = Infinity;
