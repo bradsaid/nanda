@@ -755,9 +755,7 @@ table.table tbody tr:hover { background: #f0fdf4 !important; }
 
 /* Justify items-table content closer to the center of the card */
 table.items-compact {
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
 
 /* Green gradient on the Name | Total header bar */
