@@ -150,15 +150,11 @@
         - if @top_items_brought.present?
           .table-responsive
             table.table.table-sm.mb-0.items-compact
-              thead
-                tr
-                  th Name
-                  th.text-end Total
               tbody
                 - @top_items_brought.each do |row|
                   tr
                     td = link_to row.name, item_path(row.id)
-                    td.text-end = row.total
+                    td.text-end.text-muted.small = "#{row.total} uses"
         - else
           .card-body
             .text-muted No data.
@@ -169,15 +165,11 @@
         - if @top_items_given.present?
           .table-responsive
             table.table.table-sm.mb-0.items-compact
-              thead
-                tr
-                  th Name
-                  th.text-end Total
               tbody
                 - @top_items_given.each do |row|
                   tr
                     td = link_to row.name, item_path(row.id)
-                    td.text-end = row.total
+                    td.text-end.text-muted.small = "#{row.total} uses"
         - else
           .card-body
             .text-muted No data.
