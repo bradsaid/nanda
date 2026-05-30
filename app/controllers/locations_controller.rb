@@ -17,7 +17,7 @@ class LocationsController < ApplicationController
                         DISTINCT
                         CASE
                           WHEN #{continuous_flag_sql}
-                            THEN (series.id::text || '-' || locations.country)
+                            THEN (seasons.id::text || '-' || locations.country)
                           ELSE episodes.id::text
                         END
                       ) AS eps_adj_count

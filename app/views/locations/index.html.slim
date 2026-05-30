@@ -7,9 +7,18 @@
     .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
       h1.h3.mb-0.logo Locations
       = link_to "Episodes", episodes_path, class: "btn btn-outline-secondary btn-sm"
-    - location_count = Episode.joins(:location).count
+    / Count one challenge per episode for standard seasons, but only one per
+    / (season, location) for continuous-story seasons / series so a 40-day XL
+    / run doesn't get counted as 10 separate challenges.
+    - non_cont_count = Episode.joins(:location, season: :series).where("COALESCE(seasons.continuous_story, false) = false AND COALESCE(series.continuous_story, false) = false").count
+    - cont_pairs = Episode.joins(:location, season: :series).where("COALESCE(seasons.continuous_story, false) = true OR COALESCE(series.continuous_story, false) = true").distinct.pluck(:season_id, :location_id)
+    - location_count = non_cont_count + cont_pairs.size
     - country_count  = Location.where.not(country: [nil, ""]).distinct.count(:country)
-    - top_country, top_count = Episode.joins(:location).where.not(locations: { country: [nil, ""] }).group("locations.country").order(Arel.sql("COUNT(*) DESC")).limit(1).count.first
+    / Per-country challenge counts using the same continuous-story dedupe.
+    - non_cont_by_country = Episode.joins(:location, season: :series).where("COALESCE(seasons.continuous_story, false) = false AND COALESCE(series.continuous_story, false) = false").where.not(locations: { country: [nil, ""] }).group("locations.country").count
+    - cont_by_country = Episode.joins(:location, season: :series).where("COALESCE(seasons.continuous_story, false) = true OR COALESCE(series.continuous_story, false) = true").where.not(locations: { country: [nil, ""] }).distinct.pluck("locations.country", :season_id, :location_id).group_by(&:first).transform_values(&:size)
+    - country_totals = non_cont_by_country.merge(cont_by_country) { |_k, a, b| a + b }
+    - top_country, top_count = country_totals.max_by { |_c, n| n }
     p.subtitle.mb-0
       = "Our database tracks #{location_count} filming locations across #{country_count} countries. "
       - if top_country
