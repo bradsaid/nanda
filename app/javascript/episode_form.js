@@ -105,23 +105,31 @@ function initEpisodeForm() {
   var copyControls = document.getElementById("copy-participants-controls");
   var copyBtn      = document.getElementById("copy-prev-participants");
 
-  function toggleCopyControls() {
-    if (!copyControls) return;
-    copyControls.style.display = (seasonSelect && seasonSelect.value) ? "" : "none";
+  function hideCopyControls() {
+    if (copyControls) copyControls.style.display = "none";
   }
-  toggleCopyControls();
+  hideCopyControls();
 
-  // On season change, auto-fill metadata fields (only for continuous-story seasons
-  // and only when the target field is empty — so we don't overwrite admin edits).
-  async function autoFillFromSeason() {
-    if (!seasonSelect || !seasonSelect.value) return;
+  // Fetch season metadata, then (a) reveal the copy-participants button only
+  // for continuous-story seasons and (b) auto-fill empty metadata fields from
+  // the latest episode in that season.
+  async function handleSeasonChange() {
+    if (!seasonSelect || !seasonSelect.value) {
+      hideCopyControls();
+      return;
+    }
     try {
       var res = await fetch("/admin/seasons/" + seasonSelect.value + "/latest_episode_participants.json", {
         headers: { "Accept": "application/json" }
       });
-      if (!res.ok) return;
+      if (!res.ok) { hideCopyControls(); return; }
       var data = await res.json();
-      if (!data || !data.continuous_story) return;
+      if (!data) { hideCopyControls(); return; }
+
+      if (copyControls) {
+        copyControls.style.display = data.continuous_story ? "" : "none";
+      }
+      if (!data.continuous_story) return;
 
       function setIfEmpty(elId, value) {
         if (value == null) return;
@@ -138,14 +146,13 @@ function initEpisodeForm() {
       setIfEmpty("episode_participant_arrangement", data.participant_arrangement);
       setIfEmpty("episode_type_modifiers",          data.type_modifiers);
     } catch (e) {
-      console.warn("[auto-fill from season]", e);
+      console.warn("[season change]", e);
+      hideCopyControls();
     }
   }
 
-  seasonSelect?.addEventListener("change", function() {
-    toggleCopyControls();
-    autoFillFromSeason();
-  });
+  handleSeasonChange();
+  seasonSelect?.addEventListener("change", handleSeasonChange);
 
   copyBtn?.addEventListener("click", async function() {
     if (!seasonSelect || !seasonSelect.value) return;

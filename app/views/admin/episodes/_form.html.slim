@@ -13,15 +13,12 @@
 - episode_survivors = episode.persisted? ? episode.survivors.order(:full_name).to_a : []
 
 .col-12.mb-3
-  .card.border-info.shadow-sm
-    .card-header.bg-info-subtle.d-flex.align-items-center.justify-content-between
-      .d-flex.align-items-center.gap-2
-        span(aria-hidden="true") 📘
-        strong Contributor Guide
-        span.small.text-muted.ms-2 Read this before adding or editing an episode
-      button.btn.btn-sm.btn-outline-secondary type="button" data-bs-toggle="collapse" data-bs-target="#contributor-guide" aria-expanded="false" aria-controls="contributor-guide"
-        | Show / hide
-    #contributor-guide.collapse
+  details.card.border-info.shadow-sm
+    summary.card-header.bg-info-subtle.d-flex.align-items-center.gap-2(style="cursor: pointer;")
+      span(aria-hidden="true") 📘
+      strong Contributor Guide
+      span.small.text-muted.ms-2 Click to show or hide. Read this before adding or editing an episode.
+    div
       .card-body.small
         p.mb-2
           | Welcome! This database is fan-maintained, so accuracy matters. Please watch the episode (or have it open) while filling this out. Use the official episode title as it appears on screen. If you are unsure of a value, leave it blank rather than guessing.
