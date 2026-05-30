@@ -48,7 +48,7 @@
                 |  Success = completed the challenge. Tap Out, Medical, Removed, etc. for early exits.
               li
                 strong Partner replacement:
-                |  check this if the survivalist tagged in after someone else tapped.
+                |  check this on the incoming survivor's row when they tag in after someone else has tapped out. Leave it off for the original participant who started the challenge.
             h6.mb-1.mt-3 Items (per survivalist)
             ul.mb-0.ps-3
               li
@@ -64,7 +64,10 @@
             ul.mb-0.ps-3
               li
                 strong Traps:
-                |  pick the closest type from the dropdown. Mark "No traps" if the episode explicitly shows none. Contact an admin to add a new trap type if it is not listed.
+                |  pick a type from the suggestions, or type a new one if the trap shown is not listed. Mark "No traps" if the episode explicitly shows none.
+              li
+                strong Trap and food source link:
+                |  if a food source was caught with a trap, add the trap in the Traps section first. Then in Food Sources, set Method to "Trapped" and a "Trap" picker will appear so you can pick which of the episode's traps caught it. The catch is then shown on both the trap row (Catch column) and the food source row (Tools Used) on the public episode page.
               li
                 strong Food sources:
                 |  one row per species. Use the trap or tool used and which survivalist obtained it.
@@ -418,7 +421,7 @@
               tr.trap-row
                 td
                   = etf.hidden_field :id
-                  = etf.select :trap_type, options_for_select(trap_types, et.trap_type), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+                  = etf.text_field :trap_type, list: "trap-types-datalist", class: "form-control form-control-sm", placeholder: "Pick or type a new type", autocomplete: "off"
                 td
                   input type="hidden" name="episode[episode_traps_attributes][#{i}][builder_ids][]" value=""
                   .builder-checkboxes
@@ -432,14 +435,16 @@
                   = etf.hidden_field :_destroy, value: "0"
                   button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
 
+        / Shared datalist for trap-type suggestions; the input still accepts free text.
+        datalist#trap-types-datalist
+          - trap_types.each do |t|
+            option value=t
+
         / Empty trap template
         template#trap-template
           tr.trap-row
             td
-              select.form-select.form-select-sm name="episode[episode_traps_attributes][TRAP_IDX][trap_type]"
-                option value="" Select...
-                - trap_types.each do |t|
-                  option value=t = t
+              input.form-control.form-control-sm type="text" name="episode[episode_traps_attributes][TRAP_IDX][trap_type]" list="trap-types-datalist" placeholder="Pick or type a new type" autocomplete="off"
             td
               input type="hidden" name="episode[episode_traps_attributes][TRAP_IDX][builder_ids][]" value=""
               .builder-checkboxes
