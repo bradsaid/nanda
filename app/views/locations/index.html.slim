@@ -9,8 +9,11 @@
       = link_to "Episodes", episodes_path, class: "btn btn-outline-secondary btn-sm"
     - location_count = Location.count
     - country_count  = Location.where.not(country: [nil, ""]).distinct.count(:country)
+    - top_country, top_count = Episode.joins(:location).where.not(locations: { country: [nil, ""] }).group("locations.country").order(Arel.sql("COUNT(*) DESC")).limit(1).count.first
     p.subtitle.mb-0
       = "Our database tracks #{location_count} filming locations across #{country_count} countries. "
+      - if top_country
+        = "The most-filmed country is #{top_country} with #{top_count} #{'challenge'.pluralize(top_count)} shot there. "
       | Every Naked and Afraid challenge takes place in a remote, unforgiving environment — from jungles and deltas to deserts and frozen mountains. This map plots every location we have on record. Click a pin to see the challenges shot there, or scroll down to see which countries the show has visited most.
 
   / ===== Map =====
