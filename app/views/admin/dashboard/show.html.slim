@@ -6,23 +6,6 @@
     h1.h3.mb-0 Admin Dashboard
     span.text-muted = Time.current.strftime("%A, %B %-d, %Y %-I:%M %p %Z")
 
-  / ===== Daily Views (Last 7 Days) =====
-  .card.shadow-sm.mb-4
-    .card-header Daily Views (Last 7 Days)
-    .table-responsive
-      table.table.table-sm.table-striped.mb-0
-        thead
-          tr
-            th Date
-            th.text-end Views
-            th.text-end Unique
-        tbody
-          - @daily_counts.sort_by { |d, _| d }.reverse.each do |date, count|
-            tr
-              td= date
-              td.text-end= count
-              td.text-end= @daily_uniques[date] || 0
-
   / ===== Summary Cards =====
   .row.g-3.mb-4
     .col-6.col-md
@@ -93,6 +76,23 @@
         .card-body.py-3
           div.h4.mb-0= @avg_duration ? format_duration(@avg_duration) : "—"
           small.text-muted Avg Time on Page
+
+  / ===== Daily Views (Last 7 Days) =====
+  .card.shadow-sm.mb-4
+    .card-header Daily Views (Last 7 Days)
+    .table-responsive
+      table.table.table-sm.table-striped.mb-0
+        thead
+          tr
+            th Date
+            th.text-end Views
+            th.text-end Unique
+        tbody
+          - @daily_counts.sort_by { |d, _| d }.reverse.each do |date, count|
+            tr
+              td= date
+              td.text-end= count
+              td.text-end= @daily_uniques[date] || 0
 
   .row.g-4.mb-4
     / ===== Top Pages =====
