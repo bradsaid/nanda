@@ -90,6 +90,19 @@ script type="application/json" id="episode-jsonld-data"= data
               .text-uppercase.small.text-muted Scheduled Days
               .fw-semibold = (@episode.scheduled_days.presence || "—")
 
+  / ===== Where to Watch =====
+  - watch_services = series && season ? services_for(series.name, season.number) : {}
+  - if watch_services.any?
+    .card.shadow-sm.mb-4
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 📺
+        h2.h5.mb-0 Where to Watch
+      .card-body
+        .d-flex.flex-wrap.gap-2
+          - watch_services.each do |service_key, url|
+            = link_to url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm" do
+              = streaming_label(service_key)
+
   - if @episode.synopsis.present?
     .card.shadow-sm.mb-4
       .card-header
