@@ -1,12 +1,19 @@
-div.mx-auto.md:w-2/3.w-full
-  - if alert = flash[:alert]
-    p.py-2.px-3.bg-red-50.mb-5.text-red-500.font-medium.rounded-lg.inline-block#alert = alert
+- content_for :title, "Forgot your password?"
 
-  h1.font-bold.text-4xl Forgot your password?
+.container.my-4(style="max-width: 480px;")
+  = render "shared/flash"
+  .card.shadow-sm
+    .card-header Forgot your password?
+    .card-body
+      p.small.text-muted.mb-3
+        | Enter your account email and we will send a reset link.
 
-  = form_with url: passwords_path, class: "contents" do |form|
-    .my-5
-      = form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-solid focus:outline-blue-600 px-3 py-2 mt-2 w-full"
-    
-    .inline
-      = form.submit "Email reset instructions", class: "w-full sm:w-auto text-center rounded-lg px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer"
+      = form_with url: passwords_path, local: true, class: "needs-validation" do |form|
+        .mb-3
+          = form.label :email_address, "Email", class: "form-label"
+          = form.email_field :email_address,
+              required: true, autofocus: true, autocomplete: "username",
+              value: params[:email_address], maxlength: 50, class: "form-control"
+
+        = form.submit "Email reset instructions", class: "btn btn-primary"
+        = link_to "Cancel", new_session_path, class: "btn btn-outline-secondary ms-2"

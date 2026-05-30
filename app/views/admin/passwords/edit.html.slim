@@ -1,0 +1,27 @@
+- content_for :title, "Change password — Admin"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4(style="max-width: 520px;")
+  = render "shared/flash"
+  .card.shadow-sm
+    .card-header Change your password
+    .card-body
+      p.small.text-muted.mb-3
+        | Signed in as
+        |
+        strong = @current_admin.email_address
+
+      = form_with url: admin_password_path, method: :patch, local: true, class: "needs-validation" do |form|
+        .mb-3
+          = label_tag :current_password, "Current password", class: "form-label"
+          = password_field_tag :current_password, nil, required: true, autocomplete: "current-password", maxlength: 72, class: "form-control"
+        hr.my-3
+        .mb-3
+          = label_tag :password, "New password", class: "form-label"
+          = password_field_tag :password, nil, required: true, autocomplete: "new-password", maxlength: 72, class: "form-control"
+        .mb-3
+          = label_tag :password_confirmation, "Repeat new password", class: "form-label"
+          = password_field_tag :password_confirmation, nil, required: true, autocomplete: "new-password", maxlength: 72, class: "form-control"
+
+        = form.submit "Update password", class: "btn btn-primary"
+        = link_to "Cancel", admin_root_path, class: "btn btn-outline-secondary ms-2"

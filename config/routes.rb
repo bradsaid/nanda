@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "dashboard#show"
     get "dashboard", to: "dashboard#show"
+    resource  :password, only: %i[edit update]
     resources :survivors
     resources :seasons do
       member do
