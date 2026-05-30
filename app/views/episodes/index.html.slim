@@ -114,9 +114,17 @@ script type="application/json" id="episodes-index-jsonld-data"= data
   .pb-2.mb-3.border-bottom.site-header.position-relative
     = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm position-absolute top-0 end-0 mt-2 me-2"
     h1.h3.mb-0.logo.text-center Naked & Afraid — Fan Database - Episodes
+    / Count one challenge per episode for standard seasons, but only one per
+    / (season, location) for continuous-story seasons / series.
+    - episode_total = Episode.count
+    - season_total  = Season.count
+    - non_cont_chal = Episode.joins(season: :series).where("COALESCE(seasons.continuous_story, false) = false AND COALESCE(series.continuous_story, false) = false").count
+    - cont_chal     = Episode.joins(season: :series).where("COALESCE(seasons.continuous_story, false) = true OR COALESCE(series.continuous_story, false) = true").distinct.pluck(:season_id, :location_id).size
+    - challenge_total = non_cont_chal + cont_chal
     .text-center.mt-3
-      p.fs-6.lh-lg.mb-0.mx-auto(style="max-width: 760px;")
-        | Browse every episode across the Naked and Afraid franchise — including Solo, XL, Alone, Savage, Castaways, Last One Standing, and Apocalypse — grouped by season. Click any episode for the full breakdown: air date, location, survivors, items brought and given, and more.
+      p.subtitle.mb-0.mx-auto(style="max-width: 760px;")
+        = "Our database tracks #{episode_total} episodes across #{season_total} seasons, covering #{challenge_total} #{'challenge'.pluralize(challenge_total)} in total. "
+        | Browse every episode across the Naked and Afraid franchise, including Solo, XL, Alone, Savage, Castaways, Last One Standing, and Apocalypse, grouped by season. Click any episode for the full breakdown: air date, location, survivors, items brought and given, and more.
 
   / === Season jump + sort controls (Stimulus-based) ===
   .d-flex.flex-wrap.gap-3.align-items-start

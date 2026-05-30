@@ -22,7 +22,7 @@
 
     .mt-2.text-center
       p.fw-bold.mb-2 Items — Brought & Given
-      p.small.text-muted.mb-0.mx-auto(style="max-width: 720px;")
+      p.subtitle.mb-0.mx-auto(style="max-width: 720px;")
         | Each survivor brings one item, chosen from a small pool curated by the show's producers, who also give the team an additional complimentary item the survivors don't see in advance. This database tracks every brought-and-given item used across Naked and Afraid episodes, categorized by type, popularity, and location. Click any item name for details on which survivors used it and in which episodes.
 
   / ===== Filters =====
@@ -36,9 +36,9 @@
           = label_tag :q, "Search items", class: "form-label"
           = text_field_tag :q, @q, placeholder: "e.g. machete", class: "form-control"
         .col-md-4
-          = label_tag :country, "Country", class: "form-label"
+          = label_tag :country, "Location", class: "form-label"
           = select_tag :country,
-              options_for_select([["All Countries", ""]] + @countries.map { |c| [c, c] }, @country),
+              options_for_select([["All Locations", ""]] + @countries.map { |c| [c, c] }, @country),
               class: "form-select"
         .col-12.col-md-auto.d-flex.align-items-end.gap-2
           = submit_tag "Apply", class: "btn btn-dark mb-1"

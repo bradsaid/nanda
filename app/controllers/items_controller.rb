@@ -28,12 +28,19 @@ class ItemsController < ApplicationController
       .limit(@limit)
 =end
 
-    @top_brought =
-      AppearanceItem.where(source: "brought")
-        .joins(:item)
-        .group("items.id", "items.name")
-        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-        .order("total DESC")
+    top_brought_scope = AppearanceItem.where(source: "brought").joins(:item)
+    top_given_scope   = AppearanceItem.where(source: "given").joins(:item)
+    if @country.present?
+      top_brought_scope = top_brought_scope.joins(appearance: { episode: :location })
+                                           .where(locations: { country: @country })
+      top_given_scope   = top_given_scope.joins(appearance: { episode: :location })
+                                         .where(locations: { country: @country })
+    end
+
+    @top_brought = top_brought_scope
+      .group("items.id", "items.name")
+      .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
+      .order("total DESC")
 =begin
     @top_given = items_scope
       .joins("JOIN (#{given_sub.to_sql}) gi ON gi.item_id = items.id")
@@ -43,12 +50,10 @@ class ItemsController < ApplicationController
       .limit(@limit)
 =end
 
-    @top_given =
-      AppearanceItem.where(source: "given")
-        .joins(:item)
-        .group("items.id", "items.name")
-        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-        .order("total DESC")
+    @top_given = top_given_scope
+      .group("items.id", "items.name")
+      .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
+      .order("total DESC")
 
 
     # ===== Given in episodes (unique & adjusted) =====
@@ -103,10 +108,20 @@ class ItemsController < ApplicationController
     @items_by_country_adj = rows_adj.group_by(&:country).transform_values { |arr| arr.first(10) }
 
     @items_by_type =
-      Item.where.not(item_type: [nil, ""])
-          .group(:item_type)
-          .order(Arel.sql("COUNT(*) DESC"))
-          .count
+      if @country.present?
+        Item.where.not(item_type: [nil, ""])
+            .joins(appearance_items: { appearance: { episode: :location } })
+            .where(locations: { country: @country })
+            .group(:item_type)
+            .order(Arel.sql("COUNT(DISTINCT items.id) DESC"))
+            .distinct
+            .count("items.id")
+      else
+        Item.where.not(item_type: [nil, ""])
+            .group(:item_type)
+            .order(Arel.sql("COUNT(*) DESC"))
+            .count
+      end
 
     # ===== Search results: episode-level detail =====
     if @q.present?
