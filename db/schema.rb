@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_24_000000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_30_194907) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -52,7 +52,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_24_000000) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["appearance_id", "item_id", "source"], name: "index_appearance_items_on_appearance_id_and_item_id_and_source", unique: true
+    t.string "subtype"
+    t.index "appearance_id, item_id, COALESCE(subtype, ''::character varying), source", name: "index_appearance_items_unique_with_subtype", unique: true
     t.index ["appearance_id"], name: "index_appearance_items_on_appearance_id"
     t.index ["item_id"], name: "index_appearance_items_on_item_id"
   end

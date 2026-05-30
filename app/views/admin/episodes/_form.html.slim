@@ -109,6 +109,7 @@
                     .d-flex.align-items-center.gap-1.mb-1.item-entry
                       = aif.hidden_field :id
                       = aif.collection_select :item_id, Item.order(:name), :id, :name, { include_blank: "Select item..." }, { class: "form-select form-select-sm", style: "width:200px" }
+                      = aif.text_field :subtype, class: "form-control form-control-sm", style: "width:140px", placeholder: "Specifically..."
                       = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm", style: "width:120px" }
                       = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, style: "width:60px", placeholder: "Qty"
                       = aif.hidden_field :_destroy, value: "0"
@@ -160,6 +161,7 @@
           option value="" Select item...
           - items_list.each do |name, id|
             option value=id = name
+        input.form-control.form-control-sm type="text" name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][subtype]" style="width:140px" placeholder="Specifically..."
         select.form-select.form-select-sm name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][source]" style="width:120px"
           option value="" Source...
           - sources.each do |label, val|

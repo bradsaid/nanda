@@ -21,14 +21,9 @@
         span.text-muted.small — Fan Database - Items
 
     .mt-2.text-center
-      p.fw-bold.mb-1 Items — Brought & Given
-      ul.mb-0.small.d-inline-block.text-start.ps-3
-        li Survivors typically bring one item each, and another item is given to the pair or team.
-        li They do not know ahead of time which item they will receive. The items they bring are chosen by the show's producers from a small pool of items.
-        li The producers then give them an additional complimentary item.
-        li This database tracks all items — brought & given — used in Naked and Afraid episodes.
-        li Items are also categorized by type, popularity, and location for easier browsing.
-        li Click any item name to see details, including which survivors used it and in which episodes.
+      p.fw-bold.mb-2 Items — Brought & Given
+      p.small.text-muted.mb-0.mx-auto(style="max-width: 720px;")
+        | Each survivor brings one item, chosen from a small pool curated by the show's producers, who also give the team an additional complimentary item the survivors don't see in advance. This database tracks every brought-and-given item used across Naked and Afraid episodes, categorized by type, popularity, and location. Click any item name for details on which survivors used it and in which episodes.
 
   / ===== Filters =====
   = form_with url: items_path, method: :get, local: true, class: "card shadow-sm mb-4" do
@@ -142,7 +137,7 @@
   / ===== Search Results (episode-level) =====
   - if @q.present? && @search_results.present?
     - grouped = @search_results.group_by { |ai| [ai.item_id, ai.appearance.episode_id, ai.source] }
-    .card.shadow-sm.mt-4
+    .card.shadow-sm.mt-4#items-results
       .card-header.d-flex.justify-content-between.align-items-center
         span.fw-medium Results for "#{@q}"
         span.small.text-muted = "#{grouped.size} found"
@@ -174,7 +169,7 @@
                     = link_to s.full_name, survivor_path(s)
                 td.text-muted = first.source.humanize
   - elsif @q.present?
-    .card.shadow-sm.mt-4
+    .card.shadow-sm.mt-4#items-results
       .card-body.text-center.text-muted.py-4
         | No results found for "#{@q}"
 

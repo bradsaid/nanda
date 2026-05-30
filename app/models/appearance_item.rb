@@ -17,5 +17,12 @@ class AppearanceItem < ApplicationRecord
 
   validates :quantity, numericality: { greater_than: 0 }
   validates :source, presence: true
+
+  # Display name: prefers a specific subtype (e.g. "elk hide") over the generic
+  # item name ("hide"). Falls back to the item's name when no subtype set.
+  def display_name
+    s = subtype.to_s.strip
+    s.empty? ? item&.name : s
+  end
 end
 

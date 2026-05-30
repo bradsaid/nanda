@@ -7,4 +7,5 @@ import "gtag";
 import "page_timer";
 import "episode_form";
 import "survivors_search";
+import "items_search";
 Turbo.session.progressBarDelay = Infinity;
