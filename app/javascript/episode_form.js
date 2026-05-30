@@ -341,6 +341,26 @@ function initEpisodeForm() {
     }
   });
 
+  // ===== Hide qty input for plants; leave blank = "unknown" for animals =====
+  function syncFoodQuantity(categorySelect) {
+    var row = categorySelect.closest("tr.food-source-row");
+    if (!row) return;
+    var qty = row.querySelector(".food-source-quantity");
+    if (!qty) return;
+    if (categorySelect.value === "plant") {
+      qty.value = "";
+      qty.style.visibility = "hidden";
+      qty.disabled = true;
+    } else {
+      qty.style.visibility = "";
+      qty.disabled = false;
+    }
+  }
+  document.querySelectorAll(".food-source-category").forEach(syncFoodQuantity);
+  document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("food-source-category")) syncFoodQuantity(e.target);
+  });
+
   // ===== Event delegation for the whole form area =====
   document.addEventListener("click", function(e) {
     // Add item to a participant

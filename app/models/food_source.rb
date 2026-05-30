@@ -15,9 +15,10 @@ class FoodSource < ApplicationRecord
 
   validates :name, presence: true
   validates :category, presence: true
-  validates :quantity, numericality: { only_integer: true, greater_than: 0 }
+  validates :quantity, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
 
   before_validation :normalize_name
+  before_validation :clear_quantity_for_plants
 
   scope :animals, -> { where(category: "animal") }
   scope :plants,  -> { where(category: "plant") }
@@ -38,5 +39,9 @@ class FoodSource < ApplicationRecord
 
   def normalize_name
     self.name = name.to_s.strip.downcase if name.present?
+  end
+
+  def clear_quantity_for_plants
+    self.quantity = nil if category_plant?
   end
 end

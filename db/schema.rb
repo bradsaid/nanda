@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_30_194907) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_30_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -133,7 +133,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_30_194907) do
     t.datetime "updated_at", null: false
     t.bigint "episode_trap_id"
     t.integer "survivor_ids", default: [], array: true
-    t.integer "quantity", default: 1, null: false
+    t.integer "quantity"
     t.index ["episode_id"], name: "index_food_sources_on_episode_id"
     t.index ["episode_trap_id"], name: "index_food_sources_on_episode_trap_id"
     t.index ["name", "episode_id"], name: "index_food_sources_on_name_and_episode_id"

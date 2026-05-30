@@ -249,7 +249,9 @@ script type="application/json" id="episode-jsonld-data"= data
               tr
                 td
                   = link_to fs.name.titleize, food_source_path(fs.name)
-                  - if fs.quantity.to_i > 1
+                  - if fs.category_animal? && fs.quantity.nil?
+                    span.badge.bg-secondary.ms-1 ×?
+                  - elsif fs.quantity.to_i > 1
                     span.badge.bg-secondary.ms-1 = "×#{fs.quantity}"
                 td
                   - if fs.category_animal?
