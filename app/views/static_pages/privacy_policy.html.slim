@@ -8,90 +8,213 @@ html lang="en"
     = csrf_meta_tags
 
   body
-    .container
+    .container.my-4
       header
         h1 Privacy Policy
-        p Last updated: October 30, 2025
+        p
+          em Last updated: May 31, 2026
 
       section
         h2 1. Introduction
-        p At Naked and Afraid Fan Database, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you visit our website (nakedandafraidfan.com) or use our note-taking application. By using Naked and Afraid Fan Database, you consent to the practices described here.
-
-        p If you have questions, contact us at bradsaid@gmail.com.
+        p
+          | Naked and Afraid Fan Database ("we", "us", or "the site") is an independent, fan-built reference site available at
+          |
+          strong nakedandafraidfan.com
+          | . We respect your privacy and have written this policy to explain, in plain language, what we collect when you visit, how it is used, who else processes it, and the choices you have. By using the site you agree to the practices described here.
+        p
+          | The site is operated by Brad Said. You can reach us at
+          |
+          a href="mailto:bradsaid@gmail.com" bradsaid@gmail.com
+          |
+          | or through the
+          = " "
+          a href="/contact" contact form
+          | .
+        p
+          em This site is not affiliated with, endorsed by, or sponsored by Discovery Communications or the producers of Naked and Afraid.
 
       section
         h2 2. Information We Collect
-        h3 2.1 Personal Information
-        p We do not require user accounts or collect personally identifiable information (PII) like names, emails, or addresses for core functionality. Notes are stored locally in your browser or device unless you choose to export them.
-
-        h3 2.2 Automatically Collected Information
+        h3 2.1 Information you give us
+        p Most visitors do not give us any information at all. The exceptions are:
         ul
-          li 
-            strong IP Address and Browser Data: 
-            We log IP addresses, browser type, device info, and access times for security and performance monitoring. This helps prevent abuse but is not used for profiling.
-          li 
-            strong Cookies: 
-            We use essential cookies for session management (e.g., remembering preferences). No marketing cookies are used.
-          li 
-            strong Usage Analytics: 
-            Aggregated, anonymized data (e.g., page views) may be collected via server logs for app improvements. No individual tracking.
+          li When you use the contact form, we receive your name, email address, and message so that we can reply.
+          li If you are a contributor with an editor or admin account, we store your email address, a hashed password, and the changes you make to records (so we can audit edits).
 
-        p We do not collect sensitive data like health or financial information.
-
-      section
-        h2 3. How We Use Your Information
-        p Your data is used solely to:
+        h3 2.2 Information collected automatically
         ul
-          li Provide and maintain the Naked and Afraid Fan Database service (e.g., rendering notes).
-          li Improve app performance and fix bugs.
-          li Detect and prevent fraud or security issues.
-          li Comply with legal obligations.
-
-        p We do not sell, rent, or share your data with third parties, except as required by law.
-
-      section
-        h2 4. Data Sharing and Disclosure
-        p 
-          strong Service Providers: 
-          Limited data (e.g., hosting logs) may be shared with trusted providers like our cloud host (e.g., Heroku) under strict confidentiality.
-        p 
-          strong Legal Requirements: 
-          We may disclose data if compelled by law, subpoena, or to protect rights/safety.
-        p 
-          strong Business Transfers: 
-          In case of merger or acquisition, your data may transfer to the new entity.
+          li
+            strong Server logs:
+            |  IP address, browser type, device type, referrer URL, and access times. Used for security, abuse prevention, and performance monitoring. Retained for up to 90 days.
+          li
+            strong Site analytics:
+            |  We use Google Analytics and a small in-house page-view counter to understand which pages are popular and how visitors navigate the site. Analytics data is aggregated and not used to identify individuals.
+          li
+            strong Cookies and similar technologies:
+            |  see the dedicated section below.
 
       section
-        h2 5. Data Security
-        p We implement reasonable security measures (e.g., HTTPS encryption, secure Rails configurations) to protect against unauthorized access, alteration, or destruction. However, no system is 100% secure—use strong passwords for any exports and keep your device updated.
-
-      section
-        h2 6. Your Rights and Choices
+        h2 3. Cookies and Tracking Technologies
+        p Cookies are small text files stored by your browser. We and our service providers use them for the following purposes:
         ul
-          li 
-            strong Access and Deletion: 
-            Since data is minimal and local, you can clear browser storage or contact us to request log deletion.
-          li 
-            strong Opt-Out: 
-            Disable cookies via browser settings. No email subscriptions exist.
-          li 
-            strong Children's Privacy: 
-            Naked and Afraid Fan Database is not for users under 13; we do not knowingly collect their data.
+          li
+            strong Essential cookies (always on):
+            |  required for the site to function — for example, a session cookie that keeps an admin signed in, or a CSRF token that protects forms from forgery. These cannot be disabled because the site would not work without them.
+          li
+            strong Analytics cookies (optional):
+            |  Google Analytics (g.gtm cookies, _ga, _gid, _gat) collect aggregated usage statistics so we can improve the site. You can decline these.
+          li
+            strong Advertising cookies (optional):
+            |  Google AdSense and its partners may set cookies to deliver ads, measure ad performance, and (where you have consented) to personalize ads based on your prior browsing on this and other sites. Common cookies include
+            code IDE
+            | ,
+            code DSID
+            | ,
+            code __gads
+            | , and
+            code __gpi
+            | . You can decline these.
 
-        p For EU/UK users: You have rights under GDPR to access, rectify, or erase data. Contact us to exercise them.
+        p
+          | For visitors in the European Economic Area, the United Kingdom, Switzerland, and California, we display a consent banner (powered by
+          |
+          strong Google's Funding Choices
+          | , Google's IAB-TCF-compliant consent management platform) the first time you visit. The banner lets you accept all cookies, reject non-essential cookies, or manage individual categories. Your choice is stored in a cookie and respected on subsequent visits. You can change your choice any time by clicking
+          em Manage privacy preferences
+          |
+          | in the site footer.
+        p
+          | You can also opt out of personalized advertising directly with Google at
+          |
+          a href="https://adssettings.google.com" target="_blank" rel="noopener" adssettings.google.com
+          | , and from broader online advertising at
+          |
+          a href="https://www.youradchoices.com" target="_blank" rel="noopener" youradchoices.com
+          | (US) or
+          |
+          a href="https://www.youronlinechoices.eu" target="_blank" rel="noopener" youronlinechoices.eu
+          | (EU). All major browsers also let you block or delete cookies in their settings.
 
       section
-        h2 7. Third-Party Links
-        p Our site may link to external resources (e.g., GitHub repo). We are not responsible for their privacy practices—review their policies.
+        h2 4. Advertising
+        p
+          | This site displays advertising from
+          |
+          strong Google AdSense
+          | . Google and its partners use cookies and similar technologies (as described above) to serve ads based on your visits to this site and other sites on the internet. If you have not consented to personalized advertising, ads will still be served but will be contextual rather than personalized.
+        p
+          | We may also include affiliate links (for example, to products on Amazon.com through the
+          |
+          strong Amazon Associates
+          | program). When you click an affiliate link and complete a purchase, we may earn a commission at no extra cost to you. Affiliate links do not change the content or recommendations on the site. As an Amazon Associate we earn from qualifying purchases.
 
       section
-        h2 8. Changes to This Policy
-        p We may update this policy periodically. Significant changes will be posted here with the update date. Continued use after changes implies acceptance.
+        h2 5. How We Use Information
+        p We use the limited information we collect to:
+        ul
+          li Operate and maintain the site, including authenticating contributors and recording audit trails of edits.
+          li Respond to messages sent through the contact form.
+          li Understand which pages and features are useful (aggregated analytics).
+          li Serve advertising as described in Section 4.
+          li Detect, prevent, and respond to abuse, fraud, or security incidents.
+          li Comply with applicable laws.
 
       section
-        h2 9. Contact Us
-        p For privacy concerns, email bradsaid@gmail.com
+        h2 6. Who We Share Information With
+        p We do not sell personal information. We share limited data only with the following categories of service providers, who act on our behalf and are bound to confidentiality:
+        ul
+          li
+            strong Hosting:
+            |  Heroku (Salesforce) — application hosting, request logs.
+          li
+            strong File storage:
+            |  Amazon Web Services S3 — images uploaded for the site.
+          li
+            strong Email delivery:
+            |  Gmail SMTP — sending password resets and contact-form replies.
+          li
+            strong Analytics:
+            |  Google Analytics — aggregated traffic statistics.
+          li
+            strong Advertising:
+            |  Google AdSense and its certified partners — ad serving, measurement, and (with consent) personalization.
+          li
+            strong Consent management:
+            |  Google Funding Choices — recording your cookie preferences.
 
-      footer
-        p &copy; 2025 Naked and Afraid Fan Database. All rights reserved.
+        p We may also disclose information if required by law, legal process, or to protect the rights, property, or safety of users or the public. In the unlikely event of a business transfer (merger, acquisition, or asset sale), data may transfer to the new operator under this same policy.
+
+      section
+        h2 7. Data Retention
+        ul
+          li Server logs: up to 90 days, then deleted.
+          li Page-view records (aggregated, non-identifying): indefinitely.
+          li Contributor accounts and edit history: retained while the account is active; deleted within 30 days of an account closure request.
+          li Contact form submissions: retained for up to 12 months for reference, then deleted unless an ongoing conversation requires longer retention.
+
+      section
+        h2 8. Your Rights and Choices
+        p Depending on where you live, you have some or all of the following rights:
+        ul
+          li
+            strong Access:
+            |  ask what information we hold about you.
+          li
+            strong Correction:
+            |  ask us to fix inaccurate information.
+          li
+            strong Deletion:
+            |  ask us to delete your information, subject to legal retention requirements.
+          li
+            strong Restriction or objection:
+            |  limit how we use your information, or object to specific uses.
+          li
+            strong Portability:
+            |  request a copy of your information in a portable format.
+          li
+            strong Withdraw consent:
+            |  change or withdraw your cookie consent at any time using the
+            em Manage privacy preferences
+            |
+            | link in the footer.
+
+        p
+          | California residents have additional rights under the CCPA / CPRA, including the right to know what categories of personal information we collect, the right to delete it, and the right to opt out of "sale" or "sharing" of personal information for cross-context behavioral advertising. We do not sell personal information for money, but the use of advertising cookies may qualify as "sharing" under California law; you can opt out at any time through the consent banner.
+        p
+          | To exercise any of these rights, email
+          |
+          a href="mailto:bradsaid@gmail.com" bradsaid@gmail.com
+          | . We will respond within 30 days.
+
+      section
+        h2 9. Children
+        p This site is not directed at children under 13, and we do not knowingly collect information from children under 13. If you believe a child has provided us with information, contact us and we will delete it.
+
+      section
+        h2 10. International Transfers
+        p The site is hosted in the United States. If you access it from outside the US, your information will be transferred to and processed in the US, which may have different data-protection laws than your country. Where required, we rely on Standard Contractual Clauses or equivalent safeguards offered by our service providers.
+
+      section
+        h2 11. Security
+        p We use reasonable technical and organizational measures to protect the information we hold, including HTTPS everywhere, hashed passwords (bcrypt), and least-privilege access to administrative tools. No system is perfectly secure, and we cannot guarantee absolute security.
+
+      section
+        h2 12. Third-Party Links
+        p The site links to external pages such as Amazon product listings, survivors' personal sites, podcasts, and books. We are not responsible for the privacy practices of those third parties. Please review their policies separately.
+
+      section
+        h2 13. Changes to This Policy
+        p We may update this policy from time to time. Significant changes will be reflected in the "Last updated" date at the top of the page and, where appropriate, announced through the consent banner. Continued use of the site after a change indicates acceptance of the updated policy.
+
+      section
+        h2 14. Contact
+        p
+          | For privacy questions or to exercise any of the rights described above, email
+          |
+          a href="mailto:bradsaid@gmail.com" bradsaid@gmail.com
+          | .
+
+      footer.mt-4.text-muted.small
+        p
+          | © 2026 Naked and Afraid Fan Database. All rights reserved.
         = link_to 'Back to Home', root_path

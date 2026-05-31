@@ -13,6 +13,7 @@ pin "page_timer",    to: "page_timer.js"
 pin "episode_form",  to: "episode_form.js"
 pin "survivors_search", to: "survivors_search.js"
 pin "items_search", to: "items_search.js"
+pin "consent",       to: "consent.js"
 
 #schema
 pin "json_ld/helpers", to: "json_ld/helpers.js"

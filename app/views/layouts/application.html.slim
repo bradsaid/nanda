@@ -25,6 +25,13 @@ html
     / === Google AdSense ===
     meta name="google-adsense-account" content="ca-pub-7765489985293011"
 
+    / === Google Funding Choices (GDPR / CCPA consent banner) ===
+    / Loads the consent message configured in AdSense → Privacy & messaging.
+    / Must appear before AdSense ads so the CMP can gate ad personalization.
+    script async src="https://fundingchoicesmessages.google.com/i/pub-7765489985293011?ers=1" nonce=content_security_policy_nonce
+    = javascript_tag nonce: true do
+      | (function(){function s(){if(!window.frames['googlefcPresent']){if(document.body){var i=document.createElement('iframe');i.style='width:0;height:0;border:none;z-index:-1000;left:-1000px;top:-1000px';i.style.display='none';i.name='googlefcPresent';document.body.appendChild(i);}else{setTimeout(s,0);}}}s();})();
+
     / === Twitter Card (fallbacks) ===
     - twitter_title_text       = (content_for?(:twitter_title) && yield(:twitter_title)) || (content_for?(:og_title) && yield(:og_title)) || (content_for?(:title) && yield(:title)) || site_name
     - twitter_description_text = (content_for?(:twitter_description) && yield(:twitter_description)) || (content_for?(:og_description) && yield(:og_description)) || (content_for?(:meta_description) && yield(:meta_description)) || "Episodes, survivors, items, and locations."
