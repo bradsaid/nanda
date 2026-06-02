@@ -1,8 +1,11 @@
 class PageView < ApplicationRecord
   scope :recent,     ->(n = 50) { order(created_at: :desc).limit(n) }
+  # Anchor week / month bounds to local midnight (Time.zone). Date.current.all_week
+  # and .all_month return Date ranges that ActiveRecord casts to UTC midnight,
+  # which leaks late-night-local views into the wrong calendar bucket.
   scope :today,      -> { where(created_at: Date.current.all_day) }
-  scope :this_week,  -> { where(created_at: Date.current.all_week) }
-  scope :this_month, -> { where(created_at: Date.current.all_month) }
+  scope :this_week,  -> { where(created_at: Date.current.beginning_of_week.in_time_zone.beginning_of_day..Date.current.end_of_week.in_time_zone.end_of_day) }
+  scope :this_month, -> { where(created_at: Date.current.beginning_of_month.in_time_zone.beginning_of_day..Date.current.end_of_month.in_time_zone.end_of_day) }
 
   def self.top_pages(limit = 20)
     group(:path).order("count_all desc").limit(limit).count
