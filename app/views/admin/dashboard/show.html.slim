@@ -11,27 +11,27 @@
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @total_views
+          div.h4.mb-0= number_with_delimiter(@total_views)
           small.text-muted Total Views
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @today_views
+          div.h4.mb-0= number_with_delimiter(@today_views)
           small.text-muted Today
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @week_views
+          div.h4.mb-0= number_with_delimiter(@week_views)
           small.text-muted This Week
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @month_views
+          div.h4.mb-0= number_with_delimiter(@month_views)
           small.text-muted This Month
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @avg_per_day
+          div.h4.mb-0= number_with_delimiter(@avg_per_day)
           small.text-muted Avg / Day
 
   / ===== Unique Visitors + Avg Time =====
@@ -39,12 +39,12 @@
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @unique_today
+          div.h4.mb-0= number_with_delimiter(@unique_today)
           small.text-muted Unique Today
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @unique_week
+          div.h4.mb-0= number_with_delimiter(@unique_week)
           small.text-muted
             | Unique This Week
             br
@@ -52,7 +52,7 @@
     .col-6.col-md
       .card.text-center.shadow-sm
         .card-body.py-3
-          div.h4.mb-0= @unique_month
+          div.h4.mb-0= number_with_delimiter(@unique_month)
           small.text-muted
             | Unique This Month
             br
@@ -91,8 +91,8 @@
           - @daily_counts.sort_by { |d, _| d }.reverse.each do |date, count|
             tr
               td= date
-              td.text-end= count
-              td.text-end= @daily_uniques[date] || 0
+              td.text-end= number_with_delimiter(count)
+              td.text-end= number_with_delimiter(@daily_uniques[date] || 0)
 
   .row.g-4.mb-4
     / ===== Top Pages =====
@@ -109,7 +109,7 @@
               - @top_pages.each do |path, count|
                 tr
                   td= link_to path, path, class: "link-primary"
-                  td.text-end= count
+                  td.text-end= number_with_delimiter(count)
 
     / ===== Top Sections =====
     .col-lg-6
@@ -127,7 +127,7 @@
                 tr
                   td= section.controller_name
                   td= section.action_name
-                  td.text-end= section.hits
+                  td.text-end= number_with_delimiter(section.hits)
 
   .row.g-4.mb-4
     / ===== Top Countries =====
@@ -144,7 +144,7 @@
               - @top_countries.each do |country, count|
                 tr
                   td= country
-                  td.text-end= count
+                  td.text-end= number_with_delimiter(count)
 
     / ===== Device Breakdown =====
     .col-lg-6
@@ -160,7 +160,7 @@
               - @device_breakdown.each do |type, count|
                 tr
                   td= type
-                  td.text-end= count
+                  td.text-end= number_with_delimiter(count)
 
   / ===== Avg Time on Page (by path) =====
   - if @time_by_page.any?
@@ -178,7 +178,7 @@
               tr
                 td= link_to row.path, row.path, class: "link-primary"
                 td.text-end= format_duration(row.avg_seconds)
-                td.text-end= row.views
+                td.text-end= number_with_delimiter(row.views)
 
   / ===== Top Referrer Domains =====
   .card.shadow-sm.mb-4
@@ -192,11 +192,11 @@
         tbody
           tr.table-light
             td.fw-semibold Direct / Bookmarked
-            td.text-end.fw-semibold= @direct_views
+            td.text-end.fw-semibold= number_with_delimiter(@direct_views)
           - @top_referrers.each do |domain, count|
             tr
               td= domain
-              td.text-end= count
+              td.text-end= number_with_delimiter(count)
 
   / ===== Recent Views =====
   .card.shadow-sm
