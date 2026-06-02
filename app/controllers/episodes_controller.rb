@@ -90,7 +90,7 @@ class EpisodesController < ApplicationController
 
   def show
     @episode = Episode
-      .includes(:location, :episode_shelters, season: :series,
+      .includes(:location, :episode_shelters, :medical_calls, :bushcraft_items, season: :series,
                 episode_traps: :food_sources,
                 appearances: [:survivor, { appearance_items: :item }],
                 food_sources: :episode_trap)

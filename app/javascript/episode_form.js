@@ -328,6 +328,47 @@ function initEpisodeForm() {
     }
   });
 
+  // ===== Add Medical Call =====
+  document.getElementById("add-medical-call")?.addEventListener("click", function() {
+    var tbody = document.querySelector("#medical-calls-table tbody");
+    var tmpl  = document.getElementById("medical-call-template");
+    var idx   = Date.now();
+    var html  = tmpl.innerHTML.replace(/MC_IDX/g, idx);
+    tbody.insertAdjacentHTML("beforeend", html);
+    // Populate the survivor dropdown with the current participants
+    var newRow = tbody.querySelector("tr.medical-call-row:last-child");
+    var select = newRow.querySelector("select[name*='[survivor_id]']");
+    if (select) {
+      // Reset to just the placeholder, then add current survivors
+      while (select.options.length > 1) select.remove(1);
+      getEpisodeSurvivors().forEach(function(s) {
+        var opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = s.name;
+        select.appendChild(opt);
+      });
+    }
+  });
+
+  // ===== Add Bushcraft Item =====
+  document.getElementById("add-bushcraft-item")?.addEventListener("click", function() {
+    var tbody = document.querySelector("#bushcraft-items-table tbody");
+    var tmpl  = document.getElementById("bushcraft-item-template");
+    var idx   = Date.now();
+    var html  = tmpl.innerHTML.replace(/BI_IDX/g, idx);
+    tbody.insertAdjacentHTML("beforeend", html);
+    var newRow = tbody.querySelector("tr.bushcraft-item-row:last-child");
+    var container = newRow.querySelector(".builder-checkboxes");
+    if (container) {
+      populateBuilderCheckboxes(
+        container,
+        getEpisodeSurvivors(),
+        "episode[bushcraft_items_attributes][" + idx + "]",
+        "bushcraft_" + idx
+      );
+    }
+  });
+
   // ===== Toggle trap dropdown on food source method change =====
   document.addEventListener("change", function(e) {
     if (e.target.classList.contains("food-source-method")) {

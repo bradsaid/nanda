@@ -271,3 +271,59 @@ script type="application/json" id="episode-jsonld-data"= data
                     - parts << (tname =~ /trap\z/i ? tname : "#{tname} Trap")
                   - parts << fs.tools_used if fs.tools_used.present?
                   = parts.any? ? parts.join(" with ") : "—"
+
+  / ===== Medical Calls =====
+  - if @episode.medical_calls.any?
+    .card.shadow-sm.mt-4
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 🩺
+        h2.h5.mb-0 Medical Calls
+      .table-responsive
+        table.table.table-sm.table-hover.mb-0
+          thead.table-light
+            tr
+              th Survivor
+              th Reason
+              th.text-center Tap Out
+              th Notes
+          tbody
+            - @episode.medical_calls.each do |mc|
+              tr
+                td
+                  - if mc.survivor
+                    = link_to mc.survivor.full_name, survivor_path(mc.survivor)
+                  - else
+                    span.text-muted —
+                td = mc.reason.presence || "—"
+                td.text-center
+                  - if mc.led_to_tapout
+                    span.badge.bg-danger Yes
+                  - else
+                    span.text-muted No
+                td.text-muted = mc.notes.presence || "—"
+
+  / ===== Bushcraft Items =====
+  - if @episode.bushcraft_items.any?
+    .card.shadow-sm.mt-4
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 🪵
+        h2.h5.mb-0 Bushcraft Items
+      .table-responsive
+        table.table.table-sm.table-hover.mb-0
+          thead.table-light
+            tr
+              th Item
+              th Materials
+              th Built By
+              th Notes
+          tbody
+            - @episode.bushcraft_items.each do |bi|
+              tr
+                td.fw-semibold = bi.item_type
+                td = bi.materials.presence || "—"
+                td
+                  - if bi.builders&.any?
+                    = safe_join(bi.builders.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                  - else
+                    span.text-muted —
+                td.text-muted = bi.notes.presence || "—"

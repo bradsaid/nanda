@@ -19,6 +19,14 @@ class Episode < ApplicationRecord
   accepts_nested_attributes_for :food_sources, allow_destroy: true,
     reject_if: proc { |attrs| attrs['name'].blank? }
 
+  has_many :medical_calls, dependent: :destroy
+  accepts_nested_attributes_for :medical_calls, allow_destroy: true,
+    reject_if: proc { |attrs| attrs['survivor_id'].blank? && attrs['reason'].blank? }
+
+  has_many :bushcraft_items, dependent: :destroy
+  accepts_nested_attributes_for :bushcraft_items, allow_destroy: true,
+    reject_if: proc { |attrs| attrs['item_type'].blank? }
+
   validates :title, :number_in_season, presence: true
 
   # Optional: enforce location for non-Solo series only

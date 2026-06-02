@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_30_210000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_02_085536) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -79,6 +79,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_30_210000) do
     t.check_constraint "days_lasted IS NULL OR days_lasted >= 0", name: "appearances_days_lasted_nonneg"
     t.check_constraint "ending_psr >= 0::numeric AND ending_psr <= 10::numeric", name: "appearances_ending_psr_0_10"
     t.check_constraint "starting_psr >= 0::numeric AND starting_psr <= 10::numeric", name: "appearances_starting_psr_0_10"
+  end
+
+  create_table "bushcraft_items", force: :cascade do |t|
+    t.bigint "episode_id", null: false
+    t.integer "builder_ids", default: [], null: false, array: true
+    t.string "item_type"
+    t.string "materials"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["builder_ids"], name: "index_bushcraft_items_on_builder_ids", using: :gin
+    t.index ["episode_id"], name: "index_bushcraft_items_on_episode_id"
   end
 
   create_table "episode_shelters", force: :cascade do |t|
@@ -158,6 +170,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_30_210000) do
     t.index ["country", "region", "site"], name: "index_locations_on_country_and_region_and_site"
     t.index ["country"], name: "index_locations_on_country"
     t.index ["latitude", "longitude"], name: "index_locations_on_latitude_and_longitude"
+  end
+
+  create_table "medical_calls", force: :cascade do |t|
+    t.bigint "episode_id", null: false
+    t.bigint "survivor_id"
+    t.string "reason"
+    t.boolean "led_to_tapout", default: false, null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["episode_id"], name: "index_medical_calls_on_episode_id"
+    t.index ["survivor_id"], name: "index_medical_calls_on_survivor_id"
   end
 
   create_table "page_views", force: :cascade do |t|
@@ -265,12 +289,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_30_210000) do
   add_foreign_key "appearances", "episodes"
   add_foreign_key "appearances", "locations"
   add_foreign_key "appearances", "survivors"
+  add_foreign_key "bushcraft_items", "episodes"
   add_foreign_key "episode_shelters", "episodes"
   add_foreign_key "episode_traps", "episodes"
   add_foreign_key "episodes", "locations"
   add_foreign_key "episodes", "seasons"
   add_foreign_key "food_sources", "episode_traps"
   add_foreign_key "food_sources", "episodes"
+  add_foreign_key "medical_calls", "episodes"
+  add_foreign_key "medical_calls", "survivors"
   add_foreign_key "seasons", "series"
   add_foreign_key "sessions", "users"
 end

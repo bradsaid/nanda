@@ -462,11 +462,113 @@
 
         button.btn.btn-sm.btn-outline-primary type="button" id="add-trap" + Add Trap
 
+    / ===== Section 5: Medical Calls =====
+    .col-12
+      hr.my-2
+      h5.mb-3 Medical Calls
+
+      table.table.table-sm.table-bordered.mb-2#medical-calls-table
+        thead.table-light
+          tr
+            th Survivor
+            th Reason
+            th.text-center Led to Tap Out
+            th Notes
+            th
+        tbody
+          = f.fields_for :medical_calls do |mcf|
+            - mc = mcf.object
+            - i = mcf.object_name[/\[(\d+)\]\z/, 1]
+            tr.medical-call-row
+              td
+                = mcf.hidden_field :id
+                = mcf.select :survivor_id, options_from_collection_for_select(@episode.survivors.order(:full_name), :id, :full_name, mc.survivor_id), { include_blank: "Select..." }, { class: "form-select form-select-sm" }
+              td = mcf.text_field :reason, class: "form-control form-control-sm", placeholder: "e.g. dehydration"
+              td.text-center
+                = mcf.check_box :led_to_tapout, class: "form-check-input"
+              td = mcf.text_field :notes, class: "form-control form-control-sm"
+              td
+                = mcf.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+      / Empty medical-call template
+      template#medical-call-template
+        tr.medical-call-row
+          td
+            select.form-select.form-select-sm name="episode[medical_calls_attributes][MC_IDX][survivor_id]"
+              option value="" Select...
+              - episode_survivors.each do |s|
+                option value=s.id = s.full_name
+          td
+            input.form-control.form-control-sm type="text" name="episode[medical_calls_attributes][MC_IDX][reason]" placeholder="e.g. dehydration"
+          td.text-center
+            input type="hidden" name="episode[medical_calls_attributes][MC_IDX][led_to_tapout]" value="0"
+            input.form-check-input type="checkbox" name="episode[medical_calls_attributes][MC_IDX][led_to_tapout]" value="1"
+          td
+            input.form-control.form-control-sm type="text" name="episode[medical_calls_attributes][MC_IDX][notes]"
+          td
+            input type="hidden" name="episode[medical_calls_attributes][MC_IDX][_destroy]" value="0"
+            button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+      button.btn.btn-sm.btn-outline-primary type="button" id="add-medical-call" + Add Medical Call
+
+    / ===== Section 6: Bushcraft Items =====
+    .col-12
+      hr.my-2
+      h5.mb-3 Bushcraft Items
+
+      table.table.table-sm.table-bordered.mb-2#bushcraft-items-table
+        thead.table-light
+          tr
+            th Item Type
+            th Materials
+            th Built By
+            th Notes
+            th
+        tbody
+          = f.fields_for :bushcraft_items do |bif|
+            - bi = bif.object
+            - i = bif.object_name[/\[(\d+)\]\z/, 1]
+            tr.bushcraft-item-row
+              td
+                = bif.hidden_field :id
+                = bif.text_field :item_type, class: "form-control form-control-sm", placeholder: "e.g. atlatl, bow drill"
+              td = bif.text_field :materials, class: "form-control form-control-sm", placeholder: "e.g. bamboo, cordage"
+              td
+                input type="hidden" name="episode[bushcraft_items_attributes][#{i}][builder_ids][]" value=""
+                .builder-checkboxes
+                  - episode_survivors.each do |s|
+                    .form-check.form-check-inline
+                      = check_box_tag "episode[bushcraft_items_attributes][#{i}][builder_ids][]", s.id, bi.builder_ids.include?(s.id), class: "form-check-input", id: "bushcraft_#{i}_builder_#{s.id}"
+                      = label_tag "bushcraft_#{i}_builder_#{s.id}", s.full_name, class: "form-check-label"
+              td = bif.text_field :notes, class: "form-control form-control-sm"
+              td
+                = bif.hidden_field :_destroy, value: "0"
+                button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+      / Empty bushcraft-item template
+      template#bushcraft-item-template
+        tr.bushcraft-item-row
+          td
+            input.form-control.form-control-sm type="text" name="episode[bushcraft_items_attributes][BI_IDX][item_type]" placeholder="e.g. atlatl, bow drill"
+          td
+            input.form-control.form-control-sm type="text" name="episode[bushcraft_items_attributes][BI_IDX][materials]" placeholder="e.g. bamboo, cordage"
+          td
+            input type="hidden" name="episode[bushcraft_items_attributes][BI_IDX][builder_ids][]" value=""
+            .builder-checkboxes
+          td
+            input.form-control.form-control-sm type="text" name="episode[bushcraft_items_attributes][BI_IDX][notes]"
+          td
+            input type="hidden" name="episode[bushcraft_items_attributes][BI_IDX][_destroy]" value="0"
+            button.btn.btn-sm.btn-outline-danger.remove-row-btn type="button" &times;
+
+      button.btn.btn-sm.btn-outline-primary type="button" id="add-bushcraft-item" + Add Bushcraft Item
+
   - else
     .col-12
       hr.my-2
       .alert.alert-info.mb-0
-        | Save the episode and participants first to add Traps, Shelters, and Food Sources.
+        | Save the episode and participants first to add Traps, Shelters, Food Sources, Medical Calls, and Bushcraft Items.
 
   .col-12
     = f.submit class: "btn btn-primary"

@@ -50,7 +50,9 @@ module Admin
         appearances: [:survivor, { appearance_items: :item }],
         food_sources: [],
         episode_traps: [],
-        episode_shelters: []
+        episode_shelters: [],
+        medical_calls: [],
+        bushcraft_items: []
       ).find(params[:id])
     end
 
@@ -107,6 +109,12 @@ module Admin
         ],
         episode_shelters_attributes: [
           :id, :shelter_type, :materials, :notes, :_destroy, builder_ids: []
+        ],
+        medical_calls_attributes: [
+          :id, :survivor_id, :reason, :led_to_tapout, :notes, :_destroy
+        ],
+        bushcraft_items_attributes: [
+          :id, :item_type, :materials, :notes, :_destroy, builder_ids: []
         ]
       )
     end
