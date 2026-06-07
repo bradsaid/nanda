@@ -4,7 +4,7 @@
 - challenges  = @episodes_collapsed_count
 - img_url     = (@survivor.avatar&.attached? ? url_for(@survivor.avatar) : nil)
 
-- content_for :title, "#{name} – Naked and Afraid Survivor Wiki"
+- content_for :title, "#{name} – Naked and Afraid Survivor".first(60)
 - content_for :meta_description, "Profile for #{name}: episodes, challenges, items brought/given, locations, and results."
 - content_for :keywords, "#{name}, Naked and Afraid, survivor, contestant"
 - content_for :canonical_url, request.original_url
