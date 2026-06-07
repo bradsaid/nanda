@@ -46,6 +46,20 @@ class HomeController < ApplicationController
              .order(Arel.sql("COUNT(*) DESC"))
              .limit(5).count
 
+    # Per-country challenge counts using the same continuous-story dedupe used
+    # on the Locations index: one challenge per episode for standard seasons,
+    # and one per (season, location) pair for continuous-story seasons/series.
+    non_cont_by_country = Episode.joins(:location, season: :series)
+                                 .where("COALESCE(seasons.continuous_story, false) = false AND COALESCE(series.continuous_story, false) = false")
+                                 .where.not(locations: { country: [nil, ""] })
+                                 .group("locations.country").count
+    cont_by_country = Episode.joins(:location, season: :series)
+                             .where("COALESCE(seasons.continuous_story, false) = true OR COALESCE(series.continuous_story, false) = true")
+                             .where.not(locations: { country: [nil, ""] })
+                             .distinct.pluck("locations.country", :season_id, :location_id)
+                             .group_by(&:first).transform_values(&:size)
+    @challenges_by_country = non_cont_by_country.merge(cont_by_country) { |_k, a, b| a + b }
+
     # 🔽 Sort Top Survivors by COLLAPSED, but also select TOTAL so the view can show both
     @top_survivors =
       Survivor
