@@ -2,7 +2,10 @@
 # gem 'sitemap_generator'
 
 SitemapGenerator::Sitemap.default_host = ENV.fetch("APP_HOST", "https://www.nakedandafraidfan.com")
-SitemapGenerator::Sitemap.compress = true
+# Serve uncompressed XML so /sitemap.xml is reachable directly. AdSense and
+# many SEO validators do not follow the .gz suffix; Google Search Console
+# accepts either format.
+SitemapGenerator::Sitemap.compress = false
 SitemapGenerator::Sitemap.create_index = true
 SitemapGenerator::Sitemap.namer = SitemapGenerator::SimpleNamer.new(:sitemap, :start => 1)
 # Optional: store on S3/CloudFront in production (Heroku-safe)
