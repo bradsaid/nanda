@@ -107,8 +107,8 @@ html
       iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KG87PJGV" height="0" width="0" style="display:none;visibility:hidden"
     / End Google Tag Manager (noscript)
 
-    / ===== Header Image =====
-    .container.text-center.my-2
+    / ===== Header =====
+    header.container.text-center.my-2
       = image_tag "NAKED.png",
         alt: "Naked and Afraid Fan Database",
         class: "site-banner"
@@ -116,7 +116,7 @@ html
     main.container.mx-auto.mt-8.px-5.flex
       .container.my-4
         / ===== Navigation =====
-        .nav.mb-4.d-flex.justify-content-center.site-nav
+        nav.nav.mb-4.d-flex.justify-content-center.site-nav aria-label="Primary"
           = link_to "Home", home_path(anchor: "content"), class: "nav-link"
           = link_to "Survivors", survivors_path(anchor: "content"), class: "nav-link"
           = link_to "Episodes", episodes_path(anchor: "content"), class: "nav-link"
