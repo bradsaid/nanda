@@ -129,6 +129,7 @@ module ApplicationHelper
     when /boat/                              then "🛶"
     when /paddle/                            then "🛶"
     when /fabric|cloth/                      then "🧵"
+    when /cotton/                            then "☁️"
     when /flash\s*light|torch/               then "🔦"
     when /bailer|bucket/                     then "🪣"
     when /lens/                              then "🔍"
