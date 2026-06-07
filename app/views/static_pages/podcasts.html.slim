@@ -8,9 +8,8 @@
 
 
 - ky = Survivor.find_by(full_name: "Ky Furneaux")
-- data = podcasts_books_json_payload(ky: ky)
-script type="application/json" id="podcasts-books-jsonld-data"= data
-= javascript_import_module_tag "json_ld/podcasts_books", defer: true
+/ Server-rendered JSON-LD (CollectionPage + ItemLists for podcasts + books)
+= render_jsonld(podcasts_books_jsonld)
 / ===== end SEO + JSON-LD =====
 
 

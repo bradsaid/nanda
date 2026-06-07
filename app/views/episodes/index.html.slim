@@ -34,10 +34,8 @@
   - content_for :og_title, "Naked and Afraid Episodes – Guide by Season"
   - content_for :og_description, "Browse seasons to see episodes with dates, locations, and survivors."
 
-/ JSON blob for schema (single-line to avoid Slim parse errors)
-- data = episodes_index_json_payload(location: @location, episodes: @episodes, season: (defined?(@season) && @season.present?) ? @season : nil, episodes_by_season: @episodes_by_season, episode_counts: @episode_counts)
-script type="application/json" id="episodes-index-jsonld-data"= data
-= javascript_import_module_tag "json_ld/episodes_index", defer: true
+/ Server-rendered JSON-LD (ItemList of episodes)
+= render_jsonld(episodes_index_jsonld(episodes: @episodes, season: (defined?(@season) && @season.present?) ? @season : nil, location: @location, episodes_by_season: @episodes_by_season, episode_counts: @episode_counts))
 
 - if @location
   / === Filtered by location ===

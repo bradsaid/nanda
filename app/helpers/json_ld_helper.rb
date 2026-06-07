@@ -295,4 +295,366 @@ module JsonLdHelper
       description: description.to_s
     })
   end
+
+  # ===== Server-side JSON-LD =====
+  # The methods below return full Schema.org hashes/arrays and are rendered as
+  # <script type="application/ld+json"> inline in the page so SEO validators
+  # and lightweight crawlers (which do not execute JS) can see them.
+  #
+  # render_jsonld(schema) safely emits the script tag and escapes the unsafe
+  # "</" sequence so the JSON cannot break out of the script element.
+
+  def render_jsonld(schema)
+    return "" if schema.nil?
+    json = JSON.generate(schema).gsub("</", "<\\/")
+    content_tag(:script, raw(json), type: "application/ld+json")
+  end
+
+  SITE_NAME = "Naked & Afraid Fan Database".freeze
+
+  def home_jsonld
+    [
+      { "@context" => "https://schema.org", "@type" => "WebSite",
+        "name" => SITE_NAME, "url" => request.base_url },
+      { "@context" => "https://schema.org", "@type" => "CollectionPage",
+        "name" => SITE_NAME,
+        "description" => "Fan-maintained guide to episodes, survivors, items, and locations.",
+        "url" => request.original_url, "image" => "/favicon.png" }
+    ]
+  end
+
+  def episode_show_jsonld(episode)
+    series_name  = episode.season&.series&.name
+    season_num   = episode.season&.number
+    ep_num       = episode.number_in_season
+    air_iso      = episode.air_date&.to_date&.to_s
+    loc          = episode.location
+    location_str = [loc&.country, loc&.region, loc&.site].compact_blank.join(", ").presence
+
+    actors = Array(episode.survivors).map { |s| { "@type" => "Person", "name" => s.full_name, "url" => survivor_path(s) } }
+
+    image_url = (episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? } &&
+                 (rails_blob_path(episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? }.avatar, only_path: true) rescue nil))
+
+    schema = {
+      "@context" => "https://schema.org",
+      "@type" => "TVEpisode",
+      "name" => (episode.title.presence || "Episode"),
+      "episodeNumber" => ep_num,
+      "partOfSeason" => { "@type" => "TVSeason", "seasonNumber" => season_num,
+                          "name" => "#{series_name} Season #{season_num}" },
+      "partOfSeries" => { "@type" => "TVSeries", "name" => series_name },
+      "url" => request.original_url,
+      "actor" => actors
+    }
+    schema["datePublished"]    = air_iso if air_iso
+    schema["locationCreated"]  = { "@type" => "Place", "name" => location_str } if location_str
+    schema["image"]            = image_url if image_url
+    schema
+  end
+
+  def episodes_index_jsonld(episodes:, season:, location:, episodes_by_season:, episode_counts:)
+    if location.present?
+      loc_name = [location.site, location.region, location.country].compact_blank.join(", ").presence || "Unknown Location"
+      name     = "Episodes in #{loc_name}"
+      desc     = "Episodes filmed in #{loc_name}."
+      list     = Array(episodes)
+    elsif season.present?
+      series_name = season.series&.name || "Naked and Afraid"
+      title_txt   = "#{series_name} – Season #{season.number}"
+      name        = "#{title_txt} Episodes"
+      desc        = "Episodes for #{title_txt}."
+      list        = Array(episodes)
+    else
+      name = "Naked and Afraid Episodes"
+      desc = "Episode guide organized by season."
+      list = (episodes_by_season || {}).values.flatten
+    end
+
+    items = list.first(20).each_with_index.map do |ep, i|
+      props = [
+        ep.season&.series&.name && { "@type" => "PropertyValue", "name" => "Series",   "value" => ep.season.series.name },
+        ep.season&.number       && { "@type" => "PropertyValue", "name" => "Season",   "value" => ep.season.number },
+        ep.number_in_season     && { "@type" => "PropertyValue", "name" => "Episode",  "value" => ep.number_in_season },
+        ep.air_date             && { "@type" => "PropertyValue", "name" => "Air Date", "value" => ep.air_date.strftime("%Y-%m-%d") }
+      ].compact
+      {
+        "@type"    => "ListItem",
+        "position" => i + 1,
+        "url"      => "#{request.base_url}#{episode_path(ep)}",
+        "name"     => (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        "additionalProperty" => props
+      }
+    end
+
+    {
+      "@context" => "https://schema.org",
+      "@type" => "ItemList",
+      "name" => name,
+      "description" => desc,
+      "numberOfItems" => list.size,
+      "itemListElement" => items
+    }
+  end
+
+  def episodes_by_country_jsonld(country:, episodes:)
+    items = Array(episodes).first(20).each_with_index.map do |ep, i|
+      props = [
+        ep.season&.series&.name && { "@type" => "PropertyValue", "name" => "Series",   "value" => ep.season.series.name },
+        ep.season&.number       && { "@type" => "PropertyValue", "name" => "Season",   "value" => ep.season.number },
+        ep.number_in_season     && { "@type" => "PropertyValue", "name" => "Episode",  "value" => ep.number_in_season },
+        ep.air_date             && { "@type" => "PropertyValue", "name" => "Air Date", "value" => ep.air_date.strftime("%Y-%m-%d") }
+      ].compact
+      {
+        "@type" => "ListItem", "position" => i + 1,
+        "url"   => "#{request.base_url}#{episode_path(ep)}",
+        "name"  => (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        "additionalProperty" => props
+      }
+    end
+    [
+      { "@context" => "https://schema.org", "@type" => "CollectionPage",
+        "name" => "Naked and Afraid Episodes in #{country}",
+        "url"  => request.original_url,
+        "about" => { "@type" => "Place", "name" => country } },
+      { "@context" => "https://schema.org", "@type" => "ItemList",
+        "name" => "Episodes in #{country}", "numberOfItems" => Array(episodes).size,
+        "itemListElement" => items }
+    ]
+  end
+
+  def items_index_jsonld
+    {
+      "@context" => "https://schema.org", "@type" => "CollectionPage",
+      "name" => "Naked and Afraid Items",
+      "description" => "Database of survival items used in Naked and Afraid, including brought, given, and rare items by type and country.",
+      "url" => request.original_url
+    }
+  end
+
+  def item_show_jsonld(item:, given_ai:, brought_ai:, country:)
+    given_ep_ids   = Array(given_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
+    brought_ep_ids = Array(brought_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
+    total_ids      = (given_ep_ids + brought_ep_ids).uniq
+
+    episodes = ((Array(given_ai) + Array(brought_ai)).map { |ai| ai.appearance&.episode }.compact.uniq).first(10)
+    subject_of = episodes.map do |ep|
+      {
+        "@type" => "TVEpisode",
+        "name"  => (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        "url"   => "#{request.base_url}#{episode_path(ep)}",
+        "partOfSeries" => { "@type" => "TVSeries", "name" => ep.season&.series&.name },
+        "seasonNumber" => ep.season&.number,
+        "episodeNumber" => ep.number_in_season
+      }
+    end
+
+    props = [
+      { "@type" => "PropertyValue", "name" => "Given in episodes",   "value" => given_ep_ids.size },
+      { "@type" => "PropertyValue", "name" => "Brought in episodes", "value" => brought_ep_ids.size },
+      { "@type" => "PropertyValue", "name" => "Total appearances",   "value" => total_ids.size }
+    ]
+    props << { "@type" => "PropertyValue", "name" => "Filtered country", "value" => country } if country.present?
+
+    {
+      "@context" => "https://schema.org", "@type" => "Product",
+      "name" => item.name.to_s,
+      "category" => (item.respond_to?(:item_type) ? item.item_type : nil),
+      "url" => request.original_url,
+      "description" => "#{item.name} appearances across Naked and Afraid episodes.",
+      "additionalProperty" => props,
+      "subjectOf" => subject_of
+    }
+  end
+
+  def item_type_jsonld(item_type:, country:, items_in_type_count:, given_episode_ids:, brought_episode_ids:, given_ai:, brought_ai:)
+    items = ((Array(given_ai) + Array(brought_ai)).map(&:item).compact.uniq).first(10).each_with_index.map do |it, i|
+      { "@type" => "ListItem", "position" => i + 1,
+        "url" => "#{request.base_url}#{item_path(it)}", "name" => it.name }
+    end
+    name = "#{item_type} Items#{country.present? ? " in #{country}" : ""}"
+    {
+      "@context" => "https://schema.org", "@type" => "ItemList",
+      "name" => name,
+      "numberOfItems" => items_in_type_count.to_i,
+      "description" => "Given in #{Array(given_episode_ids).uniq.size} episode(s), brought in #{Array(brought_episode_ids).uniq.size}.",
+      "itemListElement" => items
+    }
+  end
+
+  def locations_index_jsonld(countries_count_hash)
+    countries = (countries_count_hash || {}).map do |name, total|
+      { "@type" => "Place", "name" => name, "description" => "#{total} episodes filmed" }
+    end
+    {
+      "@context" => "https://schema.org", "@type" => "CollectionPage",
+      "name" => "Naked and Afraid Locations",
+      "description" => "Map and country breakdown of filming locations across all episodes.",
+      "url" => request.original_url, "hasPart" => countries
+    }
+  end
+
+  def seasons_index_jsonld(seasons:)
+    seasons = Array(seasons)
+    items = seasons.first(20).each_with_index.map do |s, i|
+      props = [
+        s.series&.name && { "@type" => "PropertyValue", "name" => "Series",   "value" => s.series.name },
+        s.number       && { "@type" => "PropertyValue", "name" => "Season",   "value" => s.number },
+        s.respond_to?(:episodes) && { "@type" => "PropertyValue", "name" => "Episodes", "value" => s.episodes.size }
+      ].select { |p| p.is_a?(Hash) }
+      { "@type" => "ListItem", "position" => i + 1,
+        "url" => "#{request.base_url}#{season_path(s)}",
+        "name" => "#{s.series&.name} – Season #{s.number}",
+        "additionalProperty" => props }
+    end
+    {
+      "@context" => "https://schema.org", "@type" => "ItemList",
+      "name" => "Naked and Afraid Seasons",
+      "numberOfItems" => seasons.size,
+      "itemListElement" => items
+    }
+  end
+
+  def season_show_jsonld(season:, episodes:)
+    eps_list = Array(episodes).first(20)
+    list_items = eps_list.each_with_index.map do |ep, i|
+      props = [
+        ep.season&.number    && { "@type" => "PropertyValue", "name" => "Season",   "value" => ep.season.number },
+        ep.number_in_season  && { "@type" => "PropertyValue", "name" => "Episode",  "value" => ep.number_in_season },
+        ep.air_date          && { "@type" => "PropertyValue", "name" => "Air date", "value" => ep.air_date.strftime("%Y-%m-%d") }
+      ].compact
+      { "@type" => "ListItem", "position" => i + 1,
+        "url" => "#{request.base_url}#{episode_path(ep)}",
+        "name" => (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
+        "additionalProperty" => props }
+    end
+    label = "#{season.series&.name} – Season #{season.number}"
+    first_air = eps_list.map(&:air_date).compact.min&.to_s
+    last_air  = eps_list.map(&:air_date).compact.max&.to_s
+    schemas = [
+      {
+        "@context" => "https://schema.org", "@type" => "TVSeason",
+        "name" => label, "seasonNumber" => season.number,
+        "partOfSeries" => { "@type" => "TVSeries", "name" => season.series&.name },
+        "numberOfEpisodes" => Array(episodes).size,
+        "url" => request.original_url
+      }.tap { |h| h["startDate"] = first_air if first_air; h["endDate"] = last_air if last_air }
+    ]
+    if list_items.any?
+      schemas << { "@context" => "https://schema.org", "@type" => "ItemList",
+                   "name" => "#{label} — Episodes", "itemListElement" => list_items }
+    end
+    schemas
+  end
+
+  def survivors_index_jsonld(top_survivors:, survivors:)
+    list = (Array(top_survivors).presence || Array(survivors)).first(20)
+    items = list.each_with_index.map do |s, i|
+      total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
+      collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
+      img = if s.respond_to?(:avatar) && s.avatar&.attached?
+              rails_blob_path(s.avatar, only_path: true) rescue nil
+            end
+      person = {
+        "@type" => "Person",
+        "name"  => s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}",
+        "url"   => "#{request.base_url}#{survivor_path(s)}",
+        "additionalProperty" => [
+          { "@type" => "PropertyValue", "name" => "Episodes (total)", "value" => total },
+          { "@type" => "PropertyValue", "name" => "Challenges",       "value" => collapsed }
+        ]
+      }
+      person["image"] = img if img
+      { "@type" => "ListItem", "position" => i + 1,
+        "url" => person["url"], "name" => person["name"], "item" => person }
+    end
+    {
+      "@context" => "https://schema.org", "@type" => "ItemList",
+      "name" => "Naked and Afraid Survivors",
+      "numberOfItems" => list.size,
+      "itemListElement" => items
+    }
+  end
+
+  def survivor_show_jsonld(survivor:, appearances:)
+    img = if survivor.respond_to?(:avatar) && survivor.avatar&.attached?
+            rails_blob_path(survivor.avatar, only_path: true) rescue nil
+          end
+    same_as = []
+    if survivor.respond_to?(:instagram) && survivor.instagram.present?
+      handle = survivor.instagram.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, '').sub(%r{/.*$}, '')
+      same_as << "https://www.instagram.com/#{handle}" unless handle.empty?
+    end
+    if survivor.respond_to?(:facebook) && survivor.facebook.present?
+      handle = survivor.facebook.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?facebook\.com/}i, '').sub(%r{/.*$}, '')
+      same_as << "https://www.facebook.com/#{handle}" unless handle.empty?
+    end
+
+    episodes_total = survivor.appearances.select(:episode_id).distinct.count
+    challenges     = survivor.respond_to?(:episodes_collapsed_count) ? survivor.episodes_collapsed_count.to_i : episodes_total
+
+    person = {
+      "@context" => "https://schema.org", "@type" => "Person",
+      "name" => survivor.full_name.to_s, "url" => request.original_url,
+      "description" => "#{survivor.full_name} from Naked and Afraid with #{episodes_total} episode(s) and #{challenges} challenge(s)."
+    }
+    person["image"]  = img if img
+    person["sameAs"] = same_as if same_as.any?
+
+    breadcrumb = {
+      "@context" => "https://schema.org", "@type" => "BreadcrumbList",
+      "itemListElement" => [
+        { "@type" => "ListItem", "position" => 1, "name" => "Home",      "item" => "#{request.base_url}/" },
+        { "@type" => "ListItem", "position" => 2, "name" => "Survivors", "item" => "#{request.base_url}#{survivors_path}" },
+        { "@type" => "ListItem", "position" => 3, "name" => survivor.full_name.to_s, "item" => request.original_url }
+      ]
+    }
+    [person, breadcrumb]
+  end
+
+  def podcasts_books_jsonld
+    podcasts = [
+      { name: "Oh Heck NAA - A Naked and Afraid Podcast",
+        urls: ["https://open.spotify.com/show/2q2ZfSDQiL6u26dV4o2fNN",
+               "https://podcasts.apple.com/us/podcast/a-naked-and-afraid-podcast-oh-heck-naa/id1637024575"] },
+      { name: "Jaked and Afraid",
+        urls: ["https://open.spotify.com/show/1jl5pP0rmBlo5Ra2G3sDmQ",
+               "https://podcasts.apple.com/us/podcast/jaked-and-afraid/id1673801964"] }
+    ]
+    books = [
+      { name: "The Superwoman's Survival Guide", url: "https://a.co/d/dJEVpqL" },
+      { name: "Survive: The All-In-One Guide to Staying Alive in Extreme Conditions", url: "https://a.co/d/aCuVK7B" },
+      { name: "When the Grid Fails: Easy Action Steps When Facing Hurricanes", url: "https://a.co/d/cWj7nxr" },
+      { name: "Surviving the First 36 Hours", url: "https://a.co/d/bTTnKoz" },
+      { name: "Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival", url: "https://a.co/d/bTTnKoz" },
+      { name: "Adventure Awaits: The Beginner's Guide to the Great Outdoors", url: "https://a.co/d/iNGF8CS" },
+      { name: "Girl's Own Survival Guide - Signed Copy", url: "https://kyfurneaux.com/product/girls-own-survival-guide-signed/" }
+    ]
+    author = { "@type" => "Person", "name" => "Ky Furneaux" }
+    [
+      { "@context" => "https://schema.org", "@type" => "CollectionPage",
+        "name" => "Naked & Afraid Podcasts and Books",
+        "url"  => request.original_url,
+        "description" => "Fan podcasts about Naked & Afraid and recommended books by Ky Furneaux." },
+      { "@context" => "https://schema.org", "@type" => "ItemList",
+        "name" => "Naked & Afraid Podcasts",
+        "itemListElement" => podcasts.each_with_index.map { |p, i|
+          { "@type" => "ListItem", "position" => i + 1,
+            "item" => { "@type" => "PodcastSeries", "name" => p[:name], "sameAs" => p[:urls] } } } },
+      { "@context" => "https://schema.org", "@type" => "ItemList",
+        "name" => "Books by Ky Furneaux",
+        "itemListElement" => books.each_with_index.map { |b, i|
+          item = { "@type" => "Book", "name" => b[:name], "author" => author }
+          item["offers"] = { "@type" => "Offer", "url" => b[:url] } if b[:url]
+          { "@type" => "ListItem", "position" => i + 1, "item" => item } } }
+    ]
+  end
+
+  def about_jsonld(name:, description:)
+    {
+      "@context" => "https://schema.org", "@type" => "AboutPage",
+      "name" => name.to_s, "description" => description.to_s,
+      "url" => request.original_url
+    }
+  end
 end

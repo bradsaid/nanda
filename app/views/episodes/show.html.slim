@@ -18,10 +18,8 @@
 - content_for :og_title, "#{title_text} | #{subtitle}"
 - content_for :og_description, "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
 
-/ JSON data for schema (built in helper to avoid Slim parsing issues)
-- data = episode_show_json_payload(@episode)
-script type="application/json" id="episode-jsonld-data"= data
-= javascript_import_module_tag "json_ld/episode_show", defer: true
+/ Server-rendered JSON-LD (TVEpisode)
+= render_jsonld(episode_show_jsonld(@episode))
 / ===== end SEO + JSON-LD =====
 
 / ===== Episode Show =====

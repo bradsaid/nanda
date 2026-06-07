@@ -10,10 +10,8 @@
 - content_for :og_title, "Naked and Afraid Seasons"
 - content_for :og_description, "All seasons organized by series with episode counts and streaming links."
 
-/ JSON blob for schema (helper builds JSON; single line keeps Slim happy)
-- data = seasons_index_json_payload(seasons: seasons_list)
-script type="application/json" id="seasons-index-jsonld-data"= data
-= javascript_import_module_tag "json_ld/seasons_index", defer: true
+/ Server-rendered JSON-LD (ItemList of seasons)
+= render_jsonld(seasons_index_jsonld(seasons: seasons_list))
 / ===== end SEO + JSON-LD =====
 
 .pb-3.mb-4.border-bottom.site-header

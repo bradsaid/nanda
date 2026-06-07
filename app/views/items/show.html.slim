@@ -16,10 +16,8 @@
 - content_for :og_title, "#{item_name} – Naked and Afraid Item"
 - content_for :og_description, "Given in #{given_ep_cnt} episode(s), brought in #{brought_ep_cnt}; total #{total_cnt} appearances#{country_param ? " in #{country_param}" : ""}."
 
-/ JSON for schema (helper builds JSON string; one line keeps Slim happy)
-- data = item_show_json_payload(item: @item, given_ai: @given_ai, brought_ai: @brought_ai, country: country_param)
-script type="application/json" id="item-jsonld-data"= data
-= javascript_import_module_tag "json_ld/item_show", defer: true
+/ Server-rendered JSON-LD (Product with subjectOf TVEpisodes)
+= render_jsonld(item_show_jsonld(item: @item, given_ai: @given_ai, brought_ai: @brought_ai, country: country_param))
 / ===== end SEO =====
 
 

@@ -10,10 +10,8 @@
 - content_for :og_description, page_desc
 / ===== end SEO =====
 
-/ JSON-LD payload (consumed by JS)
-- data = about_json_payload(name: page_title, description: page_desc)
-script type="application/json" id="about-jsonld-data"= data
-= javascript_import_module_tag "json_ld/about", defer: true
+/ Server-rendered JSON-LD (AboutPage)
+= render_jsonld(about_jsonld(name: page_title, description: page_desc))
 
 / ===== Page =====
 .container.my-4

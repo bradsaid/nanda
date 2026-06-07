@@ -10,10 +10,8 @@
 - content_for :og_title, "#{series_name} — Season #{season_num}"
 - content_for :og_description, "Episode guide for #{series_name} Season #{season_num}."
 
-/ JSON blob (helper builds the JSON string; single line keeps Slim happy)
-- data = season_show_json_payload(season: @season, episodes: @episodes)
-script type="application/json" id="season-jsonld-data"= data
-= javascript_import_module_tag "json_ld/season_show", defer: true
+/ Server-rendered JSON-LD (TVSeason + ItemList)
+= render_jsonld(season_show_jsonld(season: @season, episodes: @episodes))
 / ===== end SEO + JSON-LD =====
 
 

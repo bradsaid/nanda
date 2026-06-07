@@ -9,7 +9,7 @@
 - content_for :og_title, "Naked and Afraid Items"
 - content_for :og_description, "Complete list of Naked and Afraid items — brought, given, rarest, by type, and by country."
 
-= javascript_import_module_tag "json_ld/items_index", defer: true
+= render_jsonld(items_index_jsonld)
 / ===== end SEO =====
 
 .container.my-5

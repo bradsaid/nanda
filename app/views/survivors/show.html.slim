@@ -14,10 +14,8 @@
   - content_for :og_image, img_url
   - content_for :twitter_image, img_url
 
-/ JSON payload for schema (single line to keep Slim happy)
-- data = survivor_show_json_payload(survivor: @survivor, appearances: @appearances)
-script type="application/json" id="survivor-jsonld-data"= data
-= javascript_import_module_tag "json_ld/survivor_show", defer: true
+/ Server-rendered JSON-LD (Person + BreadcrumbList)
+= render_jsonld(survivor_show_jsonld(survivor: @survivor, appearances: @appearances))
 / ===== end SEO + JSON-LD =====
 
 

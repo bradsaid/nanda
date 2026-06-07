@@ -9,10 +9,8 @@
 - content_for :og_title, "Episodes in #{country_name} – Naked and Afraid"
 - content_for :og_description, "Episode list for #{country_name} with dates, locations, and survivors."
 
-/ JSON blob consumed by json_ld/episodes_by_country.js (single line to keep Slim happy)
-- data = episodes_by_country_json_payload(country: country_name, episodes: ep_list)
-script type="application/json" id="episodes-by-country-jsonld-data"= data
-= javascript_import_module_tag "json_ld/episodes_by_country", defer: true
+/ Server-rendered JSON-LD (CollectionPage + ItemList for the country)
+= render_jsonld(episodes_by_country_jsonld(country: country_name, episodes: ep_list))
 / ===== end SEO + JSON-LD =====
 
 .pb-2.mb-3.border-bottom.site-header

@@ -9,7 +9,7 @@
 - content_for :og_title, "#{site_name} – Fan Wiki"
 - content_for :og_description, tagline
 
-= javascript_import_module_tag "json_ld/home_schema", defer: true
+= render_jsonld(home_jsonld)
 / ===== end SEO =====
 
 .container.mt-3.mb-5

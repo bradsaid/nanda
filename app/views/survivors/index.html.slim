@@ -7,10 +7,8 @@
 - content_for :og_title, "Naked and Afraid Survivors"
 - content_for :og_description, "Complete list of survivors with episode totals and challenges."
 
-/ JSON blob (helper builds the JSON; single line keeps Slim happy)
-- data = survivors_index_json_payload(top_survivors: @top_survivors, survivors: @survivors)
-script type="application/json" id="survivors-index-jsonld-data"= data
-= javascript_import_module_tag "json_ld/survivors_index", defer: true
+/ Server-rendered JSON-LD (ItemList of survivors)
+= render_jsonld(survivors_index_jsonld(top_survivors: @top_survivors, survivors: @survivors))
 / ===== end SEO + JSON-LD =====
 
 .container.my-4
