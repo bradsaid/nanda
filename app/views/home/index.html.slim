@@ -162,7 +162,7 @@
                 - @top_items_brought.each do |row|
                   tr
                     td = link_to row.name, item_path(row.id)
-                    td.text-end.text-muted.small = "#{row.total} uses"
+                    td.text-end.text-muted.small = number_with_delimiter(row.total)
         - else
           .card-body
             .text-muted No data.
@@ -177,7 +177,7 @@
                 - @top_items_given.each do |row|
                   tr
                     td = link_to row.name, item_path(row.id)
-                    td.text-end.text-muted.small = "#{row.total} uses"
+                    td.text-end.text-muted.small = number_with_delimiter(row.total)
         - else
           .card-body
             .text-muted No data.
