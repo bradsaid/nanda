@@ -92,7 +92,7 @@ class EpisodesController < ApplicationController
     @episode = Episode
       .includes(:location, :episode_shelters, :medical_calls, :bushcraft_items, season: :series,
                 episode_traps: :food_sources,
-                appearances: [:survivor, { appearance_items: :item }],
+                appearances: [{ survivor: { avatar_attachment: :blob } }, { appearance_items: :item }],
                 food_sources: :episode_trap)
       .find(params[:id])
   end
