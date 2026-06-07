@@ -236,7 +236,7 @@
     .row.g-4.mb-4
       .col-md-6
         .card.shadow-sm
-          .card-header Items Brought
+          h2.card-header.h5.mb-0 Items Brought
           .card-body
             - if @brought_counts.present?
               ul.list-group.list-group-flush
@@ -251,7 +251,7 @@
 
       .col-md-6
         .card.shadow-sm
-          .card-header Items Given
+          h2.card-header.h5.mb-0 Items Given
           .card-body
             - if @given_counts.present?
               ul.list-group.list-group-flush

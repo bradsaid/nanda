@@ -61,7 +61,7 @@
   .row.g-3.mb-4
     .col-lg-12
       .card.shadow-sm
-        .card-header Top Survivors
+        h2.card-header.h5.mb-0 Top Survivors
         .card-body
           .row.g-3
             - @top_survivors.each do |s|
@@ -86,7 +86,7 @@
     .col-lg-6
       / Latest Episode
       .card.shadow-sm.mb-4
-        .card-header Latest Episode
+        h2.card-header.h5.mb-0 Latest Episode
         - if @latest_episode
           - ep = @latest_episode
           - series_name = ep.season&.series&.name
@@ -96,7 +96,7 @@
           - air_str = ep.air_date&.strftime("%b %-d, %Y") || "—"
           - services = services_for(series_name, season_num)
           .card-body
-            h5.card-title.mb-1 = link_to(ep.title.presence || "Untitled", episode_path(ep), class: "link-primary")
+            h3.card-title.h5.mb-1 = link_to(ep.title.presence || "Untitled", episode_path(ep), class: "link-primary")
             p.text-muted.mb-2
               = [series_name, ("Season #{season_num}" if season_num)].compact.join(" — ")
             - if loc_str.present?
@@ -116,7 +116,7 @@
 
       / Recent Episodes
       .card.shadow-sm
-        .card-header Recent Episodes
+        h2.card-header.h5.mb-0 Recent Episodes
         - if @recent_episodes.present?
           .list-group.list-group-flush
             - @recent_episodes.each do |ep|
@@ -135,7 +135,7 @@
       / Top Countries
       .card.shadow-sm.mb-4
         .card-header.d-flex.justify-content-between.align-items-center
-          span Top Countries
+          h2.h5.mb-0 Top Countries
           .small.text-uppercase.opacity-75
             span.me-3 Episodes
             span Challenges
@@ -158,7 +158,7 @@
 
       / Top Items — Brought
       .card.shadow-sm.mb-4
-        .card-header Top Items — Brought
+        h2.card-header.h5.mb-0 Top Items — Brought
         - if @top_items_brought.present?
           .table-responsive
             table.table.table-sm.mb-0.items-compact
@@ -173,7 +173,7 @@
 
       / Top Items — Given
       .card.shadow-sm
-        .card-header Top Items — Given
+        h2.card-header.h5.mb-0 Top Items — Given
         - if @top_items_given.present?
           .table-responsive
             table.table.table-sm.mb-0.items-compact
@@ -188,7 +188,7 @@
 
   / ===== Active Survivors =====
   .card.shadow-sm.mb-4
-    .card-header Recently Active Survivors
+    h2.card-header.h5.mb-0 Recently Active Survivors
     - if @active_survivors.present?
       .card-body
         .row.g-3
