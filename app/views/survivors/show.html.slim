@@ -242,9 +242,9 @@ script type="application/json" id="survivor-jsonld-data"= data
           .card-body
             - if @brought_counts.present?
               ul.list-group.list-group-flush
-                - @brought_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
+                - @brought_counts.sort_by { |(_id, name), c| [-c, name] }.each do |(id, name), c|
                   li.list-group-item.d-flex.justify-content-between.align-items-center
-                    span.fw-semibold = "#{item_icon(name)} #{name}"
+                    = link_to "#{item_icon(name)} #{name}", item_path(id), class: "fw-semibold text-decoration-none"
                     span.badge.bg-success.rounded-pill = c
             - else
               .text-center.py-5.text-muted
@@ -257,9 +257,9 @@ script type="application/json" id="survivor-jsonld-data"= data
           .card-body
             - if @given_counts.present?
               ul.list-group.list-group-flush
-                - @given_counts.sort_by { |name, c| [-c, name] }.each do |name, c|
+                - @given_counts.sort_by { |(_id, name), c| [-c, name] }.each do |(id, name), c|
                   li.list-group-item.d-flex.justify-content-between.align-items-center
-                    span.fw-semibold = "#{item_icon(name)} #{name}"
+                    = link_to "#{item_icon(name)} #{name}", item_path(id), class: "fw-semibold text-decoration-none"
                     span.badge.bg-primary.rounded-pill = c
             - else
               .text-center.py-5.text-muted
@@ -288,8 +288,10 @@ script type="application/json" id="survivor-jsonld-data"= data
             - @appearances.each do |a|
               - ep = a.episode
               - ser = ep.season&.series
-              - brought = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| "#{item_icon(ai.item)} #{ai.item.name}" }.join(", ")
-              - given   = a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| "#{item_icon(ai.item)} #{ai.item.name}" }.join(", ")
+              - brought_links = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| link_to("#{item_icon(ai.item)} #{ai.item.name}", item_path(ai.item), class: "text-reset text-decoration-underline") }
+              - given_links   = a.appearance_items.select { |ai| ai.source == "given"   }.map { |ai| link_to("#{item_icon(ai.item)} #{ai.item.name}", item_path(ai.item), class: "text-reset text-decoration-underline") }
+              - brought = safe_join(brought_links, ", ")
+              - given   = safe_join(given_links, ", ")
               tr
                 td = link_to ep.title, episode_path(ep), class: "link-primary fw-medium"
                 td = ser&.name || "—"

@@ -59,8 +59,8 @@ class SurvivorsController < ApplicationController
     row2 = base.except(:select).select(collapsed_episodes_sql("collapsed")).take
     @episodes_collapsed_count = row2["collapsed"].to_i
 
-    @brought_counts = @survivor.appearance_items.where(source: :brought).joins(:item).group("items.name").count
-    @given_counts   = @survivor.appearance_items.where(source: :given).joins(:item).group("items.name").count
+    @brought_counts = @survivor.appearance_items.where(source: :brought).joins(:item).group("items.id", "items.name").count
+    @given_counts   = @survivor.appearance_items.where(source: :given).joins(:item).group("items.id", "items.name").count
   end
 
   private
