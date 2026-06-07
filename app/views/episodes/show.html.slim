@@ -47,7 +47,13 @@ script type="application/json" id="episode-jsonld-data"= data
         = link_to "← All episodes", episodes_path, class: "small link-primary text-decoration-underline"
         h1.h3.mb-1 = title_text
         - if subtitle.present?
-          p.text-muted.mb-0 = subtitle
+          p.text-muted.mb-0
+            - if season
+              = link_to [series&.name, ("S#{season_num}" if season_num)].compact.join(" • "), season_path(season), class: "text-muted text-decoration-underline"
+              - if ep_num
+                |  • E#{ep_num}
+            - else
+              = subtitle
       - if season
         = link_to "View Season #{season.number}", season_path(season), class: "btn btn-outline-secondary btn-sm"
 
