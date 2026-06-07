@@ -350,3 +350,8 @@
                   - else
                     span.text-muted —
                 td.text-muted = bi.notes.presence || "—"
+
+  / ===== Author byline (E-A-T) =====
+  .card.shadow-sm.mt-4.small.text-muted
+    .card-body.py-2
+      == "Curated by <strong>Brad Said</strong> · Last updated #{@episode.updated_at.strftime('%B %-d, %Y')}."
