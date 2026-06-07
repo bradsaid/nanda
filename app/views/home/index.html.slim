@@ -130,15 +130,14 @@
     .col-lg-6
       / Top Countries
       .card.shadow-sm.mb-4
-        .card-header Top Countries
+        .card-header.d-flex.justify-content-between.align-items-center
+          span Top Countries
+          .small.text-uppercase.opacity-75
+            span.me-3 Episodes
+            span Challenges
         - if @top_countries.present?
           .table-responsive
             table.table.table-sm.table-hover.mb-0
-              thead.table-light
-                tr
-                  th Country
-                  th.text-end Episodes
-                  th.text-end Challenges
               tbody
                 - @top_countries.each do |country, count|
                   tr
