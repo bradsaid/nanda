@@ -119,11 +119,26 @@ script type="application/json" id="episode-jsonld-data"= data
         = simple_format(@episode.notes)
 
   / ===== Participants =====
+  / If every appearance has the exact same set of "given" items (same item +
+  / subtype + qty), hoist them into a single "Team given" banner above the
+  / table and skip the per-row given column. Continuous-story episodes where
+  / survivors received different items fall back to per-row rendering.
+  - given_signatures = @episode.appearances.map { |a| a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| [ai.item_id, ai.subtype.to_s.strip, ai.quantity.to_i] }.sort }
+  - consolidate_given = given_signatures.uniq.size == 1 && given_signatures.first.any?
+  - team_given_display = nil
+  - if consolidate_given
+    - first_given = @episode.appearances.first.appearance_items.select { |ai| ai.source == "given" }
+    - team_given_display = first_given.map { |ai| q = ai.quantity.to_i; n = ai.display_name; n ? (q > 1 ? "#{item_icon(ai.item)} #{n}×#{q}" : "#{item_icon(ai.item)} #{n}") : nil }.compact.join(", ")
+
   .card.shadow-sm
     .card-header.d-flex.align-items-center
       span.me-3.fs-3(aria-hidden="true") 👥
       h2.h5.mb-0 Participants
     - if @episode.appearances.present?
+      - if consolidate_given && team_given_display.present?
+        .px-3.py-2.bg-light.border-bottom.small
+          strong.me-1 Team given:
+          = team_given_display
       .table-responsive
         table.table.table-striped.table-hover.mb-0
           thead.table-light
@@ -178,7 +193,7 @@ script type="application/json" id="episode-jsonld-data"= data
                     span = "brought: #{brought}"
                   - else
                     span.text-muted —
-                  - if given.present?
+                  - if given.present? && !consolidate_given
                     br
                     span = "given: #{given}"
     - else
