@@ -77,6 +77,21 @@
           div.h4.mb-0= @avg_duration ? format_duration(@avg_duration) : "—"
           small.text-muted Avg Time on Page
 
+  / ===== Views Trend Chart (Last 30 Days) =====
+  - chart_dates    = (29.days.ago.to_date..Date.current).to_a
+  - chart_labels   = chart_dates.map { |d| d.strftime("%-m/%-d") }
+  - chart_views    = chart_dates.map { |d| (@chart_counts[d] || 0).to_i }
+  - chart_uniques  = chart_dates.map { |d| (@chart_uniques[d] || 0).to_i }
+  - chart_payload  = { labels: chart_labels, views: chart_views, uniques: chart_uniques }.to_json
+  = javascript_import_module_tag "admin_views_chart"
+  .card.shadow-sm.mb-4
+    h2.card-header.h5.mb-0 Views Trend (Last 30 Days)
+    .card-body
+      script type="application/json" id="admin-views-chart-data"
+        == chart_payload
+      .position-relative(style="height:260px;")
+        canvas#admin-views-chart
+
   / ===== Daily Views (Last 7 Days) =====
   .card.shadow-sm.mb-4
     .card-header Daily Views (Last 7 Days)

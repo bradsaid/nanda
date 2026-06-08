@@ -18,6 +18,10 @@ module Admin
       @top_sections  = PageView.top_sections(20)
       @daily_counts  = PageView.daily_counts(7)
       @daily_uniques = PageView.daily_unique_counts(7)
+      # Separate 30-day series for the chart so the table stays focused on the
+      # most recent week while the chart shows month-level trend.
+      @chart_counts  = PageView.daily_counts(30)
+      @chart_uniques = PageView.daily_unique_counts(30)
       @top_countries = PageView.top_countries(15)
       @device_breakdown = PageView.device_breakdown
       @top_referrers = PageView.top_referrer_domains(10)
