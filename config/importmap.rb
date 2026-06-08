@@ -14,7 +14,7 @@ pin "episode_form",  to: "episode_form.js"
 pin "survivors_search", to: "survivors_search.js"
 pin "items_search", to: "items_search.js"
 pin "consent",       to: "consent.js"
-pin "chart.js", to: "https://cdn.jsdelivr.net/npm/chart.js@4.4.7/+esm"
+pin "chart.js", to: "https://cdn.jsdelivr.net/npm/chart.js@4.4.7/auto/+esm"
 pin "admin_views_chart", to: "admin_views_chart.js"
 
 #schema

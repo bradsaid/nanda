@@ -10,9 +10,20 @@ function init() {
   const dataEl = document.getElementById("admin-views-chart-data");
   if (!canvas || !dataEl) return;
 
+  if (typeof Chart !== "function") {
+    console.error("[admin_views_chart] Chart.js failed to load:", Chart);
+    return;
+  }
+
   let payload;
-  try { payload = JSON.parse(dataEl.textContent); } catch { return; }
-  if (!payload || !payload.labels) return;
+  try { payload = JSON.parse(dataEl.textContent); } catch (e) {
+    console.error("[admin_views_chart] payload parse error:", e);
+    return;
+  }
+  if (!payload || !payload.labels) {
+    console.warn("[admin_views_chart] empty payload:", payload);
+    return;
+  }
 
   const ctx = canvas.getContext("2d");
   new Chart(ctx, {
