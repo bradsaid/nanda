@@ -1,53 +1,76 @@
 // Renders the admin dashboard's Views vs Unique Visitors line chart.
-// Reads its data from a JSON blob in #admin-views-chart-data and draws into
-// the <canvas id="admin-views-chart"> element. Safe to import on any page —
-// it exits early if either element is missing.
+// Preloads the full daily series from the server, then slices client-side
+// based on a range slider so dragging is instant. Also overlays a linear-
+// regression trend line on the Views series.
 
 import Chart from "chart.js";
 
-function init() {
-  const canvas = document.getElementById("admin-views-chart");
-  const dataEl = document.getElementById("admin-views-chart-data");
-  if (!canvas || !dataEl) return;
+let chartInstance = null;
+let fullPayload = null;
 
-  if (typeof Chart !== "function") {
-    console.error("[admin_views_chart] Chart.js failed to load:", Chart);
-    return;
+function linearTrend(values) {
+  const n = values.length;
+  if (n < 2) return values.map(() => null);
+  let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += values[i];
+    sumXY += i * values[i];
+    sumXX += i * i;
   }
+  const denom = n * sumXX - sumX * sumX;
+  if (denom === 0) return values.map(() => sumY / n);
+  const slope = (n * sumXY - sumX * sumY) / denom;
+  const intercept = (sumY - slope * sumX) / n;
+  return values.map((_, i) => Math.max(0, intercept + slope * i));
+}
 
-  let payload;
-  try { payload = JSON.parse(dataEl.textContent); } catch (e) {
-    console.error("[admin_views_chart] payload parse error:", e);
-    return;
-  }
-  if (!payload || !payload.labels) {
-    console.warn("[admin_views_chart] empty payload:", payload);
-    return;
-  }
+function sliceWindow(payload, days) {
+  const n = payload.labels.length;
+  const take = Math.min(Math.max(1, days), n);
+  return {
+    labels:  payload.labels.slice(n - take),
+    views:   payload.views.slice(n - take),
+    uniques: payload.uniques.slice(n - take)
+  };
+}
 
+function buildChart(canvas, sliced) {
   const ctx = canvas.getContext("2d");
-  new Chart(ctx, {
+  const trend = linearTrend(sliced.views);
+  return new Chart(ctx, {
     type: "line",
     data: {
-      labels: payload.labels,
+      labels: sliced.labels,
       datasets: [
         {
           label: "Views",
-          data: payload.views,
+          data: sliced.views,
           borderColor: "#0e3f24",
           backgroundColor: "rgba(14, 63, 36, 0.15)",
           fill: true,
           tension: 0.25,
-          pointRadius: 3
+          pointRadius: 2
         },
         {
           label: "Unique Visitors",
-          data: payload.uniques,
+          data: sliced.uniques,
           borderColor: "#b88070",
           backgroundColor: "rgba(184, 128, 112, 0.15)",
           fill: true,
           tension: 0.25,
-          pointRadius: 3
+          pointRadius: 2
+        },
+        {
+          label: "Views Trend",
+          data: trend,
+          borderColor: "rgba(33, 37, 41, 0.65)",
+          borderDash: [6, 4],
+          borderWidth: 2,
+          backgroundColor: "transparent",
+          fill: false,
+          pointRadius: 0,
+          tension: 0
         }
       ]
     },
@@ -71,6 +94,50 @@ function init() {
       }
     }
   });
+}
+
+function refresh(days) {
+  if (!chartInstance || !fullPayload) return;
+  const sliced = sliceWindow(fullPayload, days);
+  const trend  = linearTrend(sliced.views);
+  chartInstance.data.labels = sliced.labels;
+  chartInstance.data.datasets[0].data = sliced.views;
+  chartInstance.data.datasets[1].data = sliced.uniques;
+  chartInstance.data.datasets[2].data = trend;
+  chartInstance.update("none");
+
+  const label = document.getElementById("admin-views-chart-range-label");
+  if (label) label.textContent = `Last ${days} ${days === 1 ? "day" : "days"}`;
+}
+
+function init() {
+  const canvas = document.getElementById("admin-views-chart");
+  const dataEl = document.getElementById("admin-views-chart-data");
+  if (!canvas || !dataEl) return;
+
+  if (typeof Chart !== "function") {
+    console.error("[admin_views_chart] Chart.js failed to load:", Chart);
+    return;
+  }
+
+  try { fullPayload = JSON.parse(dataEl.textContent); } catch (e) {
+    console.error("[admin_views_chart] payload parse error:", e);
+    return;
+  }
+  if (!fullPayload || !fullPayload.labels) {
+    console.warn("[admin_views_chart] empty payload:", fullPayload);
+    return;
+  }
+
+  const slider = document.getElementById("admin-views-chart-range");
+  const initialDays = slider ? Number(slider.value) : Math.min(30, fullPayload.labels.length);
+  chartInstance = buildChart(canvas, sliceWindow(fullPayload, initialDays));
+
+  if (slider) {
+    slider.addEventListener("input", (e) => {
+      refresh(Number(e.target.value));
+    });
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);

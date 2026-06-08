@@ -18,10 +18,13 @@ module Admin
       @top_sections  = PageView.top_sections(20)
       @daily_counts  = PageView.daily_counts(7)
       @daily_uniques = PageView.daily_unique_counts(7)
-      # Separate 30-day series for the chart so the table stays focused on the
-      # most recent week while the chart shows month-level trend.
-      @chart_counts  = PageView.daily_counts(30)
-      @chart_uniques = PageView.daily_unique_counts(30)
+      # Chart series cover every day from the earliest tracked PageView through
+      # today. The view embeds the full series and a client-side slider slices
+      # it down to whatever window the admin wants (default 30 days).
+      earliest = PageView.minimum(:created_at)&.in_time_zone&.to_date || Date.current
+      @chart_total_days = (Date.current - earliest).to_i + 1
+      @chart_counts  = PageView.daily_counts(@chart_total_days)
+      @chart_uniques = PageView.daily_unique_counts(@chart_total_days)
       @top_countries = PageView.top_countries(15)
       @device_breakdown = PageView.device_breakdown
       @top_referrers = PageView.top_referrer_domains(10)

@@ -77,20 +77,31 @@
           div.h4.mb-0= @avg_duration ? format_duration(@avg_duration) : "—"
           small.text-muted Avg Time on Page
 
-  / ===== Views Trend Chart (Last 30 Days) =====
-  - chart_dates    = (29.days.ago.to_date..Date.current).to_a
+  / ===== Views Trend Chart =====
+  - earliest_date  = (Date.current - (@chart_total_days - 1))
+  - chart_dates    = (earliest_date..Date.current).to_a
   - chart_labels   = chart_dates.map { |d| d.strftime("%-m/%-d") }
   - chart_views    = chart_dates.map { |d| (@chart_counts[d] || 0).to_i }
   - chart_uniques  = chart_dates.map { |d| (@chart_uniques[d] || 0).to_i }
   - chart_payload  = { labels: chart_labels, views: chart_views, uniques: chart_uniques }.to_json
+  - default_window = [30, @chart_total_days].min
+  - slider_min     = [7, @chart_total_days].min
   = javascript_import_module_tag "admin_views_chart"
   .card.shadow-sm.mb-4
-    h2.card-header.h5.mb-0 Views Trend (Last 30 Days)
+    .card-header.d-flex.flex-wrap.align-items-center.justify-content-between.gap-2
+      h2.h5.mb-0 Views Trend
+      .small.opacity-75
+        span#admin-views-chart-range-label = "Last #{default_window} days"
     .card-body
       script type="application/json" id="admin-views-chart-data"
         == chart_payload
       .position-relative(style="height:260px;")
         canvas#admin-views-chart
+      .mt-3.d-flex.align-items-center.gap-3
+        label.small.text-muted.mb-0(for="admin-views-chart-range") Window
+        input#admin-views-chart-range.form-range.flex-grow-1 type="range" min=slider_min max=@chart_total_days value=default_window step="1"
+        .small.text-muted.text-nowrap
+          = "#{@chart_total_days} days tracked since #{earliest_date.strftime('%b %-d, %Y')}"
 
   / ===== Daily Views (Last 7 Days) =====
   .card.shadow-sm.mb-4
