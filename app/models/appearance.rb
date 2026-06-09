@@ -16,7 +16,7 @@ class Appearance < ApplicationRecord
   has_many :given_ais,   -> { where(source: "given") },  class_name: "AppearanceItem"
   has_many :given_items,  through: :given_ais,  source: :item
 
-  enum :result, { success: "success", tap_out: "tap_out", medical_tap_out: "medical_tap_out" }, prefix: true
+  enum :result, { success: "success", tap_out: "tap_out", medical_tap_out: "medical_tap_out", elimination: "elimination" }, prefix: true
   enum :role,   { duo: "duo", solo: "solo", trio: "trio", xl_team: "xl_team", frozen: "frozen" }, prefix: true
 
   validates :starting_psr, :ending_psr, numericality: { allow_nil: true, in: 0..10 }
