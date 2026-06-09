@@ -19,7 +19,7 @@
       | Survivalists are the cast of the franchise's wilderness challenges. Each is dropped into a remote environment with no clothes and one personal survival item, then has to find food, source water, build shelter, and stay safe from wildlife and weather until extraction. Their backgrounds range from military veterans and hunters to herbalists, biologists, and primitive-skills instructors.
 
   / ===== Sort pills + Search =====
-  - sort_options = [["challenges", "Challenges"], ["episodes", "Episodes"], ["name", "A–Z"], ["popular", "Popular"]]
+  - sort_options = [["challenges", "Challenges"], ["episodes", "Episodes"], ["name", "A–Z"], ["popular", "Popular"], ["newest", "Newest"], ["oldest", "Oldest"]]
   .d-flex.flex-wrap.gap-3.align-items-center.mb-3
     .btn-group.flex-wrap(role="group" aria-label="Sort survivors")
       - sort_options.each do |key, label|
@@ -55,6 +55,9 @@
               - case @sort
               - when "episodes"
                 small.text-muted.mt-1 = "#{number_with_delimiter(total)} #{'episode'.pluralize(total)}"
+              - when "newest", "oldest"
+                - debut = s.debut_air_date.respond_to?(:to_date) ? s.debut_air_date.to_date : s.debut_air_date
+                small.text-muted.mt-1 = debut ? "Debut: #{debut.strftime('%b %Y')}" : "Debut: —"
               - else
                 / View counts back the "popular" sort but stay hidden in the UI.
                 small.text-muted.mt-1 = "#{collapsed} #{'challenge'.pluralize(collapsed)}"

@@ -13,7 +13,7 @@ class SurvivorsController < ApplicationController
 
   def index
     @q    = params[:q].to_s.strip
-    @sort = params[:sort].to_s.presence_in(%w[challenges episodes name popular]) || "challenges"
+    @sort = params[:sort].to_s.presence_in(%w[challenges episodes name popular newest oldest]) || "challenges"
 
     base =
       Survivor
@@ -24,7 +24,8 @@ class SurvivorsController < ApplicationController
           "survivors.*",
           "COUNT(DISTINCT episodes.id) AS episodes_total_count",
           collapsed_episodes_sql("episodes_collapsed_count"),
-          "COUNT(appearances.id) AS appearances_count"
+          "COUNT(appearances.id) AS appearances_count",
+          "MIN(episodes.air_date) AS debut_air_date"
         ].join(", "))
         .group("survivors.id")
 
@@ -33,6 +34,10 @@ class SurvivorsController < ApplicationController
       @survivors = base.order("episodes_total_count DESC, episodes_collapsed_count DESC, survivors.full_name ASC").to_a
     when "name"
       @survivors = base.order("survivors.full_name ASC").to_a
+    when "newest"
+      @survivors = base.order(Arel.sql("MIN(episodes.air_date) DESC NULLS LAST, survivors.full_name ASC")).to_a
+    when "oldest"
+      @survivors = base.order(Arel.sql("MIN(episodes.air_date) ASC NULLS LAST, survivors.full_name ASC")).to_a
     when "popular"
       @survivors = base.order("survivors.full_name ASC").to_a
       view_counts_by_path = PageView.where("path LIKE '/survivors/%'").group(:path).count
