@@ -23,13 +23,13 @@
   .d-flex.flex-wrap.gap-3.align-items-center.mb-3
     .btn-group.flex-wrap(role="group" aria-label="Sort survivors")
       - sort_options.each do |key, label|
-        = link_to label, survivors_path(sort: key, q: @q.presence), class: "btn btn-sm btn-#{@sort == key ? 'dark' : 'outline-dark'}"
-    = form_with url: survivors_path, method: :get, local: true, class: "d-flex gap-2 ms-md-auto" do
+        = link_to label, survivors_path(sort: key, q: @q.presence, anchor: "survivors-results"), class: "btn btn-sm btn-#{@sort == key ? 'dark' : 'outline-dark'}"
+    = form_with url: survivors_path(anchor: "survivors-results"), method: :get, local: true, class: "d-flex gap-2 ms-md-auto" do
       = hidden_field_tag :sort, @sort
       = text_field_tag :q, @q, placeholder: "Search name…", class: "form-control form-control-sm"
       = submit_tag "Search", class: "btn btn-sm btn-outline-secondary"
       - if @q.present?
-        = link_to "Reset", survivors_path(sort: @sort), class: "btn btn-sm btn-link"
+        = link_to "Reset", survivors_path(sort: @sort, anchor: "survivors-results"), class: "btn btn-sm btn-link"
 
   / ===== Survivors grid =====
   - if @survivors.empty?
