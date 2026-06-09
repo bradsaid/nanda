@@ -115,6 +115,12 @@ function init() {
   const dataEl = document.getElementById("admin-views-chart-data");
   if (!canvas || !dataEl) return;
 
+  // Re-init on Turbo navigation: destroy any previous chart bound to this canvas.
+  if (chartInstance) {
+    try { chartInstance.destroy(); } catch (_) { /* noop */ }
+    chartInstance = null;
+  }
+
   if (typeof Chart !== "function") {
     console.error("[admin_views_chart] Chart.js failed to load:", Chart);
     return;
@@ -140,4 +146,13 @@ function init() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", init);
+// ES modules execute deferred, so DOMContentLoaded may have already fired by
+// the time this file runs. Call init() right away in that case, otherwise wait
+// for the DOM. Also re-init on Turbo navigations so going from another admin
+// page back to /admin re-builds the chart.
+if (document.readyState !== "loading") {
+  init();
+} else {
+  document.addEventListener("DOMContentLoaded", init);
+}
+document.addEventListener("turbo:load", init);
