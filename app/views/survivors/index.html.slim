@@ -55,7 +55,6 @@
               - case @sort
               - when "episodes"
                 small.text-muted.mt-1 = "#{number_with_delimiter(total)} #{'episode'.pluralize(total)}"
-              - when "popular"
-                small.text-muted.mt-1 = "#{number_with_delimiter(views)} #{'view'.pluralize(views)}"
               - else
+                / View counts back the "popular" sort but stay hidden in the UI.
                 small.text-muted.mt-1 = "#{collapsed} #{'challenge'.pluralize(collapsed)}"
