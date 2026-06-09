@@ -12,11 +12,13 @@ class SurvivorsController < ApplicationController
   end 
 
   def index
-    @q = params[:q].to_s.strip
+    @q    = params[:q].to_s.strip
+    @sort = params[:sort].to_s.presence_in(%w[challenges episodes name popular]) || "challenges"
 
-    @survivors =
+    base =
       Survivor
         .left_joins(appearances: { episode: { season: :series } })
+        .with_attached_avatar
         .where("survivors.full_name ILIKE ?", "%#{@q}%")
         .select([
           "survivors.*",
@@ -25,21 +27,25 @@ class SurvivorsController < ApplicationController
           "COUNT(appearances.id) AS appearances_count"
         ].join(", "))
         .group("survivors.id")
-        .order("survivors.full_name ASC")
-        .limit(1000)
 
-    # 🔽 Sort Top Survivors by COLLAPSED, but also select TOTAL so the view can show both
-    @top_survivors =
-      Survivor
-        .left_joins(appearances: { episode: { season: :series } })
-        .select([
-          "survivors.*",
-          "COUNT(DISTINCT episodes.id) AS episodes_total_count",
-          collapsed_episodes_sql("episodes_collapsed_count")
-        ].join(", "))
-        .group("survivors.id")
-        .order("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC")
-        .limit(6)
+    case @sort
+    when "episodes"
+      @survivors = base.order("episodes_total_count DESC, episodes_collapsed_count DESC, survivors.full_name ASC").to_a
+    when "name"
+      @survivors = base.order("survivors.full_name ASC").to_a
+    when "popular"
+      @survivors = base.order("survivors.full_name ASC").to_a
+      view_counts_by_path = PageView.where("path LIKE '/survivors/%'").group(:path).count
+      @view_counts = @survivors.each_with_object({}) do |s, h|
+        h[s.id] = view_counts_by_path["/survivors/#{s.slug}"].to_i if s.slug.present?
+      end
+      @survivors = @survivors.sort_by { |s| [-(@view_counts[s.id] || 0), s.full_name.to_s] }
+    else  # "challenges" — default
+      @survivors = base.order("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC").to_a
+    end
+
+    # Top-6 callout uses the same shape as before so the JSON-LD helper still works.
+    @top_survivors = @survivors.first(6) if @survivors.respond_to?(:first)
   end
 
   def show
