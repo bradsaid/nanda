@@ -60,15 +60,15 @@ module LocationsHelper
   end
 
   # Returns an outline-shape image URL for a country or US state.
-  # Countries: mapsicon (silhouette of the country, via jsdelivr proxy).
-  # US states: Wikipedia commons "<State>_in_United_States.svg" (state
-  # highlighted on a US map — more recognizable for small thumbnails than
-  # the bare state silhouette).
+  # Countries: mapsicon silhouette via jsdelivr proxy.
+  # US states: Wikipedia's blank "location map" file for the state — a clean
+  # outline of just the state with no surrounding US context. Suitable as a
+  # standalone shape and as a CSS mask-image source.
   def country_outline_url(country, width: 120)
     return nil if country.blank?
     name = country.to_s.strip
     if US_STATES.key?(name)
-      filename = "#{name.tr(' ', '_')}_in_United_States.svg"
+      filename = "USA_#{name.tr(' ', '_')}_location_map.svg"
       "https://commons.wikimedia.org/wiki/Special:FilePath/#{filename}?width=#{width}"
     elsif (cc = COUNTRIES[name])
       "https://cdn.jsdelivr.net/gh/djaiss/mapsicon@master/all/#{cc}/vector.svg"
