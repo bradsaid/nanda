@@ -813,8 +813,15 @@ table.items-compact thead th {
 }
 .country-card:hover { text-decoration: none; }
 
+/* Hero-sized variant used on the country show page */
+.country-shape-lg {
+  width: 220px;
+  height: 160px;
+}
+
 @media (max-width: 576px) {
-  .country-shape { width: 90px; height: 65px; }
+  .country-shape    { width: 90px;  height: 65px; }
+  .country-shape-lg { width: 140px; height: 100px; }
 }
 
 /* Smaller avatar for podcast/book host cards */

@@ -13,11 +13,20 @@
 = render_jsonld(episodes_by_country_jsonld(country: country_name, episodes: ep_list))
 / ===== end SEO + JSON-LD =====
 
+- hero_flag    = country_flag_url(@country, size: 320)
+- hero_outline = country_outline_url(@country, width: 480)
+
 .pb-2.mb-3.border-bottom.site-header
-  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
-    h1.h3.mb-0.logo = "Episodes in #{@country}"
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+    .d-flex.align-items-center.gap-3
+      - if hero_flag && hero_outline
+        .country-shape.country-shape-lg(style="background-image: url(#{hero_flag}); --outline-url: url(#{hero_outline});" aria-label="#{@country} flag in country outline")
+      - elsif hero_flag
+        = image_tag hero_flag, alt: @country, width: 96, class: "rounded shadow-sm"
+      .d-flex.flex-column
+        h1.h3.mb-0.logo = "Episodes in #{@country}"
+        p.subtitle.mb-0 All episodes whose location country is #{@country}.
     = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
-  p.subtitle.mb-0 All episodes whose location country is #{@country}.
 
 .card.shadow-sm
   .card-header Episodes
