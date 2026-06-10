@@ -348,3 +348,7 @@
   .card.shadow-sm.mt-4.small.text-muted
     .card-body.py-2
       == "Curated by <strong>Brad Said</strong> · Last updated #{@episode.updated_at.strftime('%B %-d, %Y')}."
+      br
+      | Spot a mistake or have a comment?
+      |
+      = link_to "Use the contact form", contact_path
