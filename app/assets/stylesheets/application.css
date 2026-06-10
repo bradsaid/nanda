@@ -801,10 +801,20 @@ table.items-compact thead th {
 /* Wrapper element exists only to host filter: drop-shadow(). CSS applies
    filter BEFORE mask on the same element, so the shadow would be clipped
    off by the mask. On a parent of the masked element the filter runs on
-   the child's already-masked output and so traces the visible silhouette. */
+   the child's already-masked output and so traces the visible silhouette.
+   Stacked layers:
+     1) white halo — provides contrast against dark backgrounds (the green
+        site-header on /episodes/by_country/<Name>) for countries whose
+        flags are entirely dark (Alaska's navy, etc.).
+     2) thin dark stroke — provides contrast against light backgrounds (the
+        Locations grid) for flags with white areas (Peru, Mexico, etc.).
+     3) faint depth shadow. */
 .country-shape-wrap {
   display: inline-block;
-  filter: drop-shadow(0 0 1px rgba(0, 0, 0, .65)) drop-shadow(0 1px 1.5px rgba(0, 0, 0, .25));
+  filter:
+    drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.9))
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.65))
+    drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.25));
 }
 .country-shape {
   width: 110px;
