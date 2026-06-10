@@ -806,6 +806,10 @@ table.items-compact thead th {
   background-repeat: no-repeat;
   -webkit-mask: var(--outline-url) center / contain no-repeat;
           mask: var(--outline-url) center / contain no-repeat;
+  /* Trace the masked silhouette with a soft dark outline so countries whose
+     flags include large white areas (Peru, Honduras, Mexico, Texas, etc.)
+     remain visible against the page background. */
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, .55)) drop-shadow(0 1px 1px rgba(0, 0, 0, .25));
   transition: transform .2s ease;
 }
 .country-card:hover .country-shape {
