@@ -54,7 +54,11 @@
       .card.shadow-sm.h-100
         .card-body
           .d-flex.align-items-center.gap-3
-            span.fs-3(aria-hidden="true") 📍
+            - flag = country_flag_url(country, size: 80)
+            - if flag
+              = image_tag flag, alt: country_flag_alt(country), width: 40, height: 30, class: "shadow-sm rounded", style: "object-fit: cover; flex-shrink: 0;"
+            - else
+              span.fs-3(aria-hidden="true") 📍
             .flex-grow-1
               .text-uppercase.small.text-muted Location
               .fw-semibold
