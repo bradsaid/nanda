@@ -55,6 +55,7 @@
         .card-body
           .d-flex.align-items-center.gap-3
             - flag = country_flag_url(country, size: 80)
+            - outline = country_outline_url(country, width: 160)
             - if flag
               = image_tag flag, alt: country_flag_alt(country), width: 40, height: 30, class: "shadow-sm rounded", style: "object-fit: cover; flex-shrink: 0;"
             - else
@@ -65,7 +66,6 @@
               - if country || region || site
                 - parts = []
                 - if country
-                  / OLD: parts << link_to(country, episodes_path(country: country))
                   - parts << link_to(country, by_country_episodes_path(country))
                 - if region
                   - parts << region
@@ -74,6 +74,8 @@
                 = safe_join(parts, " • ")
               - else
                 | —
+            - if outline
+              = image_tag outline, alt: "#{country} outline", class: "flex-shrink-0", style: "max-height: 50px; max-width: 60px; object-fit: contain;"
     .col-md-4
       .card.shadow-sm.h-100
         .card-body

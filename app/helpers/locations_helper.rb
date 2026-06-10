@@ -58,4 +58,20 @@ module LocationsHelper
     name = country.to_s.strip
     US_STATES.key?(name) ? "#{name} flag" : "#{name} flag"
   end
+
+  # Returns an outline-shape image URL for a country or US state.
+  # Countries: mapsicon (silhouette of the country, via jsdelivr proxy).
+  # US states: Wikipedia commons "<State>_in_United_States.svg" (state
+  # highlighted on a US map — more recognizable for small thumbnails than
+  # the bare state silhouette).
+  def country_outline_url(country, width: 120)
+    return nil if country.blank?
+    name = country.to_s.strip
+    if US_STATES.key?(name)
+      filename = "#{name.tr(' ', '_')}_in_United_States.svg"
+      "https://commons.wikimedia.org/wiki/Special:FilePath/#{filename}?width=#{width}"
+    elsif (cc = COUNTRIES[name])
+      "https://cdn.jsdelivr.net/gh/djaiss/mapsicon@master/all/#{cc}/vector.svg"
+    end
+  end
 end
