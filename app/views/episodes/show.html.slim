@@ -6,14 +6,9 @@
 - ep_num      = @episode.number_in_season
 - title_text  = @episode.title.presence || "Episode"
 - subtitle    = [series&.name, ("S#{season_num}" if season_num), ("E#{ep_num}" if ep_num)].compact.join(" • ")
-- series_short = case series&.name
-                 when "Naked and Afraid" then "Naked and Afraid"
-                 when /\ANaked and Afraid[: ]*(.+)/i then $1
-                 else series&.name
-                 end
+- series_short = (series&.name.to_s.sub(/\ANaked and Afraid[: ]*/i, "").presence || series&.name)
 - short_sub = [series_short, ("S#{season_num}E#{ep_num}" if season_num && ep_num)].compact.join(" ")
-- title_for_tag = short_sub.present? ? "#{title_text} (#{short_sub})" : title_text
-- title_for_tag = title_for_tag.first(60)
+- title_for_tag = (short_sub.present? ? "#{title_text} (#{short_sub})" : title_text).first(60)
 - air_date    = @episode.air_date&.strftime("%b %-d, %Y")
 - loc         = @episode.location
 - loc_str     = [loc&.country, loc&.region, loc&.site].compact_blank.join(", ").presence
@@ -31,27 +26,9 @@
 / ===== end SEO + JSON-LD =====
 
 / ===== Episode Show =====
-- series      = @episode.season&.series
-- season      = @episode.season
-- season_num  = season&.number
-- ep_num      = @episode.number_in_season
-- title_text  = @episode.title.presence || "Episode"
-- subtitle    = [series&.name, ("S#{season_num}" if season_num), ("E#{ep_num}" if ep_num)].compact.join(" • ")
-- series_short = case series&.name
-                 when "Naked and Afraid" then "Naked and Afraid"
-                 when /\ANaked and Afraid[: ]*(.+)/i then $1
-                 else series&.name
-                 end
-- short_sub = [series_short, ("S#{season_num}E#{ep_num}" if season_num && ep_num)].compact.join(" ")
-- title_for_tag = short_sub.present? ? "#{title_text} (#{short_sub})" : title_text
-- title_for_tag = title_for_tag.first(60)
-- air_date    = @episode.air_date&.strftime("%b %-d, %Y")
-- loc         = @episode.location
 - country     = loc&.country.to_s.presence
 - region      = loc&.region.to_s.presence
 - site        = loc&.site.to_s.presence
-
-- content_for :title, title_for_tag
 
 .container.my-4
   / ===== Back link + Title =====
