@@ -793,6 +793,30 @@ table.items-compact thead th {
   .avatar-portrait { width: 100px; height: 130px; }
 }
 
+/* Country grid: flag-coloured country / state outline.
+   Background = flag image (sized to cover the box). Mask = country/state
+   outline SVG (alpha mask), so only the country shape shows through and the
+   rest is transparent. Browsers without mask-image support still see the
+   flag rectangle, which is a graceful fallback. */
+.country-shape {
+  width: 110px;
+  height: 80px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  -webkit-mask: var(--outline-url) center / contain no-repeat;
+          mask: var(--outline-url) center / contain no-repeat;
+  transition: transform .2s ease;
+}
+.country-card:hover .country-shape {
+  transform: scale(1.05);
+}
+.country-card:hover { text-decoration: none; }
+
+@media (max-width: 576px) {
+  .country-shape { width: 90px; height: 65px; }
+}
+
 /* Smaller avatar for podcast/book host cards */
 .podcast-host-avatar {
   width: 80px;
