@@ -3,7 +3,11 @@
 // based on a range slider so dragging is instant. Also overlays a linear-
 // regression trend line on the Views series.
 
-import Chart from "chart.js";
+// Chart.js is loaded via a plain <script> tag on the admin dashboard so
+// it exposes window.Chart globally. We read from window instead of using
+// an ES-module import — the importmap+CDN dance was breaking because
+// Chart.js's ESM bundle has absolute-path imports that browsers resolve
+// against the page origin (404'd against our domain).
 
 let chartInstance = null;
 let fullPayload = null;
@@ -38,7 +42,7 @@ function sliceWindow(payload, days) {
 function buildChart(canvas, sliced) {
   const ctx = canvas.getContext("2d");
   const trend = linearTrend(sliced.views);
-  return new Chart(ctx, {
+  return new window.Chart(ctx, {
     type: "line",
     data: {
       labels: sliced.labels,
@@ -121,8 +125,8 @@ function init() {
     chartInstance = null;
   }
 
-  if (typeof Chart !== "function") {
-    console.error("[admin_views_chart] Chart.js failed to load:", Chart);
+  if (typeof window.Chart !== "function") {
+    console.error("[admin_views_chart] Chart.js global not present — UMD script may not have loaded yet");
     return;
   }
 

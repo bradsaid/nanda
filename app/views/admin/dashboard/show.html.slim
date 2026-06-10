@@ -86,6 +86,10 @@
   - chart_payload  = { labels: chart_labels, views: chart_views, uniques: chart_uniques }.to_json
   - default_window = [30, @chart_total_days].min
   - slider_min     = [7, @chart_total_days].min
+  / Self-contained UMD bundle: avoids the importmap dependency-chain bug
+  / where Chart.js's ESM /+esm bundle references /npm/@kurkle/color
+  / that the browser resolved against our origin and 404'd.
+  script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.js"
   = javascript_import_module_tag "admin_views_chart"
   .card.shadow-sm.mb-4
     .card-header.d-flex.flex-wrap.align-items-center.justify-content-between.gap-2
