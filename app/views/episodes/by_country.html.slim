@@ -20,7 +20,8 @@
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
     .d-flex.align-items-center.gap-3
       - if hero_flag && hero_outline
-        .country-shape.country-shape-lg(style="background-image: url(#{hero_flag}); --outline-url: url(#{hero_outline});" aria-label="#{@country} flag in country outline")
+        .country-shape-wrap
+          .country-shape.country-shape-lg(style="background-image: url(#{hero_flag}); --outline-url: url(#{hero_outline});" aria-label="#{@country} flag in country outline")
       - elsif hero_flag
         = image_tag hero_flag, alt: @country, width: 96, class: "rounded shadow-sm"
       .d-flex.flex-column

@@ -67,7 +67,8 @@
           = link_to by_country_episodes_path(country), class: "card h-100 text-center border-0 text-decoration-none country-card" do
             .card-body.py-3.d-flex.flex-column.align-items-center
               - if flag && outline
-                .country-shape(style="background-image: url(#{flag}); --outline-url: url(#{outline});" aria-label="#{country} flag in country outline")
+                .country-shape-wrap
+                  .country-shape(style="background-image: url(#{flag}); --outline-url: url(#{outline});" aria-label="#{country} flag in country outline")
               - elsif flag
                 = image_tag flag, alt: country, width: 64, class: "rounded shadow-sm mb-1", style: "object-fit: cover;"
               - else
