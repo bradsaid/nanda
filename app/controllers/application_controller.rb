@@ -5,9 +5,18 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern
 
-  helper_method :current_user, :logged_in?
+  helper_method :current_user, :logged_in?, :admin_signed_in?
   def current_user = nil
   def logged_in?   = false
+
+  # True when the visitor is signed in as a full admin or episode_editor.
+  # Used to conditionally reveal admin-only details on public pages
+  # (e.g. per-survivor view counts on the Survivors index).
+  def admin_signed_in?
+    return @_admin_signed_in if defined?(@_admin_signed_in)
+    user = User.find_by(id: session[:user_id]) if session[:user_id]
+    @_admin_signed_in = !!(user && (user.admin? || user.episode_editor?))
+  end
 
   def require_login;  true; end
   def require_admin;  true; end
