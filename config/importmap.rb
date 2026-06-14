@@ -13,6 +13,7 @@ pin "page_timer",    to: "page_timer.js"
 pin "episode_form",  to: "episode_form.js"
 pin "survivors_search", to: "survivors_search.js"
 pin "items_search", to: "items_search.js"
+pin "locations_search", to: "locations_search.js"
 pin "consent",       to: "consent.js"
 pin "admin_views_chart", to: "admin_views_chart.js"
 
