@@ -31,8 +31,8 @@
 
 .card.shadow-sm
   .card-header Episodes
-  .table-responsive
-    table.table.table-striped.table-hover.mb-0
+  .table-responsive.table-stack-host
+    table.table.table-stack.table-striped.table-hover.mb-0
       thead.table-light
         tr
           th(scope="col") Episode
@@ -47,11 +47,11 @@
         - else
           - @episodes.each do |ep|
             tr
-              td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
-              td = "S#{ep.season&.number} • #{ep.season&.series&.name}"
-              td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
-              td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
-              td
+              td data-label="Episode" = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
+              td data-label="Season" = "S#{ep.season&.number} • #{ep.season&.series&.name}"
+              td data-label="Air Date" = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+              td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+              td data-label="Survivors"
                 - if ep.survivors.any?
                   = safe_join(ep.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                 - else

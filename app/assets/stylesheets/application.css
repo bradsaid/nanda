@@ -837,6 +837,18 @@ table.items-compact thead th {
   height: 160px;
 }
 
+/* Homepage Top Countries: fixed-width columns so the card-header labels sit
+   directly above their numeric columns at every viewport. Smaller on phones
+   so the country name still has room. */
+.top-countries-label { width: 80px; }
+.top-countries-table td:nth-child(2),
+.top-countries-table td:nth-child(3) { width: 80px; }
+@media (max-width: 575.98px) {
+  .top-countries-label { width: 56px; }
+  .top-countries-table td:nth-child(2),
+  .top-countries-table td:nth-child(3) { width: 56px; }
+}
+
 /* Mobile-friendly stacked table layout. Apply class="table-stack" alongside
    .table. Below 768px every <tr> collapses into a vertical card showing each
    cell on its own line with its column label rendered from data-label="…".
