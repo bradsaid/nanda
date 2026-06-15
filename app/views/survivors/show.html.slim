@@ -269,8 +269,8 @@
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 📊
         h2.h5.mb-0 Appearances
-      .table-responsive
-        table.table.table-striped.table-hover.mb-0
+      .table-responsive.table-stack-host
+        table.table.table-stack.table-striped.table-hover.mb-0
           thead.table-light
             tr
               th(scope="col") Episode
@@ -291,24 +291,24 @@
               - brought = safe_join(brought_links, ", ")
               - given   = safe_join(given_links, ", ")
               tr
-                td = link_to ep.title, episode_path(ep), class: "link-primary fw-medium"
-                td = ser&.name || "—"
-                td = ep.air_date.presence || "—"
-                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
-                td.text-end = a.days_lasted.presence || "—"
-                td = [a.starting_psr, a.ending_psr].compact.join(" → ").presence || "—"
-                td
+                td data-label="Episode" = link_to ep.title, episode_path(ep), class: "link-primary fw-medium"
+                td data-label="Series" = ser&.name || "—"
+                td data-label="Air Date" = ep.air_date.presence || "—"
+                td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td.text-end data-label="Days" = a.days_lasted.presence || "—"
+                td data-label="PSR" = [a.starting_psr, a.ending_psr].compact.join(" → ").presence || "—"
+                td data-label="Result"
                   - if a.result.present?
                     - ok = (a.result == "success")
                     span.badge class=(ok ? "bg-success" : "bg-danger") = a.result.humanize
                   - else
                     span.text-muted —
-                td
+                td data-label="Brought"
                   - if brought.present?
                     span.badge.bg-success-subtle.text-success-emphasis = brought
                   - else
                     span.text-muted —
-                td
+                td data-label="Given"
                   - if given.present?
                     span.badge.bg-primary-subtle.text-primary-emphasis = given
                   - else

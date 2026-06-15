@@ -142,8 +142,8 @@
         .px-3.py-2.bg-light.border-bottom.small
           strong.me-1 Team given:
           = team_given_display
-      .table-responsive
-        table.table.table-striped.table-hover.mb-0
+      .table-responsive.table-stack-host
+        table.table.table-stack.table-striped.table-hover.mb-0
           thead.table-light
             tr
               th(scope="col") Name
@@ -151,7 +151,7 @@
               th(scope="col" class="text-nowrap") PSR
               th(scope="col" class="text-end") Days
               th(scope="col") Result
-              th.d-none.d-md-table-cell(scope="col") Weight Loss
+              th(scope="col") Weight Loss
               th(scope="col") Items
           tbody
             - @episode.appearances.each do |a|
@@ -173,7 +173,7 @@
                 - name ? (q > 1 ? "#{item_icon(ai.item)} #{name}×#{q}" : "#{item_icon(ai.item)} #{name}") : nil
               - given = given_names.compact.join(", ")
               tr
-                td
+                td data-label="Name"
                   .d-flex.align-items-center.gap-2
                     = link_to survivor_path(s), class: "flex-shrink-0" do
                       = image_tag avatar_src(s, name: s.full_name), alt: s.full_name, class: "rounded-circle border", width: 40, height: 40, style: "object-fit: cover;"
@@ -181,17 +181,17 @@
                       = link_to(s.full_name, survivor_path(s), class: "link-primary fw-medium")
                       - if a.partner_replacement
                         span.badge.text-bg-warning.ms-2 title="Partner replacement" PR
-                td = a.role.presence || "—"
-                td = ([start_psr, end_psr].compact.join(" → ").presence || "—")
-                td.text-end = (days_cell.presence || "—")
-                td
+                td data-label="Role" = a.role.presence || "—"
+                td data-label="PSR" = ([start_psr, end_psr].compact.join(" → ").presence || "—")
+                td.text-end data-label="Days" = (days_cell.presence || "—")
+                td data-label="Result"
                   - if a.result.present?
                     - ok = (a.result == "success")
                     span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
                   - else
                     span.text-muted —
-                td.d-none.d-md-table-cell = a.weight_loss.present? ? "#{a.weight_loss.to_i} lbs" : "—"
-                td
+                td data-label="Weight Loss" = a.weight_loss.present? ? "#{a.weight_loss.to_i} lbs" : "—"
+                td data-label="Items"
                   - if brought.present?
                     span = "brought: #{brought}"
                   - else
@@ -209,8 +209,8 @@
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🪤
         h2.h5.mb-0 Traps
-      .table-responsive
-        table.table.table-sm.table-hover.mb-0
+      .table-responsive.table-stack-host
+        table.table.table-stack.table-sm.table-hover.mb-0
           thead.table-light
             tr
               th Type
@@ -220,19 +220,19 @@
           tbody
             - @episode.episode_traps.each do |trap|
               tr
-                td.fw-semibold = trap.trap_type
-                td
+                td.fw-semibold data-label="Type" = trap.trap_type
+                td data-label="Built By"
                   - if trap.builders&.any?
                     = safe_join(trap.builders.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     span.text-muted —
-                td
+                td data-label="Result"
                   - if trap.result.present?
                     - ok = (trap.result == "Success")
                     span.badge class=(ok ? "bg-success" : "bg-danger") = trap.result
                   - else
                     span.text-muted —
-                td
+                td data-label="Caught"
                   - catches = trap.food_sources.map { |fs| fs.quantity.to_i > 1 ? "#{fs.name.titleize} ×#{fs.quantity}" : fs.name.titleize }
                   = catches.any? ? catches.join(", ") : "—"
 
@@ -257,36 +257,36 @@
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🍖
         h2.h5.mb-0 Food Sources
-      .table-responsive
-        table.table.table-sm.table-hover.mb-0
+      .table-responsive.table-stack-host
+        table.table.table-stack.table-sm.table-hover.mb-0
           thead.table-light
             tr
               th Name
               th Category
               th Method
               th Obtained By
-              th.d-none.d-md-table-cell Tools Used
+              th Tools Used
           tbody
             - @episode.food_sources.order(:category, :name).each do |fs|
               tr
-                td
+                td data-label="Name"
                   = link_to fs.name.titleize, food_source_path(fs.name)
                   - if fs.category_animal? && fs.quantity.nil?
                     span.badge.bg-secondary.ms-1 ×?
                   - elsif fs.quantity.to_i > 1
                     span.badge.bg-secondary.ms-1 = "×#{fs.quantity}"
-                td
+                td data-label="Category"
                   - if fs.category_animal?
                     span.badge.bg-danger-subtle.text-danger-emphasis Animal
                   - else
                     span.badge.bg-success-subtle.text-success-emphasis Plant
-                td = fs.method&.humanize || "—"
-                td
+                td data-label="Method" = fs.method&.humanize || "—"
+                td data-label="Obtained By"
                   - if fs.survivors&.any?
                     = safe_join(fs.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     | Team
-                td.d-none.d-md-table-cell
+                td data-label="Tools Used"
                   - parts = []
                   - if fs.episode_trap
                     - tname = fs.episode_trap.trap_type.to_s
@@ -300,8 +300,8 @@
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🩺
         h2.h5.mb-0 Medical Calls
-      .table-responsive
-        table.table.table-sm.table-hover.mb-0
+      .table-responsive.table-stack-host
+        table.table.table-stack.table-sm.table-hover.mb-0
           thead.table-light
             tr
               th Survivor
@@ -311,18 +311,18 @@
           tbody
             - @episode.medical_calls.each do |mc|
               tr
-                td
+                td data-label="Survivor"
                   - if mc.survivor
                     = link_to mc.survivor.full_name, survivor_path(mc.survivor)
                   - else
                     span.text-muted —
-                td = mc.reason.presence || "—"
-                td.text-center
+                td data-label="Reason" = mc.reason.presence || "—"
+                td.text-center data-label="Tap Out"
                   - if mc.led_to_tapout
                     span.badge.bg-danger Yes
                   - else
                     span.text-muted No
-                td.text-muted = mc.notes.presence || "—"
+                td.text-muted data-label="Notes" = mc.notes.presence || "—"
 
   / ===== Bushcraft Items =====
   - if @episode.bushcraft_items.any?
@@ -330,8 +330,8 @@
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🪵
         h2.h5.mb-0 Bushcraft Items
-      .table-responsive
-        table.table.table-sm.table-hover.mb-0
+      .table-responsive.table-stack-host
+        table.table.table-stack.table-sm.table-hover.mb-0
           thead.table-light
             tr
               th Item
@@ -341,14 +341,14 @@
           tbody
             - @episode.bushcraft_items.each do |bi|
               tr
-                td.fw-semibold = bi.item_type
-                td = bi.materials.presence || "—"
-                td
+                td.fw-semibold data-label="Item" = bi.item_type
+                td data-label="Materials" = bi.materials.presence || "—"
+                td data-label="Built By"
                   - if bi.builders&.any?
                     = safe_join(bi.builders.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     span.text-muted —
-                td.text-muted = bi.notes.presence || "—"
+                td.text-muted data-label="Notes" = bi.notes.presence || "—"
 
   / ===== Author byline (E-A-T) =====
   .card.shadow-sm.mt-4.small.text-muted

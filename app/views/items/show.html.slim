@@ -73,14 +73,14 @@
         span.me-2(aria-hidden="true") 🎁
         strong Given — Episodes 
       span.badge.rounded-pill.bg-secondary-subtle.text-secondary-emphasis = given_by_ep.size
-    .table-responsive
-      table.table.table-sm.table-hover.mb-0
+    .table-responsive.table-stack-host
+      table.table.table-stack.table-sm.table-hover.mb-0
         thead.table-light
           tr
             th Episode
             th Season
-            th.d-none.d-md-table-cell Air Date
-            th.d-none.d-md-table-cell Location
+            th Air Date
+            th Location
             th Recipients
         tbody
           - if given_by_ep.blank?
@@ -90,15 +90,15 @@
             - given_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
               - recipients = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
               tr
-                td = link_to(ep.title, episode_path(ep))
-                td
+                td data-label="Episode" = link_to(ep.title, episode_path(ep))
+                td data-label="Season"
                   - if ep&.season
                     = link_to "S#{ep.season.number}", season_path(ep.season)
                   - else
                     | —
-                td.d-none.d-md-table-cell = ep.air_date || "—"
-                td.d-none.d-md-table-cell = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
-                td = recipients.join(", ")
+                td data-label="Air Date" = ep.air_date || "—"
+                td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td data-label="Recipients" = recipients.join(", ")
 
   / ===== Brought — by episode (unique within episode) =====
   - brought_by_ep = (@brought_ai || []).group_by { |ai| ai.appearance.episode }
@@ -108,14 +108,14 @@
         span.me-2(aria-hidden="true") 🧰
         strong Brought — Episodes
       span.badge.rounded-pill.bg-secondary-subtle.text-secondary-emphasis = brought_by_ep.size
-    .table-responsive
-      table.table.table-sm.table-hover.mb-0
+    .table-responsive.table-stack-host
+      table.table.table-stack.table-sm.table-hover.mb-0
         thead.table-light
           tr
             th Episode
             th Season
-            th.d-none.d-md-table-cell Air Date
-            th.d-none.d-md-table-cell Location
+            th Air Date
+            th Location
             th Brought by
         tbody
           - if brought_by_ep.blank?
@@ -125,23 +125,23 @@
             - brought_by_ep.sort_by { |ep, _| [ep&.air_date || Date.new(1,1,1), ep&.id || 0] }.each do |ep, ais|
               - people = ais.map { |ai| ai.appearance.survivor.full_name }.uniq
               tr
-                td = link_to(ep.title, episode_path(ep))
-                td
+                td data-label="Episode" = link_to(ep.title, episode_path(ep))
+                td data-label="Season"
                   - if ep&.season
                     = link_to "S#{ep.season.number}", season_path(ep.season)
                   - else
                     | —
-                td.d-none.d-md-table-cell = ep.air_date || "—"
-                td.d-none.d-md-table-cell = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
-                td = people.join(", ")
+                td data-label="Air Date" = ep.air_date || "—"
+                td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
+                td data-label="Brought by" = people.join(", ")
 
   / ===== By Country (adjusted totals from controller) =====
   .card.shadow-sm
     .card-header.d-flex.align-items-center
       span.me-3.fs-3(aria-hidden="true") 🌐
       h2.h6.mb-0 By Country
-    .table-responsive
-      table.table.table-sm.table-hover.mb-0
+    .table-responsive.table-stack-host
+      table.table.table-stack.table-sm.table-hover.mb-0
         thead.table-light
           tr
             th(scope="col") Country
@@ -153,5 +153,5 @@
           - else
             - @by_country.each do |r|
               tr
-                td = r.country.presence || "Unknown"
-                td.text-end = r.total.to_i
+                td data-label="Country" = r.country.presence || "Unknown"
+                td.text-end data-label="Total" = r.total.to_i

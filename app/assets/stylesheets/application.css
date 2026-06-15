@@ -837,6 +837,42 @@ table.items-compact thead th {
   height: 160px;
 }
 
+/* Mobile-friendly stacked table layout. Apply class="table-stack" alongside
+   .table. Below 768px every <tr> collapses into a vertical card showing each
+   cell on its own line with its column label rendered from data-label="…".
+   Desktop view is unchanged. */
+@media (max-width: 767.98px) {
+  .table-stack thead { display: none; }
+  .table-stack tbody, .table-stack tbody tr, .table-stack tbody td { display: block; width: 100%; }
+  .table-stack tbody tr {
+    border: 1px solid #e5f7ea;
+    border-radius: .5rem;
+    margin-bottom: .75rem;
+    padding: .6rem .75rem;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .table-stack tbody td {
+    padding: .25rem 0;
+    border: 0 !important;
+    text-align: left !important;
+  }
+  .table-stack tbody td::before {
+    content: attr(data-label);
+    display: inline-block;
+    min-width: 110px;
+    font-weight: 700;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .35px;
+    color: #6c757d;
+    margin-right: .5rem;
+  }
+  /* Drop the bordered table-responsive frame on mobile — each row is its own
+     card with its own border, and the outer frame would be redundant. */
+  .table-stack-host .table-responsive { border: 0; box-shadow: none; }
+}
+
 @media (max-width: 576px) {
   .country-shape    { width: 90px;  height: 65px; }
   .country-shape-lg { width: 140px; height: 100px; }
