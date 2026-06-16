@@ -130,6 +130,7 @@ module ApplicationHelper
     when /paddle/                            then "🛶"
     when /fabric|cloth/                      then "🧵"
     when /cotton/                            then "☁️"
+    when /\bsalt\b/                          then "🧂"
     when /flash\s*light|torch/               then "🔦"
     when /bailer|bucket/                     then "🪣"
     when /lens/                              then "🔍"
