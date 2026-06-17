@@ -43,20 +43,43 @@ module Admin
     # Returns the appearances (survivors + roles + PSR + days) from the most
     # recently aired episode in this season, for pre-populating a new episode
     # form on continuous-story seasons.
+    #
+    # ?exclude_episode_id= drops a specific episode from consideration —
+    # used when this is called from the EDIT form so the "previous" episode
+    # is genuinely previous, not the one being edited.
+    #
+    # Survivors who have already tapped / been eliminated / completed (any
+    # appearance with result != nil on the source episode or an earlier one)
+    # are filtered out — they shouldn't carry forward into the next episode.
     def latest_episode_participants
       season = Season.find(params[:id])
-      latest = season.episodes
-                     .includes(:location, appearances: :survivor)
-                     .order("air_date DESC NULLS LAST, number_in_season DESC, id DESC")
-                     .first
+
+      episodes_scope = season.episodes
+      if params[:exclude_episode_id].present?
+        episodes_scope = episodes_scope.where.not(id: params[:exclude_episode_id])
+      end
+
+      latest = episodes_scope
+                 .includes(:location, appearances: :survivor)
+                 .order("air_date DESC NULLS LAST, number_in_season DESC, id DESC")
+                 .first
 
       if latest.nil?
         render json: { season_id: season.id, participants: [], location_id: nil, note: "No previous episode in this season yet." }
         return
       end
 
+      exited_survivor_ids = Appearance
+        .joins(:episode)
+        .where("episodes.season_id = ?", season.id)
+        .where("episodes.air_date <= ?", latest.air_date || Date.new(9999, 1, 1))
+        .where.not(result: [nil, ""])
+        .pluck(:survivor_id)
+        .to_set
+
       participants = latest.appearances.map do |a|
         next nil unless a.survivor
+        next nil if exited_survivor_ids.include?(a.survivor_id)
         {
           survivor_id:    a.survivor_id,
           full_name:      a.survivor.full_name,

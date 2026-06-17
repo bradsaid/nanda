@@ -112,14 +112,27 @@ function initEpisodeForm() {
 
   // Fetch season metadata, then (a) reveal the copy-participants button only
   // for continuous-story seasons and (b) auto-fill empty metadata fields from
-  // the latest episode in that season.
+  // the latest episode in that season. When editing an existing episode we
+  // pass &exclude_episode_id= so "previous" doesn't return the episode we're
+  // currently looking at.
+  function currentEpisodeIdFromUrl() {
+    var m = window.location.pathname.match(/\/admin\/episodes\/(\d+)\/edit/);
+    return m ? m[1] : null;
+  }
+  function buildLatestPrevUrl() {
+    var url = "/admin/seasons/" + seasonSelect.value + "/latest_episode_participants.json";
+    var epId = currentEpisodeIdFromUrl();
+    if (epId) url += "?exclude_episode_id=" + encodeURIComponent(epId);
+    return url;
+  }
+
   async function handleSeasonChange() {
     if (!seasonSelect || !seasonSelect.value) {
       hideCopyControls();
       return;
     }
     try {
-      var res = await fetch("/admin/seasons/" + seasonSelect.value + "/latest_episode_participants.json", {
+      var res = await fetch(buildLatestPrevUrl(), {
         headers: { "Accept": "application/json" }
       });
       if (!res.ok) { hideCopyControls(); return; }
@@ -160,7 +173,7 @@ function initEpisodeForm() {
     var original_label = copyBtn.textContent;
     copyBtn.textContent = "Loading…";
     try {
-      var res = await fetch("/admin/seasons/" + seasonSelect.value + "/latest_episode_participants.json", {
+      var res = await fetch(buildLatestPrevUrl(), {
         headers: { "Accept": "application/json" }
       });
       if (!res.ok) throw new Error("HTTP " + res.status);
