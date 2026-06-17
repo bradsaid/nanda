@@ -64,9 +64,10 @@ class HomeController < ApplicationController
     @top_survivors =
       Survivor
         .left_joins(appearances: { episode: { season: :series } })
+        .joins(appearance_exits_join)
         .select([
           "survivors.*",
-          "COUNT(DISTINCT episodes.id) AS episodes_total_count",
+          episodes_total_capped_sql("episodes_total_count"),
           collapsed_episodes_sql("episodes_collapsed_count")
         ].join(", "))
         .group("survivors.id")

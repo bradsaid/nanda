@@ -74,6 +74,42 @@ class ApplicationController < ActionController::Base
     "(#{adjusted_episodes_expr}) AS #{alias_name}"
   end
 
+  # Subquery that returns each (survivor, season) and the air_date of the
+  # LAST appearance where the admin recorded a result (any of success,
+  # tap_out, medical_tap_out, elimination). Used to clip episode counts on
+  # continuous-story seasons so episodes airing after a survivor's exit are
+  # not counted toward their total.
+  def appearance_exits_join
+    <<~SQL.squish
+      LEFT JOIN (
+        SELECT
+          a.survivor_id,
+          e.season_id,
+          MAX(e.air_date) AS exit_air_date
+        FROM appearances a
+        JOIN episodes e ON e.id = a.episode_id
+        WHERE a.result IS NOT NULL
+        GROUP BY a.survivor_id, e.season_id
+      ) appearance_exits
+        ON appearance_exits.survivor_id = appearances.survivor_id
+       AND appearance_exits.season_id   = episodes.season_id
+    SQL
+  end
+
+  # COUNT(DISTINCT episodes.id) with a per-survivor tap-out clamp on
+  # continuous-story seasons. Requires that the outer query also includes the
+  # appearance_exits_join. For non-continuous seasons or survivors with no
+  # result recorded, every appearance episode is counted as before.
+  def episodes_total_capped_sql(alias_name = "episodes_total_count")
+    <<~SQL.squish
+      COUNT(DISTINCT episodes.id) FILTER (
+        WHERE NOT #{continuous_flag_sql}
+           OR appearance_exits.exit_air_date IS NULL
+           OR episodes.air_date <= appearance_exits.exit_air_date
+      ) AS #{alias_name}
+    SQL
+  end
+
   # DISTINCT episodes normally; collapse to 1 per season when continuous.
   def collapsed_episodes_sql(alias_name = "episodes_collapsed_count")
     <<~SQL.squish

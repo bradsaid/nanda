@@ -18,11 +18,12 @@ class SurvivorsController < ApplicationController
     base =
       Survivor
         .left_joins(appearances: { episode: { season: :series } })
+        .joins(appearance_exits_join)
         .with_attached_avatar
         .where("survivors.full_name ILIKE ?", "%#{@q}%")
         .select([
           "survivors.*",
-          "COUNT(DISTINCT episodes.id) AS episodes_total_count",
+          episodes_total_capped_sql("episodes_total_count"),
           collapsed_episodes_sql("episodes_collapsed_count"),
           "COUNT(appearances.id) AS appearances_count",
           "MIN(episodes.air_date) AS debut_air_date"
@@ -62,8 +63,11 @@ class SurvivorsController < ApplicationController
 
     base = @survivor.appearances.joins(episode: { season: :series })
 
-    # DISTINCT episodes total
-    row = base.except(:select).select("COUNT(DISTINCT episodes.id) AS total").take
+    # DISTINCT episodes total, clamped at the tap-out air date on
+    # continuous-story seasons (see ApplicationController#appearance_exits_join).
+    row = base.except(:select).joins(appearance_exits_join).select(
+      episodes_total_capped_sql("total")
+    ).take
     @episodes_total_count = row["total"].to_i
 
     # Collapsed: 1 per continuous series, else distinct episodes
