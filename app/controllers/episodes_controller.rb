@@ -95,6 +95,32 @@ class EpisodesController < ApplicationController
                 appearances: [{ survivor: { avatar_attachment: :blob } }, { appearance_items: :item }],
                 food_sources: :episode_trap)
       .find(params[:id])
+
+    # On continuous-story seasons (XL, Global Showdown, Alone, etc.) the
+    # "Copy participants from previous episode" admin button carries every
+    # survivor forward to every later episode by default — so the raw
+    # appearance list for, say, GS S1 E5 includes survivors who tapped /
+    # were eliminated in an earlier episode. Drop any appearance whose
+    # survivor has a result recorded on an *earlier* episode this season;
+    # the result-bearing episode itself stays visible.
+    season = @episode.season
+    is_continuous = season && (season.continuous_story || season.series&.continuous_story)
+    if is_continuous && @episode.air_date
+      exit_air_dates =
+        Appearance
+          .joins(:episode)
+          .where("episodes.season_id = ?", @episode.season_id)
+          .where(survivor_id: @episode.appearances.map(&:survivor_id))
+          .where.not(result: nil)
+          .group(:survivor_id)
+          .minimum("episodes.air_date")
+      @active_appearances = @episode.appearances.reject do |a|
+        d = exit_air_dates[a.survivor_id]
+        d && d < @episode.air_date
+      end
+    else
+      @active_appearances = @episode.appearances
+    end
   end
 
   def by_country
