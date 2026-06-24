@@ -56,12 +56,19 @@ module ApplicationHelper
 
     survivors = exclude_survivor ? all_survivors.reject { |s| s.id == exclude_survivor.id } : all_survivors
 
+    # Tokens from the bio subject's own name. Skip any first-name alias that
+    # collides with one of these tokens — otherwise e.g. on Christopher James's
+    # bio the unambiguous first-name "James" (from James Lewis) would auto-link
+    # his own surname to a different survivor.
+    subject_tokens = exclude_survivor ? exclude_survivor.full_name.to_s.downcase.split : []
+
     aliases = []
     survivors.each do |s|
       parts = s.full_name.to_s.split
       next if parts.empty?
       aliases << [s.full_name, s]
       if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
+        next if subject_tokens.include?(parts.first.downcase)
         aliases << [parts.first, s]
       end
     end
