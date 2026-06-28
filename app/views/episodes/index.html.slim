@@ -68,7 +68,7 @@
                 td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
                 td
-                  = survivor_chips(ep.survivors, size: 22)
+                  = survivor_chips(ep.survivors, size: 32)
 
 - elsif defined?(@season) && @season.present?
   / === Filtered by season ===
@@ -99,7 +99,7 @@
                 td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
                 td
-                  = survivor_chips(ep.survivors, size: 22)
+                  = survivor_chips(ep.survivors, size: 32)
 
 - else
   / === Overview (cards per season, with 'View all' link) ===
@@ -167,7 +167,7 @@
                   .small.text-muted = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                   .small.text-muted = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
                 .text-end.small.text-muted
-                  = survivor_chips(ep.survivors, size: 22)
+                  = survivor_chips(ep.survivors, size: 32)
         - count = @episode_counts[season.id].to_i
         - if count > 3
           .px-3.pb-3

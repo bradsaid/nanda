@@ -53,4 +53,4 @@
               td data-label="Air Date" = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
               td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
               td data-label="Survivors"
-                = survivor_chips(ep.survivors, size: 22)
+                = survivor_chips(ep.survivors, size: 32)
