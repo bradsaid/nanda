@@ -24,11 +24,9 @@
           .country-shape.country-shape-lg(style="background-image: url(#{hero_flag}); --outline-url: url(#{hero_outline});" aria-label="#{@country} flag in country outline")
       - elsif hero_flag
         = image_tag hero_flag, alt: @country, width: 96, class: "rounded shadow-sm"
-      - is_us_state = LocationsHelper::US_STATES.key?(@country.to_s.strip)
-      - place_word = is_us_state ? "state" : "country"
       .d-flex.flex-column
         h1.h3.mb-0.logo = "Episodes in #{@country}"
-        p.subtitle.mb-0 = "All episodes whose location #{place_word} is #{@country}."
+        p.subtitle.mb-0 = "All Episodes in #{@country}"
     = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
 
 .card.shadow-sm
