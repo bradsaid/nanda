@@ -25,7 +25,7 @@ class EpisodesController < ApplicationController
       return render status: :not_found, plain: "Location not found" unless @location
 
       @episodes = Episode.where(location_id: @location.id)
-                         .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
+                         .includes(:location, season: :series, appearances: [{ survivor: { avatar_attachment: :blob } }, { appearance_items: :item }])
                          .order(Arel.sql("air_date IS NULL, air_date DESC, number_in_season ASC"))
       @seasons = []; @episodes_by_season = {}; @episode_counts = {}
 
@@ -39,7 +39,7 @@ class EpisodesController < ApplicationController
       return render status: :not_found, plain: "Season not found" unless @season
 
       @episodes = Episode.where(season_id: @season.id)
-                         .includes(:location, season: :series, appearances: [:survivor, { appearance_items: :item }])
+                         .includes(:location, season: :series, appearances: [{ survivor: { avatar_attachment: :blob } }, { appearance_items: :item }])
                          .order("number_in_season ASC")
       @seasons = []; @episodes_by_season = {}; @episode_counts = {}
 
@@ -83,7 +83,7 @@ class EpisodesController < ApplicationController
                                               .count(:survivor_id)
 
       @episodes = Episode.joins(season: :series)
-                        .includes(:location, season: :series, appearances: :survivor)
+                        .includes(:location, season: :series, appearances: { survivor: { avatar_attachment: :blob } })
                         .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
     end
   end
@@ -127,7 +127,7 @@ class EpisodesController < ApplicationController
     @country = params[:country].to_s.strip
     @episodes =
       Episode
-        .includes(:location, season: :series, appearances: :survivor)
+        .includes(:location, season: :series, appearances: { survivor: { avatar_attachment: :blob } })
         .joins(:location)
         .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
         .order(Arel.sql("air_date IS NULL, air_date DESC"))

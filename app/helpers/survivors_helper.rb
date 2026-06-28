@@ -30,6 +30,27 @@ module SurvivorsHelper
     clean_handle(v, %r{\Ahttps?://(www\.)?cameo\.com/}i)
   end
 
+  # Renders an inline list of "[avatar][name]" link chips for survivors —
+  # used on the episodes index / season cards / by_country table where the
+  # survivor names previously rendered as comma-separated plain links.
+  # Eager-load survivors with their avatars in the controller to avoid N+1.
+  def survivor_chips(survivors, size: 22)
+    survivors = Array(survivors)
+    return content_tag(:span, "—", class: "text-muted") if survivors.empty?
+    chips = survivors.map do |s|
+      avatar = image_tag(avatar_src(s, name: s.full_name),
+                         alt: s.full_name,
+                         width: size, height: size,
+                         loading: "lazy",
+                         class: "rounded-circle border me-1 align-middle flex-shrink-0",
+                         style: "object-fit: cover;")
+      link_to(safe_join([avatar, content_tag(:span, s.full_name, class: "align-middle")]),
+              survivor_path(s),
+              class: "text-decoration-none link-primary me-2 d-inline-block text-nowrap")
+    end
+    safe_join(chips)
+  end
+
   def avatar_src(record, name: nil)
     return rails_blob_path(record.avatar, only_path: true) if record&.avatar&.attached?
 

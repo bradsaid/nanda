@@ -53,7 +53,4 @@
               td data-label="Air Date" = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
               td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
               td data-label="Survivors"
-                - if ep.survivors.any?
-                  = safe_join(ep.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
-                - else
-                  | —
+                = survivor_chips(ep.survivors, size: 22)
