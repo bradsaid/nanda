@@ -29,26 +29,67 @@
         p.subtitle.mb-0 = "All Episodes in #{@country}"
     = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
 
-.card.shadow-sm
-  .table-responsive.table-stack-host
-    table.table.table-stack.table-striped.table-hover.mb-0
-      thead.table-light
-        tr
-          th(scope="col") Episode
-          th(scope="col") Season
-          th(scope="col") Air Date
-          th(scope="col") Location
-          th(scope="col") Survivors
-      tbody
-        - if @episodes.blank?
-          tr
-            td(colspan="5" class="text-muted text-center py-4") No episodes found in this country.
-        - else
-          - @episodes.each do |ep|
-            tr
-              td data-label="Episode" = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
-              td data-label="Season" = "S#{ep.season&.number} • #{ep.season&.series&.name}"
-              td data-label="Air Date" = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
-              td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
-              td data-label="Survivors"
-                = survivor_chips(ep.survivors, size: 40)
+/ Build a flat list of "blocks" — each block is either a continuous-story
+/ season (≥2 eps filmed here, shown as one card with shared cast) or a
+/ single episode (shown as its own card). Sort the blocks newest-first by
+/ their most recent air date so the latest activity surfaces at the top.
+- by_season    = @episodes.group_by(&:season)
+- blocks = []
+- by_season.each do |season, eps|
+  - if season&.continuous_story_effective? && eps.size >= 2
+    - blocks << { kind: :season, season: season, eps: eps.sort_by { |ep| [ep.air_date || Date.new(1, 1, 1), ep.id] }, sort_date: (eps.map(&:air_date).compact.max || Date.new(1, 1, 1)) }
+  - else
+    - eps.each do |ep|
+      - blocks << { kind: :ep, ep: ep, sort_date: (ep.air_date || Date.new(1, 1, 1)) }
+
+- blocks = blocks.sort_by { |b| -b[:sort_date].to_time.to_i }
+
+- if blocks.empty?
+  .card.shadow-sm
+    .card-body.text-center.text-muted.py-4 No episodes found in this country.
+- else
+  - blocks.each do |b|
+    - if b[:kind] == :season
+      - season = b[:season]
+      - eps    = b[:eps]
+      - cast   = eps.flat_map(&:survivors).uniq.sort_by { |s| s.full_name.to_s.downcase }
+      .card.shadow-sm.mb-4
+        .card-header.d-flex.flex-wrap.align-items-center.justify-content-between.gap-2
+          .d-flex.flex-column
+            span.fw-semibold = "#{season.series&.name} — Season #{season.number}"
+            span.small.opacity-75 = "#{eps.size} #{'episode'.pluralize(eps.size)} in #{@country}"
+          span.badge.text-bg-warning Continuous Story
+        - if cast.any?
+          .card-body.border-bottom.py-3
+            .small.text-muted.text-uppercase.fw-semibold.mb-2(style="letter-spacing: .5px;") = "Cast (#{cast.size})"
+            = survivor_chips(cast, size: 40)
+        .table-responsive.table-stack-host
+          table.table.table-stack.table-striped.table-hover.mb-0
+            thead.table-light
+              tr
+                th(scope="col") Episode
+                th(scope="col") Air Date
+                th(scope="col") Location
+            tbody
+              - eps.each do |ep|
+                tr
+                  td data-label="Episode" = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
+                  td data-label="Air Date" = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+                  td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+
+    - else
+      - ep = b[:ep]
+      .card.shadow-sm.mb-4
+        .card-header.d-flex.flex-wrap.align-items-center.justify-content-between.gap-2
+          .d-flex.flex-column
+            = link_to "#{ep.title.presence || 'Episode'} ##{ep.number_in_season || ep.id}", episode_path(ep), class: "fw-semibold text-decoration-none link-light"
+            span.small.opacity-75 = "#{ep.season&.series&.name} — Season #{ep.season&.number}"
+          span.small.opacity-75 = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : ""
+        .card-body
+          - loc = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence
+          - if loc && loc != @country
+            p.small.text-muted.mb-2 = loc
+          - if ep.survivors.any?
+            = survivor_chips(ep.survivors, size: 40)
+          - else
+            span.text-muted —
