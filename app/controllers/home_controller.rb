@@ -34,36 +34,16 @@ class HomeController < ApplicationController
              .order(Arel.sql("air_date IS NULL, air_date DESC"))
              .limit(5)
 
-    # "Recently Active" = survivors who appeared in the most recently aired
-    # episode, filtered to those still active (drop anyone with a result-
-    # bearing appearance earlier in the same season — they're already out).
-    latest_ep = Episode.where.not(air_date: nil)
-                       .where("air_date <= ?", Date.current)
-                       .order(air_date: :desc, id: :desc)
-                       .first
-    if latest_ep
-      latest_ep_appearances = latest_ep.appearances.includes(:survivor).to_a
-      exit_air_dates = Appearance.joins(:episode)
-                                 .where("episodes.season_id = ?", latest_ep.season_id)
-                                 .where(survivor_id: latest_ep_appearances.map(&:survivor_id))
-                                 .where.not(result: nil)
-                                 .group(:survivor_id)
-                                 .minimum("episodes.air_date")
-      # "Recently active" = appeared in the latest episode, minus survivors
-      # whose result was recorded on an EARLIER episode in this season (those
-      # are stale carry-over appearances, not real recent activity). Survivors
-      # whose tap/elimination IS the latest episode are kept — they were on
-      # screen most recently.
-      active_ids = latest_ep_appearances.reject { |a|
-        d = exit_air_dates[a.survivor_id]
-        d && d < latest_ep.air_date
-      }.map(&:survivor_id)
-      @active_survivors = Survivor.where(id: active_ids)
-                                  .with_attached_avatar
-                                  .order(:full_name)
-    else
-      @active_survivors = Survivor.none
-    end
+    # "Recently Active" = survivors ordered by the air date of their most
+    # recent appearance. Whoever was on screen most recently leads.
+    @active_survivors =
+      Survivor.joins(appearances: :episode)
+              .where.not(episodes: { air_date: nil })
+              .where("episodes.air_date <= ?", Date.current)
+              .with_attached_avatar
+              .group("survivors.id")
+              .order(Arel.sql("MAX(episodes.air_date) DESC, survivors.full_name ASC"))
+              .limit(12)
 
     @top_countries =
       Episode.joins(:location)
