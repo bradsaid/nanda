@@ -49,9 +49,13 @@ class HomeController < ApplicationController
                                  .where.not(result: nil)
                                  .group(:survivor_id)
                                  .minimum("episodes.air_date")
+      # "Active" = no result-bearing appearance yet on or before this episode.
+      # A survivor eliminated / tapped out / completed in the latest episode
+      # itself is also dropped, since they're no longer currently in a
+      # challenge.
       active_ids = latest_ep_appearances.reject { |a|
         d = exit_air_dates[a.survivor_id]
-        d && d < latest_ep.air_date
+        d && d <= latest_ep.air_date
       }.map(&:survivor_id)
       @active_survivors = Survivor.where(id: active_ids)
                                   .with_attached_avatar
