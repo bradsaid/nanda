@@ -72,14 +72,23 @@
 
 - elsif defined?(@season) && @season.present?
   / === Filtered by season ===
+  - is_continuous = @season.continuous_story_effective?
+  - season_cast = is_continuous ? @episodes.flat_map(&:survivors).uniq.sort_by(&:full_name) : []
   .pb-2.mb-3.border-bottom.site-header
     .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
       h1.h3.mb-0.logo = "Season #{@season.number} • #{@season.series.name}"
       = link_to "All seasons", episodes_path, class: "btn btn-outline-secondary btn-sm"
     p.subtitle.mb-0 = "All #{@episodes.size} episode(s) in this season"
 
+  - if is_continuous && season_cast.any?
+    .card.shadow-sm.mb-3
+      .card-header.d-flex.align-items-center.gap-2
+        span Cast
+        span.small.opacity-75 = "(#{season_cast.size})"
+      .card-body
+        = survivor_chips(season_cast, size: 40)
+
   .card.shadow-sm
-    .card-header Episodes
     .table-responsive
       table.table.table-striped.table-hover.mb-0
         thead.table-light
@@ -87,19 +96,21 @@
             th(scope="col") Episode
             th(scope="col") Air Date
             th(scope="col") Location
-            th(scope="col") Survivors
+            - unless is_continuous
+              th(scope="col") Survivors
         tbody
           - if @episodes.blank?
             tr
-              td(colspan="4" class="text-muted text-center py-4") No episodes found for this season.
+              td(colspan="#{is_continuous ? 3 : 4}" class="text-muted text-center py-4") No episodes found for this season.
           - else
             - @episodes.each do |ep|
               tr
                 td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
                 td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
-                td
-                  = survivor_chips(ep.survivors, size: 40)
+                - unless is_continuous
+                  td
+                    = survivor_chips(ep.survivors, size: 40)
 
 - else
   / === Overview (cards per season, with 'View all' link) ===
@@ -157,6 +168,12 @@
           - if synopsis.present?
             .small.mt-1.season-synopsis = synopsis
 
+      - season_is_continuous = season.respond_to?(:continuous_story_effective?) && season.continuous_story_effective?
+      - if season_is_continuous && (cast = @season_cast_by_id&.[](season.id)).present?
+        .card-body.border-bottom.py-3
+          .small.text-muted.text-uppercase.fw-semibold.mb-2(style="letter-spacing: .5px;") = "Cast (#{cast.size})"
+          = survivor_chips(cast, size: 40)
+
       - if @episodes_by_season[season].present?
         .list-group.list-group-flush
           - @episodes_by_season[season].each do |ep|
@@ -166,8 +183,9 @@
                   = link_to "#{ep.title.presence || 'Episode'} ##{ep.number_in_season || ep.id}", episode_path(ep), class: "fw-semibold"
                   .small.text-muted = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
                   .small.text-muted = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
-                .text-end.small.text-muted
-                  = survivor_chips(ep.survivors, size: 40)
+                - unless season_is_continuous
+                  .text-end.small.text-muted
+                    = survivor_chips(ep.survivors, size: 40)
         - count = @episode_counts[season.id].to_i
         - if count > 3
           .px-3.pb-3

@@ -85,6 +85,25 @@ class EpisodesController < ApplicationController
       @episodes = Episode.joins(season: :series)
                         .includes(:location, season: :series, appearances: { survivor: { avatar_attachment: :blob } })
                         .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
+
+      # For continuous-story seasons we want to render a single "Cast" row
+      # at the top of the season card instead of repeating the same chips on
+      # every episode row. Pre-compute the unique survivor list per such
+      # season — one query for the (season_id, survivor_id) pairs, one for
+      # the survivors+avatars themselves.
+      continuous_season_ids = @seasons.select { |s| s.respond_to?(:continuous_story_effective?) && s.continuous_story_effective? }.map(&:id)
+      if continuous_season_ids.any?
+        pairs = Appearance.joins(:episode)
+                          .where(episodes: { season_id: continuous_season_ids })
+                          .distinct
+                          .pluck(Arel.sql("episodes.season_id"), Arel.sql("appearances.survivor_id"))
+        survivors_by_id = Survivor.where(id: pairs.map(&:last).uniq).with_attached_avatar.index_by(&:id)
+        @season_cast_by_id = pairs.group_by(&:first).transform_values { |arr|
+          arr.map { |_, sid| survivors_by_id[sid] }.compact.sort_by { |s| s.full_name.to_s.downcase }
+        }
+      else
+        @season_cast_by_id = {}
+      end
     end
   end
 
