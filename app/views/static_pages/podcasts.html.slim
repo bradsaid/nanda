@@ -441,3 +441,29 @@
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Dogs on the Trail: A Year in the Life
               = link_to "Buy on Amazon", "https://www.amazon.com/Dogs-Trail-Year-Blair-Braverman/dp/0063066262", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+
+/ Alison Teal section
+- alison = Survivor.find_by(full_name: "Alison Teal")
+.pb-2.mb-3.border-bottom.site-header.site-header-faded
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    h1.h3.mb-0.logo Books by Alison Teal
+  p.subtitle.mb-0.text-muted
+    | Adventure travel guide by Naked & Afraid survivalist, filmmaker and surfer&nbsp;
+    = link_to "Alison Teal", survivor_path(alison), class: "text-primary"
+    | .
+
+.card.shadow-sm.mb-3
+  .card-header
+    .fw-semibold Recommended Book
+  .card-body
+    .d-flex.gap-3.align-items-start
+      - if alison
+        .flex-shrink-0
+          = link_to survivor_path(alison) do
+            = image_tag avatar_src(alison, name: alison.full_name), class: "podcast-host-avatar shadow", alt: alison.full_name
+      .flex-grow-1
+        ul.list-group.list-group-flush.mb-0
+          li.list-group-item.px-0
+            .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
+              span Alison's Adventures: Your Passport to the World
+              = link_to "Buy on Amazon", "https://www.amazon.com/Alisons-Adventures-Your-Passport-World/dp/160991337X/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
