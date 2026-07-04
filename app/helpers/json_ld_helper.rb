@@ -770,20 +770,6 @@ module JsonLdHelper
                a: "#{name}'s highest recorded PSR rating is #{best_str}." }
     end
 
-    completed = apps.count { |a| a.result.to_s.match?(/complete|success/i) }
-    tapped    = apps.count { |a| a.result.to_s.match?(/tap|medical|evac|out/i) }
-    if (completed + tapped).positive?
-      total = ep_count
-      qas << {
-        q: "Has #{name} completed a Naked and Afraid challenge?",
-        a: if completed.positive?
-             "Yes — #{name} has completed at least #{completed} challenge#{'s' if completed != 1} across their #{total} episode appearance#{'s' if total != 1}."
-           else
-             "Across #{total} appearance#{'s' if total != 1}, #{name} has tapped or been medically evacuated in each challenge on record."
-           end
-      }
-    end
-
     qas
   end
 
