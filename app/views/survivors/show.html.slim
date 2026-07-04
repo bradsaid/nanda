@@ -2,7 +2,7 @@
 - name        = @survivor.full_name
 - ep_total    = @survivor.appearances.select(:episode_id).distinct.count
 - challenges  = @episodes_collapsed_count
-- img_url     = (@survivor.avatar&.attached? ? url_for(@survivor.avatar) : nil)
+- img_url     = (@survivor.avatar&.attached? ? url_for(@survivor.avatar.variant(:portrait)) : nil)
 / Bio-derived description gives every survivor page a unique, keyword-rich
 / snippet in search results — much better than a boilerplate template line.
 - bio_plain = ActionView::Base.full_sanitizer.sanitize(@survivor.bio.to_s).squish
@@ -54,7 +54,7 @@
 
               - if @survivor.avatar.attached?
                 .text-center.flex-shrink-0
-                  = image_tag url_for(@survivor.avatar),
+                  = image_tag url_for(@survivor.avatar.variant(:portrait)),
                               alt: @survivor.full_name,
                               class: "avatar-lg rounded-circle shadow img-thumbnail"
 

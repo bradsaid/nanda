@@ -6,7 +6,14 @@ class Survivor < ApplicationRecord
   has_many :episodes, through: :appearances
   has_many :appearance_items, through: :appearances
 
-  has_one_attached :avatar  
+  has_one_attached :avatar do |attachable|
+    # Small circular grid tile (Survivors index, chip lists, home cards).
+    attachable.variant :thumb,     resize_to_fill: [260, 340], saver: { quality: 82, strip: true }
+    # Larger portrait for the survivor show hero + episode participants table.
+    attachable.variant :portrait,  resize_to_fill: [520, 680], saver: { quality: 85, strip: true }
+    # Tiny inline avatar (Recently Active, episode "chip" links).
+    attachable.variant :chip,      resize_to_fill: [80, 80],   saver: { quality: 80, strip: true }
+  end
 
   validates :full_name, presence: true, uniqueness: { case_sensitive: false }
 

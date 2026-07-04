@@ -187,7 +187,7 @@
                 td data-label="Name"
                   .d-flex.align-items-center.gap-2
                     = link_to survivor_path(s), class: "flex-shrink-0" do
-                      = image_tag avatar_src(s, name: s.full_name), alt: s.full_name, class: "rounded-circle border", width: 40, height: 40, style: "object-fit: cover;"
+                      = image_tag avatar_src(s, name: s.full_name, variant: :chip), alt: s.full_name, loading: "lazy", class: "rounded-circle border", width: 40, height: 40, style: "object-fit: cover;"
                     div
                       = link_to(s.full_name, survivor_path(s), class: "link-primary fw-medium")
                       - if a.partner_replacement
