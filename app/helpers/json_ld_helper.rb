@@ -741,19 +741,26 @@ module JsonLdHelper
     ]
   end
 
-  # Returns an Array of {q:, a:} pairs dynamically derived from the survivor's
-  # appearance record. Consumed both by survivor_faq_jsonld (for schema.org)
-  # and by the view, since Google requires FAQ answers to be visible on-page.
+  # Returns an Array of {q:, a:, a_html:} pairs dynamically derived from the
+  # survivor's appearance record. Consumed both by survivor_faq_jsonld (for
+  # schema.org) and by the view — Google requires FAQ answers to be visible
+  # on-page, and it also lets the Answer.text field contain HTML like links.
   def survivor_faq_qas(survivor)
     name = survivor.full_name.to_s
-    apps = survivor.appearances.includes(episode: :season).to_a
+    apps = survivor.appearances.includes(episode: { season: :series }).to_a
     qas  = []
 
     seasons = apps.map { |a| a.episode&.season }.compact.uniq
     if seasons.any?
       season_labels = seasons.map { |s| "#{s.series&.name} Season #{s.number}" }.uniq
-      qas << { q: "Which Naked and Afraid seasons has #{name} appeared in?",
-               a: "#{name} has appeared in #{season_labels.to_sentence}." }
+      linked        = seasons.map { |s|
+        link_to("#{s.series&.name} Season #{s.number}", season_path(s))
+      }
+      qas << {
+        q: "Which Naked and Afraid seasons has #{name} appeared in?",
+        a: "#{name} has appeared in #{season_labels.to_sentence}.",
+        a_html: "#{h(name)} has appeared in #{linked.to_sentence}.".html_safe
+      }
     end
 
     ep_count = apps.map(&:episode_id).compact.uniq.size
@@ -770,6 +777,23 @@ module JsonLdHelper
                a: "#{name}'s highest recorded PSR rating is #{best_str}." }
     end
 
+    # Most-brought item. Include only when the top item was brought more than
+    # once, or when there's just one brought-item on record — otherwise every
+    # tie-at-1 would randomly crown a "favorite".
+    brought_counts = survivor.appearance_items.where(source: :brought).group(:item_id).count
+    if brought_counts.any?
+      top_item_id, top_count = brought_counts.max_by { |_, c| c }
+      top_item = Item.find_by(id: top_item_id)
+      if top_item && (top_count > 1 || brought_counts.size == 1)
+        detail = top_count > 1 ? ", brought to #{top_count} of their challenges" : ""
+        qas << {
+          q: "What item does #{name} bring most often on Naked and Afraid?",
+          a: "#{name}'s most-brought item is #{top_item.name}#{detail}.",
+          a_html: "#{h(name)}'s most-brought item is #{link_to(top_item.name, item_path(top_item))}#{h(detail)}.".html_safe
+        }
+      end
+    end
+
     qas
   end
 
@@ -783,9 +807,10 @@ module JsonLdHelper
       "@context" => "https://schema.org",
       "@type" => "FAQPage",
       "mainEntity" => qas.map { |qa|
+        text = qa[:a_html].presence || qa[:a]
         { "@type" => "Question",
           "name" => qa[:q],
-          "acceptedAnswer" => { "@type" => "Answer", "text" => qa[:a] } }
+          "acceptedAnswer" => { "@type" => "Answer", "text" => text.to_s } }
       }
     }
   end

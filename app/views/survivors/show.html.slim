@@ -346,7 +346,7 @@
           - faq_qas.each_with_index do |qa, i|
             details.mb-2 open=(i == 0)
               summary.fw-semibold = qa[:q]
-              p.mt-2.mb-0.text-muted = qa[:a]
+              p.mt-2.mb-0.text-muted = qa[:a_html].presence || qa[:a]
 
     / ===== Author byline (E-A-T) =====
     .card.shadow-sm.mt-4.small.text-muted
