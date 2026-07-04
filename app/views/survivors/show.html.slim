@@ -318,6 +318,36 @@
                   - else
                     span.text-muted —
 
+    / ===== Related survivors (co-stars in shared episodes) =====
+    - if @related_survivors.present?
+      section.card.shadow-sm.mt-4 aria-labelledby="related-survivors-heading"
+        .card-header
+          h2#related-survivors-heading.h6.mb-0 = "Survivalists Who Appeared With #{@survivor.full_name.split.first}"
+        .card-body
+          .row.g-3
+            - @related_survivors.each do |co|
+              - shared = @related_survivor_shared_counts[co.id].to_i
+              - parts  = co.full_name.to_s.split(" ", 2)
+              .col-6.col-md-4.col-lg-3
+                .card.text-center.shadow-sm.h-100
+                  .card-body.py-3.d-flex.flex-column.align-items-center
+                    = link_to survivor_path(co) do
+                      = image_tag avatar_src(co, name: co.full_name, variant: :chip), alt: co.full_name, width: 64, height: 64, loading: "lazy", class: "rounded-circle border mb-2", style: "object-fit: cover;"
+                    = link_to co.full_name, survivor_path(co), class: "fw-semibold text-dark text-decoration-none small"
+                    .text-muted.small.mt-1 = "#{shared} shared episode#{'s' if shared != 1}"
+
+    / ===== FAQ (visible content backing the FAQPage schema) =====
+    - faq_qas = survivor_faq_qas(@survivor)
+    - if faq_qas.any?
+      section.card.shadow-sm.mt-4 aria-labelledby="faq-heading"
+        .card-header
+          h2#faq-heading.h6.mb-0 = "Frequently Asked Questions"
+        .card-body
+          - faq_qas.each_with_index do |qa, i|
+            details.mb-2 open=(i == 0)
+              summary.fw-semibold = qa[:q]
+              p.mt-2.mb-0.text-muted = qa[:a]
+
     / ===== Author byline (E-A-T) =====
     .card.shadow-sm.mt-4.small.text-muted
       .card-body.py-2

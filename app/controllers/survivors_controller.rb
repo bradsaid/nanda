@@ -79,6 +79,22 @@ class SurvivorsController < ApplicationController
 
     @brought_counts = @survivor.appearance_items.where(source: :brought).joins(:item).group("items.id", "items.name").count
     @given_counts   = @survivor.appearance_items.where(source: :given).joins(:item).group("items.id", "items.name").count
+
+    # Related survivors: co-stars ranked by number of shared episodes. Powers
+    # the internal-linking "Related survivors" section — key for crawlability
+    # so long-tail survivor pages sit in a dense link graph.
+    co_counts = Appearance.where(episode_id: @survivor.appearances.select(:episode_id))
+                          .where.not(survivor_id: @survivor.id)
+                          .group(:survivor_id)
+                          .order(Arel.sql("COUNT(*) DESC"))
+                          .limit(6)
+                          .count
+    @related_survivors = Survivor.where(id: co_counts.keys)
+                                 .with_attached_avatar
+                                 .index_by(&:id)
+                                 .values_at(*co_counts.keys)
+                                 .compact
+    @related_survivor_shared_counts = co_counts
   end
 
   private

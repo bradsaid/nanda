@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_02_085536) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_04_161950) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -216,6 +216,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_02_085536) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "continuous_story", default: false, null: false
+    t.text "intro"
     t.index ["continuous_story"], name: "index_seasons_on_continuous_story"
     t.index ["series_id", "number"], name: "index_seasons_on_series_id_and_number", unique: true
     t.index ["series_id"], name: "index_seasons_on_series_id"

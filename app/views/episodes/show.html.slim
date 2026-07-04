@@ -361,6 +361,41 @@
                     span.text-muted —
                 td.text-muted data-label="Notes" = bi.notes.presence || "—"
 
+  / ===== Related episodes =====
+  - if @related_episodes.present?
+    section.card.shadow-sm.mt-4 aria-labelledby="related-episodes-heading"
+      .card-header
+        h2#related-episodes-heading.h5.mb-0 = "Related Episodes"
+      .card-body
+        .row.row-cols-1.row-cols-md-2.g-3
+          - @related_episodes.each do |re|
+            - re_loc = [re.location&.country, re.location&.region, re.location&.site].compact.join(" • ").presence
+            - re_air = re.air_date&.strftime("%b %-d, %Y")
+            - re_title = re.title.presence || "Untitled"
+            .col
+              .card.h-100.shadow-sm
+                .card-body
+                  .d-flex.justify-content-between.align-items-start.gap-2
+                    h3.h6.mb-0.flex-grow-1 = link_to(re_title, episode_path(re), class: "link-primary text-decoration-underline")
+                    - if re.season
+                      span.badge.text-bg-secondary.flex-shrink-0 = "S#{re.season.number}E#{re.number_in_season || '—'}"
+                  - if re_air
+                    .small.text-muted.mt-1 = re_air
+                  - if re_loc
+                    .small.text-muted = re_loc
+
+  / ===== FAQ (visible content backing the FAQPage schema) =====
+  - ep_faq_qas = episode_faq_qas(@episode)
+  - if ep_faq_qas.any?
+    section.card.shadow-sm.mt-4 aria-labelledby="ep-faq-heading"
+      .card-header
+        h2#ep-faq-heading.h5.mb-0 = "Frequently Asked Questions"
+      .card-body
+        - ep_faq_qas.each_with_index do |qa, i|
+          details.mb-2 open=(i == 0)
+            summary.fw-semibold = qa[:q]
+            p.mt-2.mb-0.text-muted = qa[:a]
+
   / ===== Author byline (E-A-T) =====
   .card.shadow-sm.mt-4.small.text-muted
     .card-body.py-2

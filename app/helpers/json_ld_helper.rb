@@ -394,6 +394,9 @@ module JsonLdHelper
         "image" => (image_url || nil)
       }.compact
     end
+
+    faq = episode_faq_jsonld(episode)
+    schemas << faq if faq
     schemas
   end
 
@@ -599,6 +602,21 @@ module JsonLdHelper
       { name: "Seasons", path: seasons_path },
       { name: label,     path: season_path(season) }
     ])
+
+    intro_plain = ActionView::Base.full_sanitizer.sanitize(season.intro.to_s).squish
+    if intro_plain.present?
+      schemas << {
+        "@context" => "https://schema.org",
+        "@type" => "Article",
+        "headline" => "#{label} — Season Overview",
+        "articleBody" => intro_plain,
+        "datePublished" => (first_air || season.created_at.to_date.to_s),
+        "dateModified" => season.updated_at.to_date.to_s,
+        "author" => site_author_entity,
+        "publisher" => { "@type" => "Organization", "name" => SITE_NAME, "url" => request.base_url },
+        "url" => request.original_url
+      }
+    end
     schemas
   end
 
@@ -679,6 +697,9 @@ module JsonLdHelper
         "image" => img
       }.compact
     end
+
+    faq = survivor_faq_jsonld(survivor)
+    schemas << faq if faq
     schemas
   end
 
@@ -718,6 +739,118 @@ module JsonLdHelper
           item["offers"] = { "@type" => "Offer", "url" => b[:url] } if b[:url]
           { "@type" => "ListItem", "position" => i + 1, "item" => item } } }
     ]
+  end
+
+  # Returns an Array of {q:, a:} pairs dynamically derived from the survivor's
+  # appearance record. Consumed both by survivor_faq_jsonld (for schema.org)
+  # and by the view, since Google requires FAQ answers to be visible on-page.
+  def survivor_faq_qas(survivor)
+    name = survivor.full_name.to_s
+    apps = survivor.appearances.includes(episode: :season).to_a
+    qas  = []
+
+    seasons = apps.map { |a| a.episode&.season }.compact.uniq
+    if seasons.any?
+      season_labels = seasons.map { |s| "#{s.series&.name} Season #{s.number}" }.uniq
+      qas << { q: "Which Naked and Afraid seasons has #{name} appeared in?",
+               a: "#{name} has appeared in #{season_labels.to_sentence}." }
+    end
+
+    ep_count = apps.map(&:episode_id).compact.uniq.size
+    if ep_count.positive?
+      qas << { q: "How many episodes of Naked and Afraid has #{name} been in?",
+               a: "#{name} has appeared in #{ep_count} episode#{'s' if ep_count != 1} of Naked and Afraid." }
+    end
+
+    psrs = apps.map(&:ending_psr).compact
+    if psrs.any?
+      best = psrs.max
+      best_str = (best % 1).zero? ? best.to_i.to_s : format("%.1f", best)
+      qas << { q: "What is #{name}'s highest PSR rating on Naked and Afraid?",
+               a: "#{name}'s highest recorded PSR rating is #{best_str}." }
+    end
+
+    completed = apps.count { |a| a.result.to_s.match?(/complete|success/i) }
+    tapped    = apps.count { |a| a.result.to_s.match?(/tap|medical|evac|out/i) }
+    if (completed + tapped).positive?
+      total = ep_count
+      qas << {
+        q: "Has #{name} completed a Naked and Afraid challenge?",
+        a: if completed.positive?
+             "Yes — #{name} has completed at least #{completed} challenge#{'s' if completed != 1} across their #{total} episode appearance#{'s' if total != 1}."
+           else
+             "Across #{total} appearance#{'s' if total != 1}, #{name} has tapped or been medically evacuated in each challenge on record."
+           end
+      }
+    end
+
+    qas
+  end
+
+  # Assembles a FAQPage schema from dynamically-derived Q&As about a survivor.
+  # Google reduced FAQ rich-result surfacing in 2023, but the schema remains
+  # valid and gives crawlers stronger semantic hints about the page content.
+  def survivor_faq_jsonld(survivor)
+    qas = survivor_faq_qas(survivor)
+    return nil if qas.empty?
+    {
+      "@context" => "https://schema.org",
+      "@type" => "FAQPage",
+      "mainEntity" => qas.map { |qa|
+        { "@type" => "Question",
+          "name" => qa[:q],
+          "acceptedAnswer" => { "@type" => "Answer", "text" => qa[:a] } }
+      }
+    }
+  end
+
+  # Q&A pairs for an episode — location, air date, cast, and season context.
+  def episode_faq_qas(episode)
+    ep_label = episode.title.presence || "Episode #{episode.number_in_season || episode.id}"
+    loc      = episode.location
+    location_str = [loc&.site, loc&.region, loc&.country].compact_blank.join(", ").presence
+    series_name  = episode.season&.series&.name
+    season_num   = episode.season&.number
+    qas = []
+
+    if location_str
+      qas << { q: "Where was #{ep_label} filmed?",
+               a: "#{ep_label} was filmed in #{location_str}." }
+    end
+
+    if episode.air_date
+      qas << { q: "When did #{ep_label} air?",
+               a: "#{ep_label} originally aired on #{episode.air_date.strftime('%B %-d, %Y')}." }
+    end
+
+    survivors = Array(episode.survivors)
+    if survivors.any?
+      names = survivors.map(&:full_name).to_sentence
+      qas << { q: "Who appeared in #{ep_label}?",
+               a: "The survivalists in #{ep_label} were #{names}." }
+    end
+
+    if series_name && season_num
+      qas << { q: "What season of Naked and Afraid is #{ep_label} from?",
+               a: "#{ep_label} is from #{series_name} Season #{season_num}." }
+    end
+
+    qas
+  end
+
+  # FAQPage schema for an episode.
+  def episode_faq_jsonld(episode)
+    qas = episode_faq_qas(episode)
+    return nil if qas.empty?
+    {
+      "@context" => "https://schema.org",
+      "@type" => "FAQPage",
+      "mainEntity" => qas.map { |qa|
+        { "@type" => "Question",
+          "name" => qa[:q],
+          "acceptedAnswer" => { "@type" => "Answer", "text" => qa[:a] } }
+      }
+    }
   end
 
   def about_jsonld(name:, description:)

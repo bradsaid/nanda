@@ -109,7 +109,7 @@ module Admin
     end
 
     def season_params
-      params.require(:season).permit(:series_id, :number, :year, :continuous_story)
+      params.require(:season).permit(:series_id, :number, :year, :continuous_story, :intro)
     end
   end
 end

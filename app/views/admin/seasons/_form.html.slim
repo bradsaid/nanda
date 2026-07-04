@@ -25,5 +25,10 @@
       = f.label :continuous_story, "Continuous Story", class: "form-check-label"
 
   .col-12
+    = f.label :intro, "Intro / Description", class: "form-label"
+    = f.text_area :intro, class: "form-control", rows: 6, placeholder: "Optional editorial intro shown at the top of the season page. Great for setting up the season's tone, location, cast, or standout moments. 1–3 short paragraphs is ideal for SEO."
+    .form-text A paragraph or two of editorial context; renders above the episode list on the public season page.
+
+  .col-12
     = f.submit class: "btn btn-primary"
     = link_to "Cancel", admin_seasons_path, class: "btn btn-outline-secondary ms-2"

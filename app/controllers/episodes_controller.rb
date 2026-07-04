@@ -140,6 +140,30 @@ class EpisodesController < ApplicationController
     else
       @active_appearances = @episode.appearances
     end
+
+    # Related episodes: prefer other episodes in the same season, then fall
+    # back to episodes from the same country. Powers the on-page "Related
+    # episodes" internal-linking module.
+    same_season = Episode.includes(:location, season: :series)
+                         .where(season_id: @episode.season_id)
+                         .where.not(id: @episode.id)
+                         .order(Arel.sql("air_date IS NULL, air_date"))
+                         .limit(6)
+                         .to_a
+
+    if same_season.size < 6 && @episode.location&.country.present?
+      needed = 6 - same_season.size
+      country_eps = Episode.includes(:location, season: :series)
+                           .joins(:location)
+                           .where("TRIM(LOWER(locations.country)) = ?", @episode.location.country.downcase)
+                           .where.not(id: [@episode.id, *same_season.map(&:id)])
+                           .order(Arel.sql("air_date IS NULL, air_date DESC"))
+                           .limit(needed)
+                           .to_a
+      @related_episodes = same_season + country_eps
+    else
+      @related_episodes = same_season
+    end
   end
 
   def by_country

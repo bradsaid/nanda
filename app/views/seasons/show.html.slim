@@ -19,9 +19,14 @@
   = link_to "← All seasons", episodes_path, class: "small link-primary text-decoration-underline"
   h1.h3.mt-2.mb-4 = "#{@season.series&.name} — Season #{@season.number}"
 
-  - synopsis = season_synopsis(@season)
-  - if synopsis.present?
-    p.text-muted.mb-4 = synopsis
+  - if @season.intro.present?
+    .season-intro.mb-4
+      - @season.intro.to_s.split(/\n\s*\n/).each do |para|
+        p.mb-2 = para.strip
+  - else
+    - synopsis = season_synopsis(@season)
+    - if synopsis.present?
+      p.text-muted.mb-4 = synopsis
 
   - if @survivors.any?
     .card.shadow-sm.mb-4
