@@ -839,10 +839,10 @@ table.items-compact thead th {
 
 /* Homepage Top Countries: fixed-width columns so the card-header labels sit
    directly above their numeric columns at every viewport. Smaller on phones
-   so the country name still has room. */
-.top-countries-label { width: 80px; }
+   (the short "Chal" label is swapped in there so the narrower cell fits). */
+.top-countries-label { width: 96px; white-space: nowrap; }
 .top-countries-table td:nth-child(2),
-.top-countries-table td:nth-child(3) { width: 80px; }
+.top-countries-table td:nth-child(3) { width: 96px; }
 @media (max-width: 575.98px) {
   .top-countries-label { width: 56px; }
   .top-countries-table td:nth-child(2),
