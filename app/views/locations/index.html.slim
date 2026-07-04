@@ -1,5 +1,7 @@
 - content_for :title, "Locations"
 
+/ Server-rendered JSON-LD (CollectionPage listing Places)
+= render_jsonld(locations_index_jsonld(@countries_by_eps_adj.to_h))
 
 .container.my-4
   / ===== Page Header =====

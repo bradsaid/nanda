@@ -312,6 +312,25 @@ module JsonLdHelper
 
   SITE_NAME = "Naked & Afraid Fan Database".freeze
 
+  # Small helper: takes [{name:, path:}] pairs and returns a BreadcrumbList
+  # schema. The last item is treated as the current page and gets no URL
+  # (per Google's BreadcrumbList guidance).
+  def breadcrumb_jsonld(items)
+    entries = Array(items).each_with_index.map do |item, i|
+      last = (i == items.length - 1)
+      entry = { "@type" => "ListItem", "position" => i + 1, "name" => item[:name] }
+      entry["item"] = "#{request.base_url}#{item[:path]}" unless last
+      entry
+    end
+    { "@context" => "https://schema.org", "@type" => "BreadcrumbList", "itemListElement" => entries }
+  end
+
+  # Shared Author entity for Article schemas — E-A-T signal that says the
+  # site's editorial content has a named human behind it.
+  def site_author_entity
+    { "@type" => "Person", "name" => "Brad Said", "url" => "#{request.base_url}#{about_path}" }
+  end
+
   def home_jsonld
     [
       { "@context" => "https://schema.org", "@type" => "WebSite",
@@ -336,7 +355,7 @@ module JsonLdHelper
     image_url = (episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? } &&
                  (rails_blob_path(episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? }.avatar, only_path: true) rescue nil))
 
-    schema = {
+    tv_ep = {
       "@context" => "https://schema.org",
       "@type" => "TVEpisode",
       "name" => (episode.title.presence || "Episode"),
@@ -347,10 +366,35 @@ module JsonLdHelper
       "url" => request.original_url,
       "actor" => actors
     }
-    schema["datePublished"]    = air_iso if air_iso
-    schema["locationCreated"]  = { "@type" => "Place", "name" => location_str } if location_str
-    schema["image"]            = image_url if image_url
-    schema
+    tv_ep["datePublished"]    = air_iso if air_iso
+    tv_ep["locationCreated"]  = { "@type" => "Place", "name" => location_str } if location_str
+    tv_ep["image"]            = image_url if image_url
+
+    breadcrumb = breadcrumb_jsonld([
+      { name: "Home",     path: root_path },
+      { name: "Episodes", path: episodes_path },
+      ({ name: "Season #{season_num}", path: season_path(episode.season) } if episode.season),
+      { name: episode.title.presence || "Episode", path: episode_path(episode) }
+    ].compact)
+
+    schemas = [tv_ep, breadcrumb]
+
+    synopsis_plain = ActionView::Base.full_sanitizer.sanitize(episode.synopsis.to_s).squish
+    if synopsis_plain.present?
+      schemas << {
+        "@context" => "https://schema.org",
+        "@type" => "Article",
+        "headline" => (episode.title.presence || "Episode"),
+        "articleBody" => synopsis_plain,
+        "datePublished" => air_iso,
+        "dateModified" => episode.updated_at.to_date.to_s,
+        "author" => site_author_entity,
+        "publisher" => { "@type" => "Organization", "name" => SITE_NAME, "url" => request.base_url },
+        "url" => request.original_url,
+        "image" => (image_url || nil)
+      }.compact
+    end
+    schemas
   end
 
   def episodes_index_jsonld(episodes:, season:, location:, episodes_by_season:, episode_counts:)
@@ -456,7 +500,7 @@ module JsonLdHelper
     ]
     props << { "@type" => "PropertyValue", "name" => "Filtered country", "value" => country } if country.present?
 
-    {
+    product = {
       "@context" => "https://schema.org", "@type" => "Product",
       "name" => item.name.to_s,
       "category" => (item.respond_to?(:item_type) ? item.item_type : nil),
@@ -465,6 +509,12 @@ module JsonLdHelper
       "additionalProperty" => props,
       "subjectOf" => subject_of
     }
+    breadcrumb = breadcrumb_jsonld([
+      { name: "Home",  path: root_path },
+      { name: "Items", path: items_path },
+      { name: item.name.to_s, path: item_path(item) }
+    ])
+    [product, breadcrumb]
   end
 
   def item_type_jsonld(item_type:, country:, items_in_type_count:, given_episode_ids:, brought_episode_ids:, given_ai:, brought_ai:)
@@ -544,6 +594,11 @@ module JsonLdHelper
       schemas << { "@context" => "https://schema.org", "@type" => "ItemList",
                    "name" => "#{label} — Episodes", "itemListElement" => list_items }
     end
+    schemas << breadcrumb_jsonld([
+      { name: "Home",    path: root_path },
+      { name: "Seasons", path: seasons_path },
+      { name: label,     path: season_path(season) }
+    ])
     schemas
   end
 
@@ -601,15 +656,30 @@ module JsonLdHelper
     person["image"]  = img if img
     person["sameAs"] = same_as if same_as.any?
 
-    breadcrumb = {
-      "@context" => "https://schema.org", "@type" => "BreadcrumbList",
-      "itemListElement" => [
-        { "@type" => "ListItem", "position" => 1, "name" => "Home",      "item" => "#{request.base_url}/" },
-        { "@type" => "ListItem", "position" => 2, "name" => "Survivors", "item" => "#{request.base_url}#{survivors_path}" },
-        { "@type" => "ListItem", "position" => 3, "name" => survivor.full_name.to_s, "item" => request.original_url }
-      ]
-    }
-    [person, breadcrumb]
+    breadcrumb = breadcrumb_jsonld([
+      { name: "Home",      path: root_path },
+      { name: "Survivors", path: survivors_path },
+      { name: survivor.full_name.to_s, path: survivor_path(survivor) }
+    ])
+
+    schemas = [person, breadcrumb]
+
+    bio_plain = ActionView::Base.full_sanitizer.sanitize(survivor.bio.to_s).squish
+    if bio_plain.present?
+      schemas << {
+        "@context" => "https://schema.org",
+        "@type" => "Article",
+        "headline" => "#{survivor.full_name} — Naked and Afraid Survivor",
+        "articleBody" => bio_plain,
+        "datePublished" => survivor.created_at.to_date.to_s,
+        "dateModified" => survivor.updated_at.to_date.to_s,
+        "author" => site_author_entity,
+        "publisher" => { "@type" => "Organization", "name" => SITE_NAME, "url" => request.base_url },
+        "url" => request.original_url,
+        "image" => img
+      }.compact
+    end
+    schemas
   end
 
   def podcasts_books_jsonld
