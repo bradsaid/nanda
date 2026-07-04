@@ -12,14 +12,25 @@
 - air_date    = @episode.air_date&.strftime("%b %-d, %Y")
 - loc         = @episode.location
 - loc_str     = [loc&.country, loc&.region, loc&.site].compact_blank.join(", ").presence
+/ Synopsis-derived description reads better in search results than the
+/ boilerplate "Participants, PSR, ..." version when a synopsis exists.
+- synopsis_plain = ActionView::Base.full_sanitizer.sanitize(@episode.synopsis.to_s).squish
+- factual_line = "#{title_text} (#{subtitle}) — Aired #{air_date || '—'}#{loc_str ? " • Location: #{loc_str}" : ""}."
+- meta_desc = synopsis_plain.present? ? "#{factual_line} #{synopsis_plain}".first(160) : "#{factual_line} Participants, PSR, days lasted, and items."
+/ Fallback og:image: first survivor avatar on this episode when the layout
+/ has no other image hint, so social embeds don't render a blank preview.
+- og_image_url = (@episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? }&.avatar rescue nil)
 
 / Titles & meta
 - content_for :title, title_for_tag
-- content_for :meta_description, "#{title_text} (#{subtitle}) — Aired #{air_date || '—'}#{loc_str ? " • Location: #{loc_str}" : ""}. Participants, PSR, days lasted, and items."
+- content_for :meta_description, meta_desc
 - content_for :keywords, "Naked and Afraid episode, #{series&.name}, Season #{season_num}, Episode #{ep_num}, #{title_text}, survivors, PSR, items"
 - content_for :canonical_url, request.original_url
 - content_for :og_title, "#{title_text} | #{subtitle}"
-- content_for :og_description, "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
+- content_for :og_description, synopsis_plain.present? ? synopsis_plain.first(200) : "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
+- if og_image_url
+  - content_for :og_image, url_for(og_image_url)
+  - content_for :twitter_image, url_for(og_image_url)
 
 / Server-rendered JSON-LD (TVEpisode)
 = render_jsonld(episode_show_jsonld(@episode))

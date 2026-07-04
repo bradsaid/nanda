@@ -3,9 +3,13 @@
 - ep_total    = @survivor.appearances.select(:episode_id).distinct.count
 - challenges  = @episodes_collapsed_count
 - img_url     = (@survivor.avatar&.attached? ? url_for(@survivor.avatar) : nil)
+/ Bio-derived description gives every survivor page a unique, keyword-rich
+/ snippet in search results — much better than a boilerplate template line.
+- bio_plain = ActionView::Base.full_sanitizer.sanitize(@survivor.bio.to_s).squish
+- meta_desc = bio_plain.present? ? bio_plain.first(160) : "Profile for #{name}: episodes, challenges, items brought/given, locations, and results."
 
 - content_for :title, "#{name} – Naked and Afraid Survivor".first(60)
-- content_for :meta_description, "Profile for #{name}: episodes, challenges, items brought/given, locations, and results."
+- content_for :meta_description, meta_desc
 - content_for :keywords, "#{name}, Naked and Afraid, survivor, contestant"
 - content_for :canonical_url, request.original_url
 - content_for :og_title, "#{name} – Naked and Afraid Survivor"
