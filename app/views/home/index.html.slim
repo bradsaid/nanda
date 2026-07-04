@@ -74,7 +74,7 @@
                   .card-body.py-3.d-flex.flex-column.align-items-center
                     - if s.avatar.attached?
                       = link_to survivor_path(s) do
-                        = image_tag url_for(s.avatar), alt: s.full_name, class: "avatar-portrait shadow img-thumbnail d-block mb-2"
+                        = image_tag url_for(s.avatar), alt: s.full_name, loading: "lazy", class: "avatar-portrait shadow img-thumbnail d-block mb-2"
                     = link_to survivor_path(s), class: "survivor-name-stack text-decoration-none text-dark" do
                       .first-name = parts[0]
                       .last-name = parts[1].to_s
@@ -202,7 +202,7 @@
               .border.rounded.p-3.h-100.d-flex.flex-column.align-items-center
                 - if s.avatar.attached?
                   = link_to survivor_path(s) do
-                    = image_tag url_for(s.avatar), alt: s.full_name, class: "avatar-portrait shadow img-thumbnail d-block mb-2"
+                    = image_tag url_for(s.avatar), alt: s.full_name, loading: "lazy", class: "avatar-portrait shadow img-thumbnail d-block mb-2"
                 = link_to survivor_path(s), class: "survivor-name-stack text-decoration-none text-dark" do
                   .first-name = parts[0]
                   .last-name = parts[1].to_s
