@@ -837,16 +837,14 @@ table.items-compact thead th {
   height: 160px;
 }
 
-/* Homepage Top Countries: fixed-width columns so the card-header labels sit
-   directly above their numeric columns at every viewport. Smaller on phones
+/* Homepage Top Countries: fixed-width column so the card-header label sits
+   directly above the numeric column at every viewport. Smaller on phones
    (the short "Chal" label is swapped in there so the narrower cell fits). */
 .top-countries-label { width: 96px; white-space: nowrap; }
-.top-countries-table td:nth-child(2),
-.top-countries-table td:nth-child(3) { width: 96px; }
+.top-countries-table td:nth-child(2) { width: 96px; }
 @media (max-width: 575.98px) {
   .top-countries-label { width: 56px; }
-  .top-countries-table td:nth-child(2),
-  .top-countries-table td:nth-child(3) { width: 56px; }
+  .top-countries-table td:nth-child(2) { width: 56px; }
 }
 
 /* Mobile-friendly stacked table layout. Apply class="table-stack" alongside

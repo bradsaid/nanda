@@ -137,9 +137,6 @@
         .card-header.d-flex.align-items-center.gap-2
           h2.h5.mb-0.flex-grow-1 Top Countries
           .small.text-uppercase.opacity-75.text-end.top-countries-label
-            span.d-none.d-sm-inline Episodes
-            span.d-sm-none Eps
-          .small.text-uppercase.opacity-75.text-end.top-countries-label
             span.d-none.d-sm-inline Challenges
             span.d-sm-none Chal
         - if @top_countries.present?
@@ -153,7 +150,6 @@
                         = link_to country, by_country_episodes_path(country), class: "text-decoration-none"
                       - else
                         span.text-muted Unknown
-                    td.text-end.text-nowrap = number_with_delimiter(count)
                     td.text-end.text-nowrap = number_with_delimiter(@challenges_by_country[country] || count)
         - else
           .card-body
