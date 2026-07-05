@@ -3,7 +3,7 @@ class SeasonsController < ApplicationController
   def show
     @season   = Season.includes(:series).find(params[:id])
     @episodes = @season.episodes
-                       .includes(:location)
+                       .includes(:location, appearances: { survivor: { avatar_attachment: :blob } })
                        .order("number_in_season ASC NULLS LAST, id ASC")
     survivor_ids = Appearance
                      .joins(:episode)

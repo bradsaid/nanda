@@ -50,12 +50,14 @@
   - if @episodes.empty?
     p.text-muted.mb-0 No episodes in this season yet.
   - else
+    - is_continuous = @season.continuous_story || @season.series&.continuous_story
     .row.row-cols-1.g-3
       - @episodes.each do |ep|
         - loc = ep.location
         - loc_str = [loc&.country, loc&.region, loc&.site].compact.join(" • ").presence || "—"
         - air_str = ep.air_date&.strftime("%b %-d, %Y") || "—"
         - title   = ep.title.presence || "Untitled"
+        - ep_survivors = ep.appearances.map(&:survivor).compact.uniq
         .col
           .card.shadow-sm
             .card-body
@@ -64,3 +66,5 @@
                 span.badge.text-bg-secondary = "E#{ep.number_in_season || '—'}"
               .small.text-muted.mt-1 = air_str
               .small.text-muted = loc_str
+              - if !is_continuous && ep_survivors.any?
+                .mt-2 = survivor_chips(ep_survivors, size: 28)
