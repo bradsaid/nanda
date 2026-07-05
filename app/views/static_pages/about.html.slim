@@ -38,50 +38,26 @@
         | Coverage spans the original Naked and Afraid alongside every U.S. spinoff in the family: XL, Solo, Alone, Savage, Castaways, Last One Standing, Apocalypse, and Global Showdown. Each episode is catalogued with its air date, filming location, participants, what they brought or were given, what they hunted or foraged, and how the challenge played out.
 
       p.text-muted
-        | The site currently tracks the U.S. editions of the franchise only. International versions, including Naked and Afraid Brasil, the European adaptations, and the Indian series, are not yet covered.
+        | The site focuses on the U.S. editions of the franchise. Coverage of international versions — Naked and Afraid Brasil, the European adaptations, and the Indian series — sits outside the current scope.
 
       p.text-muted
         | All data is gathered first-hand by watching the episodes themselves, not aggregated from third-party sources. The goal is to give long-time fans reliable, granular answers to the questions the show inspires: which survivalist has logged the most days in the wild, how a given item has performed across challenges, how locations compare across seasons, and how the various series connect over time.
 
       p.text-muted
-        strong.text-muted Work in progress.
-        |  This database is actively being expanded. Several per-episode details are still being backfilled, including animals hunted, plants foraged, medical emergencies, ending PSR scores, days survived, and bushcraft items built on-camera. Existing entries will continue to be enriched episode by episode as time allows.
+        | New entries are added and existing ones enriched as each new episode airs. Per-episode details like animals hunted, plants foraged, medical emergencies, ending PSR scores, days survived, and bushcraft builds are logged from the broadcast, cross-checked against on-camera dialogue, and linked back to the survivalist and location records they belong to.
 
       p.text-muted
         | The site also highlights what the survivalists are doing outside the show: their books, podcasts, survival schools, knife shops, and other ventures. Promoting their work alongside their on-screen accomplishments is part of what this database is for.
 
       p.text-muted
-        | If you spot an error, want to flag a missing detail, or have a question, please use the contact form below.
+        | If you spot an error, want to flag a missing detail, or have a question, please
+        = " "
+        = link_to "use the contact form", contact_path
+        | .
 
       hr.my-3
       p.text-muted.small.mb-0
         em
           | This is an independent fan-created database. "Naked and Afraid" is a registered trademark of Discovery Communications, LLC. This site is not affiliated with, endorsed by, or sponsored by Discovery Communications or the show's producers. All show data was gathered directly from watching the episodes.
 
-hr.my-4
-
-h2.h5.mb-3 Contact
-p.text-muted
-  | Have a question, correction, or idea for the site? Send me a message below.
-
-/= form_with url: contact_path, method: :post, local: true, class: "needs-validation" do |f|
-= form_with url: contact_submit_path, method: :post, local: true, class: "needs-validation" do |f|
-  / Accessible honeypot field — hidden from users but visible to bots
-  .visually-hidden aria-hidden="true"
-    = f.label :phone_number, "Phone Number (leave blank)"
-    = f.text_field :phone_number, autocomplete: "off", tabindex: "-1"
-
-  .mb-3
-    = f.label :name, "Your Name", class: "form-label"
-    = f.text_field :name, class: "form-control", required: true
-
-  .mb-3
-    = f.label :email, "Your Email", class: "form-label"
-    = f.email_field :email, class: "form-control", required: true
-
-  .mb-3
-    = f.label :message, "Message", class: "form-label"
-    = f.text_area :message, rows: 5, class: "form-control", required: true
-
-  = f.submit "Send Message", class: "btn btn-primary"
 

@@ -1,4 +1,81 @@
-- content_for :title, "Contact – Naked & Afraid Fan"
-- content_for :meta_description, "Get in touch with the Naked & Afraid Fan team."
+/ ===== SEO: Contact =====
+- page_title = "Contact – Naked & Afraid Fan Wiki"
+- page_desc  = "Send a correction, question, or suggestion to the editor of the Naked & Afraid fan database."
 
-= render template: "static_pages/about"
+- content_for :title, page_title
+- content_for :meta_description, page_desc
+- content_for :keywords, "Naked and Afraid, contact, fan wiki, corrections"
+- content_for :canonical_url, request.original_url
+- content_for :og_title, page_title
+- content_for :og_description, page_desc
+/ ===== end SEO =====
+
+.container.my-4
+  = render "shared/flash"
+
+  .pb-2.mb-3.border-bottom.site-header
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      h1.h3.mb-0.logo Contact
+    p.subtitle.mb-0.text-muted = page_desc
+    .small.text-muted.mt-2
+      span.fw-semibold Brad Said
+      |  · Editor and curator
+
+  .row.g-4.mt-1
+    .col-lg-7
+      .card.shadow-sm
+        .card-header
+          h2.h5.mb-0 Send a Message
+        .card-body
+          p.text-muted.small
+            | Corrections, missing details, factual questions, and general feedback are all welcome. Every message goes straight to my inbox; expect a reply within a few days.
+
+          = form_with url: contact_submit_path, method: :post, local: true, class: "needs-validation" do |f|
+            / Honeypot — hidden from users, tempting to bots.
+            .visually-hidden aria-hidden="true"
+              = f.label :phone_number, "Phone Number (leave blank)"
+              = f.text_field :phone_number, autocomplete: "off", tabindex: "-1"
+
+            .mb-3
+              = f.label :name, "Your Name", class: "form-label"
+              = f.text_field :name, class: "form-control", required: true, autocomplete: "name"
+
+            .mb-3
+              = f.label :email, "Your Email", class: "form-label"
+              = f.email_field :email, class: "form-control", required: true, autocomplete: "email"
+              .form-text Only used to reply to your message. Not stored, not shared, not added to any list.
+
+            .mb-3
+              = f.label :message, "Message", class: "form-label"
+              = f.text_area :message, rows: 6, class: "form-control", required: true, placeholder: "Correction, question, or comment…"
+
+            = f.submit "Send Message", class: "btn btn-primary"
+
+    .col-lg-5
+      .card.shadow-sm.h-100
+        .card-header
+          h2.h6.mb-0 Other Ways to Reach Me
+        .card-body
+          h3.h6.mt-0 Email
+          p.small.mb-3
+            = mail_to "bradsaid@gmail.com", "bradsaid@gmail.com"
+            br
+            span.text-muted Fine for the same kinds of questions as the form; the form is just easier if you're on your phone.
+
+          h3.h6 Report a Data Issue
+          p.small.mb-3
+            | Spotted a wrong episode count, a mis-attributed survivalist, or a missing filming location? A short note with the page URL and the specific field is enough — I'll investigate and fix.
+
+          h3.h6 About the Site
+          p.small.mb-3
+            | Curious how the database is built or which spinoffs are covered?
+            = " "
+            = link_to "The About page", about_path
+            |  has the full story.
+
+          h3.h6 Privacy
+          p.small.mb-0
+            | Anything you send is used only to reply. See the
+            = " "
+            = link_to "Privacy Policy", privacy_policy_path
+            |  for details on what the site does and doesn't collect.
