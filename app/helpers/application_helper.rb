@@ -57,10 +57,29 @@ module ApplicationHelper
     survivors = exclude_survivor ? all_survivors.reject { |s| s.id == exclude_survivor.id } : all_survivors
 
     # Tokens from the bio subject's own name. Skip any first-name alias that
-    # collides with one of these tokens — otherwise e.g. on Christopher James's
+    # collides with one of these tokens, otherwise e.g. on Christopher James's
     # bio the unambiguous first-name "James" (from James Lewis) would auto-link
     # his own surname to a different survivor.
     subject_tokens = exclude_survivor ? exclude_survivor.full_name.to_s.downcase.split : []
+
+    # A survivor's full_name is often shorter than the given name that appears
+    # in the bio's opening (e.g. "EJ Snyder" is the display name but the bio
+    # opens with "Errol James 'EJ' Snyder Jr."). To catch middle names and
+    # alternate spellings, scan the first stretch of the bio up to and
+    # including the subject's last_name and pull every capitalized word out
+    # as an additional protected token. Lazy match so it stops at the first
+    # mention of the last name and doesn't sweep in unrelated capitalized
+    # words that appear later (which could suppress legitimate cross-links).
+    if exclude_survivor
+      last_name = exclude_survivor.full_name.to_s.split.last.to_s
+      if last_name.length > 1
+        opening = sanitized_html.to_s.match(/\A(.{0,160}?\b#{Regexp.escape(last_name)}\b)/im)&.[](1)
+        if opening
+          extra = opening.scan(/\b[A-Z][A-Za-z]+\b/).map(&:downcase)
+          subject_tokens = (subject_tokens + extra).uniq
+        end
+      end
+    end
 
     aliases = []
     survivors.each do |s|
@@ -106,15 +125,17 @@ module ApplicationHelper
 
     escaped = ERB::Util.html_escape(intro_text.to_s)
 
-    # --- Episode titles (quoted only, longest-first) ---
+    # --- Episode titles (quoted only, longest-first). The intro text is
+    # already HTML-escaped by this point so straight quotes now read as
+    # &quot; — the regex has to match that, not the raw " character. ---
     ep_pairs = Episode.where(season_id: season.id)
                       .where.not(title: [nil, ""])
                       .pluck(:id, :title)
                       .sort_by { |_, t| -t.length }
     ep_pairs.each do |ep_id, title|
-      pattern = /["“]#{Regexp.escape(title)}["”](?![^<]*<\/a>)/i
+      pattern = /(&quot;|“)#{Regexp.escape(title)}(&quot;|”)(?![^<]*<\/a>)/i
       escaped = escaped.gsub(pattern) do |match|
-        %Q(<a href="#{episode_path(ep_id)}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
+        %Q(<a href="#{episode_path(ep_id)}" class="link-primary fw-medium">#{match}</a>)
       end
     end
 
