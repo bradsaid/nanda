@@ -133,7 +133,11 @@ module ApplicationHelper
                       .pluck(:id, :title)
                       .sort_by { |_, t| -t.length }
     ep_pairs.each do |ep_id, title|
-      pattern = /(&quot;|“)#{Regexp.escape(title)}(&quot;|”)(?![^<]*<\/a>)/i
+      # Allow one trailing punctuation character before the closing quote —
+      # American style tucks commas and periods inside the quotes, so the
+      # text "Frozen in Fear," lands as &quot;Frozen in Fear,&quot; after
+      # escape.
+      pattern = /(&quot;|“)#{Regexp.escape(title)}[,.;!?]?(&quot;|”)(?![^<]*<\/a>)/i
       escaped = escaped.gsub(pattern) do |match|
         %Q(<a href="#{episode_path(ep_id)}" class="link-primary fw-medium">#{match}</a>)
       end
