@@ -95,6 +95,72 @@ module ApplicationHelper
     result.html_safe
   end
 
+  # Renders a season intro as HTML, auto-linking three kinds of entities to
+  # their internal pages: quoted episode titles → episode show, survivor
+  # full names + unambiguous first names → survivor show, country names that
+  # appear in the season's filming locations → by-country episode index.
+  # Intro text is stored as plain paragraphs separated by blank lines; this
+  # helper HTML-escapes the raw text and wraps <a> tags around matches only.
+  def linkify_season_intro(intro_text, season)
+    return "".html_safe if intro_text.blank?
+
+    escaped = ERB::Util.html_escape(intro_text.to_s)
+
+    # --- Episode titles (quoted only, longest-first) ---
+    ep_pairs = Episode.where(season_id: season.id)
+                      .where.not(title: [nil, ""])
+                      .pluck(:id, :title)
+                      .sort_by { |_, t| -t.length }
+    ep_pairs.each do |ep_id, title|
+      pattern = /["“]#{Regexp.escape(title)}["”](?![^<]*<\/a>)/i
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="#{episode_path(ep_id)}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
+      end
+    end
+
+    # --- Survivor names — full names + unambiguous first names, drawn from
+    # this season's cast so the shortlist stays scoped and less likely to
+    # false-positive. ---
+    survivor_ids = Appearance.joins(:episode)
+                             .where(episodes: { season_id: season.id })
+                             .distinct.pluck(:survivor_id)
+    cast = Survivor.where(id: survivor_ids).pluck(:id, :full_name, :slug)
+    first_name_counts = cast.each_with_object(Hash.new(0)) do |(_, name, _), h|
+      h[name.to_s.split.first.to_s.downcase] += 1
+    end
+    aliases = []
+    cast.each do |id, name, slug|
+      parts = name.to_s.split
+      next if parts.empty?
+      aliases << [name, id, slug]
+      if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
+        aliases << [parts.first, id, slug]
+      end
+    end
+    aliases.sort_by { |alias_name, _, _| -alias_name.length }.each do |alias_name, id, slug|
+      pattern = /\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="/survivors/#{slug || id}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
+      end
+    end
+
+    # --- Countries — only those that actually appear in this season's
+    # filming locations, so a passing mention of "Discovery" or a generic
+    # place name doesn't over-link. ---
+    countries = Episode.where(season_id: season.id)
+                       .joins(:location)
+                       .distinct.pluck("locations.country")
+                       .compact.uniq
+    countries.sort_by { |c| -c.length }.each do |country|
+      pattern = /\b#{Regexp.escape(country)}\b(?![^<]*<\/a>)/
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="#{by_country_episodes_path(country)}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
+      end
+    end
+
+    escaped.html_safe
+  end
+
   def item_icon(item)
     name = item.is_a?(String) ? item : item&.name.to_s
     case name

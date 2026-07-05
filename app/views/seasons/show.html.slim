@@ -22,7 +22,7 @@
   - if @season.intro.present?
     .season-intro.mb-4
       - @season.intro.to_s.split(/\n\s*\n/).each do |para|
-        p.mb-2 = para.strip
+        p.mb-2 == linkify_season_intro(para.strip, @season)
   - else
     - synopsis = season_synopsis(@season)
     - if synopsis.present?
