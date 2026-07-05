@@ -1,4 +1,4 @@
-import { injectJsonLd } from "./inject";
+import { injectJsonLd } from "json_ld/helpers";
 
 function readJson(selector) {
   const el = document.querySelector(selector);

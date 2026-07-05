@@ -53,5 +53,10 @@ Rails.application.routes.draw do
   get "/terms_of_service", to: "static_pages#terms_of_service", as: :terms_of_service
   get  "/contact", to: "static_pages#contact", as: :contact    # page
   post "/contact", to: "contact_messages#create", as: :contact_submit
-  
+
+  # Silence noisy browser/crawler default-icon probes. Our real icons are
+  # linked from the <head>, but many clients still blindly GET these paths.
+  get "/favicon.ico",                    to: redirect("/favicon.png", status: 301)
+  get "/apple-touch-icon.png",           to: redirect("/favicon.png", status: 301)
+  get "/apple-touch-icon-precomposed.png", to: redirect("/favicon.png", status: 301)
 end
