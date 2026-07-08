@@ -119,8 +119,10 @@ def compose_extension(survivor, ctx)
     parts << "The partner on that challenge was #{partner}."
   end
 
-  # Most-brought item
-  if ctx[:top_brought] && !existing.include?(ctx[:top_brought].to_s.downcase)
+  # Most-brought item. Skip placeholder items whose name is literally "?"
+  # (an unknown-item record) — reads as "brought a ?." nonsense in prose.
+  if ctx[:top_brought] && ctx[:top_brought].to_s.strip != "?" &&
+     !existing.include?(ctx[:top_brought].to_s.downcase)
     item = ctx[:top_brought]
     parts << "The item they brought into the challenge was #{article(item)} #{item.downcase}."
   end
