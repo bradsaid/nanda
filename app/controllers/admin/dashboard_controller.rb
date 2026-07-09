@@ -18,11 +18,14 @@ module Admin
       @top_sections  = PageView.top_sections(20)
       @daily_counts  = PageView.daily_counts(7)
       @daily_uniques = PageView.daily_unique_counts(7)
-      # Chart series cover every day from the earliest tracked PageView through
-      # today. The view embeds the full series and a client-side slider slices
-      # it down to whatever window the admin wants (default 30 days).
+      # Chart series cover every complete calendar day from the earliest
+      # tracked PageView through yesterday (today is intentionally excluded so
+      # a partial in-progress bucket doesn't visually dip the trailing edge —
+      # see PageView.daily_counts for details). The view embeds the full
+      # series and a client-side slider slices it down to whatever window
+      # the admin wants (default 30 days).
       earliest = PageView.minimum(:created_at)&.in_time_zone&.to_date || Date.current
-      @chart_total_days = (Date.current - earliest).to_i + 1
+      @chart_total_days = [(Date.current - earliest).to_i, 1].max
       @chart_counts  = PageView.daily_counts(@chart_total_days)
       @chart_uniques = PageView.daily_unique_counts(@chart_total_days)
       @top_countries = PageView.top_countries(15)

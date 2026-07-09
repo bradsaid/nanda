@@ -18,10 +18,22 @@ class PageView < ApplicationRecord
       .limit(limit)
   end
 
+  CST_ZONE     = ActiveSupport::TimeZone["America/Chicago"]
   CST_DATE_SQL = "DATE(created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Chicago')"
 
+  # Returns { Date => count } for the last `days` COMPLETE calendar days in
+  # America/Chicago, ending yesterday. The previous implementation used a
+  # rolling `days.days.ago..` window, which clipped the oldest day (only the
+  # last few hours were captured) and included today's still-accumulating
+  # partial. Both boundaries then looked artificially low on the dashboard.
+  def self.completed_day_window(days)
+    today_start = CST_ZONE.now.beginning_of_day
+    start_time  = today_start - days.days
+    start_time...today_start
+  end
+
   def self.daily_counts(days = 30)
-    where(created_at: days.days.ago..)
+    where(created_at: completed_day_window(days))
       .group(Arel.sql(CST_DATE_SQL))
       .order(Arel.sql("#{CST_DATE_SQL} ASC"))
       .count
@@ -29,7 +41,7 @@ class PageView < ApplicationRecord
 
   def self.daily_unique_counts(days = 30)
     col = where.not(visitor_id: [nil, ""]).exists? ? :visitor_id : :session_id
-    where(created_at: days.days.ago..)
+    where(created_at: completed_day_window(days))
       .group(Arel.sql(CST_DATE_SQL))
       .distinct
       .count(col)
