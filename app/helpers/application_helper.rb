@@ -94,7 +94,18 @@ module ApplicationHelper
 
     result = sanitized_html.to_s.dup
     aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, s|
-      result = result.gsub(/\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i) do |match|
+      # First-name-only aliases (single word) should not match when directly
+      # followed by another capitalized word — that pattern indicates a
+      # different person's surname (e.g. "Jennifer Garner" should not link
+      # "Jennifer" to Jennifer Pearce). Full-name aliases don't need this
+      # guard because they already include the surname.
+      is_first_name_only = !alias_name.include?(" ")
+      pattern = if is_first_name_only
+                  /\b#{Regexp.escape(alias_name)}\b(?! [A-Z][a-z])(?![^<]*<\/a>)/i
+                else
+                  /\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i
+                end
+      result = result.gsub(pattern) do |match|
         "<a href=\"#{survivor_path(s)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
       end
     end
