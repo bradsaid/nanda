@@ -162,10 +162,37 @@
               p.small.text-muted.mt-3.mb-0.fst-italic
                 | Are you #{@survivor.full_name}?
                 = " "
-                = link_to "Submit your own bio or photo",
-                          "mailto:bradsaid@gmail.com?subject=" + CGI.escape("Bio/photo submission — #{@survivor.full_name}") + "&body=" + CGI.escape("Hi Brad,\n\nI'm #{@survivor.full_name} and I'd like to submit an updated bio or photo for my page (https://www.nakedandafraidfan.com/survivors/#{@survivor.slug}).\n\n"),
-                          class: "text-muted"
+                a.text-muted data-bs-toggle="collapse" href="#submitBioForm" role="button" aria-expanded="false" aria-controls="submitBioForm"
+                  | Submit your own bio or photo
                 | .
+              .collapse.mt-3#submitBioForm
+                .card.bg-white.bg-opacity-25.border-0
+                  .card-body
+                    = form_with url: submit_survivor_path(@survivor), method: :post, local: true, multipart: true, class: "small" do |f|
+                      / Honeypot
+                      .visually-hidden aria-hidden="true"
+                        = f.label :phone_number, "Phone Number (leave blank)"
+                        = f.text_field :phone_number, autocomplete: "off", tabindex: "-1"
+
+                      .row.g-2
+                        .col-md-6.mb-2
+                          = f.label :name, "Your Name", class: "form-label small mb-1"
+                          = f.text_field :name, class: "form-control form-control-sm", required: true, autocomplete: "name"
+                        .col-md-6.mb-2
+                          = f.label :email, "Your Email", class: "form-label small mb-1"
+                          = f.email_field :email, class: "form-control form-control-sm", required: true, autocomplete: "email"
+
+                      .mb-2
+                        = f.label :message, "Bio update, correction, or other info", class: "form-label small mb-1"
+                        = f.text_area :message, rows: 5, class: "form-control form-control-sm", required: true, placeholder: "Paste an updated bio or tell me what to change…"
+
+                      .mb-2
+                        = f.label :photo, "Photo (optional, max 10 MB)", class: "form-label small mb-1"
+                        = f.file_field :photo, class: "form-control form-control-sm", accept: "image/*"
+
+                      .d-flex.gap-2.align-items-center
+                        = f.submit "Send", class: "btn btn-sm btn-primary"
+                        span.text-muted.small.fst-italic Goes straight to Brad's inbox.
 
     / ===== Challenge Summary =====
     - challenges = []

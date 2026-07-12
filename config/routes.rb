@@ -23,7 +23,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :survivors, only: [:index, :show]
+  resources :survivors, only: [:index, :show] do
+    member do
+      post :submit, to: "survivor_submissions#create", as: :submit
+    end
+  end
   resources :episodes, only: [:index, :show] do
     collection do
       get "by_country/:country", to: "episodes#by_country", as: :by_country
