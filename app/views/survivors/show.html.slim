@@ -159,14 +159,10 @@
           .card.bg-white.bg-opacity-10.border-0.mt-3
             .card-body
               p.lead.mb-0.survivor-bio = linkify_bio(sanitize(@survivor.bio, tags: %w[a strong em br], attributes: %w[href target rel title]), exclude_survivor: @survivor)
-              p.small.text-muted.mt-3.mb-0.fst-italic
-                | Are you #{@survivor.full_name}?
-                = " "
-                a.text-muted data-bs-toggle="collapse" href="#submitBioForm" role="button" aria-expanded="false" aria-controls="submitBioForm"
-                  | Submit your own bio or photo
-                | .
-              .collapse.mt-3#submitBioForm
-                .card.bg-white.bg-opacity-25.border-0
+              details.mt-3
+                summary.small.text-muted.fst-italic style="cursor: pointer;"
+                  | Are you #{@survivor.full_name}? Submit your own bio or photo.
+                .card.bg-white.bg-opacity-25.border-0.mt-2
                   .card-body
                     = form_with url: submit_survivor_path(@survivor), method: :post, local: true, multipart: true, class: "small" do |f|
                       / Honeypot
