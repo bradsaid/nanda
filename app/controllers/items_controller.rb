@@ -1,4 +1,8 @@
 class ItemsController < ApplicationController
+  # Cache TTL for expensive aggregations on the index page. Data only changes
+  # when someone edits an episode's items in admin, so 15 min is safe.
+  INDEX_CACHE_TTL = 15.minutes
+
   def index
     @q       = params[:q].to_s.strip
     @country = params[:country].presence
@@ -6,28 +10,20 @@ class ItemsController < ApplicationController
 
     @countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
 
+    # Cache key varies by filter params + latest write timestamp on the
+    # underlying data. Any edit to items/appearance_items busts the cache.
+    data_version = [
+      Item.maximum(:updated_at)&.to_i,
+      AppearanceItem.maximum(:updated_at)&.to_i
+    ].compact.max
+    cache_key_base = ["items#index", @q, @country, @limit, data_version].join("/")
+
     # Base (used for your other lists)
     ai = AppearanceItem.joins(:item, appearance: { episode: [:location, { season: :series }] })
     ai = ai.where("items.name ILIKE ?", "%#{@q}%") if @q.present?
     ai = ai.where(locations: { country: @country }) if @country.present?
 
     # ===== Top lists =====
-    # Brought: count each survivor’s brought item; collapse across continuous series.
-    # Given:   count once per episode (shared); collapse across continuous series.
-    items_scope = Item.all
-    items_scope = items_scope.where("items.name ILIKE ?", "%#{@q}%") if @q.present?
-
-    brought_sub = brought_subquery(@country, @q)
-    given_sub   = given_subquery(@country, @q)
-=begin
-    @top_brought = items_scope 
-      .joins("JOIN (#{brought_sub.to_sql}) bi ON bi.item_id = items.id")
-      .select("items.id, items.name, COUNT(*) AS total")
-      .group("items.id, items.name")
-      .order("total DESC")
-      .limit(@limit)
-=end
-
     top_brought_scope = AppearanceItem.where(source: "brought").joins(:item)
     top_given_scope   = AppearanceItem.where(source: "given").joins(:item)
     if @country.present?
@@ -37,77 +33,89 @@ class ItemsController < ApplicationController
                                          .where(locations: { country: @country })
     end
 
-    @top_brought = top_brought_scope
-      .group("items.id", "items.name")
-      .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-      .order("total DESC")
-=begin
-    @top_given = items_scope
-      .joins("JOIN (#{given_sub.to_sql}) gi ON gi.item_id = items.id")
-      .select("items.id, items.name, COUNT(*) AS total")
-      .group("items.id, items.name")
-      .order("total DESC")
-      .limit(@limit)
-=end
+    @top_brought = Rails.cache.fetch("#{cache_key_base}/top_brought", expires_in: INDEX_CACHE_TTL) do
+      top_brought_scope
+        .group("items.id", "items.name")
+        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
+        .order("total DESC")
+        .to_a
+    end
 
-    @top_given = top_given_scope
-      .group("items.id", "items.name")
-      .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-      .order("total DESC")
-
+    @top_given = Rails.cache.fetch("#{cache_key_base}/top_given", expires_in: INDEX_CACHE_TTL) do
+      top_given_scope
+        .group("items.id", "items.name")
+        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
+        .order("total DESC")
+        .to_a
+    end
 
     # ===== Given in episodes (unique & adjusted) =====
-    @given_in_episodes = ai
-      .select("items.id, items.name, #{per_episode_presence_sql('total')}")
-      .group("items.id, items.name")
-      .order("total DESC")
-      .limit(@limit)
+    @given_in_episodes = Rails.cache.fetch("#{cache_key_base}/given_in_episodes", expires_in: INDEX_CACHE_TTL) do
+      ai
+        .select("items.id, items.name, #{per_episode_presence_sql('total')}")
+        .group("items.id, items.name")
+        .order("total DESC")
+        .limit(@limit)
+        .to_a
+    end
 
-    @given_in_episodes_adj = ai
-      .select("items.id, items.name, #{collapsed_episode_presence_sql('total_adj')}")
-      .group("items.id, items.name")
-      .order("total_adj DESC")
-      .limit(@limit)
+    @given_in_episodes_adj = Rails.cache.fetch("#{cache_key_base}/given_in_episodes_adj", expires_in: INDEX_CACHE_TTL) do
+      ai
+        .select("items.id, items.name, #{collapsed_episode_presence_sql('total_adj')}")
+        .group("items.id, items.name")
+        .order("total_adj DESC")
+        .limit(@limit)
+        .to_a
+    end
 
     # ===== Rarest (existing logic preserved) =====
-    @rarest = ai
-      .select([
-        "items.id, items.name",
-        adjusted_presence_sql(total_alias: "total"),
-        adjusted_presence_for_source_sql("brought", total_alias: "brought_total"),
-        adjusted_presence_for_source_sql("given",   total_alias: "given_total")
-      ].join(", "))
-      .group("items.id, items.name")
-      .having("#{adjusted_presence_expr} > 0")
-      .order("total ASC, items.name ASC")
-      .limit(@limit)
+    @rarest = Rails.cache.fetch("#{cache_key_base}/rarest", expires_in: INDEX_CACHE_TTL) do
+      ai
+        .select([
+          "items.id, items.name",
+          adjusted_presence_sql(total_alias: "total"),
+          adjusted_presence_for_source_sql("brought", total_alias: "brought_total"),
+          adjusted_presence_for_source_sql("given",   total_alias: "given_total")
+        ].join(", "))
+        .group("items.id, items.name")
+        .having("#{adjusted_presence_expr} > 0")
+        .order("total ASC, items.name ASC")
+        .limit(@limit)
+        .to_a
+    end
 
     # ===== Items per country (unique per episode) and adjusted =====
-    rows = ai
-      .select([
-        "locations.country AS country",
-        "items.id   AS item_id",
-        "items.name AS item_name",
-        per_episode_presence_sql("total")
-      ].join(", "))
-      .group("locations.country, items.id, items.name")
-      .order("locations.country ASC, total DESC")
+    @items_by_country = Rails.cache.fetch("#{cache_key_base}/items_by_country", expires_in: INDEX_CACHE_TTL) do
+      ai
+        .select([
+          "locations.country AS country",
+          "items.id   AS item_id",
+          "items.name AS item_name",
+          per_episode_presence_sql("total")
+        ].join(", "))
+        .group("locations.country, items.id, items.name")
+        .order("locations.country ASC, total DESC")
+        .to_a
+        .group_by(&:country)
+        .transform_values { |arr| arr.first(10) }
+    end
 
-    @items_by_country = rows.group_by(&:country).transform_values { |arr| arr.first(10) }
+    @items_by_country_adj = Rails.cache.fetch("#{cache_key_base}/items_by_country_adj", expires_in: INDEX_CACHE_TTL) do
+      ai
+        .select([
+          "locations.country AS country",
+          "items.id   AS item_id",
+          "items.name AS item_name",
+          collapsed_episode_presence_sql("total_adj")
+        ].join(", "))
+        .group("locations.country, items.id, items.name")
+        .order("locations.country ASC, total_adj DESC")
+        .to_a
+        .group_by(&:country)
+        .transform_values { |arr| arr.first(10) }
+    end
 
-    rows_adj = ai
-      .select([
-        "locations.country AS country",
-        "items.id   AS item_id",
-        "items.name AS item_name",
-        collapsed_episode_presence_sql("total_adj")
-      ].join(", "))
-      .group("locations.country, items.id, items.name")
-      .order("locations.country ASC, total_adj DESC")
-
-    @items_by_country_adj = rows_adj.group_by(&:country).transform_values { |arr| arr.first(10) }
-
-    @items_by_type =
+    @items_by_type = Rails.cache.fetch("#{cache_key_base}/items_by_type", expires_in: INDEX_CACHE_TTL) do
       if @country.present?
         Item.where.not(item_type: [nil, ""])
             .joins(appearance_items: { appearance: { episode: :location } })
@@ -122,8 +130,9 @@ class ItemsController < ApplicationController
             .order(Arel.sql("COUNT(*) DESC"))
             .count
       end
+    end
 
-    # ===== Search results: episode-level detail =====
+    # ===== Search results: episode-level detail (not cached — search-specific) =====
     if @q.present?
       @search_results = ai
         .joins(appearance: [:survivor])
