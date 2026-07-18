@@ -15,6 +15,20 @@ class SurvivorsController < ApplicationController
     @q    = params[:q].to_s.strip
     @sort = params[:sort].to_s.presence_in(%w[challenges episodes name popular newest oldest recent]) || "challenges"
 
+    # Short-circuit: if the search matches no survivor, skip the heavy
+    # GROUP BY/aggregation entirely. Cache the exists-check briefly so
+    # repeat bot crawls hitting the same garbage query don't re-run it.
+    if @q.present?
+      has_match = Rails.cache.fetch("survivors_search_hit/#{@q.downcase}", expires_in: 30.minutes) do
+        Survivor.where("full_name ILIKE ?", "%#{@q}%").exists?
+      end
+      unless has_match
+        @survivors = []
+        @view_counts = {} if @sort == "popular"
+        render :index and return
+      end
+    end
+
     base =
       Survivor
         .left_joins(appearances: { episode: { season: :series } })

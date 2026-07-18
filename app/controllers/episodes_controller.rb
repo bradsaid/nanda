@@ -69,22 +69,32 @@ class EpisodesController < ApplicationController
         @seasons = Season.includes(:series).order("series_id ASC, number ASC")
       end
 
-      @episodes_by_season = @seasons.index_with do |s|
-        s.episodes.includes(:location).order("number_in_season ASC NULLS LAST, id ASC").limit(3)
-      end
-      @episode_counts = Episode.group(:season_id).count
-
       season_ids = @seasons.map(&:id)
-      @all_episodes_by_season = Episode.where(season_id: season_ids).includes(:location).group_by(&:season_id)
+
+      # One batched load of every episode for the visible seasons, ordered so
+      # the first 3 per season are the ones we want to preview. Preload the
+      # `survivors` through-association directly (not via :appearances) so
+      # the view's per-episode `ep.survivors` chip render doesn't N+1.
+      # `season: :series` is here for the JSON-LD helper which reads them.
+      @all_episodes_by_season = Episode
+        .where(season_id: season_ids)
+        .includes(:location, season: :series, survivors: { avatar_attachment: :blob })
+        .order(Arel.sql("number_in_season ASC NULLS LAST, id ASC"))
+        .group_by(&:season_id)
+
+      @episodes_by_season = @seasons.index_with { |s| (@all_episodes_by_season[s.id] || []).first(3) }
+      @episode_counts     = @all_episodes_by_season.transform_values(&:size)
+
       @survivor_counts_by_season = Appearance.joins(:episode)
                                               .where(episodes: { season_id: season_ids })
                                               .distinct
                                               .group("episodes.season_id")
                                               .count(:survivor_id)
 
-      @episodes = Episode.joins(season: :series)
-                        .includes(:location, season: :series, appearances: { survivor: { avatar_attachment: :blob } })
-                        .order("series.name ASC, seasons.number ASC, episodes.number_in_season ASC")
+      # @episodes was previously loaded here with a huge eager query, but the
+      # season-grid view + JSON-LD helper both read from @episodes_by_season
+      # in the no-filter branch. Skip it.
+      @episodes = []
 
       # For continuous-story seasons we want to render a single "Cast" row
       # at the top of the season card instead of repeating the same chips on

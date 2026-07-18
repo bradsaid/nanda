@@ -26,6 +26,9 @@ Rails.application.routes.draw do
   resources :survivors, only: [:index, :show] do
     member do
       post :submit, to: "survivor_submissions#create", as: :submit
+      # Bots (Bing especially) follow the form's action URL as GET and 404.
+      # Redirect back to the survivor page so it's a clean 301.
+      get :submit, to: redirect { |params, _req| "/survivors/#{params[:id]}" }, status: 301
     end
   end
   resources :episodes, only: [:index, :show] do
