@@ -15,7 +15,7 @@
       - @topic.errors.full_messages.each do |m|
         li = m
 
-= form_with model: @topic, url: forum_category_topics_path(@category), as: :topic, local: true do |f|
+= form_with model: @topic, url: forum_category_topics_path(@category), as: :topic, multipart: true, local: true do |f|
   .mb-3
     = f.label :title, "Topic title", class: "form-label"
     = f.text_field :title, class: "form-control", required: true, minlength: 3, maxlength: 150, autofocus: true
@@ -23,6 +23,10 @@
   .mb-3
     = label_tag "forum_topic[body]", "First post", class: "form-label"
     = text_area_tag "forum_topic[body]", nil, rows: 6, class: "form-control", placeholder: "Kick off the discussion. Markdown supported.", required: true
+
+  .mb-3
+    = label_tag "forum_topic[images][]", "Attach images (up to #{Forum::Post::MAX_IMAGES_PER_POST}, 5 MB each)", class: "form-label small"
+    = file_field_tag "forum_topic[images][]", multiple: true, accept: "image/*", class: "form-control form-control-sm"
 
   .d-flex.gap-2
     = f.submit "Post topic", class: "btn btn-primary"

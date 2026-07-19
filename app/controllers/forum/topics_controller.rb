@@ -20,11 +20,12 @@ module Forum
 
     def create
       body_text = (params.dig(:forum_topic, :body) || params.dig(:topic, :body)).to_s
+      images    = Array(params.dig(:forum_topic, :images) || params.dig(:topic, :images)).reject(&:blank?)
       Forum::Topic.transaction do
         @topic = @category.topics.new(topic_params)
         @topic.user = current_user
         if @topic.save
-          @new_post = @topic.posts.create!(user: current_user, body: body_text)
+          @new_post = @topic.posts.create!(user: current_user, body: body_text, images: images)
           current_user.forum_subscriptions.find_or_create_by!(forum_topic: @topic)
           redirect_to forum_topic_path(@topic), notice: "Topic posted."
         else

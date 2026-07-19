@@ -21,7 +21,7 @@
       .card-body
         .d-flex.align-items-start.justify-content-between.gap-3.flex-wrap
           .small.text-muted
-            strong = forum_user_display(p.user)
+            strong = forum_user_link(p.user)
             span.mx-1 ·
             = forum_time(p.created_at)
             - if p.edited_at

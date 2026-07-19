@@ -1,0 +1,45 @@
+- content_for :title, "#{@user.username} — Forum profile"
+
+.pb-2.mb-4.border-bottom.site-header
+  nav.small.mb-1
+    = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    span = @user.username
+  .d-flex.align-items-center.gap-3.flex-wrap
+    h1.h3.mb-0.logo = @user.username
+    - if @role_badge
+      span.badge.text-bg-primary = @role_badge
+
+.row.g-3.mb-4
+  .col-6.col-md-3
+    .card.text-center.shadow-sm
+      .card-body.py-3
+        div.h4.mb-0 = @posts_count
+        small.text-muted Posts
+  .col-6.col-md-3
+    .card.text-center.shadow-sm
+      .card-body.py-3
+        div.h4.mb-0 = @topics_count
+        small.text-muted Topics started
+  .col-12.col-md-6
+    .card.text-center.shadow-sm
+      .card-body.py-3
+        div.h6.mb-0 = @member_since.strftime("%B %-d, %Y")
+        small.text-muted Member since
+
+h2.h5.mb-3 Recent posts
+- if @recent_posts.any?
+  .d-flex.flex-column.gap-2
+    - @recent_posts.each do |p|
+      .card.shadow-sm
+        .card-body.py-2.px-3
+          .small.text-muted.d-flex.gap-2.flex-wrap
+            = forum_time(p.created_at)
+            span in
+            = link_to p.forum_topic.title, forum_topic_path(p.forum_topic, anchor: "post-#{p.id}"), class: "text-decoration-none"
+            span &middot;
+            = link_to p.forum_topic.forum_category.name, forum_category_path(p.forum_topic.forum_category), class: "text-decoration-none text-muted"
+          .mt-1.small.forum-post-body(style="max-height: 4.5rem; overflow: hidden;")
+            == p.body_html
+- else
+  p.text-muted No posts yet.

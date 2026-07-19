@@ -13,6 +13,17 @@ module ForumHelper
     user.username.presence || user.email_address.split("@").first
   end
 
+  # Renders the user's display name as a link to their forum profile when a
+  # username exists, or plain text for anonymized / deleted accounts.
+  def forum_user_link(user, class_attr: "text-decoration-none")
+    name = forum_user_display(user)
+    if user&.username.present?
+      link_to name, forum_profile_path(username: user.username), class: class_attr
+    else
+      content_tag(:span, name)
+    end
+  end
+
   def forum_subscribed?(topic)
     return false unless logged_in?
     current_user.forum_subscriptions.where(forum_topic_id: topic.id).exists?
