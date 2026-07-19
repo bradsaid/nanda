@@ -19,7 +19,7 @@
             .mt-1.forum-post-body
               == @post.body_html
 
-        = form_with model: @report, url: forum_post_report_path(@post), local: true do |f|
+        = form_with model: @report, url: forum_post_report_path(@post), as: :report, local: true do |f|
           .mb-3
             = f.label :reason, class: "form-label"
             = f.select :reason, Forum::Report.reasons.keys.map { |r| [r.humanize, r] }, {}, class: "form-select"

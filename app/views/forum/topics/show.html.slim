@@ -45,7 +45,7 @@
 - if logged_in? && current_user.email_verified? && !@topic.locked?
   hr.my-4
   h2.h5.mb-3 Reply
-  = form_with model: [@topic, @new_post], url: forum_topic_posts_path(@topic), multipart: true, local: true do |f|
+  = form_with model: [@topic, @new_post], url: forum_topic_posts_path(@topic), as: :post, multipart: true, local: true do |f|
     .mb-2
       = f.text_area :body, rows: 5, class: "form-control", placeholder: "Write your reply. Markdown supported.", required: true
     .mb-2

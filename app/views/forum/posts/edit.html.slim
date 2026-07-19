@@ -3,7 +3,7 @@
 .pb-2.mb-3.border-bottom.site-header
   h1.h3.mb-0.logo Edit post
 
-= form_with model: @post, url: forum_post_path(@post), method: :patch, multipart: true, local: true do |f|
+= form_with model: @post, url: forum_post_path(@post), as: :post, method: :patch, multipart: true, local: true do |f|
   .mb-3
     = f.label :body, class: "form-label"
     = f.text_area :body, rows: 8, class: "form-control", required: true
