@@ -54,7 +54,9 @@ class User < ApplicationRecord
   scope :banned,     -> { where.not(banned_at: nil) }
   scope :not_banned, -> { where(banned_at: nil) }
 
-  def email_verified? = email_verified_at.present?
+  def email_verified?
+    email_verified_at.present? || admin? || episode_editor?
+  end
   def banned?         = banned_at.present?
 
   private
