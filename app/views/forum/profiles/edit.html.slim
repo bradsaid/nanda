@@ -34,6 +34,6 @@
             = f.text_area :bio, rows: 4, class: "form-control", maxlength: User::BIO_MAX_LEN, placeholder: "A short introduction. Shown on your profile."
             .form-text = "Up to #{User::BIO_MAX_LEN} characters."
 
-          .d-flex.gap-2
+          .d-flex.gap-2.pb-1
             = f.submit "Save profile", class: "btn btn-primary"
             = link_to "Cancel", forum_profile_path(username: @user.username), class: "btn btn-outline-secondary"
