@@ -1,6 +1,13 @@
 # config/routes.rb
 Rails.application.routes.draw do
 
+  # Silence log noise from probes we don't need to respond to:
+  # - /assets/json_ld/inject: some visitor's browser/extension keeps
+  #   requesting this asset that has never existed in our codebase.
+  # - /.well-known/traffic-advice: Chromium's prefetch-proxy advice probe.
+  # Both are served as 204 No Content instead of routing-error 404s.
+  match "/assets/json_ld/inject",      to: ->(_env) { [204, {}, []] }, via: :all
+  match "/.well-known/traffic-advice", to: ->(_env) { [204, {}, []] }, via: :all
 
   resource  :session,    only: %i[new create destroy]
   resources :passwords,  only: %i[new create edit update], param: :token
