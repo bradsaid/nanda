@@ -1,0 +1,11 @@
+A new report has been filed on the forum.
+
+Reason: <%= @report.reason.humanize %>
+Reporter: <%= @report.reporter.username || @report.reporter.email_address %>
+Notes: <%= @report.notes.presence || "(none)" %>
+
+Target: <%= @report.reportable_type %> #<%= @report.reportable_id %>
+Link: <%= @url %>
+
+Open the admin queue to review:
+<%= admin_root_url %>

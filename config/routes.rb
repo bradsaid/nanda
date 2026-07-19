@@ -12,6 +12,32 @@ Rails.application.routes.draw do
   resource  :session,    only: %i[new create destroy]
   resources :passwords,  only: %i[new create edit update], param: :token
 
+  # Forum-account signup + email verification. Auth surfaces are always
+  # available (even with FORUM_ENABLED=false) so we can build and test them
+  # in isolation before flipping the flag on.
+  get  "/signup", to: "registrations#new",    as: :signup
+  post "/signup", to: "registrations#create"
+
+  get  "/email/verify/:token",  to: "email_verifications#show",   as: :email_verification
+  post "/email/verify/resend",  to: "email_verifications#resend", as: :resend_email_verification
+
+  # Forum routes. Every controller under Forum:: refuses to serve if
+  # ENV["FORUM_ENABLED"] != "true" (see Forum::BaseController), so it's safe
+  # to define them here even before the public launch.
+  get  "/forum", to: "forum/categories#index", as: :forum
+  scope "/forum", module: :forum, as: :forum do
+    resources :categories, param: :slug, only: [:show] do
+      resources :topics, param: :slug, only: [:new, :create]
+    end
+    resources :topics, param: :slug, only: [:show, :edit, :update, :destroy] do
+      resources :posts, only: [:create]
+      resource  :subscription, only: [:create, :destroy]
+    end
+    resources :posts, only: [:edit, :update, :destroy] do
+      resource :report, only: [:new, :create]
+    end
+  end
+
   namespace :admin do
     root to: "dashboard#show"
     get "dashboard", to: "dashboard#show"
@@ -27,6 +53,15 @@ Rails.application.routes.draw do
       member do
         post :revert
       end
+    end
+
+    # Forum moderation surfaces (namespaced under admin).
+    namespace :forum do
+      resources :categories, only: [:index, :new, :create, :edit, :update, :destroy]
+      resources :reports,    only: [:index, :update]
+      resources :posts,      only: [:destroy]
+      resources :topics,     only: [:update, :destroy]
+      resources :users,      only: [:update]
     end
   end
 

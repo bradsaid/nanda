@@ -1,9 +1,7 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  name: MyString
-  item_type: MyString
+  name: SampleItemA
+  item_type: knife
 
 two:
-  name: MyString
-  item_type: MyString
+  name: SampleItemB
+  item_type: firestarter

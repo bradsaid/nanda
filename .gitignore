@@ -41,3 +41,8 @@
 # DB dumps
 *.dump
 sep27.dump
+
+# Local scratch (agent state, dev sqlite, working notes)
+/.claude
+/db/development.sqlite3
+/db/development.sqlite3-*

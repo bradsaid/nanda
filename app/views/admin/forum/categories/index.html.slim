@@ -1,0 +1,31 @@
+- content_for :title, "Forum Categories"
+
+.d-flex.justify-content-between.align-items-center.mb-3
+  h1.h4.mb-0 Forum categories
+  = link_to "New category", new_admin_forum_category_path, class: "btn btn-primary btn-sm"
+
+.card.shadow-sm
+  .table-responsive
+    table.table.mb-0
+      thead.table-light
+        tr
+          th Pos
+          th Name
+          th Slug
+          th Topics
+          th Locked
+          th
+      tbody
+        - @categories.each do |c|
+          tr
+            td = c.position
+            td
+              strong = c.name
+              - if c.description.present?
+                .small.text-muted = c.description
+            td.small.text-muted = c.slug
+            td = c.topics_count
+            td = c.locked? ? "yes" : "no"
+            td
+              = link_to "Edit", edit_admin_forum_category_path(c), class: "btn btn-outline-secondary btn-sm"
+              = button_to "Delete", admin_forum_category_path(c), method: :delete, class: "btn btn-outline-danger btn-sm ms-2", form: { style: "display:inline;", data: { turbo_confirm: "Delete category?" } }

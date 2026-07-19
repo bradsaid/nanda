@@ -1,0 +1,8 @@
+<%= @post.user.username || @post.user.email_address %> replied to "<%= @topic.title %>":
+
+<%= @post.body %>
+
+Read the full thread:
+<%= @url %>
+
+You're getting this because you posted in or subscribed to this thread. To stop, open the thread and click "Unsubscribe".

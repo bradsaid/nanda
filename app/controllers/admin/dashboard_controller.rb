@@ -34,6 +34,10 @@ module Admin
       @direct_views  = PageView.where(referrer_domain: [nil, ""]).count
       @time_by_page  = PageView.avg_duration_by_page(10)
       @recent_views  = PageView.recent(50)
+
+      @forum_open_reports    = ::Forum::Report.status_open.count
+      @forum_topics_last_24h = ::Forum::Topic.where(created_at: 24.hours.ago..).count
+      @forum_posts_last_24h  = ::Forum::Post.where(created_at: 24.hours.ago..).count
     end
   end
 end

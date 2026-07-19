@@ -3,7 +3,35 @@
 one:
   email_address: one@example.com
   password_digest: <%= password_digest %>
+  role: 0
+  email_verified_at: <%= 1.day.ago %>
+  username: alice
 
 two:
   email_address: two@example.com
   password_digest: <%= password_digest %>
+  role: 0
+  email_verified_at: <%= 1.day.ago %>
+  username: bob
+
+unverified:
+  email_address: unverified@example.com
+  password_digest: <%= password_digest %>
+  role: 0
+  username: pending
+
+banned:
+  email_address: banned@example.com
+  password_digest: <%= password_digest %>
+  role: 0
+  email_verified_at: <%= 1.day.ago %>
+  banned_at: <%= 1.hour.ago %>
+  ban_reason: "test ban"
+  username: banned_user
+
+admin:
+  email_address: admin@example.com
+  password_digest: <%= password_digest %>
+  role: 1
+  email_verified_at: <%= 1.day.ago %>
+  username: siteadmin

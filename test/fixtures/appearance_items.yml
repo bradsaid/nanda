@@ -1,15 +1,11 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   appearance: one
   item: one
-  source: MyString
+  source: personal
   quantity: 1
-  notes: MyText
 
 two:
   appearance: two
   item: two
-  source: MyString
+  source: given
   quantity: 1
-  notes: MyText

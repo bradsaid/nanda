@@ -1,0 +1,32 @@
+- content_for :title, "Forum"
+- content_for :meta_description, "Fan discussion for Naked and Afraid: episode reactions, survivor threads, item talk, and more."
+
+.pb-2.mb-4.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+    .d-flex.flex-column
+      h1.h3.mb-0.logo Forum
+      p.subtitle.mb-0 Talk about episodes, survivors, gear, and everything else.
+    - if forum_read_only?
+      span.badge.text-bg-warning Preview mode (hidden from public)
+
+.card.shadow-sm
+  ul.list-group.list-group-flush
+    - @categories.each do |c|
+      li.list-group-item.py-3
+        .d-flex.align-items-start.justify-content-between.gap-3.flex-wrap
+          .flex-grow-1
+            h2.h5.mb-1
+              = link_to c.name, forum_category_path(c), class: "text-decoration-none"
+            - if c.description.present?
+              p.small.text-muted.mb-0 = c.description
+          .text-end.text-muted.small
+            div = "#{c.topics_count} #{'topic'.pluralize(c.topics_count)}"
+            - if c.last_topic_at
+              div = "Last: #{forum_time(c.last_topic_at)}"
+
+- if logged_in?
+  p.small.text-muted.mt-3.mb-0
+    | Signed in as #{forum_user_display(current_user)}.
+    - unless current_user.email_verified?
+      br
+      strong Please verify your email before posting.

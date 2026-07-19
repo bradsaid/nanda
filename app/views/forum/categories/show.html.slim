@@ -1,0 +1,55 @@
+- content_for :title, "#{@category.name} — Forum"
+
+.pb-2.mb-4.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+    .d-flex.flex-column
+      nav.small.mb-1
+        = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
+        span.mx-1 &raquo;
+        span = @category.name
+      h1.h3.mb-0.logo = @category.name
+      - if @category.description.present?
+        p.subtitle.mb-0 = @category.description
+    - if logged_in? && current_user.email_verified?
+      = link_to "New topic", new_forum_category_topic_path(@category), class: "btn btn-primary"
+
+- if @topics.any?
+  .card.shadow-sm
+    .table-responsive.table-stack-host
+      table.table.table-hover.mb-0
+        thead.table-light
+          tr
+            th Topic
+            th Replies
+            th Last activity
+        tbody
+          - @topics.each do |t|
+            tr
+              td data-label="Topic"
+                - if t.pinned?
+                  span.badge.text-bg-warning.me-1 pinned
+                = link_to t.title, forum_topic_path(t), class: "fw-semibold text-decoration-none"
+                .small.text-muted
+                  | by #{forum_user_display(t.user)} · #{forum_time(t.created_at)}
+              td data-label="Replies" = [t.posts_count - 1, 0].max
+              td data-label="Last activity"
+                - if t.last_post_at
+                  = forum_time(t.last_post_at)
+                  - if t.last_post_user
+                    .small.text-muted = "by #{forum_user_display(t.last_post_user)}"
+                - else
+                  span.text-muted —
+  = paginate @topics
+- else
+  .card.shadow-sm.text-center.py-4
+    p.mb-2.text-muted No topics yet.
+    - if logged_in? && current_user.email_verified?
+      = link_to "Start the first thread", new_forum_category_topic_path(@category), class: "btn btn-primary"
+    - elsif logged_in?
+      p.small.text-muted.mb-0 Verify your email to post.
+    - else
+      p.small.text-muted.mb-0
+        = link_to "Sign in", new_session_path
+        |  or
+        = link_to "create an account", signup_path
+        |  to post.

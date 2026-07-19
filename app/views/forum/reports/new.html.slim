@@ -1,0 +1,31 @@
+- content_for :title, "Report post"
+
+.row.justify-content-center
+  .col-md-6
+    .card.shadow-sm
+      .card-body
+        h1.h4.mb-3 Report a post
+
+        - if @report.errors.any?
+          .alert.alert-danger
+            ul.mb-0.small
+              - @report.errors.full_messages.each do |m|
+                li = m
+
+        .card.mb-3.bg-light.border
+          .card-body.small
+            .text-muted.mb-1
+              | by #{forum_user_display(@post.user)} · #{forum_time(@post.created_at)}
+            .mt-1.forum-post-body
+              == @post.body_html
+
+        = form_with model: @report, url: forum_post_report_path(@post), local: true do |f|
+          .mb-3
+            = f.label :reason, class: "form-label"
+            = f.select :reason, Forum::Report.reasons.keys.map { |r| [r.humanize, r] }, {}, class: "form-select"
+          .mb-3
+            = f.label :notes, "Notes (optional)", class: "form-label"
+            = f.text_area :notes, rows: 3, class: "form-control", maxlength: 500
+          .d-flex.gap-2
+            = f.submit "Submit report", class: "btn btn-danger"
+            = link_to "Cancel", forum_topic_path(@post.forum_topic), class: "btn btn-outline-secondary"

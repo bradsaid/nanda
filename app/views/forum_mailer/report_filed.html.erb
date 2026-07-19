@@ -1,0 +1,9 @@
+<h2>New forum report</h2>
+<p><strong>Reason:</strong> <%= @report.reason.humanize %><br/>
+<strong>Reporter:</strong> <%= @report.reporter.username || @report.reporter.email_address %><br/>
+<strong>Notes:</strong> <%= @report.notes.presence || "(none)" %></p>
+
+<p><strong>Target:</strong> <%= @report.reportable_type %> #<%= @report.reportable_id %><br/>
+<%= link_to "Open the thread", @url %></p>
+
+<p><%= link_to "Admin dashboard", admin_root_url %></p>

@@ -1,0 +1,8 @@
+<p><strong><%= @post.user.username || @post.user.email_address %></strong> replied to
+<em><%= @topic.title %></em>:</p>
+
+<blockquote><%= sanitize @post.body_html %></blockquote>
+
+<p><%= link_to "Read the full thread", @url %></p>
+
+<p style="font-size: 12px; color: #666;">You're getting this because you posted in or subscribed to this thread. To stop, open the thread and click "Unsubscribe".</p>

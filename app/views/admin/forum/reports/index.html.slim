@@ -1,0 +1,64 @@
+- content_for :title, "Forum Reports"
+
+.d-flex.justify-content-between.align-items-center.mb-3
+  h1.h4.mb-0 Forum reports
+  = link_to "Manage categories", admin_forum_categories_path, class: "btn btn-outline-secondary btn-sm"
+
+h2.h6.text-uppercase.text-muted Open (#{@open_count})
+- if @open.any?
+  .card.shadow-sm.mb-4
+    .table-responsive
+      table.table.mb-0
+        thead.table-light
+          tr
+            th Reporter
+            th Reason
+            th Target
+            th Notes
+            th When
+            th Action
+        tbody
+          - @open.each do |r|
+            tr
+              td = r.reporter.username || r.reporter.email_address
+              td = r.reason.humanize
+              td
+                - if r.reportable.is_a?(Forum::Post)
+                  = link_to "Post ##{r.reportable.id}", forum_topic_path(r.reportable.forum_topic, anchor: "post-#{r.reportable.id}"), target: "_blank"
+                  .small.text-muted = r.reportable.body.to_s.truncate(80)
+                - else
+                  = r.reportable_type
+                  |  ##{r.reportable_id}
+              td.small = r.notes.to_s.truncate(120)
+              td.small = r.created_at.strftime("%b %-d, %H:%M")
+              td
+                = form_with url: admin_forum_report_path(r), method: :patch, local: true, class: "d-flex flex-column gap-1" do
+                  = button_tag "Dismiss", name: "decision", value: "dismiss", class: "btn btn-outline-secondary btn-sm"
+                  - if r.reportable.is_a?(Forum::Post)
+                    = button_tag "Remove post", name: "decision", value: "remove_post", class: "btn btn-outline-danger btn-sm"
+                    = button_tag "Lock topic", name: "decision", value: "lock_topic", class: "btn btn-outline-warning btn-sm"
+                  = button_tag "Ban user", name: "decision", value: "ban_user", class: "btn btn-danger btn-sm", data: { turbo_confirm: "Ban this user?" }
+- else
+  .card.shadow-sm.mb-4.text-center.py-4
+    p.mb-0.text-muted No open reports. Nice.
+
+h2.h6.text-uppercase.text-muted Recently handled
+- if @handled.any?
+  .card.shadow-sm
+    .table-responsive
+      table.table.mb-0.small
+        thead.table-light
+          tr
+            th When
+            th Status
+            th Target
+            th Handled by
+        tbody
+          - @handled.each do |r|
+            tr
+              td = r.handled_at&.strftime("%b %-d, %H:%M")
+              td = r.status.humanize
+              td = "#{r.reportable_type} ##{r.reportable_id}"
+              td = r.handled_by&.username || r.handled_by&.email_address
+- else
+  p.text-muted.small No reports handled yet.

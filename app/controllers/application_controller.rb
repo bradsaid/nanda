@@ -1,33 +1,61 @@
 class ApplicationController < ActionController::Base
   include TrackPageViews
 
-  # TEMP: no auth anywhere
+  allow_browser versions: :modern unless Rails.env.test?
 
-  allow_browser versions: :modern
+  helper_method :current_user, :logged_in?, :admin_signed_in?, :forum_enabled?
 
-  helper_method :current_user, :logged_in?, :admin_signed_in?
-  def current_user = nil
-  def logged_in?   = false
+  def current_user
+    return @current_user if defined?(@current_user)
+    @current_user = load_current_user
+  end
+
+  def logged_in? = current_user.present?
 
   # True when the visitor is signed in as a full admin or episode_editor.
   # Used to conditionally reveal admin-only details on public pages
   # (e.g. per-survivor view counts on the Survivors index).
   def admin_signed_in?
-    return @_admin_signed_in if defined?(@_admin_signed_in)
-    user = User.find_by(id: session[:user_id]) if session[:user_id]
-    @_admin_signed_in = !!(user && (user.admin? || user.episode_editor?))
+    u = current_user
+    !!(u && (u.admin? || u.episode_editor?))
   end
 
-  def require_login;  true; end
-  def require_admin;  true; end
-  def require_authentication; true; end
-  def resume_session; true; end
+  # Global feature flag for the fan forum. Every user-facing forum surface
+  # (nav link, routes, controllers) must gate on this until the public launch.
+  def forum_enabled? = ENV["FORUM_ENABLED"] == "true"
 
-  if Rails.env.production?
-    allow_browser versions: :modern
+  # Redirect anonymous visitors to sign in. Used by forum controllers.
+  def require_login
+    return if logged_in?
+    session[:return_to] = request.fullpath if request.get?
+    redirect_to new_session_path, alert: "Please sign in to continue."
   end
+
+  # Block unverified accounts from mutating actions (posting, replying).
+  def require_verified_user
+    return require_login unless logged_in?
+    return if current_user.email_verified?
+    redirect_to root_path, alert: "Please verify your email address before posting."
+  end
+
 
   private
+
+  def load_current_user
+    if session[:user_id].present?
+      user = User.find_by(id: session[:user_id])
+      return user if user && !user.banned?
+    end
+
+    token = cookies.signed[:forum_session_id]
+    if token.present?
+      s = Session.authenticate_by_token(token)
+      return s.user if s && !s.user.banned?
+    end
+
+    nil
+  end
+
 
   # true if either the season or the series is marked continuous
   def continuous_flag_sql

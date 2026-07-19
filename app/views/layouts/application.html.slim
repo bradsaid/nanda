@@ -133,7 +133,13 @@ html
           = link_to "Locations", locations_path(anchor: "content"), class: "nav-link"
           = link_to "Podcasts & Books", podcasts_path(anchor: "content"), class: "nav-link"
           = link_to "Where to Watch", seasons_path(anchor: "content"), class: "nav-link"
+          - if forum_enabled? || admin_signed_in?
+            = link_to "Forum", forum_path(anchor: "content"), class: "nav-link"
           = link_to "About", about_path(anchor: "content"), class: "nav-link"
+          - if logged_in?
+            = button_to "Sign out", session_path, method: :delete, class: "nav-link btn btn-link p-0", form: { style: "display:inline;" }
+          - elsif forum_enabled?
+            = link_to "Sign in", new_session_path, class: "nav-link"
 
       - if controller.controller_path.start_with?("admin")
         = render "admin/nav"

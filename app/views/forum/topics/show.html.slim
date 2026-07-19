@@ -1,0 +1,65 @@
+- content_for :title, "#{@topic.title} — Forum"
+
+.pb-2.mb-3.border-bottom.site-header
+  nav.small.mb-1
+    = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    = link_to @topic.forum_category.name, forum_category_path(@topic.forum_category), class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    span = @topic.title
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+    h1.h3.mb-0.logo = @topic.title
+    - if logged_in? && current_user.email_verified?
+      - if forum_subscribed?(@topic)
+        = button_to "Unsubscribe", forum_topic_subscription_path(@topic), method: :delete, class: "btn btn-outline-secondary btn-sm"
+      - else
+        = button_to "Subscribe", forum_topic_subscription_path(@topic), method: :post, class: "btn btn-outline-primary btn-sm"
+
+.d-flex.flex-column.gap-3
+  - @posts.each do |p|
+    .card.shadow-sm id="post-#{p.id}"
+      .card-body
+        .d-flex.align-items-start.justify-content-between.gap-3.flex-wrap
+          .small.text-muted
+            strong = forum_user_display(p.user)
+            span.mx-1 ·
+            = forum_time(p.created_at)
+            - if p.edited_at
+              span.ms-2.text-muted = "(edited #{forum_time(p.edited_at)})"
+          - if logged_in?
+            .d-flex.gap-2
+              - if can_edit_post?(p)
+                = link_to "Edit", edit_forum_post_path(p), class: "small text-decoration-none"
+              - if p.user_id != current_user.id
+                = link_to "Report", new_forum_post_report_path(p), class: "small text-decoration-none text-danger"
+        .mt-2.forum-post-body
+          == p.body_html
+        - if p.images.attached?
+          .mt-2.d-flex.flex-wrap.gap-2
+            - p.images.each do |img|
+              = link_to url_for(img), target: "_blank", rel: "noopener"
+                = image_tag img.variant(resize_to_limit: [400, 400]), class: "rounded border", loading: "lazy"
+
+= paginate @posts
+
+- if logged_in? && current_user.email_verified? && !@topic.locked?
+  hr.my-4
+  h2.h5.mb-3 Reply
+  = form_with model: [@topic, @new_post], url: forum_topic_posts_path(@topic), multipart: true, local: true do |f|
+    .mb-2
+      = f.text_area :body, rows: 5, class: "form-control", placeholder: "Write your reply. Markdown supported.", required: true
+    .mb-2
+      = f.label :images, "Attach images (up to #{Forum::Post::MAX_IMAGES_PER_POST}, 5 MB each)", class: "form-label small"
+      = f.file_field :images, multiple: true, accept: "image/*", class: "form-control form-control-sm"
+    = f.submit "Post reply", class: "btn btn-primary"
+- elsif @topic.locked?
+  .alert.alert-warning.mt-3 This topic is locked.
+- elsif logged_in?
+  .alert.alert-info.mt-3
+    | Verify your email to reply.
+- else
+  .alert.alert-info.mt-3
+    = link_to "Sign in", new_session_path
+    |  or
+    = link_to "create an account", signup_path
+    |  to reply.

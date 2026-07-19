@@ -6,6 +6,25 @@
     h1.h3.mb-0 Admin Dashboard
     span.text-muted = Time.current.strftime("%A, %B %-d, %Y %-I:%M %p %Z")
 
+  / ===== Forum quick status =====
+  .row.g-3.mb-4
+    .col-6.col-md-4
+      = link_to admin_forum_reports_path, class: "text-decoration-none" do
+        .card.text-center.shadow-sm class=(@forum_open_reports.to_i.positive? ? "border-danger" : "")
+          .card-body.py-3
+            div.h4.mb-0 = @forum_open_reports
+            small.text-muted Open reports
+    .col-6.col-md-4
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @forum_topics_last_24h
+          small.text-muted New topics (24h)
+    .col-6.col-md-4
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @forum_posts_last_24h
+          small.text-muted New posts (24h)
+
   / ===== Summary Cards =====
   .row.g-3.mb-4
     .col-6.col-md

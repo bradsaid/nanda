@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_16_205746) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_19_120014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -151,6 +151,86 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_205746) do
     t.index ["name", "episode_id"], name: "index_food_sources_on_name_and_episode_id"
   end
 
+  create_table "forum_categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.boolean "locked", default: false, null: false
+    t.integer "topics_count", default: 0, null: false
+    t.datetime "last_topic_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_forum_categories_on_position"
+    t.index ["slug"], name: "index_forum_categories_on_slug", unique: true
+  end
+
+  create_table "forum_posts", force: :cascade do |t|
+    t.bigint "forum_topic_id", null: false
+    t.bigint "user_id", null: false
+    t.text "body", null: false
+    t.text "body_html"
+    t.datetime "edited_at"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_forum_posts_on_deleted_at"
+    t.index ["forum_topic_id", "created_at"], name: "index_forum_posts_on_forum_topic_id_and_created_at"
+    t.index ["forum_topic_id"], name: "index_forum_posts_on_forum_topic_id"
+    t.index ["user_id"], name: "index_forum_posts_on_user_id"
+  end
+
+  create_table "forum_reports", force: :cascade do |t|
+    t.bigint "reporter_id", null: false
+    t.string "reportable_type", null: false
+    t.bigint "reportable_id", null: false
+    t.integer "reason", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.text "notes"
+    t.bigint "handled_by_id"
+    t.datetime "handled_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["handled_by_id"], name: "index_forum_reports_on_handled_by_id"
+    t.index ["reportable_type", "reportable_id"], name: "index_forum_reports_on_reportable"
+    t.index ["reportable_type", "reportable_id"], name: "index_forum_reports_on_reportable_type_and_reportable_id"
+    t.index ["reporter_id"], name: "index_forum_reports_on_reporter_id"
+    t.index ["status"], name: "index_forum_reports_on_status"
+  end
+
+  create_table "forum_subscriptions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "forum_topic_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["forum_topic_id"], name: "index_forum_subscriptions_on_forum_topic_id"
+    t.index ["user_id", "forum_topic_id"], name: "index_forum_subscriptions_on_user_id_and_forum_topic_id", unique: true
+    t.index ["user_id"], name: "index_forum_subscriptions_on_user_id"
+  end
+
+  create_table "forum_topics", force: :cascade do |t|
+    t.bigint "forum_category_id", null: false
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.string "slug", null: false
+    t.boolean "pinned", default: false, null: false
+    t.boolean "locked", default: false, null: false
+    t.integer "posts_count", default: 0, null: false
+    t.integer "views_count", default: 0, null: false
+    t.datetime "last_post_at"
+    t.bigint "last_post_user_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_forum_topics_on_deleted_at"
+    t.index ["forum_category_id", "slug"], name: "index_forum_topics_on_forum_category_id_and_slug", unique: true
+    t.index ["forum_category_id"], name: "index_forum_topics_on_forum_category_id"
+    t.index ["last_post_at"], name: "index_forum_topics_on_last_post_at"
+    t.index ["last_post_user_id"], name: "index_forum_topics_on_last_post_user_id"
+    t.index ["pinned"], name: "index_forum_topics_on_pinned"
+    t.index ["user_id"], name: "index_forum_topics_on_user_id"
+  end
+
   create_table "items", force: :cascade do |t|
     t.citext "name", null: false
     t.string "item_type"
@@ -237,6 +317,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_205746) do
     t.string "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "token"
+    t.datetime "remembered_until"
+    t.index ["token"], name: "index_sessions_on_token", unique: true, where: "(token IS NOT NULL)"
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
@@ -280,7 +363,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_205746) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "role", default: 0, null: false
+    t.string "username"
+    t.datetime "email_verified_at"
+    t.datetime "banned_at"
+    t.text "ban_reason"
+    t.integer "posts_count", default: 0, null: false
+    t.datetime "last_seen_at"
+    t.index ["banned_at"], name: "index_users_on_banned_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true, where: "(username IS NOT NULL)"
   end
 
   create_table "versions", force: :cascade do |t|
@@ -308,6 +399,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_205746) do
   add_foreign_key "episodes", "seasons"
   add_foreign_key "food_sources", "episode_traps"
   add_foreign_key "food_sources", "episodes"
+  add_foreign_key "forum_posts", "forum_topics"
+  add_foreign_key "forum_posts", "users"
+  add_foreign_key "forum_reports", "users", column: "handled_by_id"
+  add_foreign_key "forum_reports", "users", column: "reporter_id"
+  add_foreign_key "forum_subscriptions", "forum_topics"
+  add_foreign_key "forum_subscriptions", "users"
+  add_foreign_key "forum_topics", "forum_categories"
+  add_foreign_key "forum_topics", "users"
+  add_foreign_key "forum_topics", "users", column: "last_post_user_id"
   add_foreign_key "medical_calls", "episodes"
   add_foreign_key "medical_calls", "survivors"
   add_foreign_key "seasons", "series"

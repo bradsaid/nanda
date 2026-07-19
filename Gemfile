@@ -60,3 +60,14 @@ gem "sitemap_generator"
 # Audit trail / change versioning for admin updates
 gem "paper_trail"
 
+# Throttle / block abusive traffic. Baseline rules live in
+# config/initializers/rack_attack.rb; forum-specific rules layer on top.
+gem "rack-attack"
+
+# Markdown for forum posts. Safer than redcarpet, GitHub-flavored, does
+# not permit raw HTML.
+gem "commonmarker"
+
+# Pagination for forum lists (categories, topics, admin queues).
+gem "kaminari"
+

@@ -1,35 +1,44 @@
-div.mx-auto.md:w-2/3.w-full
-  - if alert = flash[:alert]
-    p.py-2.px-3.bg-red-50.mb-5.text-red-500.font-medium.rounded-lg.inline-block#alert = alert
+- content_for :title, "Sign in"
 
-  - if notice = flash[:notice]
-    p.py-2.px-3.bg-green-50.mb-5.text-green-500.font-medium.rounded-lg.inline-block#notice = notice
+.row.justify-content-center
+  .col-md-6.col-lg-5
+    .card.shadow-sm
+      .card-body.p-4
+        h1.h4.mb-3.logo Sign in
 
-  h1.font-bold.text-4xl Sign In
-  br/
+        - if flash[:alert]
+          .alert.alert-danger.py-2.mb-3 = flash[:alert]
+        - if flash[:notice]
+          .alert.alert-success.py-2.mb-3 = flash[:notice]
 
-  = form_with url: session_url, class: "contents" do |form|
-    .my-5
-      = form.email_field :email_address, 
-                          required: true, 
-                          autofocus: true, 
-                          autocomplete: "username", 
-                          placeholder: "Enter your email address", 
-                          value: params[:email_address],
-                          maxlength: 50, 
-                          class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full"
-    br/
-    .my-5
-      = form.password_field :password, 
-                            required: true, 
-                            autocomplete: "current-password", 
-                            placeholder: "Enter your password", 
-                            maxlength: 50, 
-                            class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full"
-    br/
-    .col-span-6.sm:flex.sm:items-center.sm:gap-4
-      .inline
-        = form.submit "Sign in", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer"
-      br/
-      .mt-4.text-sm.text-gray-500.sm:mt-0
-        = link_to "Forgot password?", new_password_path, class: "text-gray-700 underline hover:no-underline"
+        = form_with url: session_url, local: true do |f|
+          - if @return_to.present?
+            = hidden_field_tag :return_to, @return_to
+
+          .mb-3
+            = f.label :email_address, "Email", class: "form-label"
+            = f.email_field :email_address,
+                required: true,
+                autofocus: true,
+                autocomplete: "username",
+                value: params[:email_address],
+                maxlength: 50,
+                class: "form-control"
+
+          .mb-3
+            = f.label :password, "Password", class: "form-label"
+            = f.password_field :password,
+                required: true,
+                autocomplete: "current-password",
+                maxlength: 50,
+                class: "form-control"
+
+          .d-flex.align-items-center.gap-3
+            = f.submit "Sign in", class: "btn btn-primary"
+            = link_to "Forgot password?", new_password_path, class: "small text-muted text-decoration-none"
+
+        - if forum_enabled?
+          hr.my-4
+          p.small.text-muted.mb-0
+            | New here?
+            = link_to "Create an account", signup_path, class: "text-decoration-none ms-1"

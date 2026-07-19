@@ -1,0 +1,29 @@
+- content_for :title, "New topic — #{@category.name}"
+
+.pb-2.mb-3.border-bottom.site-header
+  nav.small.mb-1
+    = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    = link_to @category.name, forum_category_path(@category), class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    span New topic
+  h1.h3.mb-0.logo New topic in #{@category.name}
+
+- if @topic.errors.any?
+  .alert.alert-danger
+    ul.mb-0.small
+      - @topic.errors.full_messages.each do |m|
+        li = m
+
+= form_with model: @topic, url: forum_category_topics_path(@category), local: true do |f|
+  .mb-3
+    = f.label :title, "Topic title", class: "form-label"
+    = f.text_field :title, class: "form-control", required: true, minlength: 3, maxlength: 150, autofocus: true
+
+  .mb-3
+    = label_tag "topic[body]", "First post", class: "form-label"
+    = text_area_tag "topic[body]", nil, rows: 6, class: "form-control", placeholder: "Kick off the discussion. Markdown supported.", required: true
+
+  .d-flex.gap-2
+    = f.submit "Post topic", class: "btn btn-primary"
+    = link_to "Cancel", forum_category_path(@category), class: "btn btn-outline-secondary"

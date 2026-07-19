@@ -1,0 +1,11 @@
+general:
+  name: General Discussion
+  slug: general-discussion
+  description: Chat about anything.
+  position: 10
+
+season:
+  name: Season Talk
+  slug: season-talk
+  description: Live-episode reactions.
+  position: 20
