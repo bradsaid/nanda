@@ -3,10 +3,19 @@ module Forum
     before_action :set_post
 
     def new
+      if @post.user_id == current_user.id
+        redirect_to forum_topic_path(@post.forum_topic), alert: "You can't report your own post."
+        return
+      end
       @report = Forum::Report.new
     end
 
     def create
+      if @post.user_id == current_user.id
+        redirect_to forum_topic_path(@post.forum_topic), alert: "You can't report your own post."
+        return
+      end
+
       @report = Forum::Report.new(report_params)
       @report.reporter    = current_user
       @report.reportable  = @post
