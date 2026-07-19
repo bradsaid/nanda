@@ -19,22 +19,23 @@ module Forum
     end
 
     def create
+      body_text = (params.dig(:forum_topic, :body) || params.dig(:topic, :body)).to_s
       Forum::Topic.transaction do
         @topic = @category.topics.new(topic_params)
         @topic.user = current_user
         if @topic.save
-          @new_post = @topic.posts.create!(user: current_user, body: params.dig(:topic, :body).to_s)
+          @new_post = @topic.posts.create!(user: current_user, body: body_text)
           current_user.forum_subscriptions.find_or_create_by!(forum_topic: @topic)
           redirect_to forum_topic_path(@topic), notice: "Topic posted."
         else
-          @new_post = @topic.posts.new(body: params.dig(:topic, :body))
+          @new_post = @topic.posts.new(body: body_text)
           flash.now[:alert] = "Please fix the errors below."
           render :new, status: :unprocessable_entity
         end
       end
     rescue ActiveRecord::RecordInvalid => e
       flash.now[:alert] = e.record.errors.full_messages.to_sentence
-      @new_post = Forum::Post.new(body: params.dig(:topic, :body))
+      @new_post = Forum::Post.new(body: body_text)
       render :new, status: :unprocessable_entity
     end
 
@@ -68,7 +69,8 @@ module Forum
     end
 
     def topic_params
-      params.require(:topic).permit(:title)
+      key = params[:forum_topic] ? :forum_topic : :topic
+      params.require(key).permit(:title)
     end
 
     def require_ownership(topic, allow_admin: false)

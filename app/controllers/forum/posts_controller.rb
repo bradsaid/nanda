@@ -51,7 +51,8 @@ module Forum
     end
 
     def post_params
-      params.require(:post).permit(:body, images: [])
+      key = params[:forum_post] ? :forum_post : :post
+      params.require(key).permit(:body, images: [])
     end
 
     def require_editable(post, allow_admin: false)

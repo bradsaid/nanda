@@ -21,8 +21,8 @@
     = f.text_field :title, class: "form-control", required: true, minlength: 3, maxlength: 150, autofocus: true
 
   .mb-3
-    = label_tag "topic[body]", "First post", class: "form-label"
-    = text_area_tag "topic[body]", nil, rows: 6, class: "form-control", placeholder: "Kick off the discussion. Markdown supported.", required: true
+    = label_tag "forum_topic[body]", "First post", class: "form-label"
+    = text_area_tag "forum_topic[body]", nil, rows: 6, class: "form-control", placeholder: "Kick off the discussion. Markdown supported.", required: true
 
   .d-flex.gap-2
     = f.submit "Post topic", class: "btn btn-primary"

@@ -26,7 +26,8 @@ module Forum
     end
 
     def report_params
-      params.require(:report).permit(:reason, :notes)
+      key = params[:forum_report] ? :forum_report : :report
+      params.require(key).permit(:reason, :notes)
     end
 
     def notify_admin(report)
