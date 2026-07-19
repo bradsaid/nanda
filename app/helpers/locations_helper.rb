@@ -76,4 +76,19 @@ module LocationsHelper
       "https://cdn.jsdelivr.net/gh/djaiss/mapsicon@master/all/#{cc}/vector.svg"
     end
   end
+
+  # Short survival-focused description for a filming location's country.
+  # Keys in the YAML are case-insensitive.
+  COUNTRY_DESCRIPTIONS = begin
+    yaml_path = Rails.root.join("config", "country_descriptions.yml")
+    raw = YAML.load_file(yaml_path) || {}
+    raw.transform_keys { |k| k.to_s.downcase.strip }.freeze
+  rescue Errno::ENOENT
+    {}.freeze
+  end
+
+  def country_description(country)
+    return nil if country.blank?
+    COUNTRY_DESCRIPTIONS[country.to_s.downcase.strip]
+  end
 end

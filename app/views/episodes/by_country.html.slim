@@ -29,6 +29,13 @@
         p.subtitle.mb-0 = "All Episodes in #{@country}"
     = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
 
+- if (country_desc = country_description(@country))
+  .card.shadow-sm.mb-4.country-description-card
+    .card-body
+      h2.h6.mb-2.text-uppercase.text-muted.fw-semibold(style="letter-spacing: .5px;")
+        | Survival conditions in #{@country}
+      p.mb-0 = country_desc
+
 / Build a flat list of "blocks" — each block is either a continuous-story
 / season (≥2 eps filmed here, shown as one card with shared cast) or a
 / single episode (shown as its own card). Sort the blocks newest-first by
