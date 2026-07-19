@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_19_120014) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_19_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -369,6 +369,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_19_120014) do
     t.text "ban_reason"
     t.integer "posts_count", default: 0, null: false
     t.datetime "last_seen_at"
+    t.text "bio"
     t.index ["banned_at"], name: "index_users_on_banned_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true, where: "(username IS NOT NULL)"

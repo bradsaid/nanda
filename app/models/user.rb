@@ -1,10 +1,22 @@
 class User < ApplicationRecord
+  BIO_MAX_LEN = 500
+
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :forum_topics,        class_name: "Forum::Topic",       dependent: :destroy
   has_many :forum_posts,         class_name: "Forum::Post",        dependent: :destroy
   has_many :forum_subscriptions, class_name: "Forum::Subscription", dependent: :destroy
   has_many :forum_reports_filed, class_name: "Forum::Report",       foreign_key: :reporter_id, dependent: :destroy
+  has_one_attached :avatar
+
+  validates :bio, length: { maximum: BIO_MAX_LEN }, allow_blank: true
+  validate  :avatar_within_limits
+
+  def avatar_within_limits
+    return unless avatar.attached?
+    errors.add(:avatar, "must be an image") unless avatar.blob.content_type.to_s.start_with?("image/")
+    errors.add(:avatar, "must be under 5 MB") if avatar.blob.byte_size > 5.megabytes
+  end
 
   enum :role, { user: 0, admin: 1, episode_editor: 2 }  # no _prefix
 

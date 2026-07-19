@@ -1,0 +1,39 @@
+- content_for :title, "Edit profile — #{@user.username}"
+
+.pb-2.mb-4.border-bottom.site-header
+  nav.small.mb-1
+    = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    = link_to @user.username, forum_profile_path(username: @user.username), class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    span Edit
+  h1.h3.mb-0.logo Edit your profile
+
+.row.justify-content-center
+  .col-md-8
+    .card.shadow-sm
+      .card-body
+        - if @user.errors.any?
+          .alert.alert-danger
+            ul.mb-0.small
+              - @user.errors.full_messages.each do |m|
+                li = m
+
+        = form_with model: @user, url: forum_profile_path(username: @user.username), method: :patch, multipart: true, local: true do |f|
+          .mb-3
+            = f.label :avatar, "Profile picture", class: "form-label"
+            - if @user.avatar.attached?
+              .mb-2
+                = image_tag @user.avatar.variant(resize_to_limit: [128, 128]), class: "rounded-circle border"
+                .small.text-muted.mt-1 Uploading a new image replaces this one.
+            = f.file_field :avatar, accept: "image/*", class: "form-control form-control-sm"
+            .form-text Under 5 MB. Square works best.
+
+          .mb-3
+            = f.label :bio, "About you", class: "form-label"
+            = f.text_area :bio, rows: 4, class: "form-control", maxlength: User::BIO_MAX_LEN, placeholder: "A short introduction. Shown on your profile."
+            .form-text = "Up to #{User::BIO_MAX_LEN} characters."
+
+          .d-flex.gap-2
+            = f.submit "Save profile", class: "btn btn-primary"
+            = link_to "Cancel", forum_profile_path(username: @user.username), class: "btn btn-outline-secondary"
