@@ -35,9 +35,18 @@ module Admin
       @time_by_page  = PageView.avg_duration_by_page(10)
       @recent_views  = PageView.recent(50)
 
-      @forum_open_reports    = ::Forum::Report.status_open.count
-      @forum_topics_last_24h = ::Forum::Topic.where(created_at: 24.hours.ago..).count
-      @forum_posts_last_24h  = ::Forum::Post.where(created_at: 24.hours.ago..).count
+      # Forum counters change slowly enough that a 60s cache is invisible to
+      # the admin but skips 3 aggregate scans per dashboard render. Open
+      # reports also caches — a moderator seeing a fresh report 60s late is
+      # fine, and the "Open reports" card links straight to the queue anyway.
+      @forum_open_reports, @forum_topics_last_24h, @forum_posts_last_24h =
+        Rails.cache.fetch("admin/dashboard/forum_counts/v1", expires_in: 60.seconds) do
+          [
+            ::Forum::Report.status_open.count,
+            ::Forum::Topic.where(created_at: 24.hours.ago..).count,
+            ::Forum::Post.where(created_at: 24.hours.ago..).count
+          ]
+        end
     end
   end
 end
