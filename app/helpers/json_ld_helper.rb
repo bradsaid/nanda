@@ -663,7 +663,11 @@ module JsonLdHelper
       same_as << "https://www.facebook.com/#{handle}" unless handle.empty?
     end
 
-    episodes_total = survivor.appearances.select(:episode_id).distinct.count
+    # Cheap in-memory derivation from the already-loaded appearances relation
+    # to avoid firing an extra COUNT query per survivor page render.
+    episodes_total = appearances.respond_to?(:loaded?) && appearances.loaded? \
+                       ? appearances.map(&:episode_id).uniq.size \
+                       : appearances.pluck(:episode_id).uniq.size
     challenges     = survivor.respond_to?(:episodes_collapsed_count) ? survivor.episodes_collapsed_count.to_i : episodes_total
 
     person = {

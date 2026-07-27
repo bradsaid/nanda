@@ -94,6 +94,14 @@ class SurvivorsController < ApplicationController
     @brought_counts = @survivor.appearance_items.where(source: :brought).joins(:item).group("items.id", "items.name").count
     @given_counts   = @survivor.appearance_items.where(source: :given).joins(:item).group("items.id", "items.name").count
 
+    # Precomputed for the view: use @appearances in-memory instead of firing
+    # 2-3 more small aggregate queries when the same data is already loaded.
+    @episode_ids_count = @appearances.map(&:episode_id).uniq.size
+    @country_counts    = @appearances
+                          .map { |a| a.episode&.location&.country }
+                          .compact_blank
+                          .tally
+
     # Related survivors: co-stars ranked by number of shared episodes. Powers
     # the internal-linking "Related survivors" section — key for crawlability
     # so long-tail survivor pages sit in a dense link graph.

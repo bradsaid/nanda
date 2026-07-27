@@ -1,6 +1,6 @@
 / ===== SEO + JSON-LD: Survivor Show =====
 - name        = @survivor.full_name
-- ep_total    = @survivor.appearances.select(:episode_id).distinct.count
+- ep_total    = @episode_ids_count
 - challenges  = @episodes_collapsed_count
 - img_url     = (@survivor.avatar&.attached? ? url_for(@survivor.avatar.variant(:portrait)) : nil)
 / Bio-derived description gives every survivor page a unique, keyword-rich
@@ -36,7 +36,6 @@
             h1.h2.mb-2.survivor-name = @survivor.full_name
 
             / Quick stats
-            - countries = @survivor.episodes.joins(:location).group("locations.country").count
             .d-flex.align-items-center.justify-content-between.flex-wrap.gap-4
               .d-flex.flex-column.gap-2
                 .stat-pill
@@ -46,11 +45,11 @@
                 .stat-pill
                   span.me-2(aria-hidden="true") 📺
                   strong.me-1 Episodes:
-                  span = @survivor.appearances.count
+                  span = @appearances.size
                 .stat-pill
                   span.me-2(aria-hidden="true") 🌍
                   strong.me-1 Locations:
-                  span = countries.keys.compact.join(", ").presence || "—"
+                  span = @country_counts.keys.join(", ").presence || "—"
 
               - if @survivor.avatar.attached?
                 .text-center.flex-shrink-0
