@@ -1,0 +1,83 @@
+- content_for :title, "Synopsis Queue"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  = render "shared/flash"
+
+  .d-flex.justify-content-between.align-items-center.mb-3
+    div
+      h1.h3.mb-0 Synopsis Queue
+      p.text-muted.small.mb-0 Write episode synopses in the order that will move the needle most.
+    = link_to "All episodes →", admin_episodes_path, class: "btn btn-outline-secondary btn-sm"
+
+  / ===== Progress bar =====
+  .card.shadow-sm.mb-3
+    .card-body.py-3
+      .d-flex.justify-content-between.align-items-baseline.mb-2
+        div
+          strong = "#{@done} / #{@total} episodes have a synopsis"
+          span.text-muted.ms-2 = "(#{@progress}%)"
+        span.small.text-muted = "#{@missing} remaining"
+      .progress(style="height: 10px;")
+        .progress-bar.bg-success role="progressbar" style="width: #{@progress}%" aria-valuenow=@progress aria-valuemin="0" aria-valuemax="100"
+
+  / ===== Filter + sort chips =====
+  .d-flex.flex-wrap.gap-2.mb-3.align-items-center
+    span.small.text-muted.me-1 Show:
+    = link_to "All (#{@total})",         admin_synopsis_queue_path(sort: @sort),                class: "btn btn-sm #{@only.nil?         ? 'btn-secondary' : 'btn-outline-secondary'}"
+    = link_to "Missing (#{@missing})",   admin_synopsis_queue_path(sort: @sort, only: 'missing'), class: "btn btn-sm #{@only == 'missing' ? 'btn-warning'   : 'btn-outline-warning'}"
+    = link_to "Done (#{@done})",         admin_synopsis_queue_path(sort: @sort, only: 'done'),    class: "btn btn-sm #{@only == 'done'    ? 'btn-success'   : 'btn-outline-success'}"
+
+    span.small.text-muted.ms-3.me-1 Sort:
+    = link_to "By traffic (30d)",  admin_synopsis_queue_path(only: @only, sort: 'traffic'),      class: "btn btn-sm #{@sort == 'traffic'       ? 'btn-primary'   : 'btn-outline-primary'}"
+    = link_to "By season/episode", admin_synopsis_queue_path(only: @only, sort: 'chronological'), class: "btn btn-sm #{@sort == 'chronological' ? 'btn-secondary' : 'btn-outline-secondary'}"
+
+  / ===== Queue table =====
+  .card.shadow-sm
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0.align-middle
+        thead.table-light
+          tr
+            th(scope="col" style="width:1rem;") &nbsp;
+            th(scope="col" style="width:2.5rem;") &#35;
+            th(scope="col") Series / Season / Ep
+            th(scope="col") Title
+            th(scope="col") Air Date
+            th(scope="col") Location
+            th.text-end(scope="col") Views 30d
+            th.text-center(scope="col") Synopsis
+            th.text-end(scope="col") Action
+        tbody
+          - if @episodes.empty?
+            tr
+              td.text-muted.text-center.py-4(colspan="9") Nothing to show with those filters.
+          - else
+            - @episodes.each_with_index do |episode, i|
+              - has_syn = episode.synopsis.present?
+              - views   = @traffic_by_episode_id[episode.id].to_i
+              tr class=(has_syn ? "table-success-subtle" : "")
+                td.text-center
+                  input.form-check-input(type="checkbox" checked=has_syn disabled title=(has_syn ? "Synopsis written (#{episode.synopsis.length} chars)" : "No synopsis yet"))
+                td.small.text-muted = i + 1
+                td.text-nowrap
+                  = episode.season.series.name
+                  span.text-muted  ·
+                  = "S#{episode.season.number}E#{episode.number_in_season}"
+                td = episode.title.presence || content_tag(:span, "(untitled)", class: "text-muted fst-italic")
+                td.small = episode.air_date&.strftime("%b %-d, %Y") || "—"
+                td.small = episode.location&.full_address || "—"
+                td.text-end.small
+                  - if views.positive?
+                    strong = number_with_delimiter(views)
+                  - else
+                    span.text-muted —
+                td.text-center
+                  - if has_syn
+                    span.badge.text-bg-success = "#{episode.synopsis.length} ch"
+                  - else
+                    span.badge.text-bg-warning missing
+                td.text-end.text-nowrap
+                  - if has_syn
+                    = link_to "Edit", edit_admin_episode_path(episode, anchor: "synopsis"), class: "btn btn-sm btn-outline-secondary"
+                  - else
+                    = link_to "Write →", edit_admin_episode_path(episode, anchor: "synopsis"), class: "btn btn-sm btn-warning"

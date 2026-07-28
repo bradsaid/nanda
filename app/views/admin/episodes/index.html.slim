@@ -9,6 +9,36 @@
     - if full_admin?
       = link_to "New Episode", new_admin_episode_path, class: "btn btn-primary"
 
+  / ===== Next-up callout (highest-traffic episode still without a synopsis) =====
+  - if @next_up
+    .card.shadow-sm.border-warning.mb-3
+      .card-body.py-3
+        .d-flex.align-items-center.justify-content-between.gap-3.flex-wrap
+          .d-flex.flex-column
+            .small.text-uppercase.text-muted.fw-semibold(style="letter-spacing:.5px;") Next up: highest-traffic episode with no synopsis
+            .fw-semibold
+              = @next_up.season.series.name
+              |  · S#{@next_up.season.number}E#{@next_up.number_in_season}
+              |  · #{@next_up.title.presence || "Untitled"}
+            .small.text-muted
+              - views = @traffic_by_episode_id[@next_up.id].to_i
+              = "#{number_with_delimiter(views)} view#{'s' unless views == 1} in last 30 days"
+              - if @next_up.air_date
+                span.mx-2 ·
+                = "aired #{@next_up.air_date.strftime('%b %-d, %Y')}"
+          = link_to "Write synopsis →", edit_admin_episode_path(@next_up), class: "btn btn-warning"
+
+  / ===== Filter + sort chips =====
+  .d-flex.flex-wrap.gap-2.mb-3.align-items-center
+    span.small.text-muted.me-1 Show:
+    = link_to "All (#{@missing_count + @with_count})", admin_episodes_path(sort: @sort), class: "btn btn-sm #{@filter.nil? ? 'btn-secondary' : 'btn-outline-secondary'}"
+    = link_to "Missing synopsis (#{@missing_count})", admin_episodes_path(filter: "missing_synopsis", sort: @sort), class: "btn btn-sm #{@filter == 'missing_synopsis' ? 'btn-warning' : 'btn-outline-warning'}"
+    = link_to "Has synopsis (#{@with_count})", admin_episodes_path(filter: "has_synopsis", sort: @sort), class: "btn btn-sm #{@filter == 'has_synopsis' ? 'btn-success' : 'btn-outline-success'}"
+
+    span.small.text-muted.ms-3.me-1 Sort:
+    = link_to "By series/season", admin_episodes_path(filter: @filter), class: "btn btn-sm #{@sort.nil? ? 'btn-secondary' : 'btn-outline-secondary'}"
+    = link_to "By traffic (30d)", admin_episodes_path(filter: @filter, sort: "traffic"), class: "btn btn-sm #{@sort == 'traffic' ? 'btn-primary' : 'btn-outline-primary'}"
+
   .card.shadow-sm
     .table-responsive
       table.table.table-sm.table-striped.table-hover.mb-0
@@ -20,13 +50,16 @@
             th Title
             th Air Date
             th Location
+            th.text-center Synopsis
+            - if @sort == "traffic"
+              th.text-end Views 30d
             th.text-center Traps?
             th.text-center Trap Result
             th.text-end Actions
         tbody
           - if @episodes.empty?
             tr
-              td.text-muted.text-center.py-3(colspan="7") No episodes found.
+              td.text-muted.text-center.py-3(colspan="11") No episodes match.
           - else
             - @episodes.each do |episode|
               tr
@@ -36,6 +69,15 @@
                 td= episode.title
                 td= episode.air_date&.strftime("%b %-d, %Y") || "—"
                 td= episode.location&.full_address || "—"
+                td.text-center
+                  - if episode.synopsis.present?
+                    span.badge.text-bg-success = "#{episode.synopsis.length} ch"
+                  - else
+                    span.text-muted —
+                - if @sort == "traffic"
+                  td.text-end.small
+                    - v = @traffic_by_episode_id[episode.id].to_i
+                    = v.positive? ? number_with_delimiter(v) : "—"
                 td.text-center = episode.no_traps? ? "F" : (episode.episode_traps.any? ? "T" : "—")
                 td.text-center.text-nowrap.small
                   - traps = episode.episode_traps

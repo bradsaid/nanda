@@ -46,6 +46,7 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#show"
     resource  :password, only: %i[edit update]
     resources :survivors
+    get "synopsis_queue", to: "synopsis_queue#index"
     resources :seasons do
       member do
         get :latest_episode_participants
