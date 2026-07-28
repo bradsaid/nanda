@@ -3,7 +3,25 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern unless Rails.env.test?
 
-  helper_method :current_user, :logged_in?, :admin_signed_in?, :forum_enabled?
+  helper_method :current_user, :logged_in?, :admin_signed_in?, :forum_enabled?, :should_show_ads?
+
+  # Gate AdSense (meta tag, Funding Choices loader, and any ad slots) off
+  # any page where user-generated content or empty-content routes could
+  # trip AdSense policy. See project_adsense_exclude_forum_on_reapply.md
+  # for the reasoning — most important on the forum surface.
+  AD_EXCLUDED_CONTROLLERS = %w[
+    forum forum/base forum/categories forum/topics forum/posts
+    forum/subscriptions forum/reports forum/profiles
+    admin/forum/categories admin/forum/reports
+    sessions registrations passwords email_verifications
+    survivor_submissions
+  ].freeze
+
+  def should_show_ads?
+    return false if controller_path.start_with?("forum/") || controller_path.start_with?("admin/forum/")
+    return false if AD_EXCLUDED_CONTROLLERS.include?(controller_path)
+    true
+  end
 
   def current_user
     return @current_user if defined?(@current_user)
