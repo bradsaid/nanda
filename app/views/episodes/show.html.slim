@@ -165,7 +165,7 @@
               th(scope="col") Weight Loss
               th(scope="col") Items
           tbody
-            - @active_appearances.each do |a|
+            - @active_appearances.sort_by { |ap| ap.survivor&.full_name.to_s.split.first.to_s.downcase }.each do |a|
               - s = a.survivor
               - start_psr = a.starting_psr
               - end_psr   = a.ending_psr
