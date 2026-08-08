@@ -7,44 +7,67 @@ module ApplicationHelper
   end
 
   def linkify_survivors(text, survivors)
-    return text if text.blank? || survivors.blank?
+    return text if text.blank?
+    survivors = Array(survivors)
     escaped = ERB::Util.html_escape(text)
 
-    # First-name aliases — only when the first name is unambiguous within
-    # the episode's cast (so we don't mislink the wrong "Dan").
+    # 1) Markdown-style italics: *foo* → <em>foo</em>. Runs before any link
+    # substitution so subsequent regexes can still find name matches inside
+    # the emphasis. Non-greedy, single-line, avoids **bold** on both sides.
+    escaped = escaped.gsub(/(?<!\*)\*([^*\n]+)\*(?!\*)/) { "<em>#{$1}</em>" }
+
+    # 2) Cast-scoped survivor aliases (full name, last name, unambiguous
+    # first-two-words for 3+ word names, unambiguous first name).
     first_name_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
       h[s.full_name.to_s.split.first.to_s.downcase] += 1
     end
-
-    # First-two-words aliases — catches compound / middle-inclusive names
-    # like "Ana Lis" (for "Ana Lis Pitter") when the text refers to them
-    # without the surname. Only for survivors with 3+ word full names.
     two_word_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
       parts = s.full_name.to_s.split
       h[parts.first(2).join(" ").downcase] += 1 if parts.size >= 3
     end
-
-    # Build (pattern, survivor) pairs: full name + last name + unambiguous
-    # first-two-words + unambiguous first name.
     aliases = []
     survivors.each do |s|
       parts = s.full_name.to_s.split
       next if parts.empty?
-      aliases << [s.full_name, s]
-      aliases << [parts.last, s] if parts.size > 1
+      aliases << [s.full_name, survivor_path(s)]
+      aliases << [parts.last, survivor_path(s)] if parts.size > 1
       if parts.size >= 3
         two = parts.first(2).join(" ")
-        aliases << [two, s] if two_word_counts[two.downcase] == 1
+        aliases << [two, survivor_path(s)] if two_word_counts[two.downcase] == 1
       end
       if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
-        aliases << [parts.first, s]
+        aliases << [parts.first, survivor_path(s)]
       end
     end
 
-    # Match longer aliases first so "Jeff Zausch" wins over "Jeff".
-    aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, s|
-      escaped = escaped.gsub(/\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i) do |match|
-        "<a href=\"#{survivor_path(s)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
+    # 3) Whole-DB fallback: full-name matches for survivors NOT in the
+    # episode cast (Steven Lee Hall Jr in an LOS-history reference, etc.).
+    # Full-name-only to avoid the false-positive risk of matching common
+    # first/last names across 385 people.
+    cast_ids = survivors.map(&:id).to_set
+    Survivor.where.not(id: cast_ids.to_a).pluck(:full_name, :slug, :id).each do |name, slug, id|
+      next if name.blank?
+      aliases << [name, "/survivors/#{slug.presence || id}"]
+    end
+
+    # 4) Series aliases: full name + short name (name with the "Naked and
+    # Afraid" prefix stripped, so "Naked and Afraid Last One Standing"
+    # also matches "Last One Standing" in prose). Series routes by :id.
+    Series.pluck(:name, :id).each do |name, id|
+      next if name.blank?
+      series_path = "/series/#{id}"
+      full = name
+      short = name.sub(/\ANaked and Afraid[: ]*/i, "").strip
+      [full, short].uniq.reject { |n| n.length < 3 }.each do |alias_name|
+        aliases << [alias_name, series_path]
+      end
+    end
+
+    # Apply longest-first so multi-word matches beat their shorter aliases.
+    aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, path|
+      pattern = /\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="#{path}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
       end
     end
     simple_format(escaped.html_safe)
