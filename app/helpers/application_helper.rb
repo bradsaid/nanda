@@ -16,13 +16,26 @@ module ApplicationHelper
       h[s.full_name.to_s.split.first.to_s.downcase] += 1
     end
 
-    # Build (pattern, survivor) pairs: full name + last name + unambiguous first name.
+    # First-two-words aliases — catches compound / middle-inclusive names
+    # like "Ana Lis" (for "Ana Lis Pitter") when the text refers to them
+    # without the surname. Only for survivors with 3+ word full names.
+    two_word_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
+      parts = s.full_name.to_s.split
+      h[parts.first(2).join(" ").downcase] += 1 if parts.size >= 3
+    end
+
+    # Build (pattern, survivor) pairs: full name + last name + unambiguous
+    # first-two-words + unambiguous first name.
     aliases = []
     survivors.each do |s|
       parts = s.full_name.to_s.split
       next if parts.empty?
       aliases << [s.full_name, s]
       aliases << [parts.last, s] if parts.size > 1
+      if parts.size >= 3
+        two = parts.first(2).join(" ")
+        aliases << [two, s] if two_word_counts[two.downcase] == 1
+      end
       if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
         aliases << [parts.first, s]
       end
@@ -81,11 +94,25 @@ module ApplicationHelper
       end
     end
 
+    # First-two-words aliases (see linkify_survivors for rationale). Same
+    # unambiguity gate as first-name aliases.
+    two_word_counts = all_survivors.each_with_object(Hash.new(0)) do |s, h|
+      parts = s.full_name.to_s.split
+      h[parts.first(2).join(" ").downcase] += 1 if parts.size >= 3
+    end
+
     aliases = []
     survivors.each do |s|
       parts = s.full_name.to_s.split
       next if parts.empty?
       aliases << [s.full_name, s]
+      if parts.size >= 3
+        two = parts.first(2).join(" ")
+        two_lc = two.downcase
+        if two_word_counts[two_lc] == 1 && !subject_tokens.include?(two_lc)
+          aliases << [two, s]
+        end
+      end
       if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
         next if subject_tokens.include?(parts.first.downcase)
         aliases << [parts.first, s]
