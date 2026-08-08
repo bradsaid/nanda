@@ -86,6 +86,9 @@ module SeasonsHelper
         },
         "Naked and Afraid: Global Showdown" => {
           1 => { discovery_go: "https://go.discovery.com/" }
+        },
+        "Naked and Afraid Shipwrecked" => {
+          1 => { discovery_go: "https://go.discovery.com/" }
         }
       }.freeze
     end
