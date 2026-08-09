@@ -85,10 +85,12 @@ module SeasonsHelper
                  max:            "https://play.hbomax.com/" }
         },
         "Naked and Afraid: Global Showdown" => {
-          1 => { discovery_go: "https://go.discovery.com/" }
+          1 => { discovery_go: "https://go.discovery.com/",
+                 max:          "https://play.hbomax.com/" }
         },
         "Naked and Afraid Shipwrecked" => {
-          1 => { discovery_go: "https://go.discovery.com/" }
+          1 => { discovery_go: "https://go.discovery.com/",
+                 max:          "https://play.hbomax.com/" }
         }
       }.freeze
     end
