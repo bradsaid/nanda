@@ -36,6 +36,8 @@ class Item < ApplicationRecord
       self.item_type = "cotton"
     when /shirt|jacket|coat|pants|clothing/
       self.item_type = "clothing"
+    when /hammer|chisel|mallet/
+      self.item_type = "carpentry tool"
     when /snake|lizard|iguana|caiman|crocodile|alligator|turtle|tortoise|frog|toad|
           crab|lobster|shrimp|clam|mussel|oyster|snail|slug|conch|
           fish|eel|catfish|piranha|trout|bass|tilapia|perch|
