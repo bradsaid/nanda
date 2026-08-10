@@ -287,7 +287,8 @@ module ApplicationHelper
     when /shovel/                            then "⛏️"
     when /boat/                              then "🛶"
     when /paddle/                            then "🛶"
-    when /fabric|cloth/                      then "🧵"
+    when /fabric|cloth(?!ing)/               then "🧵"
+    when /shirt|jacket|coat|pants|clothing/  then "👕"
     when /cotton/                            then "☁️"
     when /\bsalt\b/                          then "🧂"
     when /flash\s*light|torch/               then "🔦"
@@ -306,6 +307,7 @@ module ApplicationHelper
       when "comfort item"       then "🛖"
       when "digging tool"       then "⛏️"
       when "cotton"             then "🧺"
+      when "clothing"           then "👕"
       else "🔧"
       end
     end
