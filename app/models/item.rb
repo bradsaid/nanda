@@ -24,7 +24,7 @@ class Item < ApplicationRecord
       self.item_type = "fire starting tool"
      when /\bbow\b|arrow|sling|spear|gun|atlatl|snare|dart/
       self.item_type = "hunting weapon"
-    when /fish|cast|hook|line|mask|fins/
+    when /fish|cast|hook|line|mask|fins|\bnet\b/
       self.item_type = "fishing tool"
     when /cord|rope|string/
       self.item_type = "cordage"

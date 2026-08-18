@@ -267,7 +267,7 @@ module ApplicationHelper
     when /sling/                             then "🎯"
     when /snare/                             then "🪤"
     when /hook/                              then "🪝"
-    when /cast.*net/                         then "🕸️"
+    when /cast.*net|\bnet\b/                 then "🕸️"
     when /snorkel|diving mask|scuba/         then "🤿"
     when /goggle/                            then "🥽"
     when /\bfins?\b/                         then "🩴"
