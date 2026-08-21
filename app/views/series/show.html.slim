@@ -1,0 +1,72 @@
+- content_for :title, "#{@series.name} — Naked and Afraid Fan Wiki"
+- content_for :meta_description, ((series_synopsis(@series) || "").presence || "#{@series.name}: #{@seasons.size} season(s), #{@episode_count} episode(s), #{@survivor_count} survivalists.").first(160)
+- content_for :canonical_url, request.original_url
+
+.container.my-4
+  .pb-2.mb-4.border-bottom.site-header
+    nav.small.mb-1
+      = link_to "Home", root_path, class: "text-decoration-none text-muted"
+      span.mx-1 &raquo;
+      = link_to "Series", series_index_path, class: "text-decoration-none text-muted"
+      span.mx-1 &raquo;
+      span = @series.name
+    h1.h3.mb-0.logo = @series.name
+    - if (syn = series_synopsis(@series))
+      p.subtitle.mb-0.mt-1 = syn
+
+  / ===== Series stats =====
+  .row.g-3.mb-4
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @seasons.size
+          small.text-muted = "Season#{'s' unless @seasons.size == 1}"
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @episode_count
+          small.text-muted Episodes
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = @survivor_count
+          small.text-muted Survivalists
+    .col-6.col-md-3
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          - if @first_air && @last_air
+            div.h6.mb-0 = "#{@first_air.year}#{"–#{@last_air.year}" unless @first_air.year == @last_air.year}"
+          - else
+            div.h6.mb-0 —
+          small.text-muted Airing
+
+  / ===== Seasons =====
+  h2.h5.mb-3 Seasons
+  - if @seasons.any?
+    .card.shadow-sm
+      .list-group.list-group-flush
+        - @seasons.each do |season|
+          - eps = season.episodes.sort_by { |e| [e.number_in_season || 999, e.id] }
+          - first_ep_date = eps.map(&:air_date).compact.min
+          - last_ep_date  = eps.map(&:air_date).compact.max
+          = link_to season_path(season), class: "list-group-item list-group-item-action" do
+            .d-flex.justify-content-between.align-items-center.gap-3.flex-wrap
+              .flex-grow-1
+                strong = "Season #{season.number}"
+                - if season.year
+                  span.text-muted.ms-2 = "(#{season.year})"
+              .text-end.text-muted.small
+                = "#{eps.size} #{'episode'.pluralize(eps.size)}"
+                - if first_ep_date && last_ep_date
+                  br
+                  = "#{first_ep_date.strftime('%b %Y')}#{first_ep_date == last_ep_date ? '' : " – #{last_ep_date.strftime('%b %Y')}"}"
+  - else
+    .card.shadow-sm
+      .card-body.text-muted.text-center.py-4 No seasons recorded yet.
+
+  - if @countries.any?
+    hr.my-4
+    h2.h6.text-muted.mb-2 Countries filmed in
+    .d-flex.flex-wrap.gap-2
+      - @countries.sort.each do |c|
+        = link_to c, by_country_episodes_path(country: c), class: "badge text-bg-light border text-decoration-none"
