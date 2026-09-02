@@ -258,6 +258,7 @@ module ApplicationHelper
     when /pan/                               then "🍳"
     when /pot|pottery/                       then "🍲"
     when /jar/                               then "🫙"
+    when /sack|burlap/                       then "🧺"
     when /blow\s*gun/                        then "🪈"
     when /bow drill/                         then "🔥"
     when /permanganate/                      then "🔥"
