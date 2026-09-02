@@ -257,6 +257,7 @@ module ApplicationHelper
     when /knife|machete|kukri|blade/         then "🔪"
     when /pan/                               then "🍳"
     when /pot|pottery/                       then "🍲"
+    when /jar/                               then "🫙"
     when /blow\s*gun/                        then "🪈"
     when /bow drill/                         then "🔥"
     when /permanganate/                      then "🔥"
