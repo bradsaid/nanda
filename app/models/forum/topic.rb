@@ -17,6 +17,10 @@ module Forum
 
     validates :title, presence: true, length: { in: 3..150 }
 
+    # The categories index renders "Last: ..." from forum_categories.last_topic_at,
+    # but nothing ever wrote the column, so the line never appeared.
+    after_create_commit :touch_category_activity
+
     scope :active,   -> { where(deleted_at: nil) }
     scope :recent,   -> { order(pinned: :desc, last_post_at: :desc) }
     scope :in_order, -> { order(pinned: :desc, last_post_at: :desc, created_at: :desc) }
@@ -27,6 +31,12 @@ module Forum
 
     def should_generate_new_friendly_id?
       title_changed? || slug.blank?
+    end
+
+    private
+
+    def touch_category_activity
+      forum_category.update_columns(last_topic_at: created_at)
     end
   end
 end

@@ -10,7 +10,9 @@
       h1.h3.mb-0.logo = @category.name
       - if @category.description.present?
         p.subtitle.mb-0 = @category.description
-    - if logged_in? && current_user.email_verified?
+    - if @category.locked? && !admin_signed_in?
+      span.badge.text-bg-secondary Locked
+    - elsif logged_in? && current_user.email_verified?
       = link_to "New topic", new_forum_category_topic_path(@category), class: "btn btn-primary"
 
 - if @topics.any?
@@ -47,7 +49,9 @@
 - else
   .card.shadow-sm.text-center.py-4
     p.mb-2.text-muted No topics yet.
-    - if logged_in? && current_user.email_verified?
+    - if @category.locked? && !admin_signed_in?
+      p.small.text-muted.mb-0 This category is locked.
+    - elsif logged_in? && current_user.email_verified?
       = link_to "Start the first thread", new_forum_category_topic_path(@category), class: "btn btn-primary"
     - elsif logged_in?
       p.small.text-muted.mb-0 Verify your email to post.

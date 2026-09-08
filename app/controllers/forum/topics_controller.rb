@@ -1,7 +1,14 @@
 module Forum
   class TopicsController < BaseController
     before_action :set_category, only: [:new, :create]
+    before_action :ensure_category_unlocked, only: [:new, :create]
     before_action :set_topic,    only: [:show, :edit, :update, :destroy]
+    # Ownership guards must run as before_actions: a redirect_to inside a
+    # before_action halts the filter chain, whereas calling them from inside
+    # the action body only returned from the guard itself and let the write
+    # go through.
+    before_action :require_topic_owner,             only: [:edit, :update]
+    before_action :require_topic_owner_or_moderator, only: [:destroy]
 
     def show
       @posts = @topic.posts
@@ -36,16 +43,14 @@ module Forum
       end
     rescue ActiveRecord::RecordInvalid => e
       flash.now[:alert] = e.record.errors.full_messages.to_sentence
-      @new_post = Forum::Post.new(body: body_text)
+      @topic    ||= @category.topics.new
+      @new_post   = Forum::Post.new(body: body_text)
       render :new, status: :unprocessable_entity
     end
 
-    def edit
-      require_ownership(@topic)
-    end
+    def edit; end
 
     def update
-      require_ownership(@topic)
       if @topic.update(topic_params.slice(:title))
         redirect_to forum_topic_path(@topic), notice: "Updated."
       else
@@ -54,7 +59,6 @@ module Forum
     end
 
     def destroy
-      require_ownership(@topic, allow_admin: true)
       @topic.update!(deleted_at: Time.current)
       redirect_to forum_category_path(@topic.forum_category), notice: "Topic removed."
     end
@@ -65,19 +69,33 @@ module Forum
       @category = Forum::Category.friendly.find(params[:category_slug])
     end
 
+    # Admins set "Locked (no new topics)" per category; it had no effect
+    # because nothing ever read the flag. Moderators can still post.
+    def ensure_category_unlocked
+      return unless @category.locked?
+      return if admin_signed_in?
+      redirect_to forum_category_path(@category), alert: "This category is locked."
+    end
+
     def set_topic
       @topic = Forum::Topic.active.friendly.find(params[:slug])
     end
 
+    # The new-topic form posts the title under forum_topic[] and the edit form
+    # under topic[]. Pick whichever key actually carries the title so a form
+    # that splits fields across both keys can't silently drop it.
     def topic_params
-      key = params[:forum_topic] ? :forum_topic : :topic
+      key = params[:forum_topic].respond_to?(:key?) && params[:forum_topic].key?(:title) ? :forum_topic : :topic
       params.require(key).permit(:title)
     end
+
+    def require_topic_owner              = require_ownership(@topic)
+    def require_topic_owner_or_moderator = require_ownership(@topic, allow_admin: true)
 
     def require_ownership(topic, allow_admin: false)
       return if topic.user_id == current_user&.id
       return if allow_admin && admin_signed_in?
-      redirect_to forum_topic_path(topic), alert: "Not your topic." and return
+      redirect_to forum_topic_path(topic), alert: "Not your topic."
     end
   end
 end

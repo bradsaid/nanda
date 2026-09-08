@@ -4,6 +4,10 @@ module Forum
 
     before_action :set_topic, only: [:create]
     before_action :set_post,  only: [:edit, :update, :destroy]
+    # Must be a before_action so the redirect halts the chain — calling this
+    # from inside the action only returned from the guard and let the write
+    # land before blowing up with a DoubleRenderError.
+    before_action :require_editable, only: [:edit, :update, :destroy]
 
     def create
       if @topic.locked?
@@ -21,12 +25,9 @@ module Forum
       end
     end
 
-    def edit
-      require_editable(@post)
-    end
+    def edit; end
 
     def update
-      require_editable(@post)
       if @post.update(post_params.merge(edited_at: Time.current))
         redirect_to forum_topic_path(@post.forum_topic, anchor: "post-#{@post.id}"), notice: "Updated."
       else
@@ -35,7 +36,6 @@ module Forum
     end
 
     def destroy
-      require_editable(@post, allow_admin: true)
       @post.update!(deleted_at: Time.current)
       redirect_to forum_topic_path(@post.forum_topic), notice: "Post removed."
     end
@@ -55,13 +55,18 @@ module Forum
       params.require(key).permit(:body, images: [])
     end
 
-    def require_editable(post, allow_admin: false)
-      return if admin_signed_in? && allow_admin
-      unless post.user_id == current_user&.id
-        redirect_to forum_topic_path(post.forum_topic), alert: "Not your post." and return
+    # Mirrors ForumHelper#can_edit_post?, which is what decides whether the
+    # Edit link is rendered: moderators may always act, authors only inside
+    # the edit window. These used to disagree, so the Edit link shown to a
+    # moderator always bounced with "Not your post."
+    def require_editable
+      return if admin_signed_in?
+      unless @post.user_id == current_user&.id
+        redirect_to forum_topic_path(@post.forum_topic), alert: "Not your post."
+        return
       end
-      if post.created_at < EDIT_WINDOW.ago && !admin_signed_in?
-        redirect_to forum_topic_path(post.forum_topic), alert: "Edit window expired." and return
+      if @post.created_at < EDIT_WINDOW.ago
+        redirect_to forum_topic_path(@post.forum_topic), alert: "Edit window expired."
       end
     end
   end

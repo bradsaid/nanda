@@ -8,9 +8,11 @@ module ForumHelper
     end
   end
 
+  # Never fall back to the email local-part here — this string is rendered
+  # publicly on posts, profiles and report previews.
   def forum_user_display(user)
     return "[deleted]" if user.nil?
-    user.username.presence || user.email_address.split("@").first
+    user.username.presence || "member"
   end
 
   # Renders the user's display name as a link to their forum profile when a

@@ -7,6 +7,12 @@ class User < ApplicationRecord
   has_many :forum_posts,         class_name: "Forum::Post",        dependent: :destroy
   has_many :forum_subscriptions, class_name: "Forum::Subscription", dependent: :destroy
   has_many :forum_reports_filed, class_name: "Forum::Report",       foreign_key: :reporter_id, dependent: :destroy
+  # Both columns carry an FK but no dependent: rule, so destroying a user who
+  # had left the last reply on a surviving topic (or had handled a report)
+  # raised PG::ForeignKeyViolation. Nullify instead — the views already treat
+  # a missing last_post_user / handled_by as "unknown".
+  has_many :forum_topics_last_posted, class_name: "Forum::Topic",  foreign_key: :last_post_user_id, dependent: :nullify
+  has_many :forum_reports_handled,    class_name: "Forum::Report", foreign_key: :handled_by_id,     dependent: :nullify
   has_one_attached :avatar
 
   validates :bio, length: { maximum: BIO_MAX_LEN }, allow_blank: true
