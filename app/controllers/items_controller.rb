@@ -6,6 +6,10 @@ class ItemsController < ApplicationController
   def index
     @q       = params[:q].to_s.strip
     @country = params[:country].presence
+    # "Both" (the default) is no filter at all, so the handful of rows with
+    # other sources (found/earned/foraged) still show up rather than being
+    # silently dropped by a brought-OR-given clause.
+    @source  = params[:source].to_s.presence_in(%w[brought given])
     @limit   = (params[:limit].presence || 20).to_i.clamp(1, 200)
 
     @countries = Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
@@ -16,12 +20,13 @@ class ItemsController < ApplicationController
       Item.maximum(:updated_at)&.to_i,
       AppearanceItem.maximum(:updated_at)&.to_i
     ].compact.max
-    cache_key_base = ["items#index", @q, @country, @limit, data_version].join("/")
+    cache_key_base = ["items#index", @q, @country, @source, @limit, data_version].join("/")
 
     # Base (used for your other lists)
     ai = AppearanceItem.joins(:item, appearance: { episode: [:location, { season: :series }] })
     ai = ai.where("items.name ILIKE ?", "%#{@q}%") if @q.present?
     ai = ai.where(locations: { country: @country }) if @country.present?
+    ai = ai.where(appearance_items: { source: @source }) if @source.present?
 
     # ===== Top lists =====
     top_brought_scope = AppearanceItem.where(source: "brought").joins(:item)
@@ -116,14 +121,15 @@ class ItemsController < ApplicationController
     end
 
     @items_by_type = Rails.cache.fetch("#{cache_key_base}/items_by_type", expires_in: INDEX_CACHE_TTL) do
-      if @country.present?
-        Item.where.not(item_type: [nil, ""])
-            .joins(appearance_items: { appearance: { episode: :location } })
-            .where(locations: { country: @country })
-            .group(:item_type)
-            .order(Arel.sql("COUNT(DISTINCT items.id) DESC"))
-            .distinct
-            .count("items.id")
+      if @country.present? || @source.present?
+        join = @country.present? ? { appearance_items: { appearance: { episode: :location } } } : :appearance_items
+        rel  = Item.where.not(item_type: [nil, ""]).joins(join)
+        rel  = rel.where(locations: { country: @country })       if @country.present?
+        rel  = rel.where(appearance_items: { source: @source })  if @source.present?
+        rel.group(:item_type)
+           .order(Arel.sql("COUNT(DISTINCT items.id) DESC"))
+           .distinct
+           .count("items.id")
       else
         Item.where.not(item_type: [nil, ""])
             .group(:item_type)

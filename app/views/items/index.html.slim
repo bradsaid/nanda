@@ -35,63 +35,55 @@
         .col-md-4
           = label_tag :q, "Search items", class: "form-label"
           = text_field_tag :q, @q, placeholder: "e.g. machete", class: "form-control"
-        .col-md-4
+        .col-md-3
           = label_tag :country, "Location", class: "form-label"
           = select_tag :country,
               options_for_select([["All Locations", ""]] + @countries.map { |c| [c, c] }, @country),
+              class: "form-select"
+        .col-md-3
+          = label_tag :source, "Source", class: "form-label"
+          = select_tag :source,
+              options_for_select([["Brought & given", ""], ["Brought only", "brought"], ["Given only", "given"]], @source),
               class: "form-select"
         .col-12.col-md-auto.d-flex.align-items-end.gap-2
           = submit_tag "Apply", class: "btn btn-dark mb-1"
           = link_to "Reset", items_path, class: "btn btn-light mb-1"
 
   / ===== Top Lists (Adjusted totals) — hidden when searching =====
+  / Brought and given are source-specific by definition, so a source filter
+  / drops the card that contradicts it; the remaining card spans full width.
   - unless @q.present?
+    - top_col = @source.present? ? "col-12" : "col-lg-6"
     .row.g-4
-      .col-lg-6
-        .card.shadow-sm.h-100
-          .card-header.d-flex.justify-content-between.align-items-center
-            span.fw-medium Top Brought Items
-            span.small.text-muted = "#{@top_brought.sum { |r| r.read_attribute(:total).to_i }} overall"
-          .table-responsive
-            table.table.table-sm.table-hover.mb-0
-              thead.table-light
-                tr
-                  th Item
-                  th.text-end Total
-              tbody
-                - if @top_brought.blank?
+      - [["brought", "Top Brought Items", @top_brought], ["given", "Top Given Items", @top_given]].each do |src, heading, rows|
+        - next if @source.present? && @source != src
+        div class=top_col
+          .card.shadow-sm.h-100
+            .card-header.d-flex.justify-content-between.align-items-center
+              span.fw-medium = heading
+              span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total).to_i }} overall"
+            .table-responsive
+              table.table.table-sm.table-hover.mb-0
+                thead.table-light
                   tr
-                    td.text-muted.py-4(colspan="2") No data
-                - else
-                  - @top_brought.each do |r|
+                    th Item
+                    th.text-end Total
+                tbody
+                  - if rows.blank?
                     tr
-                      td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
-                      td.text-end = r.read_attribute(:total).to_i
-
-      .col-lg-6
-        .card.shadow-sm.h-100
-          .card-header.d-flex.justify-content-between.align-items-center
-            span.fw-medium Top Given Items
-            span.small.text-muted = "#{@top_given.sum { |r| r.read_attribute(:total).to_i }} overall"
-          .table-responsive
-            table.table.table-sm.table-hover.mb-0
-              thead.table-light
-                tr
-                  th Item
-                  th.text-end Total
-              tbody
-                - if @top_given.blank?
-                  tr
-                    td.text-muted.py-4(colspan="2") No data
-                - else
-                  - @top_given.each do |r|
-                    tr
-                      td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
-                      td.text-end = r.read_attribute(:total).to_i
+                      td.text-muted.py-4(colspan="2") No data
+                  - else
+                    - rows.each do |r|
+                      tr
+                        td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
+                        td.text-end = r.read_attribute(:total).to_i
 
 
   / ===== Rarest Items (by adjusted total occurrences > 0) =====
+  / Under a source filter the opposite column is always 0, so drop it.
   - unless @q.present?
+    - show_brought = @source.blank? || @source == "brought"
+    - show_given   = @source.blank? || @source == "given"
     .card.shadow-sm.mt-4
       .card-header.fw-medium Rarest Items
       .table-responsive
@@ -100,19 +92,23 @@
             tr
               th Item
               th.text-end Total
-              th.text-end Brought
-              th.text-end Given
+              - if show_brought
+                th.text-end Brought
+              - if show_given
+                th.text-end Given
           tbody
             - if @rarest.blank?
               tr
-                td.text-muted.py-4(colspan="4") No data
+                td.text-muted.py-4(colspan=(2 + (show_brought ? 1 : 0) + (show_given ? 1 : 0))) No data
             - else
               - @rarest.each do |r|
                 tr
                   td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
                   td.text-end = r.read_attribute(:total).to_i
-                  td.text-end = r.read_attribute(:brought_total).to_i
-                  td.text-end = r.read_attribute(:given_total).to_i
+                  - if show_brought
+                    td.text-end = r.read_attribute(:brought_total).to_i
+                  - if show_given
+                    td.text-end = r.read_attribute(:given_total).to_i
 
     / ===== Items by Type =====
     .card.shadow-sm.mt-4
