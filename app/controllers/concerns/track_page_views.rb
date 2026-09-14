@@ -22,7 +22,6 @@ module TrackPageViews
     return if request.user_agent.blank? || BOT_PATTERN.match?(request.user_agent)
 
     ua  = UserAgent.parse(request.user_agent.to_s)
-    geo = geocode_ip(request.remote_ip)
     ref = request.referrer
     ref_domain = extract_domain(ref)
     is_self = ref_domain&.sub(/\Awww\./, "")&.downcase == "nakedandafraidfan.com"
@@ -40,10 +39,11 @@ module TrackPageViews
       device_type:     ua.mobile? ? "Mobile" : "Desktop",
       visitor_id:      persistent_visitor_id,
       session_id:      page_view_session_id,
-      referrer_domain: is_self ? nil : ref_domain,
-      country:         geo&.dig(:country),
-      city:            geo&.dig(:city)
+      referrer_domain: is_self ? nil : ref_domain
     )
+
+    # Geo resolution is an external HTTP call — keep it off the request path.
+    GeocodePageViewJob.perform_later(pv.id) if geocodable_ip?(pv.ip_address)
 
     response.set_header("X-Page-View-Id", pv.id.to_s)
     cookies[:_pv_id] = { value: pv.id.to_s, path: "/", httponly: false }
@@ -67,12 +67,7 @@ module TrackPageViews
     nil
   end
 
-  def geocode_ip(ip)
-    return nil if ip.blank? || ip == "127.0.0.1" || ip == "::1"
-    result = Geocoder.search(ip).first
-    return nil unless result
-    { country: result.country, city: result.city.presence }
-  rescue StandardError
-    nil
+  def geocodable_ip?(ip)
+    ip.present? && ip != "127.0.0.1" && ip != "::1"
   end
 end
