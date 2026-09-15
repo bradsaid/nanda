@@ -32,8 +32,9 @@ namespace :cache do
 
   def ms_since(t) = ((Time.current - t) * 1000).round
 
-  def log(msg)
-    Rails.logger.info msg
-    puts msg
-  end
+  # Just puts: on Heroku the Rails logger also writes to stdout, so the old
+  # `Rails.logger.info` + `puts` pairing emitted every line to the dyno log
+  # twice (visible in production as duplicate "populated in 597ms" entries
+  # 22 microseconds apart).
+  def log(msg) = puts(msg)
 end
