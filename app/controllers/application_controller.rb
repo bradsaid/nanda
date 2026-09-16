@@ -3,7 +3,8 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern unless Rails.env.test?
 
-  helper_method :current_user, :logged_in?, :admin_signed_in?, :forum_enabled?, :should_show_ads?
+  helper_method :current_user, :logged_in?, :admin_signed_in?, :forum_enabled?, :should_show_ads?,
+                :forum_preview_access?
 
   # Gate AdSense (meta tag, Funding Choices loader, and any ad slots) off
   # any page where user-generated content or empty-content routes could
@@ -36,6 +37,13 @@ class ApplicationController < ActionController::Base
   def admin_signed_in?
     u = current_user
     !!(u && (u.admin? || u.episode_editor?))
+  end
+
+  # May this visitor see the forum before its public launch? Admins and
+  # episode editors always could; forum_tester accounts can too, without
+  # picking up any of the /admin privileges admin_signed_in? carries.
+  def forum_preview_access?
+    admin_signed_in? || !!current_user&.forum_tester?
   end
 
   # Global feature flag for the fan forum. Every user-facing forum surface

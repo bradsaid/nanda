@@ -16,7 +16,7 @@ module Forum
     private
 
     def ensure_forum_available
-      return if forum_enabled? || admin_signed_in?
+      return if forum_enabled? || forum_preview_access?
       raise ActionController::RoutingError, "Not Found"
     end
 

@@ -24,7 +24,11 @@ class User < ApplicationRecord
     errors.add(:avatar, "must be under 5 MB") if avatar.blob.byte_size > 5.megabytes
   end
 
-  enum :role, { user: 0, admin: 1, episode_editor: 2 }  # no _prefix
+  # forum_tester grants nothing except visibility of the forum while
+  # FORUM_ENABLED is unset (see ApplicationController#forum_preview_access?).
+  # It is deliberately NOT part of admin_signed_in?, so these accounts get no
+  # /admin access, no forum moderation powers, and no admin redirect on login.
+  enum :role, { user: 0, admin: 1, episode_editor: 2, forum_tester: 3 }  # no _prefix
 
   attr_accessor :phone_number  # honeypot field on signup, never persisted
 
