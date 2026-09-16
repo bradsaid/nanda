@@ -127,4 +127,40 @@ class Forum::RegressionsTest < ActionDispatch::IntegrationTest
     assert_select "form textarea[name=?]", "forum_topic[body]"
     assert_select "form input[name=?]",    "topic[title]", count: 0
   end
+
+  # BUG-01 (found in production QA): regenerating the slug on every title edit
+  # moved the topic to a new URL and left the old one 404ing.
+  test "BUG11 renaming a topic keeps its original URL" do
+    sign_in_as(@owner)
+    original = @topic.slug
+    patch forum_topic_path(@topic), params: { topic: { title: "A completely different title" } }
+    @topic.reload
+    assert_equal "A completely different title", @topic.title, "the title must still change"
+    assert_equal original, @topic.slug, "the slug must not move"
+    get forum_topic_path(original)
+    assert_response :success, "the original URL must still resolve"
+  end
+
+  test "BUG11b a brand new topic still gets a slug from its title" do
+    sign_in_as(@owner)
+    post forum_category_topics_path(@category), params: {
+      forum_topic: { title: "Fresh slug please", body: "body" }
+    }
+    assert_equal "fresh-slug-please", Forum::Topic.order(:id).last.slug
+  end
+
+  # BUG-02 (found in production QA): posts_count is a counter cache and keeps
+  # counting soft-deleted posts, so the listing over-reported replies.
+  test "BUG12 category reply count ignores soft-deleted posts" do
+    3.times { |i| @topic.posts.create!(user: @other, body: "reply #{i}") }
+    @topic.reload
+    get forum_category_path(@category)
+    assert_select "td[data-label=Replies]", { text: "3" }
+
+    @topic.posts.order(:id).last.update!(deleted_at: Time.current)
+    get forum_category_path(@category)
+    assert_select "td[data-label=Replies]", { text: "2" },
+      "a deleted reply must stop being counted"
+  end
+
 end

@@ -35,7 +35,7 @@
                   ' by
                   = forum_user_link(t.user)
                   '  · #{forum_time(t.created_at)}
-              td data-label="Replies" = [t.posts_count - 1, 0].max
+              td data-label="Replies" = [@active_post_counts.fetch(t.id, 0) - 1, 0].max
               td data-label="Last activity"
                 - if t.last_post_at
                   = forum_time(t.last_post_at)

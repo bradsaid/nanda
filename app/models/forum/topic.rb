@@ -29,8 +29,12 @@ module Forum
     def soft_deleted?   = deleted_at.present?
     def to_param        = slug
 
+    # Deliberately NOT title_changed?. Regenerating the slug on every title
+    # edit silently moved the topic to a new URL and left the old one 404ing,
+    # killing bookmarks, cross-links from other threads and indexed results.
+    # The slug is minted once and then frozen; the title stays free to change.
     def should_generate_new_friendly_id?
-      title_changed? || slug.blank?
+      slug.blank?
     end
 
     private
