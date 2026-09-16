@@ -15,4 +15,15 @@ test:
   <<: *default
 
 production:
-  <<: *default
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 500
+  workers:
+    # 2 job threads, not the default 3. The pool comes from RAILS_MAX_THREADS,
+    # which is 3 on this dyno, and the worker also needs a connection of its own
+    # for polling and heartbeats — 3 job threads would sit exactly at capacity
+    # and start raising ConnectionTimeoutError under any concurrency.
+    - queues: "*"
+      threads: 2
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      polling_interval: 0.1

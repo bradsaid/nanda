@@ -49,8 +49,12 @@ Rails.application.configure do
   # Replace the default in-process memory cache store with a durable alternative.
   config.cache_store = :solid_cache_store
 
-  # Run jobs in-process (SolidQueue tables not provisioned on Heroku).
-  config.active_job.queue_adapter = :async
+  # Durable, out-of-process job queue. The Solid Queue tables are provisioned
+  # by db/migrate/20260916120000_install_solid_queue.rb, and the supervisor runs
+  # inside Puma (config/puma.rb) when SOLID_QUEUE_IN_PUMA is set, so no extra
+  # dyno is needed. The previous :async adapter ran jobs on Puma's own request
+  # threads and lost anything still queued whenever the dyno restarted.
+  config.active_job.queue_adapter = :solid_queue
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

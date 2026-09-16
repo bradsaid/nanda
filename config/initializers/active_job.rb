@@ -1,3 +1,5 @@
-# SolidQueue tables are not provisioned on Heroku.
-# Force :async so ActiveStorage::AnalyzeJob (and others) don't crash.
-Rails.application.config.active_job.queue_adapter = :async if Rails.env.production?
+# Solid Queue is now provisioned (see db/migrate/*_install_solid_queue.rb), so
+# the adapter is set per-environment in config/environments/*.rb rather than
+# being forced here. This file previously pinned production to :async because
+# the queue tables did not exist yet; leaving that in place would silently
+# override the environment setting, since initializers load after it.
