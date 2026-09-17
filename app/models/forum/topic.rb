@@ -15,6 +15,10 @@ module Forum
                               foreign_key: :forum_topic_id, dependent: :destroy
     has_many :reports, as: :reportable, class_name: "Forum::Report", dependent: :destroy
 
+    # Shared by TopicsController#show (pagination) and PostsController#create
+    # (working out which page a brand new reply landed on).
+    POSTS_PER_PAGE = 20
+
     validates :title, presence: true, length: { in: 3..150 }
 
     # The categories index renders "Last: ..." from forum_categories.last_topic_at,

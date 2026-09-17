@@ -9,11 +9,18 @@
     span = @topic.title
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
     h1.h3.mb-0.logo = @topic.title
-    - if logged_in? && current_user.email_verified?
-      - if forum_subscribed?(@topic)
-        = button_to "Unsubscribe", forum_topic_subscription_path(@topic), method: :delete, class: "btn btn-outline-secondary btn-sm"
-      - else
-        = button_to "Subscribe", forum_topic_subscription_path(@topic), method: :post, class: "btn btn-outline-primary btn-sm"
+    .d-flex.gap-2.flex-wrap
+      - if logged_in? && current_user.email_verified?
+        - if forum_subscribed?(@topic)
+          = button_to "Unsubscribe", forum_topic_subscription_path(@topic), method: :delete, class: "btn btn-outline-secondary btn-sm"
+        - else
+          = button_to "Subscribe", forum_topic_subscription_path(@topic), method: :post, class: "btn btn-outline-primary btn-sm"
+      / TopicsController#destroy already allows the author (and moderators) to
+      / remove a topic; the control was simply never rendered.
+      - if logged_in? && (@topic.user_id == current_user.id || can_moderate_forum?)
+        = button_to "Delete topic", forum_topic_path(@topic), method: :delete,
+          class: "btn btn-outline-danger btn-sm",
+          form: { data: { turbo_confirm: "Delete this topic and all of its replies? This cannot be undone." } }
 
 .d-flex.flex-column.gap-3
   - @posts.each do |p|
@@ -26,6 +33,7 @@
             = forum_time(p.created_at)
             - if p.edited_at
               span.ms-2.text-muted = "(edited #{forum_time(p.edited_at)})"
+            = link_to "Permalink", forum_topic_path(@topic, page: params[:page].presence, anchor: "post-#{p.id}"), class: "ms-2 text-decoration-none", title: "Link to this post"
           - if logged_in?
             .d-flex.gap-2
               - if can_edit_post?(p)
@@ -35,7 +43,7 @@
         .mt-2.forum-post-body
           == p.body_html
         - if p.images.attached?
-          .mt-2.d-flex.flex-wrap.gap-2
+          .mt-2.d-flex.flex-wrap.gap-2.forum-post-images
             - p.images.each do |img|
               = link_to url_for(img), target: "_blank", rel: "noopener"
                 = image_tag img.variant(resize_to_limit: [400, 400]), class: "rounded border", loading: "lazy"

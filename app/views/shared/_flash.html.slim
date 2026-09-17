@@ -1,9 +1,8 @@
-/ app/views/shared/_flash.html.slim
-/ Bootstrap alerts for Rails flash
-- flash.each do |type, msg|
-  - next if msg.blank?
-  - bs_type = { "notice" => "success", "alert" => "danger" }.fetch(type.to_s, "info")
-
-  .alert.alert-dismissible.fade.show class="alert-#{bs_type}" role="alert" aria-live="polite"
-    = msg
-    button.btn-close type="button" data-bs-dismiss="alert" aria-label="Close"
+/ Flash messages were set all over the app (notice: / alert:) but no layout
+/ ever rendered them, so every success and error was silently discarded —
+/ which is why a rejected upload looked like it simply did nothing.
+- flash.each do |type, message|
+  - next if message.blank?
+  - css = { "notice" => "alert-success", "alert" => "alert-danger" }.fetch(type.to_s, "alert-info")
+  div class="alert #{css} mb-3" role="alert" aria-live="polite"
+    = message

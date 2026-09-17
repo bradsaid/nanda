@@ -14,12 +14,19 @@ module Forum
       @role_badge   = @user.admin? ? "Admin" : (@user.episode_editor? ? "Editor" : nil)
     end
 
-    def edit; end
+    def edit
+      @avatar_preview = @user.avatar
+    end
 
     def update
       if @user.update(profile_params)
         redirect_to forum_profile_path(username: @user.username), notice: "Profile updated."
       else
+        # A rejected upload (too large, wrong type) is still assigned to @user
+        # in memory and was never saved, so rendering a variant preview from it
+        # raised "Cannot get a signed_id for a new record" and 500'd the page.
+        # Preview the avatar that is actually stored instead.
+        @avatar_preview = User.find(@user.id).avatar
         flash.now[:alert] = @user.errors.full_messages.to_sentence
         render :edit, status: :unprocessable_entity
       end

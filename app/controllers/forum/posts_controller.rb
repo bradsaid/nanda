@@ -19,7 +19,10 @@ module Forum
 
       if @post.save
         current_user.forum_subscriptions.find_or_create_by!(forum_topic: @topic)
-        redirect_to forum_topic_path(@topic, anchor: "post-#{@post.id}"), notice: "Reply posted."
+        # Without the page, a reply sent from page 2 dropped the author back on
+        # page 1 with their new post nowhere in sight.
+        redirect_to forum_topic_path(@topic, page: page_for(@post), anchor: "post-#{@post.id}"),
+                    notice: "Reply posted."
       else
         redirect_to forum_topic_path(@topic), alert: @post.errors.full_messages.to_sentence
       end
@@ -44,6 +47,14 @@ module Forum
 
     def set_topic
       @topic = Forum::Topic.active.friendly.find(params[:topic_slug])
+    end
+
+    # Which page of the topic does this post fall on, counting only the posts
+    # that are actually rendered (soft-deleted ones are skipped in the view, so
+    # counting all rows would drift the page number).
+    def page_for(post)
+      position = post.forum_topic.posts.active.where("forum_posts.created_at <= ?", post.created_at).count
+      [(position.to_f / Forum::Topic::POSTS_PER_PAGE).ceil, 1].max
     end
 
     def set_post

@@ -22,9 +22,9 @@
         = form_with model: @user, url: forum_profile_path(username: @user.username), method: :patch, multipart: true, local: true do |f|
           .mb-3
             = f.label :avatar, "Profile picture", class: "form-label"
-            - if @user.avatar.attached?
+            - if @avatar_preview&.attached?
               .mb-2
-                = image_tag @user.avatar.variant(resize_to_limit: [128, 128]), class: "rounded-circle border"
+                = image_tag @avatar_preview.variant(resize_to_limit: [128, 128]), class: "rounded-circle border"
                 .small.text-muted.mt-1 Uploading a new image replaces this one.
             = f.file_field :avatar, accept: "image/*", class: "form-control form-control-sm"
             .form-text Under 5 MB. Square works best.

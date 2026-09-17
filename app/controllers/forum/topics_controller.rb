@@ -15,7 +15,7 @@ module Forum
                       .active
                       .includes(:user, images_attachments: :blob)
                       .chronological
-                      .page(params[:page]).per(20)
+                      .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
       @new_post = Forum::Post.new
       @topic.increment!(:views_count) unless request.headers["Turbo-Frame"].present?
     end

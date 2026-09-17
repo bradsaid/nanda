@@ -943,3 +943,24 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
 .site-header.site-header-faded {
   background: linear-gradient(135deg, #b8893d, #cda04a) !important;
 }
+
+
+/* ===== Forum fixes (found in browser QA) ===== */
+
+/* Attached images ran past the content box on narrow screens, forcing the
+   whole page to scroll sideways. */
+.forum-post-body img,
+.forum-post-images img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Buttons in the dark site header showed no visible focus: Bootstrap marks
+   focus with a box-shadow that disappears against the olive background.
+   Keyboard users could tab onto "New topic" with no indication. */
+.site-header .btn:focus-visible,
+.site-header a:focus-visible {
+  outline: 3px solid #ffd479 !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
