@@ -49,19 +49,16 @@ Rails.application.configure do
   # Replace the default in-process memory cache store with a durable alternative.
   config.cache_store = :solid_cache_store
 
-  # Back on :async after the Solid Queue in-Puma attempt took the dyno down.
-  # The Puma solid_queue plugin stops Puma when its supervisor dies ("Detected
-  # Solid Queue has gone away, stopping Puma..."), which on a one-dyno Heroku
-  # app turns any supervisor failure into a crash loop serving H10s. It was not
-  # memory — no R14 appeared — and the cause is still unidentified.
+  # Durable, out-of-process jobs. The earlier attempt at this crash-looped the
+  # dyno; the cause turned out to be the database pool being pinned to Puma's
+  # thread count, so Solid Queue refused to boot and the Puma plugin stopped
+  # Puma in response. config/database.yml now sizes the pool independently, and
+  # the supervisor was verified starting cleanly on a one-off dyno before this
+  # was switched back on.
   #
-  # The queue tables are provisioned and staying: the retry should prove the
-  # supervisor out of band (heroku run rails solid_queue:start) or give it its
-  # own dyno, where it cannot take the web process with it.
-  #
-  # Known cost of :async: jobs run on Puma's request threads and anything still
-  # queued is lost on restart. See app/models/forum/post.rb#notify_subscribers.
-  config.active_job.queue_adapter = :async
+  # Jobs only actually run once SOLID_QUEUE_IN_PUMA is set; until then they
+  # enqueue durably and wait, rather than being lost as they were under :async.
+  config.active_job.queue_adapter = :solid_queue
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

@@ -23,7 +23,16 @@ test:
 production:
   primary: &primary_production
     url: <%= ENV["DATABASE_URL"] %>
-    pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+    # Deliberately NOT just RAILS_MAX_THREADS. Solid Queue refuses to boot if
+    # the pool is smaller than the threads it needs (workers + dispatcher +
+    # scheduler), and with the pool pinned to Puma's 3 threads it exited
+    # immediately with "configured to use 4 threads but the database connection
+    # pool is 3" — which the Puma plugin turned into a dyno crash loop.
+    #
+    # Budget: this is a Heroku essential-0 database, ceiling 20 connections.
+    # Pools are lazy, so the web process still only opens the ~3 it uses; this
+    # just raises the cap enough for Solid Queue to start.
+    pool: <%= ENV.fetch("DB_POOL") { ENV.fetch("RAILS_MAX_THREADS", 5).to_i + 4 } %>
 
   cache:
     <<: *primary_production
