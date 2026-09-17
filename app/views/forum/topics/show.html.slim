@@ -15,9 +15,11 @@
           = button_to "Unsubscribe", forum_topic_subscription_path(@topic), method: :delete, class: "btn btn-outline-secondary btn-sm"
         - else
           = button_to "Subscribe", forum_topic_subscription_path(@topic), method: :post, class: "btn btn-outline-primary btn-sm"
-      / TopicsController#destroy already allows the author (and moderators) to
-      / remove a topic; the control was simply never rendered.
+      / TopicsController#edit/#update and #destroy both allow the author (and
+      / moderators); neither control was ever rendered. The slug is frozen at
+      / creation, so renaming no longer moves the URL.
       - if logged_in? && (@topic.user_id == current_user.id || can_moderate_forum?)
+        = link_to "Edit title", edit_forum_topic_path(@topic), class: "btn btn-outline-secondary btn-sm"
         = button_to "Delete topic", forum_topic_path(@topic), method: :delete,
           class: "btn btn-outline-danger btn-sm",
           form: { data: { turbo_confirm: "Delete this topic and all of its replies? This cannot be undone." } }

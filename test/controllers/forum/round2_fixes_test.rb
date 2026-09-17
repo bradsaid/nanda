@@ -72,4 +72,30 @@ class Forum::Round2FixesTest < ActionDispatch::IntegrationTest
     get forum_topic_path(@topic)
     assert_no_match(/Delete topic/, @response.body)
   end
+  # Round 4: /forum/topics/:slug carries no category, but slugs were unique
+  # only per category, so one topic permanently shadowed the other.
+  test "two topics with the same title in different categories get distinct urls" do
+    sign_in_as(@owner)
+    other_category = forum_categories(:season)
+    a = Forum::Topic.create!(forum_category: @category,      user: @owner, title: "Shared headline")
+    b = Forum::Topic.create!(forum_category: other_category, user: @owner, title: "Shared headline")
+    assert_not_equal a.slug, b.slug, "slugs must not collide across categories"
+
+    get forum_topic_path(a); assert_response :success
+    assert_select "h1", text: /Shared headline/
+    get forum_topic_path(b); assert_response :success
+  end
+
+  # Round 4: the edit route existed but nothing linked to it.
+  test "an author is offered a way to rename their topic" do
+    sign_in_as(@owner)
+    get forum_topic_path(@topic)
+    assert_select "a[href=?]", edit_forum_topic_path(@topic), text: "Edit title"
+  end
+
+  test "a non-owner is not offered the rename control" do
+    sign_in_as(@other)
+    get forum_topic_path(@topic)
+    assert_select "a[href=?]", edit_forum_topic_path(@topic), count: 0
+  end
 end

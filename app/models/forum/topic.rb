@@ -3,7 +3,11 @@ module Forum
     self.table_name = "forum_topics"
 
     extend FriendlyId
-    friendly_id :title, use: [:slugged, :scoped], scope: :forum_category
+    # Globally unique slugs, NOT scoped to the category. Topic URLs are
+    # /forum/topics/:slug with no category segment, so a :scoped slug allowed
+    # two topics in different categories to hold the same slug — the lookup
+    # then had no way to tell them apart and one was permanently unreachable.
+    friendly_id :title, use: :slugged
 
     belongs_to :forum_category, class_name: "Forum::Category", counter_cache: :topics_count
     belongs_to :user
