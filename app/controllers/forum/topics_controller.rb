@@ -28,6 +28,13 @@ module Forum
     def create
       body_text = (params.dig(:forum_topic, :body) || params.dig(:topic, :body)).to_s
       images    = Array(params.dig(:forum_topic, :images) || params.dig(:topic, :images)).reject(&:blank?)
+      if (offender = first_disguised_upload(images))
+        @topic    = @category.topics.new(title: params.dig(:forum_topic, :title))
+        @new_post = Forum::Post.new(body: body_text)
+        flash.now[:alert] = "\"#{offender}\" is not a real image file."
+        return render :new, status: :unprocessable_entity
+      end
+
       Forum::Topic.transaction do
         @topic = @category.topics.new(topic_params)
         @topic.user = current_user

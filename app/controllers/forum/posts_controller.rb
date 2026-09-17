@@ -17,6 +17,11 @@ module Forum
       @post = @topic.posts.new(post_params)
       @post.user = current_user
 
+      if (offender = first_disguised_upload(params.dig(:post, :images) || params.dig(:forum_post, :images)))
+        @post.errors.add(:images, "\"#{offender}\" is not a real image file")
+        return render_reply_error
+      end
+
       if @post.save
         current_user.forum_subscriptions.find_or_create_by!(forum_topic: @topic)
         # Without the page, a reply sent from page 2 dropped the author back on
@@ -24,7 +29,10 @@ module Forum
         redirect_to forum_topic_path(@topic, page: page_for(@post), anchor: "post-#{@post.id}"),
                     notice: "Reply posted."
       else
-        redirect_to forum_topic_path(@topic), alert: @post.errors.full_messages.to_sentence
+        # A redirect cannot carry the draft, so the author lost everything they
+        # had typed whenever an attachment was rejected. Re-render the topic
+        # with the reply still in the box, as the new-topic composer does.
+        render_reply_error
       end
     end
 
@@ -44,6 +52,19 @@ module Forum
     end
 
     private
+
+    # Re-render the topic page with the failed reply (and its errors) still in
+    # the composer. Mirrors TopicsController#show so the page is complete.
+    def render_reply_error
+      flash.now[:alert] = @post.errors.full_messages.to_sentence
+      @posts = @topic.posts
+                     .active
+                     .includes(:user, images_attachments: :blob)
+                     .chronological
+                     .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
+      @new_post = @post
+      render "forum/topics/show", status: :unprocessable_entity
+    end
 
     def set_topic
       @topic = Forum::Topic.active.friendly.find(params[:topic_slug])

@@ -45,8 +45,14 @@
         - if p.images.attached?
           .mt-2.d-flex.flex-wrap.gap-2.forum-post-images
             - p.images.each do |img|
-              = link_to url_for(img), target: "_blank", rel: "noopener"
-                = image_tag img.variant(resize_to_limit: [400, 400]), class: "rounded border", loading: "lazy"
+              / Never call .variant on a blob ActiveStorage cannot transform:
+              / it raises and takes the whole topic page down with it. Older
+              / posts may already hold such an attachment.
+              - if img.blob&.variable?
+                = link_to url_for(img), target: "_blank", rel: "noopener"
+                  = image_tag img.variant(resize_to_limit: [400, 400]), class: "rounded border", loading: "lazy"
+              - elsif img.blob
+                = link_to img.blob.filename.to_s, url_for(img), target: "_blank", rel: "noopener", class: "small"
 
 = paginate @posts
 

@@ -25,5 +25,20 @@ module Forum
     def write_action?
       WRITE_ACTIONS.include?(action_name.to_s)
     end
+
+    # Content type on an upload comes from the browser, which derives it from
+    # the filename — so a text file renamed .jpg arrives declared as
+    # image/jpeg and sails past a content-type allowlist. Sniff the actual
+    # leading bytes instead. Returns the offending filename, or nil if fine.
+    def first_disguised_upload(uploads)
+      Array(uploads).reject(&:blank?).each do |up|
+        next unless up.respond_to?(:tempfile)
+        head = up.tempfile.read(4096).to_s
+        up.tempfile.rewind
+        sniffed = Marcel::MimeType.for(StringIO.new(head))
+        return up.original_filename unless Forum::Post::ALLOWED_IMAGE_TYPES.include?(sniffed)
+      end
+      nil
+    end
   end
 end

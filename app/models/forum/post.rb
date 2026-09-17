@@ -4,6 +4,10 @@ module Forum
 
     MAX_IMAGES_PER_POST = 4
     MAX_IMAGE_BYTES     = 5.megabytes
+    # Only formats ActiveStorage can actually build a variant from. A blob that
+    # is not variable (a .txt or .pdf) raised on .variant() and 500'd the whole
+    # topic page for everyone, on every subsequent visit.
+    ALLOWED_IMAGE_TYPES = %w[image/jpeg image/png image/gif image/webp].freeze
 
     belongs_to :forum_topic, class_name: "Forum::Topic", counter_cache: :posts_count
     belongs_to :user, counter_cache: :posts_count
@@ -67,8 +71,16 @@ module Forum
         errors.add(:images, "cap is #{MAX_IMAGES_PER_POST} per post")
       end
       images.each do |img|
-        if img.blob.byte_size > MAX_IMAGE_BYTES
+        blob = img.blob
+        next if blob.nil?
+
+        if blob.byte_size.to_i > MAX_IMAGE_BYTES
           errors.add(:images, "each image must be under #{MAX_IMAGE_BYTES / 1.megabyte} MB")
+          break
+        end
+
+        unless ALLOWED_IMAGE_TYPES.include?(blob.content_type)
+          errors.add(:images, "must be a JPEG, PNG, GIF or WebP image")
           break
         end
       end
