@@ -3,17 +3,28 @@ require "test_helper"
 class AuthVisibilityTest < ActionDispatch::IntegrationTest
   include ActiveJob::TestHelper
 
-  # Sign in / Sign up used to be hidden unless FORUM_ENABLED was set, so there
-  # was no link to an account from anywhere on the site.
-  test "signed-out visitors are offered sign in and sign up, forum flag or not" do
+  teardown { ENV["FORUM_ENABLED"] = nil }
+
+  # Accounts are deliberately not advertised until the forum opens: site email
+  # cannot yet send from a real domain address, so a signup would hand out a
+  # verification link that never arrives.
+  test "no account links while the forum is closed" do
     ENV["FORUM_ENABLED"] = nil
+    get root_path
+    assert_response :success
+    assert_select "a[href=?]", new_session_path, count: 0
+    assert_select "a[href=?]", signup_path,      count: 0
+  end
+
+  test "opening the forum reveals sign in and sign up together" do
+    ENV["FORUM_ENABLED"] = "true"
     get root_path
     assert_response :success
     assert_select "a[href=?]", new_session_path, text: "Sign in"
     assert_select "a[href=?]", signup_path,      text: "Sign up"
   end
 
-  test "signup page is reachable" do
+  test "signup page still answers directly for anyone holding the URL" do
     get signup_path
     assert_response :success
   end

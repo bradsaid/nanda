@@ -139,9 +139,12 @@ html
           = link_to "About", about_path(anchor: "content"), class: "nav-link"
           - if logged_in?
             = button_to "Sign out", session_path, method: :delete, class: "nav-link btn btn-link p-0", form: { style: "display:inline;" }
-          - else
-            / Always offered: accounts are a site feature, not a forum-flag one,
-            / and previously there was no link to sign in or register anywhere.
+          - elsif forum_enabled?
+            / Accounts stay hidden until the forum opens. Site email cannot yet
+            / send from a real nakedandafraidfan.com address (see
+            / ApplicationMailer), so a signup today would hand out a
+            / verification link that never arrives. Setting FORUM_ENABLED
+            / reveals the forum and these two links together.
             = link_to "Sign in", new_session_path, class: "nav-link"
             = link_to "Sign up", signup_path, class: "nav-link"
 
