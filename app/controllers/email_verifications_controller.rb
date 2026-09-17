@@ -19,9 +19,7 @@ class EmailVerificationsController < ApplicationController
     email = params[:email_address].to_s.strip.downcase
     user = User.find_by(email_address: email)
     if user && !user.email_verified?
-      Timeout.timeout(5) do
-        AuthMailer.verify_email(user).deliver_now
-      end
+      AuthMailer.verify_email(user).deliver_later
     end
     redirect_to root_path, notice: "If that account exists and needs verification, a new email is on the way."
   rescue => e

@@ -43,7 +43,7 @@ class Forum::Round2FixesTest < ActionDispatch::IntegrationTest
 
   test "a failed topic submission keeps what the author typed" do
     sign_in_as(@owner)
-    post forum_category_topics_path(@category), params: {
+    post forum_topics_path, params: {
       forum_topic: { title: "x", body: "a body worth keeping" }  # title too short
     }
     assert_response :unprocessable_entity

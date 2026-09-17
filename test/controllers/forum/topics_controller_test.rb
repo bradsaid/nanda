@@ -27,7 +27,7 @@ class Forum::TopicsControllerTest < ActionDispatch::IntegrationTest
   test "unverified user cannot create a topic" do
     sign_in_as(users(:unverified))
     assert_no_difference "Forum::Topic.count" do
-      post forum_category_topics_path(@category), params: {
+      post forum_topics_path, params: {
         topic: { title: "Try me", body: "hello" }
       }
     end
@@ -37,7 +37,7 @@ class Forum::TopicsControllerTest < ActionDispatch::IntegrationTest
   test "verified user creates a topic" do
     sign_in_as(users(:one))
     assert_difference "Forum::Topic.count", 1 do
-      post forum_category_topics_path(@category), params: {
+      post forum_topics_path, params: {
         topic: { title: "Hello there", body: "First post body." }
       }
     end

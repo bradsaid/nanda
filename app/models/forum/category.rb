@@ -13,6 +13,10 @@ module Forum
 
     scope :ordered, -> { order(:position, :id) }
 
+    # The forum is a single space; categories survive only because topics need
+    # a parent row. Everything new lands in the first one.
+    def self.default = ordered.first
+
     def to_param = slug
   end
 end

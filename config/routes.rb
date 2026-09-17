@@ -24,12 +24,14 @@ Rails.application.routes.draw do
   # Forum routes. Every controller under Forum:: refuses to serve if
   # ENV["FORUM_ENABLED"] != "true" (see Forum::BaseController), so it's safe
   # to define them here even before the public launch.
-  get  "/forum", to: "forum/categories#index", as: :forum
+  # One forum, no categories: /forum is the topic list itself. Categories still
+  # exist in the schema (topics need one) but are not a browsing surface, so the
+  # old category URLs redirect rather than 404 for anyone holding a link.
+  get  "/forum", to: "forum/topics#index", as: :forum
   scope "/forum", module: :forum, as: :forum do
-    resources :categories, param: :slug, only: [:show] do
-      resources :topics, param: :slug, only: [:new, :create]
-    end
-    resources :topics, param: :slug, only: [:show, :edit, :update, :destroy] do
+    get "/categories",       to: redirect("/forum")
+    get "/categories/:slug", to: redirect("/forum")
+    resources :topics, param: :slug, only: [:new, :create, :show, :edit, :update, :destroy] do
       resources :posts, only: [:create]
       resource  :subscription, only: [:create, :destroy]
     end

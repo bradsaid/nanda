@@ -46,8 +46,6 @@ h2.h5.mb-3 Recent posts
             = forum_time(p.created_at)
             span in
             = link_to p.forum_topic.title, forum_topic_path(p.forum_topic, anchor: "post-#{p.id}"), class: "text-decoration-none"
-            span &middot;
-            = link_to p.forum_topic.forum_category.name, forum_category_path(p.forum_topic.forum_category), class: "text-decoration-none text-muted"
           .mt-1.small.forum-post-body(style="max-height: 4.5rem; overflow: hidden;")
             == p.body_html
 - else

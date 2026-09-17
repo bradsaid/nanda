@@ -47,11 +47,13 @@ class RegistrationsController < ApplicationController
     redirect_to root_path, notice: "Thanks!"
   end
 
+  # Queued, not sent inline. Previously this was deliver_now wrapped in a 5s
+  # timeout that swallowed failures, so a slow or misconfigured SMTP server
+  # made signup feel broken — or silently dropped the verification link while
+  # still reporting success. Solid Queue now owns delivery and retries.
   def send_verification_email(user)
-    Timeout.timeout(5) do
-      AuthMailer.verify_email(user).deliver_now
-    end
+    AuthMailer.verify_email(user).deliver_later
   rescue => e
-    Rails.logger.error "[registrations] verify email failed for #{user.email_address}: #{e.class} #{e.message}"
+    Rails.logger.error "[registrations] could not enqueue verify email for #{user.email_address}: #{e.class} #{e.message}"
   end
 end

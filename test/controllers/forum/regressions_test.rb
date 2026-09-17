@@ -25,7 +25,7 @@ class Forum::RegressionsTest < ActionDispatch::IntegrationTest
   test "BUG1 verified user creates topic using REAL form param shape" do
     sign_in_as(@owner)
     assert_difference "Forum::Topic.count", 1 do
-      post forum_category_topics_path(@category), params: {
+      post forum_topics_path, params: {
         topic:       { title: "Real form topic" },
         forum_topic: { body: "First post body." }
       }
@@ -83,19 +83,19 @@ class Forum::RegressionsTest < ActionDispatch::IntegrationTest
     @category.update!(locked: true)
     sign_in_as(@owner)
     assert_no_difference "Forum::Topic.count" do
-      post forum_category_topics_path(@category), params: {
+      post forum_topics_path, params: {
         forum_topic: { title: "Sneaking in", body: "body" }
       }
     end
-    get new_forum_category_topic_path(@category)
-    assert_redirected_to forum_category_path(@category)
+    get new_forum_topic_path
+    assert_redirected_to forum_path
   end
 
   test "BUG8b moderator can still post in a locked category" do
     @category.update!(locked: true)
     sign_in_as(@admin)
     assert_difference "Forum::Topic.count", 1 do
-      post forum_category_topics_path(@category), params: {
+      post forum_topics_path, params: {
         forum_topic: { title: "Mod announcement", body: "body" }
       }
     end
@@ -121,7 +121,7 @@ class Forum::RegressionsTest < ActionDispatch::IntegrationTest
   # must match the key TopicsController#topic_params reads.
   test "BUG1b rendered new-topic form posts every field under one key" do
     sign_in_as(@owner)
-    get new_forum_category_topic_path(@category)
+    get new_forum_topic_path
     assert_response :success
     assert_select "form input[name=?]",    "forum_topic[title]"
     assert_select "form textarea[name=?]", "forum_topic[body]"
@@ -143,7 +143,7 @@ class Forum::RegressionsTest < ActionDispatch::IntegrationTest
 
   test "BUG11b a brand new topic still gets a slug from its title" do
     sign_in_as(@owner)
-    post forum_category_topics_path(@category), params: {
+    post forum_topics_path, params: {
       forum_topic: { title: "Fresh slug please", body: "body" }
     }
     assert_equal "fresh-slug-please", Forum::Topic.order(:id).last.slug
@@ -154,11 +154,11 @@ class Forum::RegressionsTest < ActionDispatch::IntegrationTest
   test "BUG12 category reply count ignores soft-deleted posts" do
     3.times { |i| @topic.posts.create!(user: @other, body: "reply #{i}") }
     @topic.reload
-    get forum_category_path(@category)
+    get forum_path
     assert_select "td[data-label=Replies]", { text: "3" }
 
     @topic.posts.order(:id).last.update!(deleted_at: Time.current)
-    get forum_category_path(@category)
+    get forum_path
     assert_select "td[data-label=Replies]", { text: "2" },
       "a deleted reply must stop being counted"
   end

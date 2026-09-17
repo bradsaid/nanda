@@ -4,8 +4,6 @@
   nav.small.mb-1
     = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
     span.mx-1 &raquo;
-    = link_to @topic.forum_category.name, forum_category_path(@topic.forum_category), class: "text-decoration-none text-muted"
-    span.mx-1 &raquo;
     span = @topic.title
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
     h1.h3.mb-0.logo = @topic.title

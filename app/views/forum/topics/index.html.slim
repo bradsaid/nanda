@@ -1,19 +1,15 @@
-- content_for :title, "#{@category.name} — Forum"
+- content_for :title, "Forum — Naked & Afraid Fan Wiki"
+- content_for :meta_description, "Fan discussion for Naked and Afraid: episode reactions, survivor threads, item talk, and more."
 
 .pb-2.mb-4.border-bottom.site-header
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
     .d-flex.flex-column
-      nav.small.mb-1
-        = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
-        span.mx-1 &raquo;
-        span = @category.name
-      h1.h3.mb-0.logo = @category.name
-      - if @category.description.present?
-        p.subtitle.mb-0 = @category.description
-    - if @category.locked? && !admin_signed_in?
-      span.badge.text-bg-secondary Locked
+      h1.h3.mb-0.logo Forum
+      p.subtitle.mb-0 Talk about episodes, survivors, gear, and everything else.
+    - if forum_read_only?
+      span.badge.text-bg-warning Preview mode (hidden from public)
     - elsif logged_in? && current_user.email_verified?
-      = link_to "New topic", new_forum_category_topic_path(@category), class: "btn btn-primary"
+      = link_to "New topic", new_forum_topic_path, class: "btn btn-primary"
 
 - if @topics.any?
   .card.shadow-sm
@@ -49,10 +45,8 @@
 - else
   .card.shadow-sm.text-center.py-4
     p.mb-2.text-muted No topics yet.
-    - if @category.locked? && !admin_signed_in?
-      p.small.text-muted.mb-0 This category is locked.
-    - elsif logged_in? && current_user.email_verified?
-      = link_to "Start the first thread", new_forum_category_topic_path(@category), class: "btn btn-primary"
+    - if logged_in? && current_user.email_verified?
+      = link_to "Start the first thread", new_forum_topic_path, class: "btn btn-primary"
     - elsif logged_in?
       p.small.text-muted.mb-0 Verify your email to post.
     - else
@@ -61,3 +55,10 @@
         |  or
         = link_to "create an account", signup_path
         |  to post.
+
+- if logged_in?
+  p.small.text-muted.mt-3.mb-0
+    | Signed in as #{forum_user_display(current_user)}.
+    - unless current_user.email_verified?
+      br
+      strong Please verify your email before posting.

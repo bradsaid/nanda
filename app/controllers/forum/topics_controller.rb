@@ -1,6 +1,7 @@
 module Forum
   class TopicsController < BaseController
     before_action :set_category, only: [:new, :create]
+    TOPICS_PER_PAGE = 30
     before_action :ensure_category_unlocked, only: [:new, :create]
     before_action :set_topic,    only: [:show, :edit, :update, :destroy]
     # Ownership guards must run as before_actions: a redirect_to inside a
@@ -9,6 +10,19 @@ module Forum
     # go through.
     before_action :require_topic_owner,             only: [:edit, :update]
     before_action :require_topic_owner_or_moderator, only: [:destroy]
+
+    # The whole forum in one list — there is no category browsing layer.
+    def index
+      @topics = Forum::Topic.active
+                            .includes(:user, :last_post_user)
+                            .in_order
+                            .page(params[:page]).per(TOPICS_PER_PAGE)
+      # posts_count counts soft-deleted posts, so count live ones instead.
+      @active_post_counts = Forum::Post.active
+                                       .where(forum_topic_id: @topics.map(&:id))
+                                       .group(:forum_topic_id)
+                                       .count
+    end
 
     def show
       @posts = @topic.posts
@@ -67,13 +81,16 @@ module Forum
 
     def destroy
       @topic.update!(deleted_at: Time.current)
-      redirect_to forum_category_path(@topic.forum_category), notice: "Topic removed."
+      redirect_to forum_path, notice: "Topic removed."
     end
 
     private
 
+    # No category is chosen by the author any more; new topics land in the
+    # default one so the existing schema still has a parent row to point at.
     def set_category
-      @category = Forum::Category.friendly.find(params[:category_slug])
+      @category = Forum::Category.default
+      raise ActionController::RoutingError, "Not Found" if @category.nil?
     end
 
     # Admins set "Locked (no new topics)" per category; it had no effect
@@ -81,7 +98,7 @@ module Forum
     def ensure_category_unlocked
       return unless @category.locked?
       return if admin_signed_in?
-      redirect_to forum_category_path(@category), alert: "This category is locked."
+      redirect_to forum_path, alert: "The forum is closed to new topics."
     end
 
     def set_topic
