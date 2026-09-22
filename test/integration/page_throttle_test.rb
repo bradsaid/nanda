@@ -11,6 +11,9 @@ class PageThrottleTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
+    # reset! clears the counters as well as restoring the switch, so nothing
+    # this file did can reach another test sharing the process.
+    Rack::Attack.reset!
     Rack::Attack.enabled     = @was_enabled
     Rack::Attack.cache.store = @was_store
   end
