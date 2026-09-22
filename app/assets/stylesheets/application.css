@@ -997,3 +997,24 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
    replies beneath it, so the thread reads as question-then-answers. */
 .forum-post-opening { background-color: #e4ded3; }
 .forum-post-reply   { background-color: #f3efe8; }
+
+/* Whole topic row is a click target on the forum index. The title link is
+   still the real link; this just widens the area for pointer users. */
+.forum-topic-row { cursor: pointer; }
+
+/* "Sign out" is a button_to form rather than an anchor like every other nav
+   item, so it needs help sitting on the same line. Bootstrap's p-0 used to
+   cancel the .site-nav .nav-link vertical padding, leaving it 0.25rem high. */
+.site-nav form.button_to {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+.site-nav .nav-link.btn {
+  border: 0;
+  background: none;
+  box-shadow: none;
+  line-height: inherit;
+  vertical-align: baseline;
+  text-decoration: none;
+}

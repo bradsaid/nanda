@@ -138,7 +138,7 @@ html
             = link_to "Forum", forum_path(anchor: "content"), class: "nav-link"
           = link_to "About", about_path(anchor: "content"), class: "nav-link"
           - if logged_in?
-            = button_to "Sign out", session_path, method: :delete, class: "nav-link btn btn-link p-0", form: { style: "display:inline;" }
+            = button_to "Sign out", session_path, method: :delete, class: "nav-link btn btn-link"
           - elsif forum_enabled?
             / Accounts stay hidden until the forum opens. Site email cannot yet
             / send from a real nakedandafraidfan.com address (see
