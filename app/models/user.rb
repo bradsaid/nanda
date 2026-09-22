@@ -108,7 +108,14 @@ class User < ApplicationRecord
             email_verified_at: Time.current)
   end
 
-  scope :verified,   -> { where.not(email_verified_at: nil) }
+  # Mirrors #email_verified?: staff count as verified whatever the column
+  # says, because they are created without going through the email flow.
+  # Keep these two in step — a count that disagrees with the badge beside it
+  # is worse than no count.
+  STAFF_ROLES = %i[admin episode_editor].freeze
+
+  scope :verified,   -> { where.not(email_verified_at: nil).or(where(role: STAFF_ROLES.map { |r| roles[r] })) }
+  scope :unverified, -> { where(email_verified_at: nil).where.not(role: STAFF_ROLES.map { |r| roles[r] }) }
   scope :banned,     -> { where.not(banned_at: nil) }
   scope :not_banned, -> { where(banned_at: nil) }
 

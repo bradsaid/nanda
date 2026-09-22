@@ -65,7 +65,7 @@
                   span.badge.text-bg-danger Banned
                   - if u.ban_reason.present?
                     .small.text-muted = u.ban_reason
-                - elsif u.email_verified_at.nil? && !u.admin? && !u.episode_editor?
+                - elsif !u.email_verified?
                   span.badge.text-bg-warning Unverified
                 - else
                   span.badge.text-bg-success Active

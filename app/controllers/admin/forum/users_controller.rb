@@ -21,7 +21,7 @@ module Admin
         scope =
           case @filter
           when "banned"     then scope.banned
-          when "unverified" then scope.where(email_verified_at: nil)
+          when "unverified" then scope.unverified
           when "staff"      then scope.where(role: [User.roles[:admin], User.roles[:episode_editor]])
           else scope
           end
@@ -36,7 +36,7 @@ module Admin
         @totals = {
           all:        User.count,
           banned:     User.banned.count,
-          unverified: User.where(email_verified_at: nil).count
+          unverified: User.unverified.count
         }
       end
 
