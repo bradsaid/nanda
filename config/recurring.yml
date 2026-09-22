@@ -9,7 +9,11 @@
 #     priority: 2
 #     schedule: at 5am every day
 
-production:
-  clear_solid_queue_finished_jobs:
-    command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
-    schedule: every hour at minute 12
+# No recurring tasks. Solid Queue runs inside Puma on a single 512MB dyno, and
+# a recurring schedule costs a whole extra forked Ruby process (the Scheduler)
+# purely to run one cleanup an hour. That cleanup now runs from the Heroku
+# Scheduler add-on instead, which the app already uses for cache:warm_items:
+#
+#   bin/rails solid_queue:clear_finished   (hourly)
+#
+production: {}
