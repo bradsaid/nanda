@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     resources :topics, param: :slug, only: [:new, :create, :show, :edit, :update, :destroy] do
       resources :posts, only: [:create]
       resource  :subscription, only: [:create, :destroy]
+      resource  :pin,          only: [:create, :destroy]
     end
     resources :posts, only: [:edit, :update, :destroy] do
       resource :report, only: [:new, :create]

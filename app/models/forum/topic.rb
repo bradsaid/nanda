@@ -29,7 +29,32 @@ module Forum
     # but nothing ever wrote the column, so the line never appeared.
     after_create_commit :touch_category_activity
 
+    SORTS = %w[recent popular active].freeze
+
     scope :active,   -> { where(deleted_at: nil) }
+
+    # Pinned topics lead every ordering — that is the point of pinning.
+    # "active" counts live posts with a correlated subquery rather than the
+    # posts_count counter cache, which still counts soft-deleted replies.
+    scope :sorted_by, ->(key) {
+      case key
+      when "popular"
+        order(Arel.sql(<<~SQL))
+          forum_topics.pinned DESC,
+          forum_topics.views_count DESC,
+          forum_topics.last_post_at DESC NULLS LAST
+        SQL
+      when "active"
+        order(Arel.sql(<<~SQL))
+          forum_topics.pinned DESC,
+          (SELECT COUNT(*) FROM forum_posts p
+             WHERE p.forum_topic_id = forum_topics.id AND p.deleted_at IS NULL) DESC,
+          forum_topics.last_post_at DESC NULLS LAST
+        SQL
+      else
+        in_order
+      end
+    }
     scope :recent,   -> { order(pinned: :desc, last_post_at: :desc) }
     scope :in_order, -> { order(pinned: :desc, last_post_at: :desc, created_at: :desc) }
 

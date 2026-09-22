@@ -6,7 +6,10 @@
     span.mx-1 &raquo;
     span = @topic.title
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
-    h1.h3.mb-0.logo = @topic.title
+    h1.h3.mb-0.logo
+      - if @topic.pinned?
+        span.badge.text-bg-warning.me-2 pinned
+      = @topic.title
     .d-flex.gap-2.flex-wrap
       - if logged_in? && current_user.email_verified?
         - if forum_subscribed?(@topic)
@@ -16,6 +19,11 @@
       / TopicsController#edit/#update and #destroy both allow the author (and
       / moderators); neither control was ever rendered. The slug is frozen at
       / creation, so renaming no longer moves the URL.
+      - if can_moderate_forum?
+        - if @topic.pinned?
+          = button_to "Unpin", forum_topic_pin_path(@topic), method: :delete, class: "btn btn-warning btn-sm"
+        - else
+          = button_to "Pin to top", forum_topic_pin_path(@topic), method: :post, class: "btn btn-outline-warning btn-sm"
       - if logged_in? && (@topic.user_id == current_user.id || can_moderate_forum?)
         = link_to "Edit title", edit_forum_topic_path(@topic), class: "btn btn-outline-secondary btn-sm"
         = button_to "Delete topic", forum_topic_path(@topic), method: :delete,

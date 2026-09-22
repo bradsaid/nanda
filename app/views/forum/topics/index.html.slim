@@ -11,6 +11,16 @@
     - elsif logged_in? && current_user.email_verified?
       = link_to "New topic", new_forum_topic_path, class: "btn btn-primary"
 
+.d-flex.align-items-center.gap-2.mb-3.flex-wrap
+  span.small.text-muted.me-1 Sort:
+  - [["recent", "Recent"], ["popular", "Popular"], ["active", "Active"]].each do |key, label|
+    = link_to label, forum_path(sort: key),
+      class: "btn btn-sm #{@sort == key ? 'btn-dark' : 'btn-outline-secondary'}"
+  - if @sort == "popular"
+    span.small.text-muted.ms-1 most viewed
+  - elsif @sort == "active"
+    span.small.text-muted.ms-1 most replies
+
 - if @topics.any?
   .card.shadow-sm
     .table-responsive.table-stack-host
@@ -19,6 +29,7 @@
           tr
             th Topic
             th Replies
+            th Views
             th Last activity
         tbody
           - @topics.each do |t|
@@ -32,6 +43,7 @@
                   = forum_user_link(t.user)
                   '  · #{forum_time(t.created_at)}
               td data-label="Replies" = [@active_post_counts.fetch(t.id, 0) - 1, 0].max
+              td data-label="Views" = t.views_count
               td data-label="Last activity"
                 - if t.last_post_at
                   = forum_time(t.last_post_at)

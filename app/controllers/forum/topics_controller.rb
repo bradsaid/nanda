@@ -13,9 +13,10 @@ module Forum
 
     # The whole forum in one list — there is no category browsing layer.
     def index
+      @sort = params[:sort].to_s.presence_in(Forum::Topic::SORTS) || "recent"
       @topics = Forum::Topic.active
                             .includes(:user, :last_post_user)
-                            .in_order
+                            .sorted_by(@sort)
                             .page(params[:page]).per(TOPICS_PER_PAGE)
       # posts_count counts soft-deleted posts, so count live ones instead.
       @active_post_counts = Forum::Post.active
