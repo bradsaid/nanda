@@ -44,7 +44,16 @@
               tr
                 td = link_to ep.title, episode_path(ep)
                 td = link_to "S#{season.number}", season_path(season)
-                td.text-end = fs.quantity.to_i
+                / nil means "unknown" for animals (the admin form says to leave
+                / it blank), and quantity is never tracked for plants. .to_i
+                / rendered both as 0, which read as "none caught".
+                td.text-end
+                  - if fs.category_plant?
+                    span.text-muted —
+                  - elsif fs.quantity.nil?
+                    span.text-muted title="Quantity unknown" ?
+                  - else
+                    = fs.quantity
                 td.d-none.d-md-table-cell = ep.location&.country || "—"
                 td
                   - if fs.survivors&.any?
