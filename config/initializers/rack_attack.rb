@@ -49,6 +49,35 @@ class Rack::Attack
     req.ip if req.path.start_with?("/forum")
   end
 
+  ### Throttle: page reads per IP
+  # The forum had a throttle; the wiki itself had none, so a scraper could pull
+  # /items, /episodes and /survivors as fast as it liked — and those are the
+  # expensive pages, several hundred milliseconds of aggregate queries each.
+  # One OVH host fetched 97 pages in 8 seconds, 35 of them in a single second.
+  #
+  # Two tiers: a burst rule that catches exactly that, and a sustained rule for
+  # a scraper that paces itself. Both are far above human browsing — clicking
+  # steadily is perhaps 20 requests a minute — and above a polite crawler, so
+  # ordinary visitors and Googlebot never see them.
+  #
+  # Assets and image variants are excluded: one page of avatars can fire dozens
+  # of those, and counting them would throttle a genuine reader.
+  PAGE_REQUEST = lambda do |req|
+    next false unless req.get?
+    path = req.path
+    next false if path.start_with?("/assets", "/rails/active_storage", "/page_view_ping")
+    next false if path.match?(/\.(js|css|png|jpe?g|gif|svg|ico|webp|woff2?|map|xml|txt)\z/i)
+    true
+  end
+
+  throttle("pages/ip/burst", limit: 30, period: 10.seconds) do |req|
+    req.ip if PAGE_REQUEST.call(req)
+  end
+
+  throttle("pages/ip/sustained", limit: 150, period: 1.minute) do |req|
+    req.ip if PAGE_REQUEST.call(req)
+  end
+
   ### Blocklist: obvious junk User-Agents
   # Empty UA or a curl UA against POST endpoints is almost always a bot.
   blocklist("no_ua_on_writes") do |req|
