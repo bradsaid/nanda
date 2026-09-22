@@ -15,6 +15,7 @@ class RegistrationsController < ApplicationController
     @user.role = :user
     if @user.save
       send_verification_email(@user)
+      notify_owner_of_signup(@user)
       redirect_to new_session_path,
         notice: "Account created. Check your email for a verification link (valid for 48 hours)."
     else
@@ -51,6 +52,15 @@ class RegistrationsController < ApplicationController
   # timeout that swallowed failures, so a slow or misconfigured SMTP server
   # made signup feel broken — or silently dropped the verification link while
   # still reporting success. Solid Queue now owns delivery and retries.
+  # Queued like the verification email. A failure here must never affect the
+  # person registering — they have done nothing wrong and their account is
+  # already saved.
+  def notify_owner_of_signup(user)
+    AuthMailer.new_signup(user).deliver_later
+  rescue => e
+    Rails.logger.error "[registrations] could not enqueue signup notice for #{user.email_address}: #{e.class} #{e.message}"
+  end
+
   def send_verification_email(user)
     AuthMailer.verify_email(user).deliver_later
   rescue => e

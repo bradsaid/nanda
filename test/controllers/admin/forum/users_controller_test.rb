@@ -56,4 +56,50 @@ class Admin::Forum::UsersControllerTest < ActionDispatch::IntegrationTest
     get admin_forum_users_path
     assert_redirected_to root_path
   end
+
+  test "deleting a member removes their post history too" do
+    topic = Forum::Topic.create!(forum_category: forum_categories(:general),
+                                 user: @member, title: "Goes with them")
+    topic.posts.create!(user: @member, body: "also goes")
+
+    assert_difference ["User.count", "Forum::Topic.count", "Forum::Post.count"], -1 do
+      delete admin_forum_user_path(@member)
+    end
+    assert_not User.exists?(@member.id)
+  end
+
+  test "an admin cannot delete their own account" do
+    assert_no_difference "User.count" do
+      delete admin_forum_user_path(@admin)
+    end
+  end
+
+  test "an admin cannot delete another admin from here" do
+    other = User.create!(email_address: "other.admin@example.com", password: "password1",
+                         username: "otheradmin", role: :admin, email_verified_at: Time.current)
+    assert_no_difference "User.count" do
+      delete admin_forum_user_path(other)
+    end
+  end
+
+  test "issuing a password reset queues the email without changing the password" do
+    digest_before = @member.password_digest
+    assert_enqueued_with(job: ActionMailer::MailDeliveryJob) do
+      post password_reset_admin_forum_user_path(@member)
+    end
+    assert_equal digest_before, @member.reload.password_digest
+  end
+
+  test "an episode editor can see the directory but cannot delete" do
+    delete session_path
+    editor = User.create!(email_address: "editor@example.com", password: "password1",
+                          username: "theeditor", role: :episode_editor, email_verified_at: Time.current)
+    post session_path, params: { email_address: editor.email_address, password: "password1" }
+
+    get admin_forum_users_path
+    assert_response :success
+    assert_no_difference "User.count" do
+      delete admin_forum_user_path(@member)
+    end
+  end
 end

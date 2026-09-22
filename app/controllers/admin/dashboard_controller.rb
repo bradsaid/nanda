@@ -40,11 +40,17 @@ module Admin
       # reports also caches — a moderator seeing a fresh report 60s late is
       # fine, and the "Open reports" card links straight to the queue anyway.
       @forum_open_reports, @forum_topics_last_24h, @forum_posts_last_24h =
-        Rails.cache.fetch("admin/dashboard/forum_counts/v1", expires_in: 60.seconds) do
+        Rails.cache.fetch("admin/dashboard/forum_counts/v2", expires_in: 60.seconds) do
           [
             ::Forum::Report.status_open.count,
-            ::Forum::Topic.where(created_at: 24.hours.ago..).count,
-            ::Forum::Post.where(created_at: 24.hours.ago..).count
+            ::Forum::Topic.active.where(created_at: 24.hours.ago..).count,
+            # Removed posts should not be counted, and neither should live posts
+            # inside a removed topic — nobody can read either.
+            ::Forum::Post.active
+                         .joins(:forum_topic)
+                         .where(forum_topics: { deleted_at: nil })
+                         .where(forum_posts: { created_at: 24.hours.ago.. })
+                         .count
           ]
         end
     end

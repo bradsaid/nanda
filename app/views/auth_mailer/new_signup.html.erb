@@ -1,0 +1,20 @@
+<h2>New member signed up</h2>
+
+<p>
+  <strong>Username:</strong> <%= @user.username.presence || "(none set)" %><br/>
+  <strong>Email:</strong> <%= @user.email_address %><br/>
+  <strong>Signed up:</strong> <%= @user.created_at.strftime("%B %-d, %Y at %-I:%M %p %Z") %><br/>
+  <strong>Email verified:</strong> <%= @user.email_verified_at.present? ? "yes" : "not yet" %>
+</p>
+
+<p>
+  <% if @profile_url %>
+    <%= link_to "View their forum profile", @profile_url %><br/>
+  <% end %>
+  <%= link_to "Manage members", @directory_url %>
+</p>
+
+<p style="color:#6b6459;font-size:12px;">
+  You are getting this because you are the site contact. Every registration
+  sends one of these.
+</p>

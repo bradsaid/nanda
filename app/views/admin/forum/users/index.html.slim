@@ -70,6 +70,15 @@
                 - else
                   span.badge.text-bg-success Active
               td.text-end
+                - if full_admin? && u.id != current_admin.id && !u.admin?
+                  - t = @topic_counts.fetch(u.id, 0)
+                  - pc = @post_counts.fetch(u.id, 0)
+                  = button_to "Reset password", password_reset_admin_forum_user_path(u), method: :post,
+                    class: "btn btn-outline-secondary btn-sm me-1",
+                    form: { style: "display:inline;", data: { turbo_confirm: "Email #{u.username.presence || u.email_address} a password reset link?" } }
+                  = button_to "Delete", admin_forum_user_path(u), method: :delete,
+                    class: "btn btn-danger btn-sm me-1",
+                    form: { style: "display:inline;", data: { turbo_confirm: "Permanently delete #{u.username.presence || u.email_address}?\n\nThis also deletes their #{t} #{'topic'.pluralize(t)} and #{pc} #{'post'.pluralize(pc)}. This cannot be undone." } }
                 - if u.banned?
                   = button_to "Unban", admin_forum_user_path(u), method: :patch,
                     params: { decision: "unban" }, class: "btn btn-outline-secondary btn-sm",

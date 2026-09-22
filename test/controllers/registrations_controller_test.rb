@@ -7,8 +7,10 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form"
   end
 
+  # Two emails now: the member's verification link, and the signup notice to
+  # the site contact.
   test "creates a user and sends verification email" do
-    assert_emails 1 do
+    assert_emails 2 do
       assert_difference "User.count", 1 do
         post signup_path, params: {
           user: { email_address: "new@example.com", username: "newperson",

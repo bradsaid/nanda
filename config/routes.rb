@@ -70,7 +70,9 @@ Rails.application.routes.draw do
       resources :reports,    only: [:index, :update]
       resources :posts,      only: [:destroy]
       resources :topics,     only: [:update, :destroy]
-      resources :users,      only: [:index, :update]
+      resources :users,      only: [:index, :update, :destroy] do
+        member { post :password_reset }
+      end
     end
   end
 

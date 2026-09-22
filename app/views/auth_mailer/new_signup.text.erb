@@ -1,0 +1,13 @@
+New member signed up
+
+Username:       <%= @user.username.presence || "(none set)" %>
+Email:          <%= @user.email_address %>
+Signed up:      <%= @user.created_at.strftime("%B %-d, %Y at %-I:%M %p %Z") %>
+Email verified: <%= @user.email_verified_at.present? ? "yes" : "not yet" %>
+
+<% if @profile_url -%>
+Profile:  <%= @profile_url %>
+<% end -%>
+Members:  <%= @directory_url %>
+
+You are getting this because you are the site contact.
