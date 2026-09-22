@@ -6,10 +6,13 @@
     .d-flex.flex-column
       h1.h3.mb-0.logo Forum
       p.subtitle.mb-0 Talk about episodes, survivors, gear, and everything else.
-    - if forum_read_only?
-      span.badge.text-bg-warning Preview mode (hidden from public)
-    - elsif logged_in? && current_user.email_verified?
-      = link_to "New topic", new_forum_topic_path, class: "btn btn-primary"
+    .d-flex.align-items-center.gap-2.flex-wrap
+      - if forum_read_only?
+        span.badge.text-bg-warning Preview mode (hidden from public)
+      - if logged_in? && current_user.username.present?
+        = link_to "My profile", forum_profile_path(username: current_user.username), class: "btn btn-outline-primary"
+      - if logged_in? && current_user.email_verified? && !forum_read_only?
+        = link_to "New topic", new_forum_topic_path, class: "btn btn-primary"
 
 .d-flex.align-items-center.gap-2.mb-3.flex-wrap
   = link_to "Members", forum_profiles_path, class: "btn btn-sm btn-outline-secondary"

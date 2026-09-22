@@ -21,6 +21,12 @@ class ProfileLinkVisibilityTest < ActionDispatch::IntegrationTest
     assert_select "nav.site-nav a[href=?]", forum_profile_path(username: @user.username)
   end
 
+  test "the forum index header has a profile button beside New topic" do
+    get forum_path
+    assert_select ".site-header a[href=?]", forum_profile_path(username: @user.username), text: "My profile"
+    assert_select ".site-header a[href=?]", new_forum_topic_path, text: "New topic"
+  end
+
   test "the forum index offers both view and edit" do
     get forum_path
     assert_select "a[href=?]", forum_profile_path(username: @user.username)
