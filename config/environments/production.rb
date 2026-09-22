@@ -70,12 +70,16 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "nakedandafraidfan.com", protocol: "https" }
   config.action_mailer.delivery_method = :smtp
 
+  # Env-driven so moving to Google Workspace is a config change, not a deploy.
+  # SMTP_DOMAIN is the HELO domain and should match the sending domain once
+  # Workspace is live. SMTP_USERNAME/SMTP_PASSWORD fall back to the old
+  # GMAIL_* names so nothing breaks before the switch.
   config.action_mailer.smtp_settings = {
-    address:              "smtp.gmail.com",
-    port:                 587,
-    domain:               "gmail.com",
-    user_name:            ENV["GMAIL_USERNAME"],
-    password:             ENV["GMAIL_APP_PASSWORD"],
+    address:              ENV.fetch("SMTP_ADDRESS", "smtp.gmail.com"),
+    port:                 ENV.fetch("SMTP_PORT", 587).to_i,
+    domain:               ENV.fetch("SMTP_DOMAIN", "gmail.com"),
+    user_name:            ENV["SMTP_USERNAME"] || ENV["GMAIL_USERNAME"],
+    password:             ENV["SMTP_PASSWORD"] || ENV["GMAIL_APP_PASSWORD"],
     authentication:       "plain",
     enable_starttls_auto: true
   }
