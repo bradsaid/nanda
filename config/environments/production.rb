@@ -67,7 +67,14 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
 
 
-  config.action_mailer.default_url_options = { host: "nakedandafraidfan.com", protocol: "https" }
+  # www, not the bare domain. The apex still points at three retired Heroku
+  # IPs: http:// there answers with a 301, but https:// times out entirely —
+  # so every verification and password-reset link built on the apex was a dead
+  # link. Only www.nakedandafraidfan.com resolves to the live app.
+  config.action_mailer.default_url_options = {
+    host:     ENV.fetch("MAILER_HOST", "www.nakedandafraidfan.com"),
+    protocol: "https"
+  }
   config.action_mailer.delivery_method = :smtp
 
   # Env-driven so moving to Google Workspace is a config change, not a deploy.
