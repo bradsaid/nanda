@@ -964,3 +964,36 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
   outline-offset: 2px;
   box-shadow: none !important;
 }
+
+/* ===== Forum: mention typeahead ===== */
+.forum-mention-menu {
+  position: absolute;
+  z-index: 1080;
+  min-width: 240px;
+  max-width: 380px;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d6cfc2;
+  border-radius: .4rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,.14);
+  padding: .25rem;
+}
+.forum-mention-item {
+  padding: .35rem .5rem;
+  border-radius: .3rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.forum-mention-item.is-active,
+.forum-mention-item:hover { background: #f1ece2; }
+.forum-mention-label { font-weight: 600; font-size: .9rem; }
+.forum-mention-sub { font-size: .75rem; color: #6b6459; }
+
+/* ===== Forum: opening post vs replies =====
+   The post that started the topic sits on a slightly darker ground than the
+   replies beneath it, so the thread reads as question-then-answers. */
+.forum-post-opening { background-color: #e4ded3; }
+.forum-post-reply   { background-color: #f3efe8; }

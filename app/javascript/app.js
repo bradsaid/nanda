@@ -8,6 +8,7 @@ import "page_timer";
 import "episode_form";
 import "survivors_search";
 import "items_search";
+import "forum_mentions";
 import "locations_search";
 import "consent";
 Turbo.session.progressBarDelay = Infinity;

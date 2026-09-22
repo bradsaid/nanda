@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   # old category URLs redirect rather than 404 for anyone holding a link.
   get  "/forum", to: "forum/topics#index", as: :forum
   scope "/forum", module: :forum, as: :forum do
+    get "/mentions",         to: "mentions#index", as: :mentions
     get "/categories",       to: redirect("/forum")
     get "/categories/:slug", to: redirect("/forum")
     resources :topics, param: :slug, only: [:new, :create, :show, :edit, :update, :destroy] do

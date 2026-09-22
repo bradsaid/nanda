@@ -27,10 +27,11 @@ module Forum
     def show
       @posts = @topic.posts
                       .active
-                      .includes(:user, images_attachments: :blob)
+                      .includes({ user: { avatar_attachment: :blob } }, images_attachments: :blob)
                       .chronological
                       .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
       @new_post = Forum::Post.new
+      @opening_post_id = @topic.posts.active.chronological.pick(:id)
       @topic.increment!(:views_count) unless request.headers["Turbo-Frame"].present?
     end
 

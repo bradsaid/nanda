@@ -21,7 +21,7 @@
 
   .mb-3
     = label_tag "forum_topic[body]", "First post", class: "form-label"
-    = text_area_tag "forum_topic[body]", @new_post&.body, rows: 6, class: "form-control", placeholder: "Kick off the discussion. Markdown supported.", required: true
+    = text_area_tag "forum_topic[body]", @new_post&.body, rows: 6, class: "form-control", placeholder: "Kick off the discussion. Markdown supported. Type @ for a survivalist, # for an episode.", required: true, data: { mentions: true }
 
   .mb-3
     = label_tag "forum_topic[images][]", "Attach images (up to #{Forum::Post::MAX_IMAGES_PER_POST}, 5 MB each)", class: "form-label small"

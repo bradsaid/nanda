@@ -13,7 +13,10 @@ class User < ApplicationRecord
   # a missing last_post_user / handled_by as "unknown".
   has_many :forum_topics_last_posted, class_name: "Forum::Topic",  foreign_key: :last_post_user_id, dependent: :nullify
   has_many :forum_reports_handled,    class_name: "Forum::Report", foreign_key: :handled_by_id,     dependent: :nullify
-  has_one_attached :avatar
+  has_one_attached :avatar do |attachable|
+    # Small round avatar beside a poster's name on every post.
+    attachable.variant :chip, resize_to_fill: [64, 64], saver: { quality: 80, strip: true }
+  end
 
   validates :bio, length: { maximum: BIO_MAX_LEN }, allow_blank: true
   validate  :avatar_within_limits

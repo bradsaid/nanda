@@ -59,10 +59,11 @@ module Forum
       flash.now[:alert] = @post.errors.full_messages.to_sentence
       @posts = @topic.posts
                      .active
-                     .includes(:user, images_attachments: :blob)
+                     .includes({ user: { avatar_attachment: :blob } }, images_attachments: :blob)
                      .chronological
                      .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
       @new_post = @post
+      @opening_post_id = @topic.posts.active.chronological.pick(:id)
       render "forum/topics/show", status: :unprocessable_entity
     end
 

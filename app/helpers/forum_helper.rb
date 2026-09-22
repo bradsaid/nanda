@@ -26,6 +26,22 @@ module ForumHelper
     end
   end
 
+  # Avatar beside a poster's name. Falls back to an initial disc so every row
+  # keeps the same shape whether or not the member uploaded a picture.
+  def forum_avatar(user, size: 28)
+    style = "width:#{size}px;height:#{size}px;object-fit:cover;flex:0 0 auto;"
+    if user&.avatar&.attached?
+      image_tag user.avatar.variant(:chip),
+                class: "rounded-circle border", style: style, alt: "", loading: "lazy"
+    else
+      initial = forum_user_display(user).to_s[0, 1].upcase.presence || "?"
+      content_tag :span, initial,
+                  class: "rounded-circle border d-inline-flex align-items-center justify-content-center bg-light text-muted",
+                  style: "#{style}font-size:#{(size * 0.45).round}px;",
+                  "aria-hidden": "true"
+    end
+  end
+
   def forum_subscribed?(topic)
     return false unless logged_in?
     current_user.forum_subscriptions.where(forum_topic_id: topic.id).exists?

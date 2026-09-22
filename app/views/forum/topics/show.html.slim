@@ -24,10 +24,12 @@
 
 .d-flex.flex-column.gap-3
   - @posts.each do |p|
-    .card.shadow-sm id="post-#{p.id}"
+    - opening = (p.id == @opening_post_id)
+    .card.shadow-sm class=(opening ? "forum-post forum-post-opening" : "forum-post forum-post-reply") id="post-#{p.id}"
       .card-body
         .d-flex.align-items-start.justify-content-between.gap-3.flex-wrap
-          .small.text-muted
+          .small.text-muted.d-flex.align-items-center.gap-2
+            = forum_avatar(p.user)
             strong = forum_user_link(p.user)
             span.mx-1 ·
             = forum_time(p.created_at)
@@ -61,7 +63,7 @@
   h2.h5.mb-3 Reply
   = form_with model: [@topic, @new_post], url: forum_topic_posts_path(@topic), as: :post, multipart: true, local: true do |f|
     .mb-2
-      = f.text_area :body, rows: 5, class: "form-control", placeholder: "Write your reply. Markdown supported.", required: true
+      = f.text_area :body, rows: 5, class: "form-control", placeholder: "Write your reply. Markdown supported. Type @ for a survivalist, # for an episode.", required: true, data: { mentions: true }
     .mb-2
       = f.label :images, "Attach images (up to #{Forum::Post::MAX_IMAGES_PER_POST}, 5 MB each)", class: "form-label small"
       = f.file_field :images, multiple: true, accept: "image/*", class: "form-control form-control-sm"
