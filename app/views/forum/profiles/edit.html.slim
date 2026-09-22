@@ -1,10 +1,10 @@
-- content_for :title, "Edit profile — #{@user.username}"
+- content_for :title, "Edit profile — #{@profile_username}"
 
 .pb-2.mb-4.border-bottom.site-header
   nav.small.mb-1
     = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
     span.mx-1 &raquo;
-    = link_to @user.username, forum_profile_path(username: @user.username), class: "text-decoration-none text-muted"
+    = link_to @profile_username, forum_profile_path(username: @profile_username), class: "text-decoration-none text-muted"
     span.mx-1 &raquo;
     span Edit
   h1.h3.mb-0.logo Edit your profile
@@ -19,7 +19,13 @@
               - @user.errors.full_messages.each do |m|
                 li = m
 
-        = form_with model: @user, url: forum_profile_path(username: @user.username), method: :patch, multipart: true, local: true do |f|
+        = form_with model: @user, url: forum_profile_path(username: @profile_username), method: :patch, multipart: true, local: true do |f|
+          .mb-3
+            = f.label :username, "Username", class: "form-label"
+            = f.text_field :username, class: "form-control", minlength: 3, maxlength: 20, autocomplete: "username"
+            .form-text
+              | 3 to 20 characters. Letters, numbers and underscores only. This is the name on your posts, and your profile address changes with it &mdash; any link you have shared to the old one will stop working.
+
           .mb-3
             = f.label :avatar, "Profile picture", class: "form-label"
             - if @avatar_preview&.attached?
@@ -27,13 +33,13 @@
                 = image_tag @avatar_preview.variant(resize_to_limit: [128, 128]), class: "rounded-circle border"
                 .small.text-muted.mt-1 Uploading a new image replaces this one.
             = f.file_field :avatar, accept: "image/*", class: "form-control form-control-sm"
-            .form-text Under 5 MB. Square works best.
+            .form-text Under 5 MB. Square works best. Shown beside your name on every post.
 
           .mb-3
             = f.label :bio, "About you", class: "form-label"
-            = f.text_area :bio, rows: 4, class: "form-control", maxlength: User::BIO_MAX_LEN, placeholder: "A short introduction. Shown on your profile."
-            .form-text = "Up to #{User::BIO_MAX_LEN} characters."
+            = f.text_area :bio, rows: 4, class: "form-control", maxlength: User::BIO_MAX_LEN, placeholder: "A short introduction."
+            .form-text = "Up to #{User::BIO_MAX_LEN} characters. Shown at the top of your profile."
 
           .d-flex.gap-2.pb-1
             = f.submit "Save profile", class: "btn btn-primary"
-            = link_to "Cancel", forum_profile_path(username: @user.username), class: "btn btn-outline-secondary"
+            = link_to "Cancel", forum_profile_path(username: @profile_username), class: "btn btn-outline-secondary"

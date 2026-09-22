@@ -43,7 +43,8 @@ module Forum
     end
 
     def edit
-      @avatar_preview = @user.avatar
+      @avatar_preview   = @user.avatar
+      @profile_username = persisted_username
     end
 
     def update
@@ -55,6 +56,11 @@ module Forum
         # raised "Cannot get a signed_id for a new record" and 500'd the page.
         # Preview the avatar that is actually stored instead.
         @avatar_preview = User.find(@user.id).avatar
+        # Every link on this page is built from the username, and @user is
+        # holding the rejected one — which may not even satisfy the route
+        # constraint. Build them from the stored name instead, or an invalid
+        # username 500s the page rather than showing the error.
+        @profile_username = persisted_username
         flash.now[:alert] = @user.errors.full_messages.to_sentence
         render :edit, status: :unprocessable_entity
       end
@@ -67,6 +73,11 @@ module Forum
       raise ActionController::RoutingError, "Not Found" unless @user
     end
 
+    # The username as stored, ignoring any unsaved change.
+    def persisted_username
+      @user.username_changed? ? @user.username_was : @user.username
+    end
+
     def require_owner
       return if current_user&.id == @user.id
       return if admin_signed_in?
@@ -74,7 +85,7 @@ module Forum
     end
 
     def profile_params
-      params.require(:user).permit(:bio, :avatar)
+      params.require(:user).permit(:username, :bio, :avatar)
     end
   end
 end
