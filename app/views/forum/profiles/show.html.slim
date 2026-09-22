@@ -16,8 +16,25 @@
       - if @user.bio.present?
         p.subtitle.mb-0.mt-1 = @user.bio
   - if logged_in? && (current_user.id == @user.id || admin_signed_in?)
-    .mt-2
+    .mt-2.d-flex.gap-2.flex-wrap
       = link_to "Edit profile", forum_edit_profile_path(username: @user.username), class: "btn btn-outline-secondary btn-sm"
+      / Full admins get the same controls the directory offers, here where the
+      / decision is actually made. Not shown on your own profile, and not for
+      / another admin — both are lockout risks.
+      - if current_user.admin? && current_user.id != @user.id && !@user.admin?
+        = button_to "Reset password", password_reset_admin_forum_user_path(@user), method: :post,
+          class: "btn btn-outline-secondary btn-sm",
+          form: { style: "display:inline;", data: { turbo_confirm: "Email #{@user.username} a password reset link?" } }
+        - if @user.banned?
+          = button_to "Unban", admin_forum_user_path(@user), method: :patch, params: { decision: "unban" },
+            class: "btn btn-outline-secondary btn-sm", form: { style: "display:inline;" }
+        - else
+          = button_to "Ban", admin_forum_user_path(@user), method: :patch, params: { decision: "ban" },
+            class: "btn btn-outline-danger btn-sm",
+            form: { style: "display:inline;", data: { turbo_confirm: "Ban #{@user.username}? They will be signed out immediately." } }
+        = button_to "Delete user", admin_forum_user_path(@user), method: :delete,
+          class: "btn btn-danger btn-sm",
+          form: { style: "display:inline;", data: { turbo_confirm: "Permanently delete #{@user.username}?\n\nThis also deletes every topic and post they wrote. This cannot be undone." } }
 
 .row.g-3.mb-4
   .col-6.col-md-3

@@ -137,6 +137,8 @@ html
           - if forum_enabled? || forum_preview_access?
             = link_to "Forum", forum_path(anchor: "content"), class: "nav-link"
           = link_to "About", about_path(anchor: "content"), class: "nav-link"
+          - if admin_signed_in?
+            = link_to "Admin", admin_root_path, class: "nav-link"
           - if logged_in?
             / A signed-in member had no route to their own profile from
             / anywhere. Gated on forum access so the link cannot 404 if the
