@@ -1,0 +1,13 @@
+- return unless show_forum_promo?
+
+.forum-promo role="region" aria-label="Fan forum"
+  .forum-promo-body
+    span.forum-promo-tag New
+    .forum-promo-text
+      strong The Fan Forum is open.
+      |  Talk episodes, survivalists, gear and locations with other fans.
+    .forum-promo-actions
+      = link_to "Visit the forum", forum_path, class: "btn btn-sm btn-light fw-semibold"
+      - unless logged_in?
+        = link_to "Create an account", signup_path, class: "btn btn-sm btn-outline-light"
+  button.forum-promo-close type="button" aria-label="Dismiss" title="Dismiss" &times;

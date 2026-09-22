@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern unless Rails.env.test?
 
   helper_method :current_user, :logged_in?, :admin_signed_in?, :forum_enabled?, :should_show_ads?,
-                :forum_preview_access?
+                :forum_preview_access?, :show_forum_promo?
 
   # Gate AdSense (meta tag, Funding Choices loader, and any ad slots) off
   # any page where user-generated content or empty-content routes could
@@ -44,6 +44,17 @@ class ApplicationController < ActionController::Base
   # picking up any of the /admin privileges admin_signed_in? carries.
   def forum_preview_access?
     admin_signed_in? || !!current_user&.forum_tester?
+  end
+
+  # Should this page carry the "the forum is open" banner? Not on the forum
+  # itself (they are already there), not in admin, not once dismissed — the
+  # dismissal is a cookie rather than JS-on-load so a returning reader never
+  # sees it flash up and disappear.
+  def show_forum_promo?
+    return false unless forum_enabled?
+    return false if controller_path.start_with?("forum", "admin")
+    return false if controller_path.in?(%w[sessions registrations passwords email_verifications email_changes])
+    cookies[:forum_promo_dismissed].blank?
   end
 
   # Global feature flag for the fan forum. Every user-facing forum surface

@@ -159,6 +159,7 @@ html
 
       - if controller.controller_path.start_with?("admin")
         = render "admin/nav"
+      = render "shared/forum_promo"
       = render "shared/flash"
       #content= yield
       = render "layouts/footer"

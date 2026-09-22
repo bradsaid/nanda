@@ -1038,3 +1038,59 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
 .site-nav .nav-link.d-inline-flex { text-transform: none; letter-spacing: 0; }
 .site-nav .nav-link.d-inline-flex img,
 .site-nav .nav-link.d-inline-flex span.rounded-circle { flex: 0 0 auto; }
+
+/* ===== Forum promo banner =====
+   Sits above page content on the wiki, not on the forum itself. Uses the
+   site's forest palette rather than a Bootstrap alert colour, so it reads as
+   part of the site rather than as a warning. */
+.forum-promo {
+  background: linear-gradient(135deg, #0e3f24, #14532d);
+  color: #f3f7f4;
+  border-radius: .5rem;
+  padding: .7rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+.forum-promo-body {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+}
+.forum-promo-tag {
+  background: #86efac;
+  color: #0e3f24;
+  font-weight: 800;
+  font-size: .7rem;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  padding: .15rem .45rem;
+  border-radius: .25rem;
+  flex: 0 0 auto;
+}
+.forum-promo-text { flex: 1 1 16rem; font-size: .95rem; }
+.forum-promo-actions { display: flex; gap: .5rem; flex-wrap: wrap; flex: 0 0 auto; }
+.forum-promo .btn-outline-light { border-color: rgba(255,255,255,.65); color: #fff; }
+.forum-promo .btn-outline-light:hover { background: rgba(255,255,255,.16); border-color: #fff; }
+.forum-promo-close {
+  background: none;
+  border: 0;
+  color: #cfe3d6;
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0 .25rem;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.forum-promo-close:hover { color: #fff; }
+.forum-promo-close:focus-visible { outline: 3px solid #ffd479; outline-offset: 2px; }
+
+@media (max-width: 575px) {
+  .forum-promo { align-items: flex-start; }
+  .forum-promo-actions { width: 100%; }
+}
