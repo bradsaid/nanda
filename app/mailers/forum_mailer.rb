@@ -8,13 +8,13 @@ class ForumMailer < ApplicationMailer
     mail subject: "New reply: #{@topic.title}", to: subscriber.email_address
   end
 
-  # Notifies bradsaid@gmail.com whenever any report is filed.
+  # Notifies the site contact address whenever any report is filed.
   def report_filed(report)
     @report = report
     @target = report.reportable
     @url    = report.reportable.is_a?(Forum::Post) ?
                 forum_topic_url(@target.forum_topic, anchor: "post-#{@target.id}") :
                 forum_topic_url(@target)
-    mail subject: "[forum] Report: #{report.reason.humanize}", to: "bradsaid@gmail.com"
+    mail subject: "[forum] Report: #{report.reason.humanize}", to: ENV.fetch("CONTACT_EMAIL", "brad@nakedandafraidfan.com")
   end
 end

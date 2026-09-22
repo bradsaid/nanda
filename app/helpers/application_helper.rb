@@ -1,4 +1,8 @@
 module ApplicationHelper
+  # One place for the address shown on the contact page and used as the
+  # recipient by ContactMailer and ForumMailer.
+  def contact_email_address = ENV.fetch("CONTACT_EMAIL", "brad@nakedandafraidfan.com")
+
   def format_duration(seconds)
     return "—" if seconds.blank? || seconds <= 0
     mins = seconds.to_i / 60

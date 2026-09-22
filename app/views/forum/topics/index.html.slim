@@ -12,6 +12,8 @@
       = link_to "New topic", new_forum_topic_path, class: "btn btn-primary"
 
 .d-flex.align-items-center.gap-2.mb-3.flex-wrap
+  = link_to "Members", forum_profiles_path, class: "btn btn-sm btn-outline-secondary"
+  span.vr.mx-1
   span.small.text-muted.me-1 Sort:
   - [["recent", "Recent"], ["popular", "Popular"], ["active", "Active"]].each do |key, label|
     = link_to label, forum_path(sort: key),

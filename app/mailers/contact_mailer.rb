@@ -1,6 +1,8 @@
 class ContactMailer < ApplicationMailer
-  default to:   "bradsaid@gmail.com",
-          from: "no-reply@nakedandafraidfan.com"
+  # No explicit from: — ApplicationMailer's MAILER_FROM is the address the
+  # Workspace account is allowed to send as. The old no-reply@ here does not
+  # exist in Workspace, so Gmail would have rewritten or refused it.
+  default to: ENV.fetch("CONTACT_EMAIL", "brad@nakedandafraidfan.com")
 
   def contact_email(name:, email:, message:)
     @name, @email, @message = name, email, message

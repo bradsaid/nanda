@@ -1,7 +1,28 @@
 module Forum
   class ProfilesController < BaseController
-    before_action :set_user
+    PER_PAGE = 40
+
+    before_action :set_user, except: [:index]
     before_action :require_owner, only: [:edit, :update]
+
+    # Public member directory. Deliberately shows nothing an email address
+    # could be recovered from — username, picture, join date and activity only.
+    def index
+      @q = params[:q].to_s.strip
+      scope = User.not_banned.where.not(username: [nil, ""])
+      scope = scope.where("LOWER(username) LIKE ?", "%#{@q.downcase}%") if @q.present?
+
+      @members = scope.with_attached_avatar
+                      .order(Arel.sql("LOWER(username)"))
+                      .page(params[:page]).per(PER_PAGE)
+
+      ids = @members.map(&:id)
+      @post_counts = ::Forum::Post.active
+                                  .joins(:forum_topic)
+                                  .where(forum_topics: { deleted_at: nil }, forum_posts: { user_id: ids })
+                                  .group(:user_id).count
+      @member_total = scope.count
+    end
 
     def show
       # Post.active only checks the post's own deleted_at, so a post inside a

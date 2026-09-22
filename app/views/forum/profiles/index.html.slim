@@ -1,0 +1,44 @@
+- content_for :title, "Members — Forum"
+
+.pb-2.mb-4.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+    .d-flex.flex-column
+      nav.small.mb-1
+        = link_to "Forum", forum_path, class: "text-decoration-none text-muted"
+        span.mx-1 &raquo;
+        span Members
+      h1.h3.mb-0.logo Members
+      p.subtitle.mb-0 = "#{@member_total} #{'member'.pluralize(@member_total)}"
+
+.card.shadow-sm.mb-3
+  .card-body.py-3
+    = form_with url: forum_profiles_path, method: :get, local: true, class: "row g-2 align-items-end" do
+      .col-md-6
+        = label_tag :q, "Find a member", class: "form-label small mb-1"
+        = text_field_tag :q, @q, class: "form-control form-control-sm", placeholder: "username"
+      .col-auto
+        = submit_tag "Search", class: "btn btn-dark btn-sm"
+        = link_to "Reset", forum_profiles_path, class: "btn btn-light btn-sm ms-1"
+
+- if @members.any?
+  .row.g-3
+    - @members.each do |m|
+      .col-12.col-sm-6.col-lg-4
+        .card.shadow-sm.h-100
+          .card-body.d-flex.align-items-center.gap-3
+            = forum_avatar(m, size: 48)
+            .flex-grow-1.min-width-0
+              .d-flex.align-items-center.gap-2.flex-wrap
+                = link_to m.username, forum_profile_path(username: m.username), class: "fw-semibold text-decoration-none"
+                - if m.admin?
+                  span.badge.text-bg-primary Admin
+                - elsif m.episode_editor?
+                  span.badge.text-bg-info Editor
+              .small.text-muted
+                = "#{@post_counts.fetch(m.id, 0)} #{'post'.pluralize(@post_counts.fetch(m.id, 0))}"
+                span.mx-1 ·
+                = "joined #{m.created_at.strftime('%b %Y')}"
+  = paginate @members
+- else
+  .card.shadow-sm.text-center.py-4
+    p.mb-0.text-muted No members match.

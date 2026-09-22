@@ -9,6 +9,26 @@ module Forum
     # topic page for everyone, on every subsequent visit.
     ALLOWED_IMAGE_TYPES = %w[image/jpeg image/png image/gif image/webp].freeze
 
+    # Posts may contain HTML, so this list is the security boundary.
+    # Deliberately absent: script, style, iframe, object, embed, form, input,
+    # button, link, meta, base and svg — every one of them can execute or
+    # exfiltrate. Layout tags are absent too, so a post cannot restructure the
+    # page around it.
+    ALLOWED_TAGS = %w[
+      a abbr b blockquote br code del details dfn em
+      h1 h2 h3 h4 h5 h6 hr i img ins kbd li mark ol p pre q s samp
+      small span strong sub summary sup
+      table tbody td tfoot th thead tr u ul
+    ].freeze
+
+    # No style, class or id: style enables defacement and CSS-based tracking,
+    # class would let a post borrow Bootstrap's layout utilities, and id can
+    # collide with the page's own anchors. No target either, which keeps
+    # tabnabbing off the table without needing rel=noopener everywhere.
+    ALLOWED_ATTRIBUTES = %w[
+      href src alt title width height colspan rowspan start lang dir
+    ].freeze
+
     belongs_to :forum_topic, class_name: "Forum::Topic", counter_cache: :posts_count
     belongs_to :user, counter_cache: :posts_count
 
@@ -35,14 +55,16 @@ module Forum
     def render_html
       return if body.blank?
       source = body.to_s.dup.force_encoding("UTF-8")
+      # unsafe: true lets raw HTML through Commonmarker instead of dropping it,
+      # so posts can use tags directly. Nothing is trusted on the strength of
+      # that — the sanitiser below is now the only thing standing between a
+      # post and the page, and it allowlists both tags and attributes.
       raw_html = Commonmarker.to_html(source, options: {
         extension: { table: true, autolink: true, strikethrough: true },
-        render:    { hardbreaks: true, unsafe: false }
+        render:    { hardbreaks: true, unsafe: true }
       })
       self.body_html = ActionController::Base.helpers.sanitize(
-        raw_html,
-        tags: %w[a strong em br p ul ol li code pre blockquote hr],
-        attributes: %w[href]
+        raw_html, tags: ALLOWED_TAGS, attributes: ALLOWED_ATTRIBUTES
       )
     end
 

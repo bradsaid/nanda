@@ -40,6 +40,7 @@ Rails.application.routes.draw do
     resources :posts, only: [:edit, :update, :destroy] do
       resource :report, only: [:new, :create]
     end
+    get   "/users",                to: "profiles#index",  as: :profiles
     get   "/users/:username",      to: "profiles#show",   as: :profile,      constraints: { username: /[A-Za-z0-9_]+/ }
     get   "/users/:username/edit", to: "profiles#edit",   as: :edit_profile, constraints: { username: /[A-Za-z0-9_]+/ }
     patch "/users/:username",      to: "profiles#update",                    constraints: { username: /[A-Za-z0-9_]+/ }
