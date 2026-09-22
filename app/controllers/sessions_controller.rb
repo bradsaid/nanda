@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(email_address: params[:email_address])
+    user = User.find_by_email(params[:email_address])
     if user&.authenticate(params[:password])
       if user.banned?
         redirect_to new_session_path, alert: "Your account has been suspended."

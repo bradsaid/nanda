@@ -35,7 +35,18 @@ class User < ApplicationRecord
 
   attr_accessor :phone_number  # honeypot field on signup, never persisted
 
-  before_save :downcase_email
+  # before_validation, not before_save: uniqueness runs during validation, so
+  # normalising afterwards let "Foo@x.com" pass the check against a stored
+  # "foo@x.com" and only collide at the database index.
+  before_validation :downcase_email
+
+  # Every lookup by address must go through this. The column is a plain
+  # string holding a lowercased address, so find_by(email_address:) misses
+  # anyone who types their own address with different capitalisation.
+  def self.find_by_email(address)
+    return nil if address.blank?
+    find_by(email_address: address.to_s.strip.downcase)
+  end
 
   validates :password, length: { minimum: 8 }, if: :password_required?
 
@@ -60,7 +71,7 @@ class User < ApplicationRecord
     email_verified_at&.to_i
   end
 
-  validates :email_address, presence: true, uniqueness: true,
+  validates :email_address, presence: true, uniqueness: { case_sensitive: false },
                             format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :username, uniqueness: { case_sensitive: false },
                        length: { in: 3..20 },

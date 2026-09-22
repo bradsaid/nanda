@@ -16,8 +16,7 @@ class EmailVerificationsController < ApplicationController
   end
 
   def resend
-    email = params[:email_address].to_s.strip.downcase
-    user = User.find_by(email_address: email)
+    user = User.find_by_email(params[:email_address])
     if user && !user.email_verified?
       AuthMailer.verify_email(user).deliver_later
     end
