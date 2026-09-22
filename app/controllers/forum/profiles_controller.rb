@@ -3,7 +3,10 @@ module Forum
     PER_PAGE = 40
 
     before_action :set_user, except: [:index]
+    # Only the account holder may move their own address — not an admin, who
+    # could otherwise take over an account without knowing the password.
     before_action :require_owner, only: [:edit, :update]
+    before_action :require_self,  only: [:request_email_change, :cancel_email_change]
 
     # Public member directory. Deliberately shows nothing an email address
     # could be recovered from — username, picture, join date and activity only.
@@ -47,6 +50,33 @@ module Forum
       @profile_username = persisted_username
     end
 
+    # Requests an email change. Nothing moves until the new address is
+    # confirmed from a link sent to it, and the member's current password is
+    # required so a borrowed session cannot quietly take the account over.
+    def request_email_change
+      unless @user.authenticate(params[:current_password].to_s)
+        redirect_to forum_edit_profile_path(username: @user.username),
+                    alert: "That password is not correct." and return
+      end
+
+      @user.pending_email_address = params[:new_email_address]
+      if @user.save
+        AuthMailer.confirm_email_change(@user).deliver_later
+        AuthMailer.email_change_requested(@user).deliver_later
+        redirect_to forum_profile_path(username: @user.username),
+                    notice: "Check #{@user.pending_email_address} for a link to confirm the change. "                             "Your current address stays in use until you do."
+      else
+        redirect_to forum_edit_profile_path(username: @user.username),
+                    alert: @user.errors.full_messages.to_sentence.presence || "That address could not be used."
+      end
+    end
+
+    def cancel_email_change
+      @user.update(pending_email_address: nil)
+      redirect_to forum_edit_profile_path(username: @user.username),
+                  notice: "Email change cancelled."
+    end
+
     def update
       if @user.update(profile_params)
         redirect_to forum_profile_path(username: @user.username), notice: "Profile updated."
@@ -76,6 +106,12 @@ module Forum
     # The username as stored, ignoring any unsaved change.
     def persisted_username
       @user.username_changed? ? @user.username_was : @user.username
+    end
+
+    def require_self
+      return if current_user&.id == @user.id
+      redirect_to forum_profile_path(username: @user.username),
+                  alert: "You can only change your own email address."
     end
 
     def require_owner

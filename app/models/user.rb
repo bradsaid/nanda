@@ -39,6 +39,12 @@ class User < ApplicationRecord
   # normalising afterwards let "Foo@x.com" pass the check against a stored
   # "foo@x.com" and only collide at the database index.
   before_validation :downcase_email
+  before_validation :downcase_pending_email
+
+  validates :pending_email_address,
+            format: { with: URI::MailTo::EMAIL_REGEXP },
+            allow_nil: true
+  validate  :pending_email_not_already_taken
 
   # Every lookup by address must go through this. The column is a plain
   # string holding a lowercased address, so find_by(email_address:) misses
@@ -65,6 +71,13 @@ class User < ApplicationRecord
     password_salt&.last(10)
   end
 
+  # Confirms a requested email change. Keyed on the pending address, so the
+  # link dies the moment the request is cancelled or superseded, and expires
+  # after 24 hours.
+  generates_token_for :email_change, expires_in: 24.hours do
+    pending_email_address
+  end
+
   # Signed token used for signup email verification. Expires after 48 hours.
   # Invalidates once `email_verified_at` is set, so a re-click is rejected.
   generates_token_for :email_verification, expires_in: 48.hours do
@@ -86,6 +99,15 @@ class User < ApplicationRecord
     end
   end
 
+  # Moves the confirmed address into place. The new address arrived by a link
+  # sent to it, so it counts as verified.
+  def apply_pending_email!
+    return false if pending_email_address.blank?
+    update!(email_address: pending_email_address,
+            pending_email_address: nil,
+            email_verified_at: Time.current)
+  end
+
   scope :verified,   -> { where.not(email_verified_at: nil) }
   scope :banned,     -> { where.not(banned_at: nil) }
   scope :not_banned, -> { where(banned_at: nil) }
@@ -99,6 +121,19 @@ class User < ApplicationRecord
 
   def downcase_email
     self.email_address = email_address.to_s.strip.downcase if email_address.present?
+  end
+
+  def downcase_pending_email
+    self.pending_email_address = pending_email_address.to_s.strip.downcase.presence
+  end
+
+  def pending_email_not_already_taken
+    return if pending_email_address.blank?
+    if pending_email_address == email_address
+      errors.add(:pending_email_address, "is already your address")
+    elsif User.where.not(id: id).exists?(email_address: pending_email_address)
+      errors.add(:pending_email_address, "is already in use")
+    end
   end
 
   # Ask for password validation only when it's being set (create or change),

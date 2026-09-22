@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get  "/signup", to: "registrations#new",    as: :signup
   post "/signup", to: "registrations#create"
 
+  get  "/email/change/:token",   to: "email_changes#show",         as: :email_change
   get  "/email/verify/:token",  to: "email_verifications#show",   as: :email_verification
   post "/email/verify/resend",  to: "email_verifications#resend", as: :resend_email_verification
 
@@ -44,6 +45,8 @@ Rails.application.routes.draw do
     get   "/users/:username",      to: "profiles#show",   as: :profile,      constraints: { username: /[A-Za-z0-9_]+/ }
     get   "/users/:username/edit", to: "profiles#edit",   as: :edit_profile, constraints: { username: /[A-Za-z0-9_]+/ }
     patch "/users/:username",      to: "profiles#update",                    constraints: { username: /[A-Za-z0-9_]+/ }
+    post  "/users/:username/email", to: "profiles#request_email_change", as: :request_email_change, constraints: { username: /[A-Za-z0-9_]+/ }
+    delete "/users/:username/email", to: "profiles#cancel_email_change", as: :cancel_email_change, constraints: { username: /[A-Za-z0-9_]+/ }
   end
 
   namespace :admin do

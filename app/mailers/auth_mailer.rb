@@ -10,6 +10,23 @@ class AuthMailer < ApplicationMailer
          to: ENV.fetch("CONTACT_EMAIL", "brad@nakedandafraidfan.com")
   end
 
+  # Sent to the NEW address. Clicking the link is what actually applies the
+  # change, so an address nobody controls can never take over an account.
+  def confirm_email_change(user)
+    @user  = user
+    @token = user.generate_token_for(:email_change)
+    @url   = email_change_url(token: @token)
+    mail subject: "Confirm your new email address", to: user.pending_email_address
+  end
+
+  # Sent to the CURRENT address, so a change requested by someone else does
+  # not happen quietly.
+  def email_change_requested(user)
+    @user = user
+    mail subject: "Someone requested an email change on your account",
+         to: user.email_address
+  end
+
   def verify_email(user)
     @user  = user
     @token = user.generate_token_for(:email_verification)

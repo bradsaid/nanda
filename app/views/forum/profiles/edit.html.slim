@@ -43,3 +43,33 @@
           .d-flex.gap-2.pb-1
             = f.submit "Save profile", class: "btn btn-primary"
             = link_to "Cancel", forum_profile_path(username: @profile_username), class: "btn btn-outline-secondary"
+
+- if current_user&.id == @user.id
+  .row.justify-content-center.mt-4
+    .col-md-8
+      .card.shadow-sm
+        .card-header Email address
+        .card-body
+          p.small.text-muted.mb-3
+            | Signed in as
+            strong<>  = @user.email_address
+            |  . Changing this changes how you sign in, so the new address has to be confirmed before it takes effect.
+
+          - if @user.pending_email_address.present?
+            .alert.alert-warning.d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
+              div
+                | Waiting for confirmation at
+                strong<>  = @user.pending_email_address
+                br
+                span.small Check that inbox for the link. Your current address stays in use until you do.
+              = button_to "Cancel change", forum_cancel_email_change_path(username: @profile_username), method: :delete, class: "btn btn-outline-secondary btn-sm"
+
+          = form_with url: forum_request_email_change_path(username: @profile_username), method: :post, local: true do
+            .mb-3
+              = label_tag :new_email_address, "New email address", class: "form-label"
+              = email_field_tag :new_email_address, nil, class: "form-control", required: true, autocomplete: "email"
+            .mb-3
+              = label_tag :current_password, "Your current password", class: "form-label"
+              = password_field_tag :current_password, nil, class: "form-control", required: true, autocomplete: "current-password"
+              .form-text Required so nobody else can move your account.
+            = submit_tag "Send confirmation link", class: "btn btn-primary"
