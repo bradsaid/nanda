@@ -1,0 +1,82 @@
+- content_for :title, "Forum Users"
+
+.d-flex.justify-content-between.align-items-center.mb-3.flex-wrap.gap-2
+  h1.h4.mb-0 Forum users
+  .small.text-muted
+    = "#{@totals[:all]} total"
+    - if @totals[:banned] > 0
+      span.ms-2.text-danger = "#{@totals[:banned]} banned"
+    - if @totals[:unverified] > 0
+      span.ms-2 = "#{@totals[:unverified]} unverified"
+
+.card.shadow-sm.mb-3
+  .card-body.py-3
+    = form_with url: admin_forum_users_path, method: :get, local: true, class: "row g-2 align-items-end" do
+      .col-md-5
+        = label_tag :q, "Search username or email", class: "form-label small mb-1"
+        = text_field_tag :q, @q, class: "form-control form-control-sm", placeholder: "e.g. alice"
+      .col-md-4
+        = label_tag :filter, "Show", class: "form-label small mb-1"
+        = select_tag :filter,
+            options_for_select([["Everyone", "all"], ["Banned", "banned"], ["Unverified", "unverified"], ["Staff", "staff"]], @filter),
+            class: "form-select form-select-sm"
+      .col-auto
+        = submit_tag "Apply", class: "btn btn-dark btn-sm"
+        = link_to "Reset", admin_forum_users_path, class: "btn btn-light btn-sm ms-1"
+
+.card.shadow-sm
+  .table-responsive
+    table.table.table-sm.align-middle.mb-0
+      thead.table-light
+        tr
+          th Member
+          th Email
+          th Role
+          th.text-end Topics
+          th.text-end Posts
+          th Joined
+          th Status
+          th
+      tbody
+        - if @users.blank?
+          tr
+            td.text-muted.py-4(colspan="8") No users match.
+        - else
+          - @users.each do |u|
+            tr
+              td
+                - if u.username.present?
+                  = link_to u.username, forum_profile_path(username: u.username), class: "fw-semibold text-decoration-none"
+                - else
+                  span.text-muted (no username)
+              td.small.text-muted = u.email_address
+              td
+                - if u.admin?
+                  span.badge.text-bg-primary Admin
+                - elsif u.episode_editor?
+                  span.badge.text-bg-info Editor
+                - else
+                  span.small.text-muted Member
+              td.text-end = @topic_counts.fetch(u.id, 0)
+              td.text-end = @post_counts.fetch(u.id, 0)
+              td.small.text-muted = u.created_at.strftime("%b %-d, %Y")
+              td
+                - if u.banned?
+                  span.badge.text-bg-danger Banned
+                  - if u.ban_reason.present?
+                    .small.text-muted = u.ban_reason
+                - elsif u.email_verified_at.nil? && !u.admin? && !u.episode_editor?
+                  span.badge.text-bg-warning Unverified
+                - else
+                  span.badge.text-bg-success Active
+              td.text-end
+                - if u.banned?
+                  = button_to "Unban", admin_forum_user_path(u), method: :patch,
+                    params: { decision: "unban" }, class: "btn btn-outline-secondary btn-sm",
+                    form: { style: "display:inline;" }
+                - elsif !(u.admin? || u.episode_editor?)
+                  = button_to "Ban", admin_forum_user_path(u), method: :patch,
+                    params: { decision: "ban" }, class: "btn btn-outline-danger btn-sm",
+                    form: { style: "display:inline;", data: { turbo_confirm: "Ban #{u.username.presence || u.email_address}? They will be signed out immediately." } }
+
+= paginate @users

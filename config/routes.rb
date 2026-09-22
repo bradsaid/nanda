@@ -69,7 +69,7 @@ Rails.application.routes.draw do
       resources :reports,    only: [:index, :update]
       resources :posts,      only: [:destroy]
       resources :topics,     only: [:update, :destroy]
-      resources :users,      only: [:update]
+      resources :users,      only: [:index, :update]
     end
   end
 
