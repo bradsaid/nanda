@@ -138,6 +138,13 @@ html
             = link_to "Forum", forum_path(anchor: "content"), class: "nav-link"
           = link_to "About", about_path(anchor: "content"), class: "nav-link"
           - if logged_in?
+            / A signed-in member had no route to their own profile from
+            / anywhere. Gated on forum access so the link cannot 404 if the
+            / forum is ever closed again.
+            - if (forum_enabled? || forum_preview_access?) && current_user.username.present?
+              = link_to forum_profile_path(username: current_user.username), class: "nav-link d-inline-flex align-items-center gap-2" do
+                = forum_avatar(current_user, size: 22)
+                span = current_user.username
             = button_to "Sign out", session_path, method: :delete, class: "nav-link btn btn-link"
           - elsif forum_enabled?
             / Accounts stay hidden until the forum opens. Site email cannot yet

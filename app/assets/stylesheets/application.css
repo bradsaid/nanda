@@ -1022,3 +1022,11 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
   vertical-align: baseline;
   text-decoration: none;
 }
+
+
+/* The member's own profile link in the nav carries their username and their
+   picture, so it keeps its capitalisation instead of being uppercased like
+   the section links, and its avatar must not be stretched by the flex row. */
+.site-nav .nav-link.d-inline-flex { text-transform: none; letter-spacing: 0; }
+.site-nav .nav-link.d-inline-flex img,
+.site-nav .nav-link.d-inline-flex span.rounded-circle { flex: 0 0 auto; }

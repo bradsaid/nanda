@@ -72,7 +72,13 @@
 
 - if logged_in?
   p.small.text-muted.mt-3.mb-0
-    | Signed in as #{forum_user_display(current_user)}.
+    ' Signed in as
+    - if current_user.username.present?
+      = link_to current_user.username, forum_profile_path(username: current_user.username)
+      '  ·
+      = link_to "Edit your profile", forum_edit_profile_path(username: current_user.username)
+    - else
+      = forum_user_display(current_user)
     - unless current_user.email_verified?
       br
       strong Please verify your email before posting.
