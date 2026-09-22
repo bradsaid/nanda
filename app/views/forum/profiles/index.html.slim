@@ -24,7 +24,7 @@
   .row.g-3
     - @members.each do |m|
       .col-12.col-sm-6.col-lg-4
-        .card.shadow-sm.h-100
+        .card.shadow-sm.h-100.forum-clickable data-click-href=forum_profile_path(username: m.username)
           .card-body.d-flex.align-items-center.gap-3
             = forum_avatar(m, size: 48)
             .flex-grow-1.min-width-0

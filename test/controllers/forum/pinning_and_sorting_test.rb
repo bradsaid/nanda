@@ -27,7 +27,7 @@ class Forum::PinningAndSortingTest < ActionDispatch::IntegrationTest
   def sign_in_as(user) = post(session_path, params: { email_address: user.email_address, password: "password" })
 
   def titles_in_order
-    css_select("tr.forum-topic-row a[href^='/forum/topics/']").map(&:text).reject(&:blank?)
+    css_select("tr.forum-clickable a[href^='/forum/topics/']").map(&:text).reject(&:blank?)
   end
 
   test "recent is the default and leads with the newest activity" do

@@ -15,6 +15,18 @@ class Forum::MemberDirectoryTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", forum_profiles_path, text: "Members"
   end
 
+  test "the whole member card is a click target" do
+    get forum_profiles_path
+    assert_select ".card.forum-clickable[data-click-href=?]",
+      forum_profile_path(username: users(:one).username)
+  end
+
+  test "the username inside stays a real link for keyboard users" do
+    get forum_profiles_path
+    assert_select ".card.forum-clickable a[href=?]",
+      forum_profile_path(username: users(:one).username)
+  end
+
   test "banned members are hidden" do
     get forum_profiles_path
     assert_no_match(/#{users(:banned).username}/, @response.body)

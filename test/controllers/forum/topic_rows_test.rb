@@ -12,11 +12,11 @@ class Forum::TopicRowsTest < ActionDispatch::IntegrationTest
   test "each row carries its destination so the whole row can be clicked" do
     get forum_path
     assert_response :success
-    assert_select "tr.forum-topic-row[data-topic-href=?]", forum_topic_path(@topic)
+    assert_select "tr.forum-clickable[data-click-href=?]", forum_topic_path(@topic)
   end
 
   test "the title is still a real link for keyboard and screen readers" do
     get forum_path
-    assert_select "tr.forum-topic-row a[href=?]", forum_topic_path(@topic), text: "Clickable row"
+    assert_select "tr.forum-clickable a[href=?]", forum_topic_path(@topic), text: "Clickable row"
   end
 end

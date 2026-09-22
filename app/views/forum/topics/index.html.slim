@@ -38,7 +38,7 @@
             th Last activity
         tbody
           - @topics.each do |t|
-            tr.forum-topic-row data-topic-href=forum_topic_path(t)
+            tr.forum-clickable data-click-href=forum_topic_path(t)
               td data-label="Topic"
                 - if t.pinned?
                   span.badge.text-bg-warning.me-1 pinned

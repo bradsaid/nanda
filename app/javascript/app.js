@@ -9,7 +9,7 @@ import "episode_form";
 import "survivors_search";
 import "items_search";
 import "forum_mentions";
-import "forum_topic_rows";
+import "forum_clickable";
 import "locations_search";
 import "consent";
 Turbo.session.progressBarDelay = Infinity;
