@@ -30,13 +30,13 @@
       thead.table-light
         tr
           th Member
-          th Email
+          th.d-none.d-lg-table-cell Email
           th Role
-          th.text-end Topics
-          th.text-end Posts
-          th Joined
+          th.text-end.d-none.d-md-table-cell Topics
+          th.text-end.d-none.d-md-table-cell Posts
+          th.d-none.d-xl-table-cell Joined
           th Status
-          th
+          th.text-end Actions
       tbody
         - if @users.blank?
           tr
@@ -49,7 +49,7 @@
                   = link_to u.username, forum_profile_path(username: u.username), class: "fw-semibold text-decoration-none"
                 - else
                   span.text-muted (no username)
-              td.small.text-muted = u.email_address
+              td.small.text-muted.d-none.d-lg-table-cell = u.email_address
               td
                 - if u.admin?
                   span.badge.text-bg-primary Admin
@@ -57,9 +57,9 @@
                   span.badge.text-bg-info Editor
                 - else
                   span.small.text-muted Member
-              td.text-end = @topic_counts.fetch(u.id, 0)
-              td.text-end = @post_counts.fetch(u.id, 0)
-              td.small.text-muted = u.created_at.strftime("%b %-d, %Y")
+              td.text-end.d-none.d-md-table-cell = @topic_counts.fetch(u.id, 0)
+              td.text-end.d-none.d-md-table-cell = @post_counts.fetch(u.id, 0)
+              td.small.text-muted.d-none.d-xl-table-cell = u.created_at.strftime("%b %-d, %Y")
               td
                 - if u.banned?
                   span.badge.text-bg-danger Banned
