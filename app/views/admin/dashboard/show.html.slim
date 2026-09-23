@@ -24,6 +24,34 @@
         .card-body.py-3
           div.h4.mb-0 = @forum_posts_last_24h
           small.text-muted New posts (24h)
+    .col-6.col-md-4
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = number_with_delimiter(@forum_traffic[:today])
+          small.text-muted Forum views today
+          .small.text-muted = "#{number_with_delimiter(@forum_traffic[:unique_today])} unique"
+    .col-6.col-md-4
+      .card.text-center.shadow-sm
+        .card-body.py-3
+          div.h4.mb-0 = number_with_delimiter(@forum_traffic[:week])
+          small.text-muted Forum views this week
+          .small.text-muted = "#{number_with_delimiter(@forum_traffic[:unique_week])} unique"
+
+  / ===== Most-read forum pages =====
+  - if @forum_traffic[:top_pages].any?
+    .card.shadow-sm.mb-4
+      .card-header.fw-medium Most-read forum pages
+      .table-responsive
+        table.table.table-sm.mb-0
+          thead.table-light
+            tr
+              th Page
+              th.text-end Views
+          tbody
+            - @forum_traffic[:top_pages].each do |path, count|
+              tr
+                td = link_to path, path, class: "text-decoration-none"
+                td.text-end = number_with_delimiter(count)
 
   / ===== Summary Cards =====
   .row.g-3.mb-4

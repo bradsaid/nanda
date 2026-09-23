@@ -4,8 +4,6 @@ module Forum
   #      public. Admins still get through so we can preview.
   #   2. Writes require a verified account. Reads are open.
   class BaseController < ApplicationController
-    skip_after_action :record_page_view, raise: false
-
     WRITE_ACTIONS = %w[new create edit update destroy].freeze
 
     before_action :ensure_forum_available

@@ -1,5 +1,9 @@
 class PageView < ApplicationRecord
   scope :recent,     ->(n = 50) { order(created_at: :desc).limit(n) }
+  # The wiki and the forum are reported separately: site figures keep their
+  # historical meaning, and forum traffic stays out of ad-facing reporting.
+  scope :site,       -> { where(forum: false) }
+  scope :in_forum,   -> { where(forum: true) }
   # Anchor week / month bounds to local midnight (Time.zone). Date.current.all_week
   # and .all_month return Date ranges that ActiveRecord casts to UTC midnight,
   # which leaks late-night-local views into the wrong calendar bucket.

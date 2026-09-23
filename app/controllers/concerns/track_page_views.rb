@@ -39,7 +39,8 @@ module TrackPageViews
       device_type:     ua.mobile? ? "Mobile" : "Desktop",
       visitor_id:      persistent_visitor_id,
       session_id:      page_view_session_id,
-      referrer_domain: is_self ? nil : ref_domain
+      referrer_domain: is_self ? nil : ref_domain,
+      forum:           request.path.start_with?("/forum")
     )
 
     # Geo resolution is an external HTTP call — keep it off the request path.

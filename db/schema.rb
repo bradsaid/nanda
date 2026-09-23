@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_22_130000) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_23_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -283,8 +283,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_22_130000) do
     t.integer "duration_seconds"
     t.string "referrer_domain"
     t.string "visitor_id"
+    t.boolean "forum", default: false, null: false
     t.index ["controller_name"], name: "index_page_views_on_controller_name"
     t.index ["created_at"], name: "index_page_views_on_created_at"
+    t.index ["forum", "created_at"], name: "index_page_views_on_forum_and_created_at"
     t.index ["path"], name: "index_page_views_on_path"
     t.index ["session_id"], name: "index_page_views_on_session_id"
     t.index ["visitor_id"], name: "index_page_views_on_visitor_id"
