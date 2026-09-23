@@ -51,8 +51,11 @@
             th Air Date
             th Location
             th.text-center Synopsis
-            - if @sort == "traffic"
-              th.text-end Views 30d
+            th.text-end
+              = link_to admin_episodes_path(filter: @filter, sort: "traffic"), class: "text-decoration-none text-reset" do
+                | Views 30d
+                - if @sort == "traffic"
+                  span.ms-1 &darr;
             th.text-center Traps?
             th.text-center Trap Result
             th.text-end Actions
@@ -74,10 +77,9 @@
                     span.badge.text-bg-success = "#{episode.synopsis.length} ch"
                   - else
                     span.text-muted —
-                - if @sort == "traffic"
-                  td.text-end.small
-                    - v = @traffic_by_episode_id[episode.id].to_i
-                    = v.positive? ? number_with_delimiter(v) : "—"
+                td.text-end.small
+                  - v = @traffic_by_episode_id[episode.id].to_i
+                  = v.positive? ? number_with_delimiter(v) : "—"
                 td.text-center = episode.no_traps? ? "F" : (episode.episode_traps.any? ? "T" : "—")
                 td.text-center.text-nowrap.small
                   - traps = episode.episode_traps
