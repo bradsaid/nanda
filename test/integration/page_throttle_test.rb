@@ -3,6 +3,12 @@ require "test_helper"
 # Rack::Attack is disabled in the test environment by default, and Rails.cache
 # is a null store there, so both have to be turned on deliberately for these.
 class PageThrottleTest < ActionDispatch::IntegrationTest
+  # Time is frozen around each burst. Without it these requests take real
+  # wall-clock time, and under a loaded parallel run 31 of them straddle two
+  # of the throttle's 10-second buckets — neither crosses the limit and the
+  # test fails for reasons that have nothing to do with the throttle.
+  include ActiveSupport::Testing::TimeHelpers
+
   setup do
     @was_enabled = Rack::Attack.enabled
     @was_store   = Rack::Attack.cache.store
@@ -23,35 +29,39 @@ class PageThrottleTest < ActionDispatch::IntegrationTest
   end
 
   test "a scraper bursting past the limit is refused" do
-    31.times { get_as "203.0.113.10" }
+    freeze_time { 31.times { get_as "203.0.113.10" } }
     assert_response :too_many_requests
     assert_match(/slow down/i, @response.body)
   end
 
   test "the refusal tells the client when to come back" do
-    31.times { get_as "203.0.113.11" }
+    freeze_time { 31.times { get_as "203.0.113.11" } }
     assert @response.headers["Retry-After"].present?
   end
 
   test "ordinary browsing is never touched" do
     # Far brisker than a human clicking, and still well inside the limit.
-    20.times { get_as "203.0.113.12" }
+    freeze_time { 20.times { get_as "203.0.113.12" } }
     assert_response :success
   end
 
   test "one visitor's burst does not affect anyone else" do
-    31.times { get_as "203.0.113.13" }
-    assert_response :too_many_requests
+    freeze_time do
+      31.times { get_as "203.0.113.13" }
+      assert_response :too_many_requests
 
-    get_as "203.0.113.14"
-    assert_response :success, "a different visitor must be unaffected"
+      get_as "203.0.113.14"
+      assert_response :success, "a different visitor must be unaffected"
+    end
   end
 
   test "images and assets do not count towards the limit" do
     # A page full of avatars fires many of these; counting them would throttle
     # a genuine reader partway through loading one page.
-    40.times { get_as "203.0.113.15", "/assets/application.css" }
-    get_as "203.0.113.15"
+    freeze_time do
+      40.times { get_as "203.0.113.15", "/assets/application.css" }
+      get_as "203.0.113.15"
+    end
     assert_response :success
   end
 

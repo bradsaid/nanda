@@ -34,6 +34,12 @@ class Rack::Attack
     req.ip if req.path == "/passwords" && req.post?
   end
 
+  ### Throttle: verification resends
+  # The button is one click, and the email goes to someone else's inbox.
+  throttle("email_resends/ip", limit: 5, period: 1.hour) do |req|
+    req.ip if req.path == "/email/verify/resend" && req.post?
+  end
+
   ### Throttle: forum posts per user
   # Cap at 30 posts per user per hour (a very active user might approach
   # this on an unusually busy thread but shouldn't exceed it).

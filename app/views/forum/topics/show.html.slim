@@ -79,8 +79,9 @@
 - elsif @topic.locked?
   .alert.alert-warning.mt-3 This topic is locked.
 - elsif logged_in?
-  .alert.alert-info.mt-3
-    | Verify your email to reply.
+  .alert.alert-warning.mt-3.d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+    span Confirm your email address to reply.
+    = button_to "Resend the email", resend_email_verification_path, method: :post, class: "btn btn-warning btn-sm", form: { style: "display:inline;" }
 - else
   .alert.alert-info.mt-3
     = link_to "Sign in", new_session_path

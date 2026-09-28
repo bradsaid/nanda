@@ -16,13 +16,26 @@ class EmailVerificationsController < ApplicationController
   end
 
   def resend
-    user = User.find_by_email(params[:email_address])
-    if user && !user.email_verified?
-      AuthMailer.verify_email(user).deliver_later
-    end
-    redirect_to root_path, notice: "If that account exists and needs verification, a new email is on the way."
+    # A signed-in member is resending to themselves, so there is no address to
+    # type and no enumeration question. Anyone else has to name one, and gets
+    # the same answer either way.
+    user = logged_in? ? current_user : User.find_by_email(params[:email_address])
+
+    AuthMailer.verify_email(user).deliver_later if user && !user.email_verified?
+
+    redirect_back fallback_location: root_path, notice: resend_notice
   rescue => e
     Rails.logger.error "[email_verifications#resend] #{e.class} #{e.message}"
-    redirect_to root_path, notice: "If that account exists and needs verification, a new email is on the way."
+    redirect_back fallback_location: root_path, notice: resend_notice
+  end
+
+  private
+
+  def resend_notice
+    if logged_in?
+      "Verification email sent to #{current_user.email_address}. It can take a minute, and it may land in your spam folder."
+    else
+      "If that account exists and needs verification, a new email is on the way."
+    end
   end
 end

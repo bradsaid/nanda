@@ -1,0 +1,16 @@
+/ Signed in but unverified means they cannot post at all. That was previously
+/ one muted line at the foot of the forum list, with no way to get the email
+/ resent — most people who hit it simply never posted.
+- return unless logged_in? && !current_user.email_verified?
+- return if controller_path.in?(%w[sessions registrations passwords email_verifications email_changes])
+
+.alert.alert-warning.d-flex.align-items-center.justify-content-between.flex-wrap.gap-2.mb-3 role="alert"
+  div
+    strong One more step:
+    |  confirm your email address to post in the forum.
+    br
+    span.small
+      | We sent a link to
+      strong<>  = current_user.email_address
+      | . Check your spam folder if it isn't there.
+  = button_to "Resend the email", resend_email_verification_path, method: :post, class: "btn btn-warning btn-sm", form: { style: "display:inline;" }
