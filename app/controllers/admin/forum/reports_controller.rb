@@ -15,7 +15,7 @@ module Admin
           redirect_to admin_forum_reports_path, notice: "Dismissed."
         when "remove_post"
           if @report.reportable.is_a?(::Forum::Post)
-            @report.reportable.update!(deleted_at: Time.current, deleted_by: current_admin)
+            @report.reportable.update!(deleted_at: Time.current)
             @report.update!(status: :actioned, handled_by: current_admin, handled_at: Time.current)
             redirect_to admin_forum_reports_path, notice: "Post removed."
           else

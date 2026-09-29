@@ -13,10 +13,6 @@ class User < ApplicationRecord
   # a missing last_post_user / handled_by as "unknown".
   has_many :forum_topics_last_posted, class_name: "Forum::Topic",  foreign_key: :last_post_user_id, dependent: :nullify
   has_many :forum_reports_handled,    class_name: "Forum::Report", foreign_key: :handled_by_id,     dependent: :nullify
-  # Same reasoning: these only reference the account, so deleting it must
-  # clear the reference rather than fail on the foreign key.
-  has_many :forum_topics_deleted, class_name: "Forum::Topic", foreign_key: :deleted_by_id, dependent: :nullify
-  has_many :forum_posts_deleted,  class_name: "Forum::Post",  foreign_key: :deleted_by_id, dependent: :nullify
   has_one_attached :avatar do |attachable|
     # Small round avatar beside a poster's name on every post.
     attachable.variant :chip, resize_to_fill: [64, 64], saver: { quality: 80, strip: true }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_29_010000) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_29_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -174,9 +174,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_29_010000) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "deleted_by_id"
     t.index ["deleted_at"], name: "index_forum_posts_on_deleted_at"
-    t.index ["deleted_by_id"], name: "index_forum_posts_on_deleted_by_id"
     t.index ["forum_topic_id", "created_at"], name: "index_forum_posts_on_forum_topic_id_and_created_at"
     t.index ["forum_topic_id"], name: "index_forum_posts_on_forum_topic_id"
     t.index ["user_id"], name: "index_forum_posts_on_user_id"
@@ -224,9 +222,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_29_010000) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "deleted_by_id"
     t.index ["deleted_at"], name: "index_forum_topics_on_deleted_at"
-    t.index ["deleted_by_id"], name: "index_forum_topics_on_deleted_by_id"
     t.index ["forum_category_id", "slug"], name: "index_forum_topics_on_forum_category_id_and_slug", unique: true
     t.index ["forum_category_id"], name: "index_forum_topics_on_forum_category_id"
     t.index ["last_post_at"], name: "index_forum_topics_on_last_post_at"
@@ -533,14 +529,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_29_010000) do
   add_foreign_key "food_sources", "episodes"
   add_foreign_key "forum_posts", "forum_topics"
   add_foreign_key "forum_posts", "users"
-  add_foreign_key "forum_posts", "users", column: "deleted_by_id"
   add_foreign_key "forum_reports", "users", column: "handled_by_id"
   add_foreign_key "forum_reports", "users", column: "reporter_id"
   add_foreign_key "forum_subscriptions", "forum_topics"
   add_foreign_key "forum_subscriptions", "users"
   add_foreign_key "forum_topics", "forum_categories"
   add_foreign_key "forum_topics", "users"
-  add_foreign_key "forum_topics", "users", column: "deleted_by_id"
   add_foreign_key "forum_topics", "users", column: "last_post_user_id"
   add_foreign_key "medical_calls", "episodes"
   add_foreign_key "medical_calls", "survivors"

@@ -31,7 +31,6 @@ module Forum
 
     belongs_to :forum_topic, class_name: "Forum::Topic", counter_cache: :posts_count
     belongs_to :user, counter_cache: :posts_count
-    belongs_to :deleted_by, class_name: "User", optional: true
 
     has_many_attached :images
     has_many :reports, as: :reportable, class_name: "Forum::Report", dependent: :destroy

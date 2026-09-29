@@ -37,32 +37,6 @@
           small.text-muted Forum views this week
           .small.text-muted = "#{number_with_delimiter(@forum_traffic[:unique_week])} unique"
 
-  / ===== Recently removed forum content =====
-  - if @recently_removed.any?
-    .card.shadow-sm.mb-4
-      .card-header.fw-medium Recently removed from the forum
-      .table-responsive
-        table.table.table-sm.mb-0
-          thead.table-light
-            tr
-              th What
-              th Title
-              th Written by
-              th Removed by
-              th When
-          tbody
-            - @recently_removed.each do |r|
-              tr
-                td = r[:kind]
-                td = r[:title].to_s.truncate(60)
-                td.small = r[:author]&.username || "[deleted]"
-                td.small
-                  - if r[:by]
-                    = r[:by].username
-                  - else
-                    span.text-muted not recorded
-                td.small.text-muted = r[:at].strftime("%b %-d, %-I:%M %p")
-
   / ===== Most-read forum pages =====
   - if @forum_traffic[:top_pages].any?
     .card.shadow-sm.mb-4

@@ -12,9 +12,6 @@ module Forum
     belongs_to :forum_category, class_name: "Forum::Category", counter_cache: :topics_count
     belongs_to :user
     belongs_to :last_post_user, class_name: "User", optional: true
-    # Who removed it. Null for anything removed before this was recorded, and
-    # for anything still live.
-    belongs_to :deleted_by, class_name: "User", optional: true
 
     has_many :posts, class_name: "Forum::Post",
                       foreign_key: :forum_topic_id, dependent: :destroy

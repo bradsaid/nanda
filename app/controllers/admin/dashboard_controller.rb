@@ -65,17 +65,6 @@ module Admin
                          .count
           ]
         end
-
-      # Recently removed forum content, with who removed it. Anything removed
-      # before deleted_by existed shows as unknown rather than guessing.
-      @recently_removed = (
-        ::Forum::Topic.unscoped.where.not(deleted_at: nil)
-                      .includes(:user, :deleted_by).order(deleted_at: :desc).limit(10)
-                      .map { |t| { kind: "Topic", title: t.title, author: t.user, by: t.deleted_by, at: t.deleted_at } } +
-        ::Forum::Post.unscoped.where.not(deleted_at: nil)
-                     .includes(:user, :deleted_by, :forum_topic).order(deleted_at: :desc).limit(10)
-                     .map { |p| { kind: "Post", title: p.forum_topic&.title.to_s, author: p.user, by: p.deleted_by, at: p.deleted_at } }
-      ).sort_by { |r| r[:at] }.reverse.first(10)
     end
   end
 end
