@@ -82,7 +82,7 @@ module Forum
     end
 
     def destroy
-      @topic.update!(deleted_at: Time.current)
+      @topic.update!(deleted_at: Time.current, deleted_by: current_user)
       redirect_to forum_path, notice: "Topic removed."
     end
 
