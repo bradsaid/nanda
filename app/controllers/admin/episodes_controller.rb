@@ -70,12 +70,19 @@ module Admin
     def edit; end
 
     def update
-      attrs = dedupe_appearance_items(episode_params)
+      attrs = dedupe_appearances(dedupe_appearance_items(episode_params))
       if @episode.update(attrs)
         redirect_to admin_episodes_path, notice: "Episode updated."
       else
         render :edit, status: :unprocessable_entity
       end
+    rescue ActiveRecord::RecordNotUnique
+      # appearances has a unique index on (survivor_id, episode_id). The dedupe
+      # above should make this unreachable, but a 500 is never the right
+      # answer to a form submission — say what happened and keep their edits.
+      @episode.assign_attributes(attrs.except(:appearances_attributes))
+      flash.now[:alert] = "A survivor was listed more than once on this episode. Each survivor can appear only once — remove the duplicate row and save again."
+      render :edit, status: :unprocessable_entity
     end
 
     def destroy
@@ -100,6 +107,32 @@ module Admin
     # (appearance_id, item_id, source) — the DB has a unique index on that
     # triple. This guards against the Quick Add Given Item button being used
     # to fan out an item to a survivor who already has it.
+    # The participant copy button appended a row for every survivor on the
+    # previous episode without checking who was already on this one. Saving
+    # then hit the unique index on (survivor_id, episode_id) and 500'd. Drop
+    # any NEW row whose survivor is already present — on an existing row, or
+    # earlier in the submission — so the first mention wins.
+    def dedupe_appearances(attrs)
+      apps = attrs[:appearances_attributes]
+      return attrs unless apps.is_a?(ActionController::Parameters) || apps.is_a?(Hash)
+
+      existing = @episode ? @episode.appearances.pluck(:survivor_id, :id).to_h { |sid, id| [sid.to_s, id.to_s] } : {}
+      seen = {}
+      apps.to_h.each do |key, row|
+        next if row[:_destroy].to_s == "1"
+        sid = row[:survivor_id].to_s
+        next if sid.empty?
+        if row[:id].present?
+          seen[sid] = key
+        elsif seen.key?(sid) || existing.key?(sid)
+          apps.delete(key)
+        else
+          seen[sid] = key
+        end
+      end
+      attrs
+    end
+
     def dedupe_appearance_items(attrs)
       apps = attrs[:appearances_attributes]
       return attrs unless apps.is_a?(ActionController::Parameters) || apps.is_a?(Hash)

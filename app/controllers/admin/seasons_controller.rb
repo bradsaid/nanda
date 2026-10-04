@@ -55,13 +55,21 @@ module Admin
       season = Season.find(params[:id])
 
       episodes_scope = season.episodes
-      if params[:exclude_episode_id].present?
-        episodes_scope = episodes_scope.where.not(id: params[:exclude_episode_id])
+
+      # When editing an existing episode, "previous" has to mean the one
+      # immediately before it in the season — not the latest episode overall.
+      # Every episode of a season usually exists already (bulk-imported), so
+      # excluding only the current one made "latest" resolve to the finale and
+      # copied the finale's roster into episode 2.
+      current = season.episodes.find_by(id: params[:exclude_episode_id]) if params[:exclude_episode_id].present?
+      if current
+        episodes_scope = episodes_scope.where.not(id: current.id)
+                                       .where("number_in_season < ?", current.number_in_season)
       end
 
       latest = episodes_scope
                  .includes(:location, appearances: :survivor)
-                 .order("air_date DESC NULLS LAST, number_in_season DESC, id DESC")
+                 .order("number_in_season DESC, air_date DESC NULLS LAST, id DESC")
                  .first
 
       if latest.nil?

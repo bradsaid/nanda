@@ -186,6 +186,20 @@ function initEpisodeForm() {
 
       var tbody = document.querySelector("#participants-table tbody");
       var tmpl  = document.getElementById("participant-template");
+
+      // Skip anyone already on this episode. Appending them again produced a
+      // duplicate (survivor, episode) row, which the database refuses on save.
+      var alreadyHere = {};
+      tbody.querySelectorAll("tr.participant-row select[name*='[survivor_id]']").forEach(function(sel) {
+        if (sel.value) alreadyHere[String(sel.value)] = true;
+      });
+      var skipped = participants.filter(function(p) { return alreadyHere[String(p.survivor_id)]; }).length;
+      participants = participants.filter(function(p) { return !alreadyHere[String(p.survivor_id)]; });
+      if (participants.length === 0) {
+        alert("Everyone from the previous episode is already on this one" + (skipped ? " (" + skipped + " skipped)." : "."));
+        return;
+      }
+
       participants.forEach(function(p, i) {
         var idx  = Date.now() + i;
         var html = tmpl.innerHTML.replace(/NEW_IDX/g, idx);
@@ -203,7 +217,9 @@ function initEpisodeForm() {
       });
 
       updateBulkGivenRecipients();
-      var note = data.from_episode ? ("Copied " + participants.length + " participants from \"" + data.from_episode.title + "\".") : ("Copied " + participants.length + " participants.");
+      var note = data.from_episode ? ("Copied " + participants.length + " from \"" + data.from_episode.title + "\"") : ("Copied " + participants.length);
+      if (skipped) note += " (" + skipped + " already here)";
+      note += ".";
       copyBtn.textContent = "✓ " + note;
       setTimeout(function() { copyBtn.textContent = original_label; copyBtn.disabled = false; }, 3500);
     } catch (e) {
