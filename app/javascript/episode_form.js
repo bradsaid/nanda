@@ -179,7 +179,7 @@ function initEpisodeForm() {
       if (!res.ok) throw new Error("HTTP " + res.status);
       var data = await res.json();
       var participants = data.participants || [];
-      if (participants.length === 0) {
+      if (participants.length === 0 && !(data.exited || []).length) {
         alert(data.note || "No previous episode in this season.");
         return;
       }
@@ -187,16 +187,49 @@ function initEpisodeForm() {
       var tbody = document.querySelector("#participants-table tbody");
       var tmpl  = document.getElementById("participant-template");
 
+      // Bulk-imported seasons list the whole cast on every episode, so the
+      // form may already carry people who tapped out earlier. Take them off
+      // (they're confirmed on save), but leave anyone who has items recorded
+      // here, since that row is clearly more than an import artifact.
+      var exitedById = {};
+      (data.exited || []).forEach(function(x) { exitedById[String(x.survivor_id)] = x; });
+      var removed = [], kept = [];
+      tbody.querySelectorAll("tr.participant-row").forEach(function(row) {
+        if (row.style.display === "none") return;
+        var sel = row.querySelector("select[name*='[survivor_id]']");
+        var exit = sel && exitedById[String(sel.value)];
+        if (!exit) return;
+        var itemsRow = row.nextElementSibling;
+        var liveItems = itemsRow && itemsRow.classList.contains("items-row")
+          ? Array.prototype.filter.call(itemsRow.querySelectorAll(".item-entry"), function(e) { return e.style.display !== "none"; }).length
+          : 0;
+        if (liveItems > 0) { kept.push(exit.full_name); return; }
+        var destroyField = row.querySelector("input[name*='_destroy']");
+        if (destroyField && row.querySelector("input[name*='[id]']")) {
+          destroyField.value = "1";
+          row.style.display = "none";
+          if (itemsRow && itemsRow.classList.contains("items-row")) itemsRow.style.display = "none";
+        } else {
+          if (itemsRow && itemsRow.classList.contains("items-row")) itemsRow.remove();
+          row.remove();
+        }
+        removed.push(exit.full_name + " (E" + exit.number_in_season + ")");
+      });
+
       // Skip anyone already on this episode. Appending them again produced a
       // duplicate (survivor, episode) row, which the database refuses on save.
       var alreadyHere = {};
-      tbody.querySelectorAll("tr.participant-row select[name*='[survivor_id]']").forEach(function(sel) {
-        if (sel.value) alreadyHere[String(sel.value)] = true;
+      tbody.querySelectorAll("tr.participant-row").forEach(function(row) {
+        if (row.style.display === "none") return;
+        var sel = row.querySelector("select[name*='[survivor_id]']");
+        if (sel && sel.value) alreadyHere[String(sel.value)] = true;
       });
       var skipped = participants.filter(function(p) { return alreadyHere[String(p.survivor_id)]; }).length;
       participants = participants.filter(function(p) { return !alreadyHere[String(p.survivor_id)]; });
-      if (participants.length === 0) {
-        alert("Everyone from the previous episode is already on this one" + (skipped ? " (" + skipped + " skipped)." : "."));
+      if (participants.length === 0 && removed.length === 0) {
+        var msg = "Everyone from the previous episode is already on this one" + (skipped ? " (" + skipped + " skipped)." : ".");
+        if (kept.length) msg += "\nNot removed because they have items on this episode: " + kept.join(", ");
+        alert(msg);
         return;
       }
 
@@ -219,8 +252,15 @@ function initEpisodeForm() {
       updateBulkGivenRecipients();
       var note = data.from_episode ? ("Copied " + participants.length + " from \"" + data.from_episode.title + "\"") : ("Copied " + participants.length);
       if (skipped) note += " (" + skipped + " already here)";
+      if (removed.length) note += "; removed " + removed.length + " who exited earlier";
       note += ".";
       copyBtn.textContent = "✓ " + note;
+      if (removed.length || kept.length) {
+        var detail = "";
+        if (removed.length) detail += "Removed (save to confirm): " + removed.join(", ");
+        if (kept.length) detail += (detail ? "\n" : "") + "Kept because they have items here: " + kept.join(", ");
+        alert(detail);
+      }
       setTimeout(function() { copyBtn.textContent = original_label; copyBtn.disabled = false; }, 3500);
     } catch (e) {
       console.error("[copy-participants]", e);

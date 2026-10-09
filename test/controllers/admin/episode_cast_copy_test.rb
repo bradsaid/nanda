@@ -53,6 +53,22 @@ class Admin::EpisodeCastCopyTest < ActionDispatch::IntegrationTest
     assert_not_includes names, "Taps Out"
   end
 
+  test "lists who has exited so the form can drop them from an imported roster" do
+    data = participants_for(exclude: @e3)
+    exited = data["exited"]
+    assert_equal [ "Taps Out" ], exited.map { |x| x["full_name"] }
+    assert_equal "tap_out", exited.first["result"]
+    assert_equal 1, exited.first["number_in_season"]
+  end
+
+  test "an exit on a later episode does not count, even when air dates are missing" do
+    @season.episodes.update_all(air_date: nil)
+    @e3.appearances.find_by(survivor: @stayer).update!(result: "success")
+    data = participants_for(exclude: @e2)
+    assert_includes data["participants"].map { |p| p["full_name"] }, "Stays In"
+    assert_equal [ "Taps Out" ], data["exited"].map { |x| x["full_name"] }
+  end
+
   test "editing the first episode has nothing to copy from" do
     data = participants_for(exclude: @e1)
     assert_empty data["participants"]

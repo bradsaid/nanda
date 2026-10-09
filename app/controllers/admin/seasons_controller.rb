@@ -77,13 +77,27 @@ module Admin
         return
       end
 
-      exited_survivor_ids = Appearance
+      # Compared by episode number, not air date: imported episodes often have
+      # no air date, and a nil there used to count every exit in the season.
+      exits = Appearance
         .joins(:episode)
+        .includes(:survivor, :episode)
         .where("episodes.season_id = ?", season.id)
-        .where("episodes.air_date <= ?", latest.air_date || Date.new(9999, 1, 1))
+        .where("episodes.number_in_season <= ?", latest.number_in_season)
         .where.not(result: [nil, ""])
-        .pluck(:survivor_id)
-        .to_set
+        .order("episodes.number_in_season")
+      exited_survivor_ids = exits.map(&:survivor_id).to_set
+
+      # Listed so the form can drop these survivors if the episode being
+      # edited still carries them from the bulk import.
+      exited = exits.uniq(&:survivor_id).map do |a|
+        {
+          survivor_id:       a.survivor_id,
+          full_name:         a.survivor.full_name,
+          result:            a.result,
+          number_in_season:  a.episode.number_in_season
+        }
+      end
 
       participants = latest.appearances.map do |a|
         next nil unless a.survivor
@@ -106,7 +120,8 @@ module Admin
         scheduled_days:          latest.scheduled_days,
         participant_arrangement: latest.participant_arrangement,
         type_modifiers:          latest.type_modifiers,
-        participants:            participants
+        participants:            participants,
+        exited:                  exited
       }
     end
 
