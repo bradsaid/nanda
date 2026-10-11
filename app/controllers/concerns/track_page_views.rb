@@ -15,11 +15,26 @@ module TrackPageViews
     headlesschrome|phantomjs|wget|curl|python-requests|go-http-client|
     pingdom|uptimerobot|statuscake|site24x7|googleother|petalbot|bytespider/ix.freeze
 
+  # The same browser loading the same URL again within this window is a reload,
+  # not a new view. A Mac app stuck reloading one episode page every 0.4s for a
+  # day recorded 88,000 views and queued a geocoding lookup for every one.
+  REPEAT_VIEW_WINDOW = 30.seconds
+
   def record_page_view
     return unless request.get?
     return if request.path.start_with?("/admin")
     return if request.path.match?(/\.(js|css|png|jpg|svg|ico|woff2?|map)\z/)
     return if request.user_agent.blank? || BOT_PATTERN.match?(request.user_agent)
+
+    # Keyed on IP and user agent rather than the visitor cookie, so a client
+    # that drops cookies is still recognised. The full URL is used, so paging
+    # or filtering a list still counts each page.
+    repeat_key = "page_view/recent/" +
+      Digest::SHA256.hexdigest([ request.remote_ip, request.user_agent, request.fullpath ].join("|"))
+    if (recent_id = Rails.cache.read(repeat_key))
+      expose_page_view_id(recent_id)
+      return
+    end
 
     ua  = UserAgent.parse(request.user_agent.to_s)
     ref = request.referrer
@@ -43,13 +58,21 @@ module TrackPageViews
       forum:           request.path.start_with?("/forum")
     )
 
+    Rails.cache.write(repeat_key, pv.id, expires_in: REPEAT_VIEW_WINDOW)
+
     # Geo resolution is an external HTTP call — keep it off the request path.
     GeocodePageViewJob.perform_later(pv.id) if geocodable_ip?(pv.ip_address)
 
-    response.set_header("X-Page-View-Id", pv.id.to_s)
-    cookies[:_pv_id] = { value: pv.id.to_s, path: "/", httponly: false }
+    expose_page_view_id(pv.id)
   rescue StandardError => e
     Rails.logger.warn("PageView tracking failed: #{e.message}")
+  end
+
+  # The page timer pings back with this id to record time on page; a reload
+  # reports against the view it repeats.
+  def expose_page_view_id(id)
+    response.set_header("X-Page-View-Id", id.to_s)
+    cookies[:_pv_id] = { value: id.to_s, path: "/", httponly: false }
   end
 
   def persistent_visitor_id

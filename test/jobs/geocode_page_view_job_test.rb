@@ -2,6 +2,9 @@ require "test_helper"
 
 class GeocodePageViewJobTest < ActiveJob::TestCase
   setup do
+    # The test environment's cache is a null store; these need a real one.
+    @was_cache  = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
     @original_ip_lookup = Geocoder.config[:ip_lookup]
     Geocoder.configure(ip_lookup: :test)
     Geocoder::Lookup::Test.reset
@@ -13,6 +16,7 @@ class GeocodePageViewJobTest < ActiveJob::TestCase
   end
 
   teardown do
+    Rails.cache = @was_cache
     Geocoder::Lookup::Test.reset
     Geocoder.configure(ip_lookup: @original_ip_lookup)
   end
@@ -48,5 +52,39 @@ class GeocodePageViewJobTest < ActiveJob::TestCase
                             method: "GET", ip_address: "203.0.113.9")
     assert_nothing_raised { GeocodePageViewJob.perform_now(boom.id) }
     assert_nil boom.reload.country
+  end
+
+  def page_view(ip)
+    PageView.create!(path: "/", controller_name: "home", action_name: "index",
+                     method: "GET", ip_address: ip)
+  end
+
+  test "an address is looked up once, then answered from the cache" do
+    GeocodePageViewJob.perform_now(@pv.id)
+    Geocoder::Lookup::Test.reset # any further lookup would now raise
+    again = page_view("8.8.8.8")
+    GeocodePageViewJob.perform_now(again.id)
+    assert_equal "Mountain View", again.reload.city
+  end
+
+  test "a failed lookup is not cached, so the next view retries" do
+    Geocoder::Lookup::Test.reset
+    GeocodePageViewJob.perform_now(@pv.id)
+    assert_nil @pv.reload.country
+
+    Geocoder::Lookup::Test.add_stub("8.8.8.8", [{ "country" => "United States", "city" => "Mountain View" }])
+    later = page_view("8.8.8.8")
+    GeocodePageViewJob.perform_now(later.id)
+    assert_equal "United States", later.reload.country
+  end
+
+  test "a reply without a country is not cached" do
+    Geocoder::Lookup::Test.add_stub("198.51.100.7", [{ "country" => "", "city" => "" }])
+    GeocodePageViewJob.perform_now(page_view("198.51.100.7").id)
+
+    Geocoder::Lookup::Test.add_stub("198.51.100.7", [{ "country" => "Canada", "city" => "Toronto" }])
+    later = page_view("198.51.100.7")
+    GeocodePageViewJob.perform_now(later.id)
+    assert_equal "Canada", later.reload.country
   end
 end

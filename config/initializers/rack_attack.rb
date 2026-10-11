@@ -84,6 +84,16 @@ class Rack::Attack
     req.ip if PAGE_REQUEST.call(req)
   end
 
+  ### Throttle: one URL, over and over
+  # A Mac app stuck in a reload loop fetched a single episode page 88,000 times
+  # in a day, every 0.4s — right at the sustained limit above, so it was capped
+  # but never stopped. Nobody loads the same URL 30 times in five minutes.
+  # The full URL is the key, so paging, sorting or filtering a list counts each
+  # variation separately and a reader working through /items is unaffected.
+  throttle("pages/ip/same_url", limit: 30, period: 5.minutes) do |req|
+    "#{req.ip}|#{Digest::SHA256.hexdigest(req.fullpath)[0, 16]}" if PAGE_REQUEST.call(req)
+  end
+
   ### Blocklist: obvious junk User-Agents
   # Empty UA or a curl UA against POST endpoints is almost always a bot.
   blocklist("no_ua_on_writes") do |req|

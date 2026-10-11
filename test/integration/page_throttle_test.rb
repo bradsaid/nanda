@@ -65,6 +65,36 @@ class PageThrottleTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # Spaced 9s apart so neither the 10-second burst rule nor the per-minute rule
+  # is involved, starting on a 5-minute boundary so all 31 share one bucket.
+  def reload_slowly(ip, path, times)
+    start = Time.zone.at((Time.current.to_i / 300 + 1) * 300)
+    times.times do |i|
+      travel_to(start + (i * 9).seconds) { get_as ip, path }
+    end
+  end
+
+  test "a client reloading one URL over and over is refused" do
+    reload_slowly "203.0.113.17", "/items", 31
+    assert_response :too_many_requests
+  end
+
+  test "reloading one URL does not block the rest of the site" do
+    reload_slowly "203.0.113.18", "/items", 31
+    travel_to(Time.zone.at((Time.current.to_i / 300 + 1) * 300) + 280.seconds) do
+      get_as "203.0.113.18", "/episodes"
+    end
+    assert_response :success
+  end
+
+  test "paging or filtering a list counts each URL separately" do
+    start = Time.zone.at((Time.current.to_i / 300 + 1) * 300)
+    31.times do |i|
+      travel_to(start + (i * 9).seconds) { get_as "203.0.113.19", "/items?page=#{i + 1}" }
+    end
+    assert_response :success
+  end
+
   test "the forum is still covered by its own throttle" do
     get_as "203.0.113.16", "/forum"
     assert_includes [200, 404], @response.status
