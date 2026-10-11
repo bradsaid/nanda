@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
 
   def new
-    @return_to = params[:return_to].presence || stored_return_to
+    @return_to = safe_return_to(params[:return_to]) || stored_return_to
   end
 
   def create
@@ -32,7 +32,7 @@ class SessionsController < ApplicationController
 
       redirect_to(after_login_path(user), notice: "Signed in")
     else
-      redirect_to new_session_path(return_to: params[:return_to]), alert: "Invalid email or password"
+      redirect_to new_session_path(return_to: safe_return_to(params[:return_to])), alert: "Invalid email or password"
     end
   end
 
@@ -52,12 +52,25 @@ class SessionsController < ApplicationController
   # wherever they were trying to go (stored_return_to), or the forum index
   # if that's not set.
   def after_login_path(user)
-    params[:return_to].presence ||
+    safe_return_to(params[:return_to]) ||
       stored_return_to ||
       (user.admin? || user.episode_editor? ? admin_root_path : root_path)
   end
 
   def stored_return_to
     session.delete(:return_to)
+  end
+
+  # return_to arrives from the query string and a form field, so it is
+  # attacker-controlled. Only a path on this site is acceptable: anything else
+  # (an absolute URL, "//host", "/\\host", a header-splitting newline) would
+  # make redirect_to raise UnsafeRedirectError and answer with a 500.
+  def safe_return_to(value)
+    path = value.to_s
+    return nil if path.blank?
+    return nil unless path.start_with?("/")
+    return nil if path.start_with?("//", "/\\")
+    return nil if path.match?(/[[:cntrl:]]/)
+    path
   end
 end

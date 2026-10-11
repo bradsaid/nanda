@@ -4,6 +4,9 @@ class PageView < ApplicationRecord
   # historical meaning, and forum traffic stays out of ad-facing reporting.
   scope :site,       -> { where(forum: false) }
   scope :in_forum,   -> { where(forum: true) }
+  # Arrived with no referrer at all (typed URL, bookmark, app). Navigation from
+  # one of our own pages records the site's own domain, so it is not counted here.
+  scope :direct,     -> { where(referrer_domain: [nil, ""]) }
   # Anchor week / month bounds to local midnight (Time.zone). Date.current.all_week
   # and .all_month return Date ranges that ActiveRecord casts to UTC midnight,
   # which leaks late-night-local views into the wrong calendar bucket.

@@ -9,6 +9,13 @@ module Admin
         return render :edit, status: :unprocessable_entity
       end
 
+      # has_secure_password ignores a blank password on update, so an empty
+      # form would otherwise report success and change nothing.
+      if params[:password].blank?
+        flash.now[:alert] = "Please enter a new password."
+        return render :edit, status: :unprocessable_entity
+      end
+
       if @current_admin.update(password_params)
         redirect_to admin_root_path, notice: "Password updated."
       else

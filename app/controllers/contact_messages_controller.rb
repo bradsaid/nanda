@@ -1,4 +1,6 @@
 class ContactMessagesController < ApplicationController
+  MAX_MESSAGE = 5_000
+
   # POST /contact
   def create
     # honeypot
@@ -12,6 +14,10 @@ class ContactMessagesController < ApplicationController
 
     if name.blank? || email.blank? || message.blank?
       redirect_back fallback_location: contact_path, alert: "Please fill all fields." and return
+    end
+
+    if name.length > 200 || email.length > 320 || message.length > MAX_MESSAGE
+      redirect_back fallback_location: contact_path, alert: "That message is too long." and return
     end
 
     begin

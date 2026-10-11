@@ -74,4 +74,24 @@ class TrackPageViewsTest < ActionDispatch::IntegrationTest
     assert_difference("PageView.count", 1) { visit(path: "/episodes?page=2") }
     assert_difference("PageView.count", 1) { visit(ip: "9.9.9.9") }
   end
+
+  test "navigating from one of our own pages is not counted as direct traffic" do
+    get root_path, headers: { "REMOTE_ADDR" => "8.8.8.8", "HTTP_USER_AGENT" => BROWSER_UA,
+                              "HTTP_REFERER" => "https://www.nakedandafraidfan.com/episodes" }
+    pv = PageView.order(:id).last
+    assert_nil pv.referrer, "the internal referrer URL is not worth storing"
+    assert_equal "nakedandafraidfan.com", pv.referrer_domain
+    assert_not_includes PageView.direct, pv
+  end
+
+  test "a visit with no referrer is direct, and an external one is not" do
+    get root_path, headers: { "REMOTE_ADDR" => "8.8.8.8", "HTTP_USER_AGENT" => BROWSER_UA }
+    direct = PageView.order(:id).last
+    get episodes_path, headers: { "REMOTE_ADDR" => "8.8.4.4", "HTTP_USER_AGENT" => BROWSER_UA,
+                                  "HTTP_REFERER" => "https://www.google.com/" }
+    external = PageView.order(:id).last
+
+    assert_includes PageView.direct, direct
+    assert_not_includes PageView.direct, external
+  end
 end

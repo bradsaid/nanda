@@ -40,6 +40,14 @@ class Rack::Attack
     req.ip if req.path == "/email/verify/resend" && req.post?
   end
 
+  ### Throttle: contact and bio-submission forms
+  # Both send mail synchronously, holding a Puma thread for the whole SMTP
+  # round trip, and each message lands in Brad's inbox. Five an hour is far
+  # more than a real reader sends; a flood gets a 429 instead of a full inbox.
+  throttle("contact_forms/ip", limit: 5, period: 1.hour) do |req|
+    req.ip if req.post? && (req.path == "/contact" || req.path.match?(%r{\A/survivors/[^/]+/submit\z}))
+  end
+
   ### Throttle: forum posts per user
   # Cap at 30 posts per user per hour (a very active user might approach
   # this on an unusually busy thread but shouldn't exceed it).

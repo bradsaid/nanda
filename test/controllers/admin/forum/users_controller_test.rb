@@ -57,6 +57,20 @@ class Admin::Forum::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
+  test "deleting a member says how many other members' replies went with their topics" do
+    topic = Forum::Topic.create!(forum_category: forum_categories(:general),
+                                 user: @member, title: "Popular thread")
+    topic.posts.create!(user: @member, body: "opening")
+    topic.posts.create!(user: users(:one), body: "reply from someone else")
+    topic.posts.create!(user: users(:one), body: "another one")
+
+    get admin_forum_users_path
+    assert_match(/2 replies from other members/, @response.body, "the confirm dialog should warn")
+
+    delete admin_forum_user_path(@member)
+    assert_match(/2 replies from other members on those topics went with them/, flash[:notice])
+  end
+
   test "deleting a member removes their post history too" do
     topic = Forum::Topic.create!(forum_category: forum_categories(:general),
                                  user: @member, title: "Goes with them")

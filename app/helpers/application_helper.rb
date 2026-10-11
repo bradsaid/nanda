@@ -22,25 +22,46 @@ module ApplicationHelper
 
     # 2) Cast-scoped survivor aliases (full name, last name, unambiguous
     # first-two-words for 3+ word names, unambiguous first name).
+    # Partial names (surname, first name, first two words) are only used when
+    # they point at exactly one cast member, and only when written with the
+    # capitalisation the name has. Without that, two cast members sharing a
+    # surname both got the first one's link, and a cast member called Short or
+    # Hall turned every "short" or "hall" in the prose into a survivor link.
+    name_suffixes = %w[jr jr. sr sr. ii iii iv v].to_set
+    parts_of = ->(s) { s.full_name.to_s.split }
+    surname_of = lambda do |s|
+      parts = parts_of.(s)
+      parts.pop while parts.size > 1 && name_suffixes.include?(parts.last.downcase)
+      parts.size > 1 ? parts.last : nil
+    end
+
     first_name_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
-      h[s.full_name.to_s.split.first.to_s.downcase] += 1
+      h[parts_of.(s).first.to_s.downcase] += 1
+    end
+    surname_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
+      sn = surname_of.(s)
+      h[sn.downcase] += 1 if sn
     end
     two_word_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
-      parts = s.full_name.to_s.split
+      parts = parts_of.(s)
       h[parts.first(2).join(" ").downcase] += 1 if parts.size >= 3
     end
+
+    # [text, path, match_case]
     aliases = []
     survivors.each do |s|
-      parts = s.full_name.to_s.split
+      parts = parts_of.(s)
       next if parts.empty?
-      aliases << [s.full_name, survivor_path(s)]
-      aliases << [parts.last, survivor_path(s)] if parts.size > 1
+      path = survivor_path(s)
+      aliases << [s.full_name, path, false]
+      sn = surname_of.(s)
+      aliases << [sn, path, true] if sn && surname_counts[sn.downcase] == 1
       if parts.size >= 3
         two = parts.first(2).join(" ")
-        aliases << [two, survivor_path(s)] if two_word_counts[two.downcase] == 1
+        aliases << [two, path, true] if two_word_counts[two.downcase] == 1
       end
       if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
-        aliases << [parts.first, survivor_path(s)]
+        aliases << [parts.first, path, true]
       end
     end
 
@@ -51,7 +72,7 @@ module ApplicationHelper
     cast_ids = survivors.map(&:id).to_set
     Survivor.where.not(id: cast_ids.to_a).pluck(:full_name, :slug, :id).each do |name, slug, id|
       next if name.blank?
-      aliases << [name, "/survivors/#{slug.presence || id}"]
+      aliases << [name, "/survivors/#{slug.presence || id}", false]
     end
 
     # 4) Series aliases: full name + short name (name with the "Naked and
@@ -63,13 +84,13 @@ module ApplicationHelper
       full = name
       short = name.sub(/\ANaked and Afraid[: ]*/i, "").strip
       [full, short].uniq.reject { |n| n.length < 3 }.each do |alias_name|
-        aliases << [alias_name, series_path]
+        aliases << [alias_name, series_path, false]
       end
     end
 
     # Apply longest-first so multi-word matches beat their shorter aliases.
-    aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, path|
-      pattern = /\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i
+    aliases.sort_by { |alias_name, _, _| -alias_name.length }.each do |alias_name, path, match_case|
+      pattern = Regexp.new("\\b#{Regexp.escape(alias_name)}\\b(?![^<]*<\\/a>)", match_case ? nil : Regexp::IGNORECASE)
       escaped = escaped.gsub(pattern) do |match|
         %Q(<a href="#{path}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
       end

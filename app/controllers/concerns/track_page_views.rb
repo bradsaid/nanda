@@ -19,6 +19,7 @@ module TrackPageViews
   # not a new view. A Mac app stuck reloading one episode page every 0.4s for a
   # day recorded 88,000 views and queued a geocoding lookup for every one.
   REPEAT_VIEW_WINDOW = 30.seconds
+  SELF_DOMAIN = "nakedandafraidfan.com".freeze
 
   def record_page_view
     return unless request.get?
@@ -39,7 +40,7 @@ module TrackPageViews
     ua  = UserAgent.parse(request.user_agent.to_s)
     ref = request.referrer
     ref_domain = extract_domain(ref)
-    is_self = ref_domain&.sub(/\Awww\./, "")&.downcase == "nakedandafraidfan.com"
+    is_self = ref_domain&.sub(/\Awww\./, "")&.downcase == SELF_DOMAIN
 
     pv = PageView.create!(
       path:            request.path,
@@ -54,7 +55,9 @@ module TrackPageViews
       device_type:     ua.mobile? ? "Mobile" : "Desktop",
       visitor_id:      persistent_visitor_id,
       session_id:      page_view_session_id,
-      referrer_domain: is_self ? nil : ref_domain,
+      # Keep our own domain for internal navigation rather than nil: nil means
+      # "no referrer", which the dashboard reports as direct traffic.
+      referrer_domain: is_self ? SELF_DOMAIN : ref_domain,
       forum:           request.path.start_with?("/forum")
     )
 

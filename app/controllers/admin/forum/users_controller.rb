@@ -32,6 +32,13 @@ module Admin
         ids = @users.map(&:id)
         @topic_counts = ::Forum::Topic.active.where(user_id: ids).group(:user_id).count
         @post_counts  = ::Forum::Post.active.where(user_id: ids).group(:user_id).count
+        # Deleting a member deletes their topics, and with them every reply
+        # other members left there. Counted so the confirmation can say so.
+        @others_reply_counts = ::Forum::Post.active
+                                            .joins(:forum_topic)
+                                            .where(forum_topics: { user_id: ids })
+                                            .where("forum_posts.user_id <> forum_topics.user_id")
+                                            .group("forum_topics.user_id").count
 
         @totals = {
           all:        User.count,
@@ -77,10 +84,17 @@ module Admin
         name    = display_name(user)
         topics  = user.forum_topics.count
         posts   = user.forum_posts.count
+        # Replies by other members on this person's topics are destroyed with
+        # those topics, so report them rather than implying only their own
+        # writing went.
+        others  = ::Forum::Post.joins(:forum_topic)
+                               .where(forum_topics: { user_id: user.id })
+                               .where.not(user_id: user.id).count
         user.destroy!
 
-        redirect_to admin_forum_users_path,
-                    notice: "Deleted #{name}, #{topics} #{'topic'.pluralize(topics)} and #{posts} #{'post'.pluralize(posts)}."
+        notice = "Deleted #{name}, #{topics} #{'topic'.pluralize(topics)} and #{posts} #{'post'.pluralize(posts)}."
+        notice += " #{others} #{'reply'.pluralize(others)} from other members on those topics went with them." if others.positive?
+        redirect_to admin_forum_users_path, notice: notice
       end
 
       # Emails the member a reset link. The token is generated from their

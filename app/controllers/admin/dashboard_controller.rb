@@ -29,11 +29,11 @@ module Admin
       @chart_counts  = PageView.site.daily_counts(@chart_total_days)
       @chart_uniques = PageView.site.daily_unique_counts(@chart_total_days)
       @top_countries = PageView.site.top_countries(15)
-      @device_breakdown = PageView.device_breakdown
-      @top_referrers = PageView.top_referrer_domains(10)
-      @direct_views  = PageView.where(referrer_domain: [nil, ""]).count
-      @time_by_page  = PageView.avg_duration_by_page(10)
-      @recent_views  = PageView.recent(50)
+      @device_breakdown = PageView.site.device_breakdown
+      @top_referrers = PageView.site.top_referrer_domains(10)
+      @direct_views  = PageView.site.direct.count
+      @time_by_page  = PageView.site.avg_duration_by_page(10)
+      @recent_views  = PageView.site.recent(50)
 
       # Forum counters change slowly enough that a 60s cache is invisible to
       # the admin but skips 3 aggregate scans per dashboard render. Open

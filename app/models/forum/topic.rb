@@ -73,6 +73,16 @@ module Forum
       slug.blank?
     end
 
+    # /forum/topics/new is the new-topic form, so a topic whose slug is "new"
+    # could never be opened. Titles that would normalise to a route word get a
+    # suffix instead.
+    RESERVED_SLUGS = %w[new edit].freeze
+
+    def normalize_friendly_id(value)
+      slug = super
+      RESERVED_SLUGS.include?(slug) ? "#{slug}-topic" : slug
+    end
+
     private
 
     def touch_category_activity
