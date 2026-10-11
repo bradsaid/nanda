@@ -74,6 +74,14 @@ class SurvivorsController < ApplicationController
   def show
     #@survivor = Survivor.find(params[:id])
 
+    # Reached through a slug the survivor used to have (they were renamed)?
+    # Send the visitor, and search engines, to the current URL. Numeric ids are
+    # left alone: they are a supported way in and not a stale slug.
+    if params[:id].to_s !~ /\A\d+\z/ && params[:id].to_s != @survivor.slug
+      redirect_to survivor_path(@survivor), status: :moved_permanently
+      return
+    end
+
     @appearances = @survivor.appearances
                             .includes(episode: [{ season: :series }, :location], appearance_items: :item)
                             .order("episodes.air_date NULLS LAST, episodes.id")

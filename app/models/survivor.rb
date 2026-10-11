@@ -1,10 +1,19 @@
 # app/models/survivor.rb
 class Survivor < ApplicationRecord
   extend FriendlyId
-  friendly_id :full_name, use: :slugged
+  # :history remembers every slug a survivor has had, so renaming someone (the
+  # bio verification pass did six) leaves the old /survivors/<slug> URL
+  # resolving instead of 404ing. SurvivorsController#show 301s it to the
+  # current slug.
+  friendly_id :full_name, use: [:slugged, :history]
   has_many :appearances, dependent: :destroy
   has_many :episodes, through: :appearances
   has_many :appearance_items, through: :appearances
+  # medical_calls.survivor_id has a foreign key, so deleting a survivor who had
+  # a medical call raised PG::ForeignKeyViolation. Keep the call on the episode
+  # (reason, tap-out flag, notes) and just drop the link to the person; the
+  # episode page already renders a call with no survivor.
+  has_many :medical_calls, dependent: :nullify
 
   has_one_attached :avatar do |attachable|
     # Small circular grid tile (Survivors index, chip lists, home cards).

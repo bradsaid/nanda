@@ -45,6 +45,11 @@ class User < ApplicationRecord
   before_validation :downcase_email
   before_validation :downcase_pending_email
 
+  # Changing the password ends every other sign-in. Otherwise resetting a
+  # password after a suspected compromise leaves the attacker's remember-me
+  # token working for the rest of its lifetime.
+  after_update :revoke_sessions, if: :saved_change_to_password_digest?
+
   validates :pending_email_address,
             format: { with: URI::MailTo::EMAIL_REGEXP },
             allow_nil: true
@@ -129,6 +134,10 @@ class User < ApplicationRecord
   def banned?         = banned_at.present?
 
   private
+
+  def revoke_sessions
+    sessions.delete_all
+  end
 
   def downcase_email
     self.email_address = email_address.to_s.strip.downcase if email_address.present?

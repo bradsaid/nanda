@@ -28,7 +28,12 @@ module Admin
           redirect_to admin_forum_reports_path, notice: "Topic locked."
         when "ban_user"
           user = @report.reportable.respond_to?(:user) ? @report.reportable.user : nil
-          if user
+          if user && (user.admin? || user.episode_editor?)
+            # Same rule as Admin::Forum::UsersController#update: staff cannot be
+            # banned from the moderation UI. Without this, any episode editor
+            # could lock an admin out by reporting one of the admin's posts.
+            redirect_to admin_forum_reports_path, alert: "Staff accounts cannot be banned from here."
+          elsif user
             user.update!(banned_at: Time.current, ban_reason: params[:ban_reason].presence || "Reported content")
             user.sessions.delete_all
             @report.update!(status: :actioned, handled_by: current_admin, handled_at: Time.current)

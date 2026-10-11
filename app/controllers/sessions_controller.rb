@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
           httponly: true,
           secure:   Rails.env.production?,
           same_site: :lax,
-          expires:  30.days.from_now
+          expires:  record.remembered_until
         }
       end
 

@@ -12,8 +12,12 @@ module Admin
 
     private
 
+    # Goes through current_user like the rest of the site, so the persistent
+    # remember-me cookie signs an admin in here too (it used to look only at
+    # session[:user_id], which dies with the browser) and a banned account is
+    # refused rather than waved through on a still-live session.
     def require_admin_user
-      @current_admin = User.find_by(id: session[:user_id])
+      @current_admin = current_user
       unless @current_admin && (@current_admin.admin? || @current_admin.episode_editor?)
         redirect_to root_path, alert: "Not authorized."
       end

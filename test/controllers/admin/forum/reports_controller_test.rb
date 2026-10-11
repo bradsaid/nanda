@@ -55,4 +55,18 @@ class Admin::Forum::ReportsControllerTest < ActionDispatch::IntegrationTest
     assert users(:one).reload.banned?
     assert_equal "spam", users(:one).reload.ban_reason
   end
+
+  test "an episode editor cannot ban an admin through a report on the admin's post" do
+    editor = User.create!(email_address: "editor@example.com", password: "password1",
+                          username: "theeditor", role: :episode_editor, email_verified_at: Time.current)
+    admin_post   = @topic.posts.create!(user: users(:admin), body: "An admin speaking")
+    admin_report = Forum::Report.create!(reporter: editor, reportable: admin_post, reason: "abuse", status: "open")
+
+    post session_path, params: { email_address: editor.email_address, password: "password1" }
+    patch admin_forum_report_path(admin_report), params: { decision: "ban_user", ban_reason: "coup" }
+
+    assert_response :redirect
+    assert_not users(:admin).reload.banned?, "staff must not be bannable from the reports queue"
+    assert_equal "open", admin_report.reload.status, "a refused ban must not mark the report as actioned"
+  end
 end
