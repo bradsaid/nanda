@@ -15,7 +15,10 @@ class ItemTest < ActiveSupport::TestCase
     "spearmint"                => "plant",      # was "hunting weapon": "spear"
     "clothesline"              => "cordage",    # was "fishing tool": "line"
     "slackline"                => "cordage",
-    "slack line"               => "cordage"
+    "slack line"               => "cordage",
+    "mosquito net"             => "comfort item",  # "net" is a fishing word, but not here
+    "fishing net"              => "fishing tool",
+    "net"                      => "fishing tool"
   }.each do |name, expected|
     test "classifies #{name.inspect} as #{expected}" do
       assert_equal expected, Item.classify(name)

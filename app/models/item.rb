@@ -28,7 +28,7 @@ class Item < ApplicationRecord
   POT        = /pottery|#{word("pot", "pan")}/i
   FIRE       = /fire|lighter|flint|bow drill|#{word("lens")}/i
   HUNTING    = /\bbow\b|arrow(?!root)|sling|spear(?!mint)|atlatl|snare|blowgun|#{word("dart", "gun")}/i
-  FISHING    = /fish|cast net|(?<!slack )#{word("line")}|#{word("cast", "hook", "mask", "fin", "net")}/i
+  FISHING    = /fish|cast net|(?<!slack )#{word("line")}|#{word("cast", "hook", "mask", "fin")}|(?<!mosquito )#{word("net")}/i
   CORDAGE    = /paracord|cordage|clothesline|slack\s*line|twine|rope|string|#{word("cord")}/i
   COMFORT    = /tarp|hammock|mosquito|fabric|rawhide|#{word("duct", "tent", "hide", "pelt")}/i
   DIGGING    = /shovel/i
