@@ -1,6 +1,28 @@
 module ApplicationHelper
   # One place for the address shown on the contact page and used as the
   # recipient by ContactMailer and ForumMailer.
+  # Query parameters that select genuinely different content (a filtered list,
+  # a country's page), as opposed to sorting/searching/limiting the same list.
+  # Only these survive into canonical and og:url, so /survivors?sort=name and
+  # /survivors both canonicalise to /survivors instead of splitting ranking.
+  CANONICAL_PARAMS = %w[location_id season_id series_id season country item_type source page].freeze
+
+  def canonical_request_url
+    keep = request.query_parameters.slice(*CANONICAL_PARAMS)
+                  .reject { |k, v| v.blank? || (k == "page" && v.to_s == "1") }
+                  .sort.to_h
+    url = "#{request.base_url}#{request.path}"
+    keep.any? ? "#{url}?#{keep.to_query}" : url
+  end
+
+  # Structured data wants absolute URLs; rails_blob_path alone is a bare path.
+  def absolute_blob_url(attachment)
+    return nil if attachment.nil? || !attachment.attached?
+    "#{request.base_url}#{rails_blob_path(attachment, only_path: true)}"
+  rescue StandardError
+    nil
+  end
+
   def contact_email_address = ENV.fetch("CONTACT_EMAIL", "brad@nakedandafraidfan.com")
 
   def format_duration(seconds)

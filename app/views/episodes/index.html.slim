@@ -7,7 +7,7 @@
   - content_for :title, "Naked and Afraid Episodes in #{loc_name}"
   - content_for :meta_description, "Guide to #{ep_list.size} episode(s) filmed in #{loc_name}: air dates, survivors, and details."
   - content_for :keywords, "Naked and Afraid episodes, #{loc_name}, locations, survivors, episode guide"
-  - content_for :canonical_url, request.original_url
+  - content_for :canonical_url, canonical_request_url
   - content_for :og_title, "Episodes in #{loc_name} – Naked and Afraid"
   - content_for :og_description, "All episodes filmed in #{loc_name} with dates, survivors, and details."
 
@@ -19,7 +19,7 @@
   - content_for :title, "#{title_txt} (Episode Guide)"
   - content_for :meta_description, "#{title_txt}: #{ep_list.size} episode(s) with air dates, locations, survivors, and items."
   - content_for :keywords, "Naked and Afraid, #{series_name}, Season #{@season.number}, episodes, survivors, items"
-  - content_for :canonical_url, request.original_url
+  - content_for :canonical_url, canonical_request_url
   - content_for :og_title, "#{title_txt} – Episodes"
   - content_for :og_description, "Full episode list for #{title_txt}."
 
@@ -30,7 +30,7 @@
   - content_for :title, "Naked and Afraid Episodes – By Season"
   - content_for :meta_description, "Complete episode guide organized by season with air dates, locations, survivors, and items."
   - content_for :keywords, "Naked and Afraid episodes, episode guide, seasons, survivors, locations, items"
-  - content_for :canonical_url, request.original_url
+  - content_for :canonical_url, canonical_request_url
   - content_for :og_title, "Naked and Afraid Episodes – Guide by Season"
   - content_for :og_description, "Browse seasons to see episodes with dates, locations, and survivors."
 

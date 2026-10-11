@@ -63,4 +63,37 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name=source] option[value=brought]",    text: /Brought only/
     assert_select "select[name=source] option[value=given][selected]"
   end
+
+  test "a % or _ in the search is literal, not a wildcard for every item" do
+    ["%", "_"].each do |wildcard|
+      get items_path(q: wildcard)
+      assert_response :success
+      assert_select "#items-results", text: /No results found/
+      assert_no_match(/Results for/, @response.body)
+    end
+  end
+
+  test "an absurdly long search string is capped rather than echoed back in full" do
+    get items_path(q: "z" * 5_000)
+    assert_response :success
+    assert_no_match(/z{101}/, @response.body)
+  end
+
+  test "deleting an item shows up on /items without waiting for the cache to expire" do
+    was = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    begin
+      get items_path
+      assert_match "zzbroughtonly", @response.body
+
+      # The deleted rows were not the most recently touched, so MAX(updated_at)
+      # alone would not have changed.
+      AppearanceItem.where(item: @brought_item).delete_all
+      @brought_item.destroy
+      get items_path
+      assert_no_match(/zzbroughtonly/, @response.body)
+    ensure
+      Rails.cache = was
+    end
+  end
 end

@@ -25,7 +25,7 @@
 - content_for :title, title_for_tag
 - content_for :meta_description, meta_desc
 - content_for :keywords, "Naked and Afraid episode, #{series&.name}, Season #{season_num}, Episode #{ep_num}, #{title_text}, survivors, PSR, items"
-- content_for :canonical_url, request.original_url
+- content_for :canonical_url, canonical_request_url
 - content_for :og_title, "#{title_text} | #{subtitle}"
 - content_for :og_description, synopsis_plain.present? ? synopsis_plain.first(200) : "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
 - if og_image_url
@@ -33,7 +33,7 @@
   - content_for :twitter_image, url_for(og_image_url)
 
 / Server-rendered JSON-LD (TVEpisode)
-= render_jsonld(episode_show_jsonld(@episode))
+= render_jsonld(episode_show_jsonld(@episode, appearances: @active_appearances))
 / ===== end SEO + JSON-LD =====
 
 / ===== Episode Show =====

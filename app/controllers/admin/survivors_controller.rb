@@ -5,7 +5,7 @@ module Admin
 
     def index
       @survivors = Survivor.order(:full_name)
-      @survivors = @survivors.where("full_name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
+      @survivors = @survivors.where("full_name ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s)}%") if params[:q].present?
     end
 
     def show

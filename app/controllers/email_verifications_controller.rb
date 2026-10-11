@@ -1,15 +1,14 @@
 class EmailVerificationsController < ApplicationController
+  # GET only shows a button. Verifying is a POST so a mail scanner or link
+  # preview that merely fetches the URL cannot verify an address by itself.
   def show
-    user = User.find_by_token_for(:email_verification, params[:token])
-    if user.nil?
-      redirect_to root_path, alert: "That verification link is invalid or expired."
-      return
-    end
+    @token = params[:token]
+    return unless (user = verifiable_user)
+    @email = user.email_address
+  end
 
-    if user.email_verified?
-      redirect_to new_session_path, notice: "Your email is already verified. Please sign in."
-      return
-    end
+  def update
+    return unless (user = verifiable_user)
 
     user.update!(email_verified_at: Time.current)
     redirect_to new_session_path, notice: "Email verified. You can now sign in."
@@ -30,6 +29,21 @@ class EmailVerificationsController < ApplicationController
   end
 
   private
+
+  # Returns the user for a valid, still-unverified token. Otherwise redirects
+  # and returns nil, so callers can `return unless`.
+  def verifiable_user
+    user = User.find_by_token_for(:email_verification, params[:token])
+    if user.nil?
+      redirect_to root_path, alert: "That verification link is invalid or expired."
+      return nil
+    end
+    if user.email_verified?
+      redirect_to new_session_path, notice: "Your email is already verified. Please sign in."
+      return nil
+    end
+    user
+  end
 
   def resend_notice
     if logged_in?

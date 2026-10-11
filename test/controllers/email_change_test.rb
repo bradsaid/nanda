@@ -41,7 +41,7 @@ class EmailChangeTest < ActionDispatch::IntegrationTest
     request_change(to: "confirmed@example.com")
     token = @user.reload.generate_token_for(:email_change)
 
-    get email_change_path(token: token)
+    post email_change_path(token: token)
     @user.reload
     assert_equal "confirmed@example.com", @user.email_address
     assert_nil @user.pending_email_address
@@ -50,7 +50,7 @@ class EmailChangeTest < ActionDispatch::IntegrationTest
 
   test "the new address can then be used to sign in" do
     request_change(to: "movedto@example.com")
-    get email_change_path(token: @user.reload.generate_token_for(:email_change))
+    post email_change_path(token: @user.reload.generate_token_for(:email_change))
     delete session_path
     post session_path, params: { email_address: "MovedTo@Example.com", password: "password" }
     assert_redirected_to root_path
@@ -66,7 +66,7 @@ class EmailChangeTest < ActionDispatch::IntegrationTest
     token = @user.reload.generate_token_for(:email_change)
     User.create!(email_address: "contested@example.com", username: "claimant", password: "password1")
 
-    get email_change_path(token: token)
+    post email_change_path(token: token)
     @user.reload
     assert_not_equal "contested@example.com", @user.email_address
     assert_nil @user.pending_email_address
@@ -75,7 +75,23 @@ class EmailChangeTest < ActionDispatch::IntegrationTest
   test "a tampered token does nothing" do
     request_change(to: "nope@example.com")
     get email_change_path(token: "not-a-real-token")
+    post email_change_path(token: "not-a-real-token")
     assert_equal users(:one).email_address, @user.reload.email_address
+  end
+
+  # Mail scanners and link previews fetch every URL in a message.
+  test "merely opening the emailed link (GET) does not change the address" do
+    request_change(to: "prefetched@example.com")
+    token = @user.reload.generate_token_for(:email_change)
+
+    get email_change_path(token: token)
+    assert_response :success
+    assert_select "form[action=?][method=post]", email_change_path(token: token)
+    assert_match(/prefetched@example\.com/, response.body)
+
+    @user.reload
+    assert_not_equal "prefetched@example.com", @user.email_address
+    assert_equal "prefetched@example.com", @user.pending_email_address, "the request must stay pending"
   end
 
   test "cancelling clears the pending address" do

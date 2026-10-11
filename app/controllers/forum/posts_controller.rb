@@ -39,6 +39,14 @@ module Forum
     def edit; end
 
     def update
+      # The edit form has no file field, but the endpoint accepts images, so a
+      # hand-built request could attach a renamed non-image. Same sniff as create.
+      if (offender = first_disguised_upload(params.dig(:post, :images) || params.dig(:forum_post, :images)))
+        @post.errors.add(:images, "\"#{offender}\" is not a real image file")
+        flash.now[:alert] = @post.errors.full_messages.to_sentence
+        return render :edit, status: :unprocessable_entity
+      end
+
       if @post.update(post_params.merge(edited_at: Time.current))
         redirect_to forum_topic_path(@post.forum_topic, anchor: "post-#{@post.id}"), notice: "Updated."
       else

@@ -14,7 +14,7 @@ module Admin
 
         scope = User.all
         if @q.present?
-          like = "%#{@q.downcase}%"
+          like = "%#{ActiveRecord::Base.sanitize_sql_like(@q.downcase)}%"
           scope = scope.where("LOWER(username) LIKE :q OR LOWER(email_address) LIKE :q", q: like)
         end
 

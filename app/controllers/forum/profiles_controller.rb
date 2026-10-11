@@ -13,7 +13,7 @@ module Forum
     def index
       @q = params[:q].to_s.strip
       scope = User.not_banned.where.not(username: [nil, ""])
-      scope = scope.where("LOWER(username) LIKE ?", "%#{@q.downcase}%") if @q.present?
+      scope = scope.where("LOWER(username) LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(@q.downcase)}%") if @q.present?
 
       @members = scope.with_attached_avatar
                       .order(Arel.sql("LOWER(username)"))
@@ -28,6 +28,10 @@ module Forum
     end
 
     def show
+      # A banned member's page is gone for everyone but staff. The directory
+      # already leaves them out; the direct URL should not still work.
+      raise ActionController::RoutingError, "Not Found" if @user.banned? && !admin_signed_in?
+
       # Post.active only checks the post's own deleted_at, so a post inside a
       # removed topic still counted as live — it showed on the profile and
       # linked to a topic that 404s. The topic has to be undeleted too.

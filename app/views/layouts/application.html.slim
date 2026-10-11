@@ -9,7 +9,7 @@ html
     meta name="keywords" content=(content_for?(:keywords) ? yield(:keywords) : "Naked and Afraid, wiki, survivors, episodes, items, PSR, locations")
 
     / Canonical + robots
-    link rel="canonical" href=(content_for?(:canonical_url) ? yield(:canonical_url) : request.original_url)
+    link rel="canonical" href=(content_for?(:canonical_url) ? yield(:canonical_url) : canonical_request_url)
     - if content_for?(:robots)
       meta name="robots" content=yield(:robots)
 
@@ -18,7 +18,7 @@ html
     meta property="og:site_name"   content=site_name
     meta property="og:title"       content=(content_for?(:og_title) ? yield(:og_title) : (content_for?(:title) ? yield(:title) : site_name))
     meta property="og:description" content=(content_for?(:og_description) ? yield(:og_description) : (content_for?(:meta_description) ? yield(:meta_description) : "Episodes, survivors, items, and locations."))
-    meta property="og:url"         content=(content_for?(:og_url) ? yield(:og_url) : request.original_url)
+    meta property="og:url"         content=(content_for?(:og_url) ? yield(:og_url) : canonical_request_url)
     - if content_for?(:og_image)
       meta property="og:image" content=yield(:og_image)
 

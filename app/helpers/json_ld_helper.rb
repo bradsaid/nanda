@@ -338,11 +338,15 @@ module JsonLdHelper
       { "@context" => "https://schema.org", "@type" => "CollectionPage",
         "name" => SITE_NAME,
         "description" => "Fan-maintained guide to episodes, survivors, items, and locations.",
-        "url" => request.original_url, "image" => "/favicon.png" }
+        "url" => canonical_request_url, "image" => "#{request.base_url}/favicon.png" }
     ]
   end
 
-  def episode_show_jsonld(episode)
+  # `appearances:` is the cast actually shown on the page (EpisodesController
+  # drops survivors who exited in an earlier episode of a continuous season).
+  # Falling back to every appearance would credit them as actors again.
+  def episode_show_jsonld(episode, appearances: nil)
+    appearances = Array(appearances.nil? ? episode.appearances : appearances)
     series_name  = episode.season&.series&.name
     season_num   = episode.season&.number
     ep_num       = episode.number_in_season
@@ -350,10 +354,10 @@ module JsonLdHelper
     loc          = episode.location
     location_str = [loc&.country, loc&.region, loc&.site].compact_blank.join(", ").presence
 
-    actors = Array(episode.survivors).map { |s| { "@type" => "Person", "name" => s.full_name, "url" => survivor_path(s) } }
+    cast = appearances.map(&:survivor).compact
+    actors = cast.map { |s| { "@type" => "Person", "name" => s.full_name, "url" => "#{request.base_url}#{survivor_path(s)}" } }
 
-    image_url = (episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? } &&
-                 (rails_blob_path(episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? }.avatar, only_path: true) rescue nil))
+    image_url = absolute_blob_url(cast.find { |s| s.avatar.attached? }&.avatar)
 
     tv_ep = {
       "@context" => "https://schema.org",
@@ -363,7 +367,7 @@ module JsonLdHelper
       "partOfSeason" => { "@type" => "TVSeason", "seasonNumber" => season_num,
                           "name" => "#{series_name} Season #{season_num}" },
       "partOfSeries" => { "@type" => "TVSeries", "name" => series_name },
-      "url" => request.original_url,
+      "url" => canonical_request_url,
       "actor" => actors
     }
     tv_ep["datePublished"]    = air_iso if air_iso
@@ -390,7 +394,7 @@ module JsonLdHelper
         "dateModified" => episode.updated_at.to_date.to_s,
         "author" => site_author_entity,
         "publisher" => { "@type" => "Organization", "name" => SITE_NAME, "url" => request.base_url },
-        "url" => request.original_url,
+        "url" => canonical_request_url,
         "image" => (image_url || nil)
       }.compact
     end
@@ -462,7 +466,7 @@ module JsonLdHelper
     [
       { "@context" => "https://schema.org", "@type" => "CollectionPage",
         "name" => "Naked and Afraid Episodes in #{country}",
-        "url"  => request.original_url,
+        "url"  => canonical_request_url,
         "about" => { "@type" => "Place", "name" => country } },
       { "@context" => "https://schema.org", "@type" => "ItemList",
         "name" => "Episodes in #{country}", "numberOfItems" => Array(episodes).size,
@@ -475,7 +479,7 @@ module JsonLdHelper
       "@context" => "https://schema.org", "@type" => "CollectionPage",
       "name" => "Naked and Afraid Items",
       "description" => "Database of survival items used in Naked and Afraid, including brought, given, and rare items by type and country.",
-      "url" => request.original_url
+      "url" => canonical_request_url
     }
   end
 
@@ -507,7 +511,7 @@ module JsonLdHelper
       "@context" => "https://schema.org", "@type" => "Product",
       "name" => item.name.to_s,
       "category" => (item.respond_to?(:item_type) ? item.item_type : nil),
-      "url" => request.original_url,
+      "url" => canonical_request_url,
       "description" => "#{item.name} appearances across Naked and Afraid episodes.",
       "additionalProperty" => props,
       "subjectOf" => subject_of
@@ -543,7 +547,7 @@ module JsonLdHelper
       "@context" => "https://schema.org", "@type" => "CollectionPage",
       "name" => "Naked and Afraid Locations",
       "description" => "Map and country breakdown of filming locations across all episodes.",
-      "url" => request.original_url, "hasPart" => countries
+      "url" => canonical_request_url, "hasPart" => countries
     }
   end
 
@@ -590,7 +594,7 @@ module JsonLdHelper
         "name" => label, "seasonNumber" => season.number,
         "partOfSeries" => { "@type" => "TVSeries", "name" => season.series&.name },
         "numberOfEpisodes" => Array(episodes).size,
-        "url" => request.original_url
+        "url" => canonical_request_url
       }.tap { |h| h["startDate"] = first_air if first_air; h["endDate"] = last_air if last_air }
     ]
     if list_items.any?
@@ -614,7 +618,7 @@ module JsonLdHelper
         "dateModified" => season.updated_at.to_date.to_s,
         "author" => site_author_entity,
         "publisher" => { "@type" => "Organization", "name" => SITE_NAME, "url" => request.base_url },
-        "url" => request.original_url
+        "url" => canonical_request_url
       }
     end
     schemas
@@ -625,9 +629,7 @@ module JsonLdHelper
     items = list.each_with_index.map do |s, i|
       total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
       collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
-      img = if s.respond_to?(:avatar) && s.avatar&.attached?
-              rails_blob_path(s.avatar, only_path: true) rescue nil
-            end
+      img = (absolute_blob_url(s.avatar) if s.respond_to?(:avatar))
       person = {
         "@type" => "Person",
         "name"  => s.try(:full_name) || s.try(:name) || "Survivor ##{s.id}",
@@ -650,9 +652,7 @@ module JsonLdHelper
   end
 
   def survivor_show_jsonld(survivor:, appearances:)
-    img = if survivor.respond_to?(:avatar) && survivor.avatar&.attached?
-            rails_blob_path(survivor.avatar, only_path: true) rescue nil
-          end
+    img = (absolute_blob_url(survivor.avatar) if survivor.respond_to?(:avatar))
     same_as = []
     if survivor.respond_to?(:instagram) && survivor.instagram.present?
       handle = survivor.instagram.to_s.strip.sub(/\A@/, '').sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, '').sub(%r{/.*$}, '')
@@ -672,7 +672,7 @@ module JsonLdHelper
 
     person = {
       "@context" => "https://schema.org", "@type" => "Person",
-      "name" => survivor.full_name.to_s, "url" => request.original_url,
+      "name" => survivor.full_name.to_s, "url" => canonical_request_url,
       "description" => "#{survivor.full_name} from Naked and Afraid with #{episodes_total} episode(s) and #{challenges} challenge(s)."
     }
     person["image"]  = img if img
@@ -697,7 +697,7 @@ module JsonLdHelper
         "dateModified" => survivor.updated_at.to_date.to_s,
         "author" => site_author_entity,
         "publisher" => { "@type" => "Organization", "name" => SITE_NAME, "url" => request.base_url },
-        "url" => request.original_url,
+        "url" => canonical_request_url,
         "image" => img
       }.compact
     end
@@ -729,7 +729,7 @@ module JsonLdHelper
     [
       { "@context" => "https://schema.org", "@type" => "CollectionPage",
         "name" => "Naked & Afraid Podcasts and Books",
-        "url"  => request.original_url,
+        "url"  => canonical_request_url,
         "description" => "Fan podcasts about Naked & Afraid and recommended books by Ky Furneaux." },
       { "@context" => "https://schema.org", "@type" => "ItemList",
         "name" => "Naked & Afraid Podcasts",
@@ -872,7 +872,7 @@ module JsonLdHelper
     {
       "@context" => "https://schema.org", "@type" => "AboutPage",
       "name" => name.to_s, "description" => description.to_s,
-      "url" => request.original_url
+      "url" => canonical_request_url
     }
   end
 end

@@ -59,12 +59,21 @@ module Admin
     end
 
     def create
-      @episode = Episode.new(episode_params)
+      attrs = dedupe_appearances(dedupe_appearance_items(episode_params))
+      @episode = Episode.new(attrs)
       if @episode.save
         redirect_to edit_admin_episode_path(@episode), notice: "Episode created. Now add traps, shelters, and food sources."
       else
         render :new, status: :unprocessable_entity
       end
+    rescue ActiveRecord::RecordNotUnique
+      # Same unique indexes as #update (survivor per episode, season + number).
+      # Say what happened and keep what they typed rather than 500ing.
+      @episode = Episode.new(attrs.except(:appearances_attributes))
+      @episode.appearances.build
+      flash.now[:alert] = "That episode could not be saved because it duplicates an existing record " \
+                          "(a survivor listed twice, or an episode number already used in this season)."
+      render :new, status: :unprocessable_entity
     end
 
     def edit; end
@@ -116,7 +125,12 @@ module Admin
       apps = attrs[:appearances_attributes]
       return attrs unless apps.is_a?(ActionController::Parameters) || apps.is_a?(Hash)
 
-      existing = @episode ? @episode.appearances.pluck(:survivor_id, :id).to_h { |sid, id| [sid.to_s, id.to_s] } : {}
+      # Rows being deleted in this same submission no longer occupy their
+      # survivor, so a replacement row for that survivor must be kept. Without
+      # this the new row was dropped as a "duplicate" of a row about to be
+      # destroyed, and the survivor vanished from the episode.
+      destroyed_ids = apps.to_h.values.filter_map { |row| row[:id].to_s if row[:_destroy].to_s == "1" && row[:id].present? }
+      existing = @episode ? @episode.appearances.where.not(id: destroyed_ids).pluck(:survivor_id, :id).to_h { |sid, id| [sid.to_s, id.to_s] } : {}
       seen = {}
       apps.to_h.each do |key, row|
         next if row[:_destroy].to_s == "1"

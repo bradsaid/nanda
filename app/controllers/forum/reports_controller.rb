@@ -39,10 +39,11 @@ module Forum
       params.require(key).permit(:reason, :notes)
     end
 
+    # Through the queue, like every other forum email. Timeout.timeout around a
+    # synchronous send can interrupt the SMTP socket mid-write, and it held the
+    # reporter's request open for as long as the mail server took.
     def notify_admin(report)
-      Timeout.timeout(5) do
-        ForumMailer.report_filed(report).deliver_now
-      end
+      ForumMailer.report_filed(report).deliver_later
     rescue => e
       Rails.logger.error "[forum/report] mail failed: #{e.class} #{e.message}"
     end

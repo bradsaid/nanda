@@ -18,9 +18,15 @@ Rails.application.routes.draw do
   get  "/signup", to: "registrations#new",    as: :signup
   post "/signup", to: "registrations#create"
 
-  get  "/email/change/:token",   to: "email_changes#show",         as: :email_change
-  get  "/email/verify/:token",  to: "email_verifications#show",   as: :email_verification
+  # The emailed link only SHOWS a confirmation button (GET); the change itself
+  # is a POST. Mail scanners and link-preview bots fetch every URL in a message,
+  # and a GET that changed state let them confirm on the member's behalf.
+  # Must precede POST /email/verify/:token, which would otherwise capture "resend".
   post "/email/verify/resend",  to: "email_verifications#resend", as: :resend_email_verification
+  get  "/email/change/:token",   to: "email_changes#show",         as: :email_change
+  post "/email/change/:token",   to: "email_changes#update"
+  get  "/email/verify/:token",  to: "email_verifications#show",   as: :email_verification
+  post "/email/verify/:token",  to: "email_verifications#update"
 
   # Forum routes. Every controller under Forum:: refuses to serve if
   # ENV["FORUM_ENABLED"] != "true" (see Forum::BaseController), so it's safe
@@ -71,8 +77,6 @@ Rails.application.routes.draw do
     namespace :forum do
       resources :categories, only: [:index, :new, :create, :edit, :update, :destroy]
       resources :reports,    only: [:index, :update]
-      resources :posts,      only: [:destroy]
-      resources :topics,     only: [:update, :destroy]
       resources :users,      only: [:index, :update, :destroy] do
         member { post :password_reset }
       end
@@ -97,8 +101,10 @@ Rails.application.routes.draw do
       get "types/:item_type", to: "items#type", as: :type
     end
   end
-  resources :food_sources, only: [:index, :show], param: :name
-  resources :shelters, only: [:index, :show], param: :shelter_type
+  # The constraint lets a name contain a dot; otherwise Rails reads everything
+  # after it as a format and the lookup gets a truncated name.
+  resources :food_sources, only: [:index, :show], param: :name, constraints: { name: /[^\/]+/ }
+  resources :shelters, only: [:index, :show], param: :shelter_type, constraints: { shelter_type: /[^\/]+/ }
   resources :locations, only: [:index]
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]

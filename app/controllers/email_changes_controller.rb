@@ -1,12 +1,18 @@
 # Applying a confirmed email change. Lives outside the forum gate so the link
 # in the email works regardless of whether the forum is open.
+#
+# GET shows a confirmation button; the POST applies the change. A link that
+# changed state on GET was consumed by any mail scanner or preview bot that
+# fetched it, before the member had clicked anything.
 class EmailChangesController < ApplicationController
   def show
-    user = User.find_by_token_for(:email_change, params[:token])
+    @token = params[:token]
+    return unless (user = pending_user)
+    @new_address = user.pending_email_address
+  end
 
-    if user.nil? || user.pending_email_address.blank?
-      redirect_to root_path, alert: "That confirmation link is invalid or has expired." and return
-    end
+  def update
+    return unless (user = pending_user)
 
     # The address could have been claimed by someone else between the request
     # and the click.
@@ -17,5 +23,16 @@ class EmailChangesController < ApplicationController
 
     user.apply_pending_email!
     redirect_to new_session_path, notice: "Your email address has been updated. Please sign in with it."
+  end
+
+  private
+
+  def pending_user
+    user = User.find_by_token_for(:email_change, params[:token])
+    if user.nil? || user.pending_email_address.blank?
+      redirect_to root_path, alert: "That confirmation link is invalid or has expired."
+      return nil
+    end
+    user
   end
 end

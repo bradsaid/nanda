@@ -1,0 +1,14 @@
+- content_for :title, "Verify your email"
+- content_for :robots, "noindex, nofollow"
+
+.row.justify-content-center
+  .col-md-6.col-lg-5
+    .card.shadow-sm
+      .card-body.p-4
+        h1.h4.mb-3.logo Verify your email
+        p.mb-4
+          | Confirm that
+          strong< = @email
+          |  is your address to finish setting up your account.
+        = button_to "Verify my email", email_verification_path(token: @token), method: :post,
+          class: "btn btn-primary"

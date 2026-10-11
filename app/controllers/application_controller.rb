@@ -140,17 +140,22 @@ class ApplicationController < ActionController::Base
   end
 
   # Subquery that returns each (survivor, season) and the air_date of the
-  # LAST appearance where the admin recorded a result (any of success,
+  # FIRST appearance where the admin recorded a result (any of success,
   # tap_out, medical_tap_out, elimination). Used to clip episode counts on
   # continuous-story seasons so episodes airing after a survivor's exit are
   # not counted toward their total.
+  #
+  # FIRST, not last: EpisodesController#show hides a survivor from every
+  # episode after their earliest recorded result, so the counts have to stop at
+  # the same point or the two disagree for anyone with results on more than one
+  # episode. (No such survivor exists today; this keeps it that way.)
   def appearance_exits_join
     <<~SQL.squish
       LEFT JOIN (
         SELECT
           a.survivor_id,
           e.season_id,
-          MAX(e.air_date) AS exit_air_date
+          MIN(e.air_date) AS exit_air_date
         FROM appearances a
         JOIN episodes e ON e.id = a.episode_id
         WHERE a.result IS NOT NULL

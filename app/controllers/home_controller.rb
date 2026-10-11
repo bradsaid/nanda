@@ -1,13 +1,12 @@
 class HomeController < ApplicationController
+  # The headline numbers and per-country tallies are plain hashes of integers
+  # that only move when someone edits an episode, yet were recomputed (nine
+  # queries, two of them joins over every episode) on every home-page view.
+  AGGREGATES_TTL = 10.minutes
+
   def index
-    @counts = {
-      series:    Series.count,
-      seasons:   Season.count,
-      episodes:  Episode.count,
-      survivors: Survivor.count,
-      items:     Item.count,
-      locations: Location.distinct.count(:country)
-    }
+    @counts, @top_countries, @challenges_by_country =
+      Rails.cache.fetch("home/aggregates/v1", expires_in: AGGREGATES_TTL) { home_aggregates }
 
     @latest_episode =
       Episode
@@ -45,7 +44,34 @@ class HomeController < ApplicationController
               .order(Arel.sql("MAX(episodes.air_date) DESC, survivors.full_name ASC"))
               .limit(12)
 
-    @top_countries =
+    # 🔽 Sort Top Survivors by COLLAPSED, but also select TOTAL so the view can show both
+    @top_survivors =
+      Survivor
+        .left_joins(appearances: { episode: { season: :series } })
+        .joins(appearance_exits_join)
+        .select([
+          "survivors.*",
+          episodes_total_capped_sql("episodes_total_count"),
+          collapsed_episodes_sql("episodes_collapsed_count")
+        ].join(", "))
+        .group("survivors.id")
+        .order("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC")
+        .limit(6)
+  end
+
+  private
+
+  def home_aggregates
+    counts = {
+      series:    Series.count,
+      seasons:   Season.count,
+      episodes:  Episode.count,
+      survivors: Survivor.count,
+      items:     Item.count,
+      locations: Location.distinct.count(:country)
+    }
+
+    top_countries =
       Episode.joins(:location)
              .group("locations.country")
              .order(Arel.sql("COUNT(*) DESC"))
@@ -63,22 +89,8 @@ class HomeController < ApplicationController
                              .where.not(locations: { country: [nil, ""] })
                              .distinct.pluck("locations.country", :season_id, :location_id)
                              .group_by(&:first).transform_values(&:size)
-    @challenges_by_country = non_cont_by_country.merge(cont_by_country) { |_k, a, b| a + b }
+    challenges_by_country = non_cont_by_country.merge(cont_by_country) { |_k, a, b| a + b }
 
-    # 🔽 Sort Top Survivors by COLLAPSED, but also select TOTAL so the view can show both
-    @top_survivors =
-      Survivor
-        .left_joins(appearances: { episode: { season: :series } })
-        .joins(appearance_exits_join)
-        .select([
-          "survivors.*",
-          episodes_total_capped_sql("episodes_total_count"),
-          collapsed_episodes_sql("episodes_collapsed_count")
-        ].join(", "))
-        .group("survivors.id")
-        .order("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC")
-        .limit(6)
+    [counts, top_countries, challenges_by_country]
   end
-
-
 end

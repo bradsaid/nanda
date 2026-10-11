@@ -12,7 +12,7 @@
 - content_for :title, "#{type_name} Items – Naked and Afraid#{subtitle_str}"
 - content_for :meta_description, "#{type_name} items used on Naked & Afraid#{country_param ? " in #{country_param}" : ""}. #{total_items} item(s) in this type. Given in #{given_cnt} episode(s) and brought in #{brought_cnt}."
 - content_for :keywords, "Naked and Afraid items, #{type_name.downcase} items, survival gear, brought items, given items#{country_param ? ", #{country_param}" : ""}"
-- content_for :canonical_url, request.original_url
+- content_for :canonical_url, canonical_request_url
 - content_for :og_title, "#{type_name} Items – Naked and Afraid"
 - content_for :og_description, "#{total_items} #{type_name} item(s). Given: #{given_cnt} • Brought: #{brought_cnt}#{country_param ? " • Country: #{country_param}" : ""}."
 

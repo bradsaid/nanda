@@ -1,0 +1,14 @@
+- content_for :title, "Confirm your new email"
+- content_for :robots, "noindex, nofollow"
+
+.row.justify-content-center
+  .col-md-6.col-lg-5
+    .card.shadow-sm
+      .card-body.p-4
+        h1.h4.mb-3.logo Confirm your new email
+        p.mb-4
+          | Change the email address on your account to
+          strong< = @new_address
+          | ?
+        = button_to "Confirm the change", email_change_path(token: @token), method: :post,
+          class: "btn btn-primary"

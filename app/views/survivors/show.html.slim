@@ -11,7 +11,7 @@
 - content_for :title, "#{name} – Naked and Afraid Survivor".first(60)
 - content_for :meta_description, meta_desc
 - content_for :keywords, "#{name}, Naked and Afraid, survivor, contestant"
-- content_for :canonical_url, request.original_url
+- content_for :canonical_url, canonical_request_url
 - content_for :og_title, "#{name} – Naked and Afraid Survivor"
 - content_for :og_description, "#{name}: #{ep_total} episode(s), #{challenges} challenge(s)."
 - if img_url

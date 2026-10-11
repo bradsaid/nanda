@@ -1,6 +1,6 @@
 - content_for :title, "#{@series.name} — Naked and Afraid Fan Wiki"
 - content_for :meta_description, ((series_synopsis(@series) || "").presence || "#{@series.name}: #{@seasons.size} season(s), #{@episode_count} episode(s), #{@survivor_count} survivalists.").first(160)
-- content_for :canonical_url, request.original_url
+- content_for :canonical_url, canonical_request_url
 
 .container.my-4
   .pb-2.mb-4.border-bottom.site-header

@@ -24,4 +24,13 @@ class FoodSourcesControllerTest < ActionDispatch::IntegrationTest
     get food_source_path("coconut")
     assert_select "td.text-end", text: "—"
   end
+
+  # Rails reads everything after a dot as the format, so "mud crab. large" or
+  # "st. john's wort" resolved to a truncated name and showed nothing.
+  test "a name containing a dot is looked up whole" do
+    FoodSource.create!(episode: @episode, name: "st. john's wort", category: "plant")
+    get food_source_path("st. john's wort")
+    assert_response :success
+    assert_match(/john/i, response.body)
+  end
 end

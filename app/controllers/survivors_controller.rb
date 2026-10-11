@@ -1,26 +1,20 @@
 class SurvivorsController < ApplicationController
 
-  before_action :set_survivor, only: %i[show edit update destroy]
-
-  def update
-  end
-
-  def edit
-  end
-
-  def destroy
-  end 
+  before_action :set_survivor, only: %i[show]
 
   def index
-    @q    = params[:q].to_s.strip
+    @q    = params[:q].to_s.strip.first(100)
+    @like = "%#{ActiveRecord::Base.sanitize_sql_like(@q)}%"
     @sort = params[:sort].to_s.presence_in(%w[challenges episodes name popular newest oldest recent]) || "challenges"
 
     # Short-circuit: if the search matches no survivor, skip the heavy
     # GROUP BY/aggregation entirely. Cache the exists-check briefly so
     # repeat bot crawls hitting the same garbage query don't re-run it.
     if @q.present?
-      has_match = Rails.cache.fetch("survivors_search_hit/#{@q.downcase}", expires_in: 30.minutes) do
-        Survivor.where("full_name ILIKE ?", "%#{@q}%").exists?
+      # Hashed: the raw string went straight into the cache key, so a crawler
+      # could mint unbounded keys of any length.
+      has_match = Rails.cache.fetch("survivors_search_hit/#{Digest::SHA256.hexdigest(@q.downcase)[0, 32]}", expires_in: 30.minutes) do
+        Survivor.where("full_name ILIKE ?", @like).exists?
       end
       unless has_match
         @survivors = []
@@ -34,7 +28,7 @@ class SurvivorsController < ApplicationController
         .left_joins(appearances: { episode: { season: :series } })
         .joins(appearance_exits_join)
         .with_attached_avatar
-        .where("survivors.full_name ILIKE ?", "%#{@q}%")
+        .where("survivors.full_name ILIKE ?", @like)
         .select([
           "survivors.*",
           episodes_total_capped_sql("episodes_total_count"),
@@ -58,7 +52,11 @@ class SurvivorsController < ApplicationController
       @survivors = base.order(Arel.sql("MAX(episodes.air_date) DESC NULLS LAST, survivors.full_name ASC")).to_a
     when "popular"
       @survivors = base.order("survivors.full_name ASC").to_a
-      view_counts_by_path = PageView.where("path LIKE '/survivors/%'").group(:path).count
+      # A scan of every survivor page view ever recorded, on each request for
+      # the "popular" sort. Ten minutes stale is invisible for a ranking.
+      view_counts_by_path = Rails.cache.fetch("survivors/popular_view_counts/v1", expires_in: 10.minutes) do
+        PageView.where("path LIKE '/survivors/%'").group(:path).count
+      end
       @view_counts = @survivors.each_with_object({}) do |s, h|
         h[s.id] = view_counts_by_path["/survivors/#{s.slug}"].to_i if s.slug.present?
       end
@@ -128,25 +126,6 @@ class SurvivorsController < ApplicationController
   end
 
   private
-
-  def serialize_row(s)
-    h = view_context
-    links = []
-    links << h.link_to("IG",   s.instagram, target: "_blank", rel: "noopener") if s.instagram.present?
-    links << h.link_to("FB",   s.facebook,  target: "_blank", rel: "noopener") if s.facebook.present?
-    links << h.link_to("YT",   s.youtube,   target: "_blank", rel: "noopener") if s.youtube.present?
-    links << h.link_to("Site", s.website,   target: "_blank", rel: "noopener") if s.website.present?
-    links << h.link_to("Merch", s.merch,    target: "_blank", rel: "noopener") if s.merch.present?
-
-    episodes_total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count     : s.appearances.distinct.count(:episode_id)
-    episodes_collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count : episodes_total
-
-    [
-      h.link_to(s.full_name, h.survivor_path(s)),
-      episodes_collapsed, # show collapsed stat
-      (links.any? ? h.safe_join(links, " · ".html_safe) : h.content_tag(:span, "-", class: "text-gray-400"))
-    ]
-  end
 
   def set_survivor
     @survivor = Survivor.friendly.find(params[:id])  # This handles both slugs and IDs as fallback

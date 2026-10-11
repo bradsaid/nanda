@@ -4,7 +4,7 @@ class ItemsController < ApplicationController
   INDEX_CACHE_TTL = 15.minutes
 
   def index
-    @q       = params[:q].to_s.strip
+    @q       = params[:q].to_s.strip.first(100)
     @country = params[:country].presence
     # "Both" (the default) is no filter at all, so the handful of rows with
     # other sources (found/earned/foraged) still show up rather than being
@@ -16,15 +16,23 @@ class ItemsController < ApplicationController
 
     # Cache key varies by filter params + latest write timestamp on the
     # underlying data. Any edit to items/appearance_items busts the cache.
+    #
+    # Row counts are part of the version because MAX(updated_at) cannot see a
+    # deletion: remove the newest-touched item and the max stays put, so the
+    # page served the deleted rows for up to INDEX_CACHE_TTL.
     data_version = [
       Item.maximum(:updated_at)&.to_i,
-      AppearanceItem.maximum(:updated_at)&.to_i
-    ].compact.max
-    cache_key_base = ["items#index", @q, @country, @source, @limit, data_version].join("/")
+      AppearanceItem.maximum(:updated_at)&.to_i,
+      Item.count,
+      AppearanceItem.count
+    ].join("-")
+    # Hashed so a long or odd search string cannot make an unbounded key.
+    cache_key_base = "items#index/" +
+      Digest::SHA256.hexdigest([@q, @country, @source, @limit, data_version].join("/"))[0, 32]
 
     # Base (used for your other lists)
     ai = AppearanceItem.joins(:item, appearance: { episode: [:location, { season: :series }] })
-    ai = ai.where("items.name ILIKE ?", "%#{@q}%") if @q.present?
+    ai = ai.where("items.name ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(@q)}%") if @q.present?
     ai = ai.where(locations: { country: @country }) if @country.present?
     ai = ai.where(appearance_items: { source: @source }) if @source.present?
 
@@ -238,7 +246,7 @@ class ItemsController < ApplicationController
             .where(source: "brought")
             .joins(:item, appearance: { episode: [:location, { season: :series }] })
 
-    rel = rel.where("items.name ILIKE ?", "%#{q}%") if q.present?
+    rel = rel.where("items.name ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(q)}%") if q.present?
     rel = rel.where(locations: { country: country }) if country.present?
 
     rel.select("DISTINCT (#{key_sql}) AS grp_key, appearance_items.item_id, appearance_items.appearance_id")
@@ -262,7 +270,7 @@ class ItemsController < ApplicationController
             .where(source: "given")
             .joins(:item, appearance: { episode: [:location, { season: :series }] })
 
-    rel = rel.where("items.name ILIKE ?", "%#{q}%") if q.present?
+    rel = rel.where("items.name ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(q)}%") if q.present?
     rel = rel.where(locations: { country: country }) if country.present?
 
     rel.select("DISTINCT (#{key_sql}) AS grp_key, appearance_items.item_id")

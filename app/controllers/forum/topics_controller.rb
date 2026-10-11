@@ -33,8 +33,16 @@ module Forum
                       .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
       @new_post = Forum::Post.new
       @opening_post_id = @topic.posts.active.chronological.pick(:id)
-      @topic.increment!(:views_count) unless request.headers["Turbo-Frame"].present?
+      # Crawlers and link-preview bots are not readers; counting them inflated
+      # the figure and made every one of their fetches a database write.
+      @topic.increment!(:views_count) if count_view?
     end
+
+    def count_view?
+      ua = request.user_agent.to_s
+      ua.present? && !TrackPageViews::BOT_PATTERN.match?(ua) && request.headers["Turbo-Frame"].blank?
+    end
+    private :count_view?
 
     def new
       @topic    = @category.topics.new
