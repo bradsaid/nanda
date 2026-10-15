@@ -79,14 +79,61 @@
             tr
               td(colspan="5" class="text-muted text-center py-4") No episodes found for this location.
           - else
-            - @episodes.each do |ep|
-              tr
-                td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
-                td = "S#{ep.season&.number} • #{ep.season&.series&.name}"
-                td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
-                td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
-                td
-                  = survivor_chips(ep.survivors, size: 40)
+            / A continuous-story season is one challenge, so when it has 2+
+            / episodes here it collapses into a single expandable row (placed
+            / where its newest episode would have been). Everything else is
+            / listed one episode per row.
+            - all_eps    = @episodes.to_a
+            - season_eps = all_eps.group_by(&:season_id)
+            - emitted    = {}
+            - rows       = []
+            - all_eps.each do |ep|
+              - season = ep.season
+              - group  = season&.continuous_story_effective? ? season_eps[ep.season_id] : nil
+              - if group && group.size >= 2
+                - unless emitted[ep.season_id]
+                  - emitted[ep.season_id] = true
+                  - rows << { kind: :season, season: season, eps: group.sort_by { |e| [e.air_date || Date.new(1, 1, 1), e.number_in_season.to_i] } }
+              - else
+                - rows << { kind: :ep, ep: ep }
+
+            - rows.each do |row|
+              - if row[:kind] == :season
+                - season = row[:season]
+                - eps    = row[:eps]
+                - cast   = eps.flat_map(&:survivors).uniq.sort_by { |s| s.full_name.to_s.downcase }
+                - dates  = eps.map(&:air_date).compact
+                tr.continuous-season-row
+                  td(style="vertical-align: top;")
+                    details
+                      summary.fw-semibold(style="cursor: pointer;")
+                        = "#{season.series&.name} Season #{season.number}: #{eps.size} episodes "
+                        span.badge.text-bg-warning.ms-1 Continuous Story
+                      ul.list-unstyled.mb-0.mt-2.ps-3
+                        - eps.each do |e|
+                          li.mb-1
+                            = link_to "#{e.title.presence || "Episode"} ##{e.number_in_season || e.id}", episode_path(e)
+                            span.text-muted.small.ms-2 = e.air_date ? e.air_date.strftime("%b %-d, %Y") : ""
+                  td(style="vertical-align: top;") = "S#{season.number} • #{season.series&.name}"
+                  td(style="vertical-align: top;")
+                    - if dates.empty?
+                      | —
+                    - elsif dates.min == dates.max
+                      = dates.min.strftime("%b %-d, %Y")
+                    - else
+                      = "#{dates.min.strftime('%b %-d, %Y')} – #{dates.max.strftime('%b %-d, %Y')}"
+                  td(style="vertical-align: top;") = [eps.first.location&.country, eps.first.location&.region, eps.first.location&.site].compact_blank.join(", ").presence || "—"
+                  td(style="vertical-align: top;")
+                    = survivor_chips(cast, size: 40)
+              - else
+                - ep = row[:ep]
+                tr
+                  td = link_to "#{ep.title.presence || "Episode"} ##{ep.number_in_season || ep.id}", episode_path(ep)
+                  td = "S#{ep.season&.number} • #{ep.season&.series&.name}"
+                  td = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+                  td = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+                  td
+                    = survivor_chips(ep.survivors, size: 40)
 
 - elsif defined?(@season) && @season.present?
   / === Filtered by season ===
