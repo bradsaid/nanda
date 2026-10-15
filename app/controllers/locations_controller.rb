@@ -2,7 +2,7 @@
 class LocationsController < ApplicationController
   def index
     @q    = params[:q].to_s.strip
-    @sort = params[:sort].to_s.presence_in(%w[challenges name]) || "challenges"
+    @sort = params[:sort].to_s.presence_in(%w[challenges episodes name]) || "challenges"
 
     # Map pins show challenges, not episodes: every episode is its own
     # challenge, except a continuous-story season, which is a single challenge
@@ -29,6 +29,7 @@ class LocationsController < ApplicationController
                   .group("locations.country")
                   .select(
                     "locations.country",
+                    "COUNT(DISTINCT episodes.id) AS eps_count",
                     <<~SQL.squish
                       COUNT(
                         DISTINCT
@@ -43,6 +44,8 @@ class LocationsController < ApplicationController
                   .order("eps_adj_count DESC, locations.country ASC")
 
     @countries_by_eps_adj = rows.map { |r| [r.country, r.eps_adj_count.to_i] }
+    # Raw episode totals per country (no continuous-story collapsing).
+    @country_episodes = rows.to_h { |r| [r.country, r.eps_count.to_i] }
 
     @country_challenges = @countries_by_eps_adj.dup
     if @q.present?
@@ -53,6 +56,8 @@ class LocationsController < ApplicationController
       case @sort
       when "name"
         @country_challenges.sort_by { |c, _| c.to_s.downcase }
+      when "episodes"
+        @country_challenges.sort_by { |c, n| [-@country_episodes[c].to_i, -n.to_i, c.to_s.downcase] }
       else
         @country_challenges.sort_by { |c, n| [-n.to_i, c.to_s.downcase] }
       end
