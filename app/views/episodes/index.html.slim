@@ -39,11 +39,20 @@
 
 - if @location
   / === Filtered by location ===
+  - hero_flag    = country_flag_url(@location.country, size: 320)
+  - hero_outline = country_outline_url(@location.country, width: 480)
   .pb-2.mb-3.border-bottom.site-header
-    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
-      h1.h3.mb-0.logo Episodes at this location
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+      .d-flex.align-items-center.gap-3
+        - if hero_flag && hero_outline
+          .country-shape-wrap
+            .country-shape.country-shape-lg(style="background-image: url(#{hero_flag}); --outline-url: url(#{hero_outline});" aria-label="#{@location.country} flag in country outline")
+        - elsif hero_flag
+          = image_tag hero_flag, alt: "#{@location.country} flag", width: 96, class: "rounded shadow-sm"
+        .d-flex.flex-column
+          h1.h3.mb-0.logo Episodes at this location
+          p.subtitle.mb-0 = [@location.site, @location.region, @location.country].compact_blank.join(", ")
       = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
-    p.subtitle.mb-0 = [@location.site, @location.region, @location.country].compact_blank.join(", ")
 
   - if @location.latitude.present? && @location.longitude.present?
     - content_for :needs_map, "1"

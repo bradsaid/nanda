@@ -149,6 +149,28 @@ class LocationsMapTest < ActionDispatch::IntegrationTest
     assert css_select('link[rel=stylesheet][href*="leaflet"]').any?, "leaflet CSS should load on this page"
   end
 
+  test "episodes at a location page shows the country flag outline in the header" do
+    peru = Location.create!(country: "Peru", site: "Flag Site", latitude: -9.1, longitude: -75.0)
+    get episodes_path(location_id: peru.id)
+    shape = css_select(".site-header .country-shape").first
+    assert shape, "country flag outline should be in the header"
+    assert_includes shape["style"], "flagcdn.com"
+    assert_includes shape["style"], "/pe/vector.svg"
+    assert_equal "Peru flag in country outline", shape["aria-label"]
+
+    alaska = Location.create!(country: "Alaska", site: "State Flag Site", latitude: 64.4, longitude: -149.6)
+    get episodes_path(location_id: alaska.id)
+    assert_includes css_select(".site-header .country-shape").first["style"], "/state_outlines/alaska.svg"
+  end
+
+  test "episodes at a location page still renders for a country without a known flag" do
+    loc = Location.create!(country: "Atlantis", site: "No Flag", latitude: 1.0, longitude: 1.0)
+    get episodes_path(location_id: loc.id)
+    assert_response :success
+    assert_empty css_select(".site-header .country-shape")
+    assert css_select("h1").text.include?("Episodes at this location")
+  end
+
   test "episodes at a location page has no map when the location has no coordinates" do
     loc = Location.create!(country: "Nowhere", site: "No Coords")
     get episodes_path(location_id: loc.id)
