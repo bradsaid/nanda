@@ -44,7 +44,8 @@ document.addEventListener("turbo:load", () => {
       const markers = points.map(p => {
         const m = L.marker([p.lat, p.lng]).addTo(map);
         const title = p.name || p.address || "Location";
-        const ep = `${p.episodes_count} challenge${p.episodes_count === 1 ? "" : "s"}`;
+        const n = p.challenges_count ?? p.episodes_count;
+        const ep = `${n} challenge${n === 1 ? "" : "s"}`;
         const link = p.episodes_url ? `<div class="mt-1"><a href="${p.episodes_url}">View challenges</a></div>` : "";
         m.bindPopup(`<div><strong>${title}</strong><br>${p.address || ""}<br>${ep}${link}</div>`);
         return m;

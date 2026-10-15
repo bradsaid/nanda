@@ -4,9 +4,24 @@ class LocationsController < ApplicationController
     @q    = params[:q].to_s.strip
     @sort = params[:sort].to_s.presence_in(%w[challenges name]) || "challenges"
 
+    # Map pins show challenges, not episodes: every episode is its own
+    # challenge, except a continuous-story season, which is a single challenge
+    # no matter how many episodes it spans (same rule as the country totals).
     @locations =
       Location.left_joins(:episodes)
-              .select("locations.*, COUNT(DISTINCT episodes.id) AS episodes_count")
+              .joins("LEFT JOIN seasons ON seasons.id = episodes.season_id")
+              .joins("LEFT JOIN series ON series.id = seasons.series_id")
+              .select(<<~SQL.squish)
+                locations.*,
+                COUNT(DISTINCT episodes.id) AS episodes_count,
+                COUNT(
+                  DISTINCT
+                  CASE
+                    WHEN #{continuous_flag_sql} THEN ('season-' || seasons.id::text)
+                    ELSE ('episode-' || episodes.id::text)
+                  END
+                ) AS challenges_count
+              SQL
               .group("locations.id")
 
     rows = Episode.joins(:location, season: :series)
@@ -54,6 +69,7 @@ class LocationsController < ApplicationController
               address: l.full_address,
               lat: l.latitude,
               lng: l.longitude,
+              challenges_count: l.try(:challenges_count).to_i,
               episodes_count: l.try(:episodes_count).to_i,
               # You can handle this param in EpisodesController (filter by location_id)
               episodes_url: Rails.application.routes.url_helpers.episodes_path(location_id: l.id)
