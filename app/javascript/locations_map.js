@@ -50,13 +50,14 @@ document.addEventListener("turbo:load", () => {
         const n = p.challenges_count ?? p.episodes_count;
         const e = p.episodes_count ?? 0;
         const ep = `${n} challenge${n === 1 ? "" : "s"}<br>${e} episode${e === 1 ? "" : "s"}`;
-        const link = p.episodes_url ? `<div class="mt-1"><a href="${p.episodes_url}">View challenges</a></div>` : "";
+        const link = p.episodes_url && !el.dataset.noLinks ? `<div class="mt-1"><a href="${p.episodes_url}">View challenges</a></div>` : "";
         m.bindPopup(`<div><strong>${title}</strong><br>${addressLine}${ep}${link}</div>`);
         return m;
       });
 
       const group = L.featureGroup(markers);
-      map.fitBounds(group.getBounds().pad(0.15));
+      // maxZoom keeps a single-pin map (location page) from zooming in to street level.
+      map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 6 });
     })
     .catch(e => {
       console.error("[map] fetch error", e);

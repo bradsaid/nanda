@@ -36,6 +36,15 @@
         | Survival conditions in #{@country}
       p.mb-0 = country_desc
 
+- if Location.where("TRIM(LOWER(country)) = ?", @country.to_s.strip.downcase).where.not(latitude: nil).where.not(longitude: nil).exists?
+  - content_for :needs_map, "1"
+  .card.shadow-sm.mb-4
+    .card-header.d-flex.align-items-center
+      span.me-2(aria-hidden="true") 🗺️
+      span Map
+    .card-body.p-0
+      #locations-map.map-frame.map-frame-sm data-locations-url=(locations_path(format: :json, country: @country))
+
 / Build a flat list of "blocks" — each block is either a continuous-story
 / season (≥2 eps filmed here, shown as one card with shared cast) or a
 / single episode (shown as its own card). Sort the blocks newest-first by

@@ -45,6 +45,15 @@
       = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
     p.subtitle.mb-0 = [@location.site, @location.region, @location.country].compact_blank.join(", ")
 
+  - if @location.latitude.present? && @location.longitude.present?
+    - content_for :needs_map, "1"
+    .card.shadow-sm.mb-3
+      .card-header.d-flex.align-items-center
+        span.me-2(aria-hidden="true") 🗺️
+        span Map
+      .card-body.p-0
+        #locations-map.map-frame.map-frame-sm data-locations-url=(locations_path(format: :json, location_id: @location.id)) data-no-links="true"
+
   .card.shadow-sm
     .card-header Episodes
     .table-responsive

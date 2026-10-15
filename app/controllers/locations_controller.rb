@@ -62,6 +62,13 @@ class LocationsController < ApplicationController
         @country_challenges.sort_by { |c, n| [-n.to_i, c.to_s.downcase] }
       end
 
+    # Optional filters so the episode-by-location and episode-by-country pages
+    # can embed the same map with only their own pins.
+    @locations = @locations.where(id: params[:location_id].to_i) if params[:location_id].present?
+    if params[:country].present?
+      @locations = @locations.where("TRIM(LOWER(locations.country)) = ?", params[:country].to_s.strip.downcase)
+    end
+
     respond_to do |format|
       format.html
       format.json do

@@ -115,6 +115,71 @@ class LocationsMapTest < ActionDispatch::IntegrationTest
     assert_equal ["Challenges", "Episodes", "A–Z"], labels
   end
 
+  def pin_ids(params)
+    get locations_path(format: :json), params: params
+    assert_response :success
+    JSON.parse(response.body).map { |p| p["id"] }
+  end
+
+  test "pins can be filtered to one location" do
+    a = Location.create!(country: "Filterland", site: "A", latitude: 10, longitude: 10)
+    Location.create!(country: "Filterland", site: "B", latitude: 11, longitude: 11)
+    assert_equal [a.id], pin_ids(location_id: a.id)
+  end
+
+  test "pins can be filtered to one country, ignoring case and padding" do
+    a = Location.create!(country: "Filterland", site: "A", latitude: 10, longitude: 10)
+    b = Location.create!(country: "Filterland", site: "B", latitude: 11, longitude: 11)
+    other = Location.create!(country: "Otherland", site: "C", latitude: 12, longitude: 12)
+    ids = pin_ids(country: "  fILTERland ")
+    assert_equal [a.id, b.id].sort, ids.sort
+    refute_includes ids, other.id
+  end
+
+  test "episodes at a location page embeds a single-pin map without a self link" do
+    loc = Location.create!(country: "Peru", site: "Embed Site", latitude: -9.1, longitude: -75.0)
+    add_episodes(Season.create!(series: Series.create!(name: "Embed Loc"), number: 1, year: 2020), loc, 1)
+
+    get episodes_path(location_id: loc.id)
+    assert_response :success
+    map = css_select("#locations-map").first
+    assert map, "map container should be present"
+    assert_equal locations_path(format: :json, location_id: loc.id), map["data-locations-url"]
+    assert_equal "true", map["data-no-links"]
+    assert css_select('link[rel=stylesheet][href*="leaflet"]').any?, "leaflet CSS should load on this page"
+  end
+
+  test "episodes at a location page has no map when the location has no coordinates" do
+    loc = Location.create!(country: "Nowhere", site: "No Coords")
+    get episodes_path(location_id: loc.id)
+    assert_response :success
+    assert_empty css_select("#locations-map")
+  end
+
+  test "episodes by country page embeds a map of that country's pins" do
+    loc = Location.create!(country: "Peru", site: "Embed Country", latitude: -9.1, longitude: -75.0)
+    add_episodes(Season.create!(series: Series.create!(name: "Embed Country S"), number: 1, year: 2020), loc, 1)
+
+    get by_country_episodes_path("Peru")
+    assert_response :success
+    map = css_select("#locations-map").first
+    assert map, "map container should be present"
+    assert_equal locations_path(format: :json, country: "Peru"), map["data-locations-url"]
+    assert_nil map["data-no-links"]
+    assert css_select('link[rel=stylesheet][href*="leaflet"]').any?
+  end
+
+  test "locations page itself still loads the map assets" do
+    get locations_path
+    assert css_select('link[rel=stylesheet][href*="leaflet"]').any?
+    assert css_select("#locations-map").any?
+  end
+
+  test "pages without a map do not load leaflet CSS" do
+    get survivors_path
+    assert_empty css_select('link[rel=stylesheet][href*="leaflet"]')
+  end
+
   test "a location with no episodes reports zero challenges" do
     loc = Location.create!(country: "Iceland", site: "Pin Empty Site", latitude: 64.9, longitude: -18.5)
     assert_equal 0, pins.fetch(loc.id)["challenges_count"]

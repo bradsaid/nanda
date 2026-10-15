@@ -1,3 +1,5 @@
 
 #locations-map.map-frame { height: 540px; }
+/* Compact version embedded in the episodes-by-location / by-country headers */
+#locations-map.map-frame.map-frame-sm { height: 320px; }
 .leaflet-popup-content .popup-box { min-width: 200px; }
