@@ -44,11 +44,14 @@ document.addEventListener("turbo:load", () => {
       const markers = points.map(p => {
         const m = L.marker([p.lat, p.lng]).addTo(map);
         const title = p.name || p.address || "Location";
+        // A country-only location has name === address; don't print it twice.
+        const sameAsTitle = (p.address || "").trim().toLowerCase() === title.trim().toLowerCase();
+        const addressLine = p.address && !sameAsTitle ? `${p.address}<br>` : "";
         const n = p.challenges_count ?? p.episodes_count;
         const e = p.episodes_count ?? 0;
         const ep = `${n} challenge${n === 1 ? "" : "s"}<br>${e} episode${e === 1 ? "" : "s"}`;
         const link = p.episodes_url ? `<div class="mt-1"><a href="${p.episodes_url}">View challenges</a></div>` : "";
-        m.bindPopup(`<div><strong>${title}</strong><br>${p.address || ""}<br>${ep}${link}</div>`);
+        m.bindPopup(`<div><strong>${title}</strong><br>${addressLine}${ep}${link}</div>`);
         return m;
       });
 
