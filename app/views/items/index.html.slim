@@ -137,33 +137,36 @@
       .card-header.d-flex.justify-content-between.align-items-center
         span.fw-medium Results for "#{@q}"
         span.small.text-muted = "#{grouped.size} found"
-      .table-responsive
-        table.table.table-sm.table-hover.mb-0
-          thead.table-light
-            tr
-              th Item
-              th Season
-              th Episode
-              th Location
-              th Survivor
-              th Source
-          tbody
-            - grouped.each do |(_item_id, _ep_id, _source), records|
-              - first = records.first
-              - ep = first.appearance.episode
-              - season = ep.season
-              - survivors = records.map { |r| r.appearance.survivor }.uniq(&:id)
+      / The card header and the table header are both dark green; the padded
+      / body keeps them from running together.
+      .card-body
+        .table-responsive
+          table.table.table-sm.table-hover.mb-0
+            thead.table-light
               tr
-                td = link_to "#{item_icon(first.item)} #{first.item.name}", item_path(first.item)
-                td = link_to "S#{season.number}", season_path(season)
-                td = link_to ep.title, episode_path(ep)
-                td = ep.location&.country
-                td
-                  - survivors.each_with_index do |s, i|
-                    - if i > 0
-                      ',
-                    = link_to s.full_name, survivor_path(s)
-                td.text-muted = first.source.humanize
+                th Item
+                th Season
+                th Episode
+                th Location
+                th Survivor
+                th Source
+            tbody
+              - grouped.each do |(_item_id, _ep_id, _source), records|
+                - first = records.first
+                - ep = first.appearance.episode
+                - season = ep.season
+                - survivors = records.map { |r| r.appearance.survivor }.uniq(&:id)
+                tr
+                  td = link_to "#{item_icon(first.item)} #{first.item.name}", item_path(first.item)
+                  td = link_to "S#{season.number}", season_path(season)
+                  td = link_to ep.title, episode_path(ep)
+                  td = ep.location&.country
+                  td
+                    - survivors.each_with_index do |s, i|
+                      - if i > 0
+                        ',
+                      = link_to s.full_name, survivor_path(s)
+                  td.text-muted = first.source.humanize
   - elsif @q.present?
     .card.shadow-sm.mt-4#items-results
       .card-body.text-center.text-muted.py-4

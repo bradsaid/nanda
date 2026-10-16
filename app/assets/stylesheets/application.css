@@ -936,6 +936,17 @@ table.table thead th {
 }
 table.table thead.table-light { background: linear-gradient(to right, #06291a, #0e3f24) !important; }
 
+/* Secondary text ("3 found", "12 total") inside the dark green card headers.
+   Bootstrap's .text-muted is !important gray and .card small is dark gray,
+   both nearly unreadable on the green gradient. */
+.card-header .text-muted,
+.card-header small,
+.card-header .small {
+  color: rgba(255, 255, 255, .82) !important;
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+
 /* Make links inside survivor bios visibly clickable */
 .survivor-bio a {
   color: #14532d;

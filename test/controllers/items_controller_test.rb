@@ -41,6 +41,15 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/zzbroughtonly/,   @response.body)
   end
 
+  test "search results table sits inside a padded card body, apart from the card header" do
+    get items_path(q: "zz")
+    assert_response :success
+    assert_select "#items-results > .card-header", text: /Results for "zz"/
+    assert_select "#items-results > .card-header .text-muted", text: /found/
+    assert_select "#items-results > .card-body > .table-responsive table tbody tr", minimum: 1
+    assert_select "#items-results > .table-responsive", count: 0
+  end
+
   test "both (blank source) returns rows of either source" do
     get items_path(q: "zz")
     assert_response :success
