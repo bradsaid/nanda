@@ -43,7 +43,7 @@
               - season = ep.season
               tr
                 td = link_to ep.title, episode_path(ep)
-                td = link_to "S#{season.number}", season_path(season)
+                td = link_to season_label(season), season_path(season)
                 / nil means "unknown" for animals (the admin form says to leave
                 / it blank), and quantity is never tracked for plants. .to_i
                 / rendered both as 0, which read as "none caught".

@@ -50,6 +50,29 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#items-results > .table-responsive", count: 0
   end
 
+  test "search result season column tags continuous seasons with their series" do
+    xl      = Series.create!(name: "Naked and Afraid XL", continuous_story: true)
+    regular = Series.create!(name: "Naked and Afraid")
+    loc     = Location.find_or_create_by!(country: "Peru", site: "Season Tag Site")
+    item    = Item.create!(name: "zztagged")
+    {
+      "XL Tag Ep"      => Season.create!(series: xl,      number: 5, year: 2019),
+      "Frozen Tag Ep"  => Season.create!(series: xl,      number: 9, year: 2022),
+      "Regular Tag Ep" => Season.create!(series: regular, number: 5, year: 2015)
+    }.each do |title, season|
+      ep  = Episode.create!(season: season, location: loc, title: title, number_in_season: 1, air_date: Date.new(2024, 1, 1))
+      app = Appearance.create!(survivor: Survivor.find_or_create_by!(full_name: "Tag #{title}"), episode: ep)
+      AppearanceItem.create!(appearance: app, item: item, source: "brought", quantity: 1)
+    end
+
+    get items_path(q: "zztagged")
+    assert_response :success
+    cell = ->(title) { css_select("#items-results tbody tr").find { |tr| tr.text.include?(title) }.css("td")[1].text.strip }
+    assert_equal "S5 XL",     cell.("XL Tag Ep")
+    assert_equal "S9 Frozen", cell.("Frozen Tag Ep")
+    assert_equal "S5",        cell.("Regular Tag Ep")
+  end
+
   test "both (blank source) returns rows of either source" do
     get items_path(q: "zz")
     assert_response :success

@@ -21,6 +21,33 @@ module SeasonsHelper
     "Naked and Afraid: Global Showdown"   => "Seven international teams of two compete in a 40-day, points-based survival tournament for a $200,000 prize. Each team represents a different region of the world."
   }.freeze
 
+  # Short tags for series whose stripped name is too long for a table cell.
+  SERIES_TAGS = {
+    "Last One Standing" => "LOS",
+    "Global Showdown"   => "Showdown"
+  }.freeze
+
+  # Compact season label for tables: "S5", or "S5 XL" / "S9 Frozen" / "S1 Solo"
+  # when the season belongs to a continuous-story series (or is flagged
+  # continuous itself). A bare "S5" is ambiguous because regular and XL seasons
+  # share numbers; regular-series seasons keep the plain label.
+  def season_label(season)
+    return "" unless season
+    base = "S#{season.number}"
+    tag  = season_series_tag(season)
+    tag ? "#{base} #{tag}" : base
+  end
+
+  def season_series_tag(season)
+    series = season.series
+    return nil unless season.continuous_story? || series&.continuous_story?
+    short = series&.name.to_s.sub(/\ANaked and Afraid[: ]*/i, "").strip
+    return nil if short.blank? # the flagship series has no distinguishing tag
+    # XL season 9 is the "Frozen" run (every episode is titled "Frozen: ...").
+    return "Frozen" if short.casecmp?("XL") && season.number == 9
+    SERIES_TAGS.fetch(short, short)
+  end
+
   def streaming_label(key)
     SERVICE_LABELS[key.to_sym] || key.to_s.titleize
   end

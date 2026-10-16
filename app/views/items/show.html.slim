@@ -112,7 +112,7 @@
                 td data-label="Episode" = link_to(ep.title, episode_path(ep))
                 td data-label="Season"
                   - if ep&.season
-                    = link_to "S#{ep.season.number}", season_path(ep.season)
+                    = link_to season_label(ep.season), season_path(ep.season)
                   - else
                     | —
                 td data-label="Air Date" = ep.air_date || "—"
@@ -147,7 +147,7 @@
                 td data-label="Episode" = link_to(ep.title, episode_path(ep))
                 td data-label="Season"
                   - if ep&.season
-                    = link_to "S#{ep.season.number}", season_path(ep.season)
+                    = link_to season_label(ep.season), season_path(ep.season)
                   - else
                     | —
                 td data-label="Air Date" = ep.air_date || "—"

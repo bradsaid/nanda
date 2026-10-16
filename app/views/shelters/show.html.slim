@@ -32,7 +32,7 @@
               - season = ep.season
               tr
                 td = link_to ep.title, episode_path(ep)
-                td = link_to "S#{season.number}", season_path(season)
+                td = link_to season_label(season), season_path(season)
                 td.d-none.d-md-table-cell = ep.location&.country || "—"
                 td = shelter.materials.presence || "—"
                 td.d-none.d-md-table-cell = shelter.notes.presence || "—"
