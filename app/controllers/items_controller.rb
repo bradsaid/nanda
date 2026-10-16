@@ -163,7 +163,7 @@ class ItemsController < ApplicationController
     # Base scope with all joins needed (series join required for adjusted logic)
     scope = @item.appearance_items
                 .joins(appearance: [{ episode: [:location, { season: :series }] }, :survivor])
-                .includes(appearance: [:survivor, episode: [:season, :location]])
+                .includes(appearance: [:survivor, episode: [{ season: :series }, :location]])
 
     scope = scope.where(locations: { country: @country }) if @country.present?
 
@@ -176,21 +176,13 @@ class ItemsController < ApplicationController
     @given_episode_ids   = @given_ai.reorder(nil).distinct.pluck("appearances.episode_id")
     @brought_episode_ids = @brought_ai.reorder(nil).distinct.pluck("appearances.episode_id")
 
-    # ---------- Adjusted presence (continuous series collapse to 1) ----------
-    # Build stable keys: ep-<episode_id> for normal, series-<series_id> for continuous
-    @given_keys = @given_ai.to_a.map do |ai|
-      ep  = ai.appearance.episode
-      ser = ep.season&.series
-      cont = !!(ep.season&.continuous_story || ser&.continuous_story)
-      cont ? "series-#{ser&.id}" : "ep-#{ep.id}"
-    end.uniq
-
-    @brought_keys = @brought_ai.to_a.map do |ai|
-      ep  = ai.appearance.episode
-      ser = ep.season&.series
-      cont = !!(ep.season&.continuous_story || ser&.continuous_story)
-      cont ? "series-#{ser&.id}" : "ep-#{ep.id}"
-    end.uniq
+    # ---------- Challenges (a continuous-story season counts as ONE challenge) ----------
+    # Same rule as the locations pages: one key per normal episode, one key per
+    # continuous season (not per series, which would lump unrelated seasons).
+    @given_keys   = challenge_keys(@given_ai)
+    @brought_keys = challenge_keys(@brought_ai)
+    @brought_challenges = @brought_keys.size
+    @given_challenges   = @given_keys.size
 
     # ---------- By country (adjusted totals) ----------
     @by_country = @item.appearance_items
@@ -227,6 +219,19 @@ class ItemsController < ApplicationController
   end
 
   private
+
+  # Distinct challenge keys for a set of appearance_items. Normal episodes are
+  # one challenge each; every episode of a continuous-story season (or series)
+  # collapses into a single "season-<id>" challenge. Several survivors bringing
+  # the same item in one challenge still count once.
+  def challenge_keys(appearance_items)
+    appearance_items.map do |ai|
+      ep     = ai.appearance.episode
+      season = ep.season
+      continuous = !!(season&.continuous_story || season&.series&.continuous_story)
+      continuous ? "season-#{season.id}" : "episode-#{ep.id}"
+    end.uniq
+  end
 
   # For brought items:
   # - Count per survivor (appearance) within each episode.

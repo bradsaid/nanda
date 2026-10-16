@@ -27,6 +27,25 @@
     h1.h3.mb-0.logo = "#{item_icon(@item)} #{@item.name}"
     p.subtitle Analytics for this item across all episodes.
 
+  / ---------- Summary: how many challenges this item was brought on ----------
+  - brought_n = @brought_challenges.to_i
+  - given_n   = @given_challenges.to_i
+  - where_str = @country.present? ? " in #{@country}" : ""
+  p#item-summary.lead.mb-4
+    - if brought_n.zero?
+      | This item has never been brought on a challenge#{where_str}
+    - else
+      | This item has been brought on&nbsp;
+      strong = pluralize(brought_n, "challenge")
+      = where_str
+    - if given_n.positive?
+      - if brought_n.zero?
+        | , but it has been given on&nbsp;
+      - else
+        | , and given on&nbsp;
+      strong = pluralize(given_n, "challenge")
+    | .
+
   / Country filter
   = form_with url: item_path(@item), method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center
