@@ -33,7 +33,8 @@ class Item < ApplicationRecord
   COMFORT    = /tarp|hammock|mosquito|fabric|rawhide|#{word("duct", "tent", "hide", "pelt")}/i
   DIGGING    = /shovel/i
   COTTON     = /cotton/i
-  CLOTHING   = /shirt|jacket|coat|pants|clothing|purse|sandal/i
+  CONTAINER  = /purse|bottle|container/i
+  CLOTHING   = /shirt|jacket|coat|pants|clothing|sandal/i
   CARPENTRY  = /hammer|chisel|mallet/i
 
   ANIMAL = Regexp.union(
@@ -70,6 +71,7 @@ class Item < ApplicationRecord
     when COMFORT   then "comfort item"
     when DIGGING   then "digging tool"
     when COTTON    then "cotton"
+    when CONTAINER then "container"
     when CLOTHING  then "clothing"
     when CARPENTRY then "carpentry tool"
     when ANIMAL    then "animal"

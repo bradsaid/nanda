@@ -5,7 +5,9 @@ class ItemTest < ActiveSupport::TestCase
   {
     "pants"                    => "clothing",   # was "pot": "pan" inside "pants"
     "underpants"               => "clothing",
-    "purse"                    => "clothing",
+    "purse"                    => "container",
+    "plastic bottles"          => "container",
+    "water bottle"             => "container",
     "sandals"                  => "clothing",
     "leather sandal"           => "clothing",
     "potato"                   => "plant",      # was "pot"
@@ -57,7 +59,8 @@ class ItemTest < ActiveSupport::TestCase
 
   test "a new item is classified on save" do
     assert_equal "clothing", Item.create!(name: "  Pants ").item_type
-    assert_equal "clothing", Item.create!(name: "Purse").item_type
+    assert_equal "container", Item.create!(name: "Purse").item_type
+    assert_equal "container", Item.create!(name: "Plastic Bottles").item_type
     assert_equal "clothing", Item.create!(name: "Sandals").item_type
   end
 

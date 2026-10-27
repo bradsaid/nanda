@@ -340,6 +340,8 @@ module ApplicationHelper
     when /paddle/                            then "🛶"
     when /fabric|cloth(?!ing)/               then "🧵"
     when /shirt|jacket|coat|pants|clothing/  then "👕"
+    when /purse/                             then "👜"
+    when /bottle/                            then "🧴"
     when /hammer/                            then "🔨"
     when /chisel/                            then "🪛"
     when /cotton/                            then "☁️"
@@ -361,6 +363,7 @@ module ApplicationHelper
       when "digging tool"       then "⛏️"
       when "cotton"             then "🧺"
       when "clothing"           then "👕"
+      when "container"          then "🫙"
       when "carpentry tool"     then "⚒️"
       else "🔧"
       end
