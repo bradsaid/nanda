@@ -5,6 +5,9 @@ class ItemTest < ActiveSupport::TestCase
   {
     "pants"                    => "clothing",   # was "pot": "pan" inside "pants"
     "underpants"               => "clothing",
+    "purse"                    => "clothing",
+    "sandals"                  => "clothing",
+    "leather sandal"           => "clothing",
     "potato"                   => "plant",      # was "pot"
     "stainless steel"          => "other",      # was "animal": "eel" inside "steel"
     "steel"                    => "other",
@@ -54,6 +57,8 @@ class ItemTest < ActiveSupport::TestCase
 
   test "a new item is classified on save" do
     assert_equal "clothing", Item.create!(name: "  Pants ").item_type
+    assert_equal "clothing", Item.create!(name: "Purse").item_type
+    assert_equal "clothing", Item.create!(name: "Sandals").item_type
   end
 
   test "a hand-set item_type survives later saves" do

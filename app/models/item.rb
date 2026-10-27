@@ -33,7 +33,7 @@ class Item < ApplicationRecord
   COMFORT    = /tarp|hammock|mosquito|fabric|rawhide|#{word("duct", "tent", "hide", "pelt")}/i
   DIGGING    = /shovel/i
   COTTON     = /cotton/i
-  CLOTHING   = /shirt|jacket|coat|pants|clothing/i
+  CLOTHING   = /shirt|jacket|coat|pants|clothing|purse|sandal/i
   CARPENTRY  = /hammer|chisel|mallet/i
 
   ANIMAL = Regexp.union(
