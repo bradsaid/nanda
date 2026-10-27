@@ -34,7 +34,7 @@ class Item < ApplicationRecord
   DIGGING    = /shovel/i
   COTTON     = /cotton/i
   CONTAINER  = /purse|bottle|container/i
-  CLOTHING   = /shirt|jacket|coat|pants|clothing|sandal/i
+  CLOTHING   = /shirt|jacket|coat|pants|clothing|sandal|underwear/i
   CARPENTRY  = /hammer|chisel|mallet/i
 
   ANIMAL = Regexp.union(

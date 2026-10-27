@@ -339,7 +339,7 @@ module ApplicationHelper
     when /boat/                              then "🛶"
     when /paddle/                            then "🛶"
     when /fabric|cloth(?!ing)/               then "🧵"
-    when /shirt|jacket|coat|pants|clothing/  then "👕"
+    when /shirt|jacket|coat|pants|clothing|underwear/ then "👕"
     when /purse/                             then "👜"
     when /bottle/                            then "🧴"
     when /hammer/                            then "🔨"

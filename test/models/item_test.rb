@@ -9,6 +9,7 @@ class ItemTest < ActiveSupport::TestCase
     "plastic bottles"          => "container",
     "water bottle"             => "container",
     "sandals"                  => "clothing",
+    "underwear"                => "clothing",
     "leather sandal"           => "clothing",
     "potato"                   => "plant",      # was "pot"
     "stainless steel"          => "other",      # was "animal": "eel" inside "steel"
