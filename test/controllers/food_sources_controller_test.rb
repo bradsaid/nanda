@@ -19,7 +19,13 @@ class FoodSourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "td.text-end", text: "3"
   end
 
-  test "plants show a dash since quantity is not tracked for them" do
+  test "a plant with a quantity shows the number" do
+    FoodSource.create!(episode: @episode, name: "banana", category: "plant", quantity: 7)
+    get food_source_path("banana")
+    assert_select "td.text-end", text: "7"
+  end
+
+  test "plants without a quantity show a dash" do
     FoodSource.create!(episode: @episode, name: "coconut", category: "plant")
     get food_source_path("coconut")
     assert_select "td.text-end", text: "—"

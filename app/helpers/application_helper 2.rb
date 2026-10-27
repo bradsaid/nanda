@@ -1,0 +1,425 @@
+module ApplicationHelper
+  # One place for the address shown on the contact page and used as the
+  # recipient by ContactMailer and ForumMailer.
+  # Query parameters that select genuinely different content (a filtered list,
+  # a country's page), as opposed to sorting/searching/limiting the same list.
+  # Only these survive into canonical and og:url, so /survivors?sort=name and
+  # /survivors both canonicalise to /survivors instead of splitting ranking.
+  CANONICAL_PARAMS = %w[location_id season_id series_id season country item_type source page].freeze
+
+  def canonical_request_url
+    keep = request.query_parameters.slice(*CANONICAL_PARAMS)
+                  .reject { |k, v| v.blank? || (k == "page" && v.to_s == "1") }
+                  .sort.to_h
+    url = "#{request.base_url}#{request.path}"
+    keep.any? ? "#{url}?#{keep.to_query}" : url
+  end
+
+  # Structured data wants absolute URLs; rails_blob_path alone is a bare path.
+  def absolute_blob_url(attachment)
+    return nil if attachment.nil? || !attachment.attached?
+    "#{request.base_url}#{rails_blob_path(attachment, only_path: true)}"
+  rescue StandardError
+    nil
+  end
+
+  def contact_email_address = ENV.fetch("CONTACT_EMAIL", "brad@nakedandafraidfan.com")
+
+  def format_duration(seconds)
+    return "—" if seconds.blank? || seconds <= 0
+    mins = seconds.to_i / 60
+    secs = seconds.to_i % 60
+    mins > 0 ? "#{mins}m #{secs}s" : "#{secs}s"
+  end
+
+  def linkify_survivors(text, survivors)
+    return text if text.blank?
+    survivors = Array(survivors)
+    escaped = ERB::Util.html_escape(text)
+
+    # 1) Markdown-style italics: *foo* → <em>foo</em>. Runs before any link
+    # substitution so subsequent regexes can still find name matches inside
+    # the emphasis. Non-greedy, single-line, avoids **bold** on both sides.
+    escaped = escaped.gsub(/(?<!\*)\*([^*\n]+)\*(?!\*)/) { "<em>#{$1}</em>" }
+
+    # 2) Cast-scoped survivor aliases (full name, last name, unambiguous
+    # first-two-words for 3+ word names, unambiguous first name).
+    # Partial names (surname, first name, first two words) are only used when
+    # they point at exactly one cast member, and only when written with the
+    # capitalisation the name has. Without that, two cast members sharing a
+    # surname both got the first one's link, and a cast member called Short or
+    # Hall turned every "short" or "hall" in the prose into a survivor link.
+    name_suffixes = %w[jr jr. sr sr. ii iii iv v].to_set
+    parts_of = ->(s) { s.full_name.to_s.split }
+    surname_of = lambda do |s|
+      parts = parts_of.(s)
+      parts.pop while parts.size > 1 && name_suffixes.include?(parts.last.downcase)
+      parts.size > 1 ? parts.last : nil
+    end
+
+    first_name_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
+      h[parts_of.(s).first.to_s.downcase] += 1
+    end
+    surname_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
+      sn = surname_of.(s)
+      h[sn.downcase] += 1 if sn
+    end
+    two_word_counts = survivors.each_with_object(Hash.new(0)) do |s, h|
+      parts = parts_of.(s)
+      h[parts.first(2).join(" ").downcase] += 1 if parts.size >= 3
+    end
+
+    # [text, path, match_case]
+    aliases = []
+    survivors.each do |s|
+      parts = parts_of.(s)
+      next if parts.empty?
+      path = survivor_path(s)
+      aliases << [s.full_name, path, false]
+      sn = surname_of.(s)
+      aliases << [sn, path, true] if sn && surname_counts[sn.downcase] == 1
+      if parts.size >= 3
+        two = parts.first(2).join(" ")
+        aliases << [two, path, true] if two_word_counts[two.downcase] == 1
+      end
+      if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
+        aliases << [parts.first, path, true]
+      end
+    end
+
+    # 3) Whole-DB fallback: full-name matches for survivors NOT in the
+    # episode cast (Steven Lee Hall Jr in an LOS-history reference, etc.).
+    # Full-name-only to avoid the false-positive risk of matching common
+    # first/last names across 385 people.
+    cast_ids = survivors.map(&:id).to_set
+    Survivor.where.not(id: cast_ids.to_a).pluck(:full_name, :slug, :id).each do |name, slug, id|
+      next if name.blank?
+      aliases << [name, "/survivors/#{slug.presence || id}", false]
+    end
+
+    # 4) Series aliases: full name + short name (name with the "Naked and
+    # Afraid" prefix stripped, so "Naked and Afraid Last One Standing"
+    # also matches "Last One Standing" in prose). Series routes by :id.
+    Series.pluck(:name, :id).each do |name, id|
+      next if name.blank?
+      series_path = "/series/#{id}"
+      full = name
+      short = name.sub(/\ANaked and Afraid[: ]*/i, "").strip
+      [full, short].uniq.reject { |n| n.length < 3 }.each do |alias_name|
+        aliases << [alias_name, series_path, false]
+      end
+    end
+
+    # Apply longest-first so multi-word matches beat their shorter aliases.
+    aliases.sort_by { |alias_name, _, _| -alias_name.length }.each do |alias_name, path, match_case|
+      pattern = Regexp.new("\\b#{Regexp.escape(alias_name)}\\b(?![^<]*<\\/a>)", match_case ? nil : Regexp::IGNORECASE)
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="#{path}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
+      end
+    end
+    simple_format(escaped.html_safe)
+  end
+
+  # Linkify survivor names mentioned in a bio. Unlike linkify_survivors,
+  # this takes already-sanitized HTML (the bio may contain admin-authored
+  # <a>, <em>, etc.) and the corpus is every survivor in the DB, minus the
+  # subject of the bio. Full names always link; first names only link when
+  # unambiguous franchise-wide. Last names are skipped to avoid collisions
+  # with common words.
+  def linkify_bio(sanitized_html, exclude_survivor: nil)
+    return sanitized_html if sanitized_html.blank?
+
+    all_survivors = Survivor.select(:id, :full_name, :slug).to_a
+
+    # Count first names across the *full* corpus so excluding the bio's
+    # subject doesn't artificially make their first name unambiguous.
+    first_name_counts = all_survivors.each_with_object(Hash.new(0)) do |s, h|
+      h[s.full_name.to_s.split.first.to_s.downcase] += 1
+    end
+
+    survivors = exclude_survivor ? all_survivors.reject { |s| s.id == exclude_survivor.id } : all_survivors
+
+    # Tokens from the bio subject's own name. Skip any first-name alias that
+    # collides with one of these tokens, otherwise e.g. on Christopher James's
+    # bio the unambiguous first-name "James" (from James Lewis) would auto-link
+    # his own surname to a different survivor.
+    subject_tokens = exclude_survivor ? exclude_survivor.full_name.to_s.downcase.split : []
+
+    # A survivor's full_name is often shorter than the given name that appears
+    # in the bio's opening (e.g. "EJ Snyder" is the display name but the bio
+    # opens with "Errol James 'EJ' Snyder Jr."). To catch middle names and
+    # alternate spellings, scan the first stretch of the bio up to and
+    # including the subject's last_name and pull every capitalized word out
+    # as an additional protected token. Lazy match so it stops at the first
+    # mention of the last name and doesn't sweep in unrelated capitalized
+    # words that appear later (which could suppress legitimate cross-links).
+    if exclude_survivor
+      last_name = exclude_survivor.full_name.to_s.split.last.to_s
+      if last_name.length > 1
+        opening = sanitized_html.to_s.match(/\A(.{0,160}?\b#{Regexp.escape(last_name)}\b)/im)&.[](1)
+        if opening
+          extra = opening.scan(/\b[A-Z][A-Za-z]+\b/).map(&:downcase)
+          subject_tokens = (subject_tokens + extra).uniq
+        end
+      end
+    end
+
+    # First-two-words aliases (see linkify_survivors for rationale). Same
+    # unambiguity gate as first-name aliases.
+    two_word_counts = all_survivors.each_with_object(Hash.new(0)) do |s, h|
+      parts = s.full_name.to_s.split
+      h[parts.first(2).join(" ").downcase] += 1 if parts.size >= 3
+    end
+
+    aliases = []
+    survivors.each do |s|
+      parts = s.full_name.to_s.split
+      next if parts.empty?
+      aliases << [s.full_name, s]
+      if parts.size >= 3
+        two = parts.first(2).join(" ")
+        two_lc = two.downcase
+        if two_word_counts[two_lc] == 1 && !subject_tokens.include?(two_lc)
+          aliases << [two, s]
+        end
+      end
+      if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
+        next if subject_tokens.include?(parts.first.downcase)
+        aliases << [parts.first, s]
+      end
+    end
+
+    result = sanitized_html.to_s.dup
+    aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, s|
+      # First-name-only aliases (single word) should not match when directly
+      # followed by another capitalized word — that pattern indicates a
+      # different person's surname (e.g. "Jennifer Garner" should not link
+      # "Jennifer" to Jennifer Pearce). Full-name aliases don't need this
+      # guard because they already include the surname.
+      is_first_name_only = !alias_name.include?(" ")
+      pattern = if is_first_name_only
+                  /\b#{Regexp.escape(alias_name)}\b(?! [A-Z][a-z])(?![^<]*<\/a>)/i
+                else
+                  /\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i
+                end
+      result = result.gsub(pattern) do |match|
+        "<a href=\"#{survivor_path(s)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
+      end
+    end
+
+    # Auto-link quoted episode titles. Quoted-only to avoid false positives
+    # on short titles like "Threesome" or "Frozen". Matches both straight
+    # and curly quotes; preserves whichever quote style the admin wrote.
+    episode_titles = Episode.where.not(title: [nil, ""]).pluck(:id, :title)
+    episode_titles.sort_by { |_, t| -t.length }.each do |ep_id, title|
+      escaped_title = Regexp.escape(title)
+      pattern = /["“]#{escaped_title}["”](?![^<]*<\/a>)/i
+      result = result.gsub(pattern) do |match|
+        "<a href=\"#{episode_path(ep_id)}\" class=\"link-primary fw-medium\">#{ERB::Util.html_escape(match)}</a>"
+      end
+    end
+
+    result.html_safe
+  end
+
+  # Renders a season intro as HTML, auto-linking three kinds of entities to
+  # their internal pages: quoted episode titles → episode show, survivor
+  # full names + unambiguous first names → survivor show, country names that
+  # appear in the season's filming locations → by-country episode index.
+  # Intro text is stored as plain paragraphs separated by blank lines; this
+  # helper HTML-escapes the raw text and wraps <a> tags around matches only.
+  def linkify_season_intro(intro_text, season)
+    return "".html_safe if intro_text.blank?
+
+    escaped = ERB::Util.html_escape(intro_text.to_s)
+
+    # --- Episode titles (quoted only, longest-first). The intro text is
+    # already HTML-escaped by this point so straight quotes now read as
+    # &quot; — the regex has to match that, not the raw " character. ---
+    ep_pairs = Episode.where(season_id: season.id)
+                      .where.not(title: [nil, ""])
+                      .pluck(:id, :title)
+                      .sort_by { |_, t| -t.length }
+    ep_pairs.each do |ep_id, title|
+      # Allow one trailing punctuation character before the closing quote —
+      # American style tucks commas and periods inside the quotes, so the
+      # text "Frozen in Fear," lands as &quot;Frozen in Fear,&quot; after
+      # escape.
+      pattern = /(&quot;|“)#{Regexp.escape(title)}[,.;!?]?(&quot;|”)(?![^<]*<\/a>)/i
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="#{episode_path(ep_id)}" class="link-primary fw-medium">#{match}</a>)
+      end
+    end
+
+    # --- Survivor names — full names + unambiguous first names, drawn from
+    # this season's cast so the shortlist stays scoped and less likely to
+    # false-positive. ---
+    survivor_ids = Appearance.joins(:episode)
+                             .where(episodes: { season_id: season.id })
+                             .distinct.pluck(:survivor_id)
+    cast = Survivor.where(id: survivor_ids).pluck(:id, :full_name, :slug)
+    first_name_counts = cast.each_with_object(Hash.new(0)) do |(_, name, _), h|
+      h[name.to_s.split.first.to_s.downcase] += 1
+    end
+    aliases = []
+    cast.each do |id, name, slug|
+      parts = name.to_s.split
+      next if parts.empty?
+      aliases << [name, id, slug]
+      if parts.size > 1 && first_name_counts[parts.first.downcase] == 1
+        aliases << [parts.first, id, slug]
+      end
+    end
+    aliases.sort_by { |alias_name, _, _| -alias_name.length }.each do |alias_name, id, slug|
+      pattern = /\b#{Regexp.escape(alias_name)}\b(?![^<]*<\/a>)/i
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="/survivors/#{slug || id}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
+      end
+    end
+
+    # --- Countries — only those that actually appear in this season's
+    # filming locations, so a passing mention of "Discovery" or a generic
+    # place name doesn't over-link. ---
+    countries = Episode.where(season_id: season.id)
+                       .joins(:location)
+                       .distinct.pluck("locations.country")
+                       .compact.uniq
+    countries.sort_by { |c| -c.length }.each do |country|
+      pattern = /\b#{Regexp.escape(country)}\b(?![^<]*<\/a>)/
+      escaped = escaped.gsub(pattern) do |match|
+        %Q(<a href="#{by_country_episodes_path(country)}" class="link-primary fw-medium">#{ERB::Util.html_escape(match)}</a>)
+      end
+    end
+
+    escaped.html_safe
+  end
+
+  def item_icon(item)
+    name = item.is_a?(String) ? item : item&.name.to_s
+    case name
+    when /\A\?\z/                            then "❓"
+    # Short words are matched as whole words: bare /pan/ and /pot/ caught
+    # "pants" and "potato", and /saw/ and /axe/ caught "seesaw" and "taxed".
+    when /\baxes?\b|tomahawk|hatchet|pulaski/ then "🪓"
+    when /sword/                             then "⚔️"
+    when /\bsaws?\b/                         then "🪚"
+    when /knife|machete|kukri|blade/         then "🔪"
+    when /\bpans?\b/                         then "🍳"
+    when /\bpots?\b|pottery/                 then "🍲"
+    when /jar/                               then "🫙"
+    when /sack|burlap/                       then "🧺"
+    when /blow\s*gun/                        then "🪈"
+    when /bow drill/                         then "🔥"
+    when /permanganate/                      then "🔥"
+    when /magnif|glass.*lens/                then "🔍"
+    when /fire|lighter|flint/                then "🔥"
+    when /\bbow\b|arrow/                     then "🏹"
+    when /spear|atlatl|dart/                 then "🗡️"
+    when /sling/                             then "🎯"
+    when /snare/                             then "🪤"
+    when /hook/                              then "🪝"
+    when /cast.*net|\bnet\b/                 then "🕸️"
+    when /snorkel|diving mask|scuba/         then "🤿"
+    when /goggle/                            then "🥽"
+    when /\bfins?\b/                         then "🩴"
+    when /slack\s*line/                      then "🪢"
+    when /fish|line(?!n)/                    then "🎣"
+    when /rope/                              then "🪢"
+    when /cord|string|paracord/              then "🪢"
+    when /hammock/                           then "🛏️"
+    when /tent/                              then "⛺"
+    when /tarp/                              then "🛖"
+    when /shelter/                           then "🛖"
+    when /duct/                              then "🩹"
+    when /mosquito/                          then "🦟"
+    when /beaver/                            then "🦫"
+    when /buffalo|bison/                     then "🦬"
+    when /\bhide\b|pelt|skin|\bfurs?\b/      then "🦌"
+    when /shovel/                            then "⛏️"
+    when /boat/                              then "🛶"
+    when /paddle/                            then "🛶"
+    when /fabric|cloth(?!ing)/               then "🧵"
+    when /shirt|jacket|coat|pants|clothing/  then "👕"
+    when /hammer/                            then "🔨"
+    when /chisel/                            then "🪛"
+    when /cotton/                            then "☁️"
+    when /\bsalt\b/                          then "🧂"
+    when /flash\s*light|torch/               then "🔦"
+    when /bailer|bucket/                     then "🪣"
+    when /lens/                              then "🔍"
+    when /mask/                              then "🤿"
+    else
+      type = item.respond_to?(:item_type) ? (item.item_type rescue nil) : nil
+      case type
+      when "blade"              then "🔪"
+      when "pot"                then "🍲"
+      when "fire starting tool" then "🔥"
+      when "hunting weapon"     then "🏹"
+      when "fishing tool"       then "🎣"
+      when "cordage"            then "🪢"
+      when "comfort item"       then "🛖"
+      when "digging tool"       then "⛏️"
+      when "cotton"             then "🧺"
+      when "clothing"           then "👕"
+      when "carpentry tool"     then "⚒️"
+      else "🔧"
+      end
+    end
+  end
+
+  def food_icon(food_source)
+    food_icon_by_name(food_source.name, food_source.category)
+  end
+
+  def food_icon_by_name(name, category)
+    n = name.to_s.downcase
+    case n
+    when /snake/                          then "🐍"
+    when /lizard|iguana/                  then "🦎"
+    when /caiman|crocodile|alligator/     then "🐊"
+    when /turtle|tortoise/                then "🐢"
+    when /frog|toad/                      then "🐸"
+    when /crab/                           then "🦀"
+    when /lobster|crayfish|crawfish/      then "🦞"
+    when /shrimp|prawn/                   then "🦐"
+    when /clam|mussel|oyster|shellfish/   then "🐚"
+    when /snail|conch/                    then "🐌"
+    when /fish|piranha|catfish|trout|bass|tilapia|perch|minnow/ then "🐟"
+    when /\beels?\b/                      then "🐍"
+    when /bird|chicken|duck|goose|pigeon|dove|parrot/ then "🐦"
+    when /pig|boar|hog|peccary/           then "🐗"
+    when /deer|elk|moose/                 then "🦌"
+    when /goat/                           then "🐐"
+    when /rabbit|hare/                    then "🐇"
+    when /\brats?\b|mouse|mice/           then "🐀"
+    when /monkey/                         then "🐒"
+    when /scorpion/                       then "🦂"
+    when /spider/                         then "🕷️"
+    when /\bants?\b|termite/              then "🐜"
+    when /beetle|cricket|grasshopper/     then "🦗"
+    when /worm|grub|larva|maggot/         then "🪱"
+    when /shark/                          then "🦈"
+    when /octopus|squid/                  then "🐙"
+    when /jellyfish/                      then "🪼"
+    when /urchin/                         then "🟣"
+    when /coconut/                        then "🥥"
+    when /banana/                         then "🍌"
+    when /mango/                          then "🥭"
+    when /papaya/                         then "🍈"
+    when /pineapple/                      then "🍍"
+    when /berry|berries/                  then "🫐"
+    when /fruit/                          then "🍇"
+    when /yam|potato|tuber|taro|cassava/  then "🍠"
+    when /mushroom|fungus|fungi/          then "🍄"
+    when /corn/                           then "🌽"
+    when /rice/                           then "🍚"
+    when /nut/                            then "🥜"
+    when /bamboo/                         then "🎋"
+    when /cactus/                         then "🌵"
+    when /seaweed|kelp|algae/             then "🌊"
+    when /herb|mint|basil|sage/           then "🥗"
+    else
+      category.to_s == "animal" ? "🍖" : "🥕"
+    end
+  end
+end
