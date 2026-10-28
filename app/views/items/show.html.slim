@@ -46,6 +46,18 @@
       strong = pluralize(given_n, "challenge")
     | .
 
+  / ---------- Shop preview: full admins only while the catalog is being vetted ----------
+  - if @shop_products.present?
+    .card.shadow-sm.mb-4#item-shop
+      .card-header.d-flex.align-items-center.justify-content-between
+        span
+          | 🛒 Shop this item
+          small.ms-2 = "(#{@shop_products.size})"
+        small Admin preview
+      ul.list-group.list-group-flush
+        - @shop_products.each do |p|
+          = render "admin/shop/product", product: p, item: @item, link_item: false
+
   / Country filter
   = form_with url: item_path(@item), method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center

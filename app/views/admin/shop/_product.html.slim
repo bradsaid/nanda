@@ -1,0 +1,38 @@
+/ One catalog product. locals: product, item (the Item it maps to, or nil), link_item (show "On the show" link)
+- badge_class, badge_label = ShopCatalog::BADGES.fetch(product[:match], ["bg-light text-dark", product[:match].to_s.titleize])
+/ Books, DVDs and merch were never "used on the show"; confirmed there means official or cast-made.
+- badge_label = "Official / cast-made" if ShopCatalog::NON_GEAR.include?(product[:category]) && product[:match] == "confirmed"
+li.list-group-item.shop-product
+  .d-flex.flex-wrap.justify-content-between.gap-3
+    .flex-grow-1(style="min-width: 260px;")
+      .fw-semibold
+        = product[:product]
+        span.badge.ms-2 class=badge_class = badge_label
+      - if product[:brand].present?
+        .small.text-muted = product[:brand]
+      - if product[:used_by].present?
+        .small.mt-1
+          | Used by: 
+          = product[:used_by]
+      - if product[:evidence].present?
+        .small.text-muted.mt-1
+          = product[:evidence]
+          - if product[:evidence_url].present?
+            |  
+            = link_to "Source", product[:evidence_url], target: "_blank", rel: "noopener noreferrer nofollow"
+          - Array(product[:more_sources]).each_with_index do |url, i|
+            |  
+            = link_to "Source #{i + 2}", url, target: "_blank", rel: "noopener noreferrer nofollow"
+      - if product[:notes].present?
+        .small.fst-italic.mt-1 = product[:notes]
+      - if link_item && item
+        .small.mt-1
+          | On the show: 
+          = link_to "#{item_icon(item)} #{item.name}", item_path(item)
+    .d-flex.flex-wrap.align-content-start.gap-2
+      - Array(product[:buy]).each do |link|
+        - amazon = ShopCatalog.amazon?(link)
+        = link_to (amazon ? "View on Amazon" : "Buy at #{link[:store]}"),
+          ShopCatalog.buy_url(link),
+          class: "btn btn-sm #{amazon ? 'btn-warning' : 'btn-outline-secondary'}",
+          target: "_blank", rel: "sponsored noopener noreferrer nofollow"

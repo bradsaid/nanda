@@ -1087,7 +1087,7 @@
   notes: 'Brand on screen is not identified; the ASIN is morethanjustsurviving.com''s
     link for the generic ''Magnesium Fire Starter''. Amazon title: ''SE Waterproof
     Magnesium Firestarter Kit ... FS374''.'
-- item: magnifier lens
+- item: glass magnifier lens
   category: fire starting tool
   product: Glass lens handheld magnifier (SE 5x, 2 in)
   brand: SE
@@ -1930,7 +1930,7 @@
     asin: B000ENST92
   notes: 'Amazon title: ''Aqua Sphere Kaiman Swim Goggle, Made In Italy''. Only an
     example; actual goggles unidentified.'
-- item: flashlight
+- item: flash light
   category: other
   product: Maglite Mini LED Flashlight (2xAAA)
   brand: MagLite

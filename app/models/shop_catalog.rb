@@ -13,6 +13,19 @@ class ShopCatalog
     @products ||= (YAML.safe_load_file(PATH) || []).map { |h| h.with_indifferent_access.freeze }.freeze
   end
 
+  BADGES = {
+    "confirmed" => ["bg-success", "Confirmed on the show"],
+    "likely"    => ["bg-primary", "Likely match"],
+    "similar"   => ["bg-secondary", "Similar"]
+  }.freeze
+
+  # Products that map to one Item (by its name), strongest evidence first.
+  def self.for_item(name)
+    rank = MATCHES.each_with_index.to_h
+    products.select { |p| p[:item].to_s.casecmp?(name.to_s) }
+            .sort_by { |p| [rank.fetch(p[:match], 99), p[:product].to_s.downcase] }
+  end
+
   def self.amazon?(link)
     link[:store].to_s == "amazon" || link[:url].to_s.match?(AMAZON)
   end
