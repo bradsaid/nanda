@@ -5,6 +5,9 @@ class Admin::ShopControllerTest < ActionDispatch::IntegrationTest
   PRODUCTS = [
     { item: "pot", category: "pot", product: "CanCooker Jr.", brand: "CanCooker", match: "likely",
       image: "https://m.media-amazon.com/images/I/abc._AC_SL500_.jpg",
+      survivors: ["Test Survivor A", "Nobody Here"],
+      episodes: [{ series: "TestSeriesA", season: 1, title: "Test Episode A" },
+                 { series: "TestSeriesA", season: 1, title: "No Such Episode" }],
       used_by: "Season 8", evidence_url: "https://example.com/e", evidence: "Fans say so",
       more_sources: ["https://example.com/e2"],
       buy: [{ store: "amazon", url: "https://www.amazon.com/dp/B0B74MT6VM", asin: "B0B74MT6VM" },
@@ -120,6 +123,38 @@ class Admin::ShopControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "cards link to the survivor bios and episodes they name, skipping any that no longer exist" do
+    sign_in(users(:admin))
+    with_products do
+      get admin_shop_path
+      assert_select ".shop-survivors a[href=?]", survivor_path(survivors(:one)), text: "Test Survivor A"
+      assert_select ".shop-survivors a", 1
+      assert_select ".shop-episodes a[href=?]", episode_path(episodes(:one)), text: "Test Episode A (TestSeriesA S1)"
+      assert_select ".shop-episodes a", 1
+      # products that name nobody get no empty "Survivors:" line
+      assert_select ".shop-survivors", 1
+      assert_select ".shop-episodes", 1
+    end
+  end
+
+  test "the same survivor and episode links appear on the item page" do
+    sign_in(users(:admin))
+    Item.create!(name: "pot")
+    with_products do
+      get item_path(Item.find_by!(name: "pot"))
+      assert_select "#item-shop .shop-survivors a[href=?]", survivor_path(survivors(:one))
+      assert_select "#item-shop .shop-episodes a[href=?]", episode_path(episodes(:one))
+    end
+  end
+
+  test "ShopLinks resolves survivor names and episode titles to records" do
+    links = ShopLinks.build(PRODUCTS)
+    assert_equal [survivors(:one)], links.survivors_for(PRODUCTS[0])
+    assert_equal [episodes(:one)], links.episodes_for(PRODUCTS[0])
+    assert_empty links.survivors_for(PRODUCTS[1])
+    assert_empty links.episodes_for(PRODUCTS[1])
+  end
+
   test "the associate tag is appended to amazon links only when configured" do
     link = PRODUCTS[0][:buy][0]
     assert_equal "https://www.amazon.com/dp/B0B74MT6VM", ShopCatalog.buy_url(link, tag: nil)
@@ -138,6 +173,18 @@ class ShopCatalogDataTest < ActiveSupport::TestCase
       assert_includes ShopCatalog::MATCHES, p[:match], "#{p[:product]}: bad match #{p[:match].inspect}"
       assert p[:buy].is_a?(Array) && p[:buy].any?, "#{p[:product]} has no buy links"
     end
+  end
+
+  test "survivor and episode references are well formed" do
+    refs = 0
+    ShopCatalog.products.each do |p|
+      Array(p[:survivors]).each { |n| assert n.is_a?(String) && n.present?, "#{p[:product]}: bad survivor #{n.inspect}"; refs += 1 }
+      Array(p[:episodes]).each do |e|
+        assert e[:series].present? && e[:season].is_a?(Integer) && e[:title].present?, "#{p[:product]}: bad episode #{e.inspect}"
+        refs += 1
+      end
+    end
+    assert refs > 100, "expected the catalog to carry survivor and episode links"
   end
 
   test "product images are https image urls" do

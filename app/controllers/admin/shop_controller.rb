@@ -31,6 +31,7 @@ module Admin
 
       names = @products.map { |p| p[:item].presence }.compact.uniq
       @items_by_name = Item.where(name: names).index_by { |i| i.name.downcase }
+      @links = ShopLinks.build(@products)
     end
   end
 end

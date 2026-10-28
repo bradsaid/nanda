@@ -20,6 +20,23 @@ li.list-group-item.shop-product
         .small.mt-1
           | Used by: 
           = product[:used_by]
+      - if (links = local_assigns[:links])
+        - linked_survivors = links.survivors_for(product)
+        - linked_episodes  = links.episodes_for(product)
+        - if linked_survivors.any?
+          .small.mt-1.shop-survivors
+            | Survivors: 
+            - linked_survivors.each_with_index do |s, i|
+              = ", " if i.positive?
+              = link_to s.full_name, survivor_path(s)
+        - if linked_episodes.any?
+          .small.mt-1.shop-episodes
+            | Episodes: 
+            - linked_episodes.each_with_index do |e, i|
+              = ", " if i.positive?
+              - series = e.season.series.name
+              - label = series == "Naked and Afraid" ? "S#{e.season.number}" : "#{series.sub('Naked and Afraid', '').strip} S#{e.season.number}"
+              = link_to "#{e.title} (#{label})", episode_path(e)
       - if product[:evidence].present?
         .small.text-muted.mt-1
           = product[:evidence]

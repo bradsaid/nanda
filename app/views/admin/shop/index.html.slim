@@ -46,4 +46,4 @@
         small.ms-2 = "(#{products.size})"
       ul.list-group.list-group-flush
         - products.each do |p|
-          = render "admin/shop/product", product: p, item: @items_by_name[p[:item].to_s.downcase], link_item: true
+          = render "admin/shop/product", product: p, item: @items_by_name[p[:item].to_s.downcase], link_item: true, links: @links

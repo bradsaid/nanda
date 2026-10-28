@@ -10,6 +10,8 @@
 # store's og:image); optional. Amazon image URLs can go stale; swap in PA-API images before going public.
 
 - item: kukri
+  survivors: ["Trenton Harper"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Fire on the Mountain"}]
   category: blade
   product: Behring Made hand-forged kukri
   brand: Behring Made Knives
@@ -26,6 +28,7 @@
     standard model. No Amazon listing found. The maker's Facebook post is not linked.
 - item: knife
   image: https://m.media-amazon.com/images/I/314PPzUZv7L._AC_SL500_.jpg
+  survivors: ["Eva Rupert"]
   category: blade
   product: Colonial Knife Defiant E.T.A.G. Bushcraft Knife (CE-400)
   brand: Colonial Knife
@@ -45,6 +48,7 @@
     url: https://www.colonialknifecorp.com/products/bushcraft-defiant-model-ce-400
   notes: Manufacturer page showed the item as sold out at time of research.
 - item: knife
+  survivors: ["Laura Zerra"]
   category: blade
   product: Diving Sparrow Knife Works Mako Shark
   brand: Diving Sparrow Knife Works
@@ -59,6 +63,7 @@
   notes: No Amazon listing found. Custom Canadian maker; ordering is through the maker.
 - item: knife
   image: https://www.extremeinstinct.com/uploads/5/8/0/1/5801928/s504521426379210152_p137_i1_w640.jpeg
+  survivors: ["Matt Wright"]
   category: blade
   product: Extreme Instinct 'The Naked and NOT Afraid' custom survival knife
   brand: Extreme Instinct
@@ -75,6 +80,7 @@
   notes: Handmade by Matt Wright's shop; not on Amazon.
 - item: knife
   image: https://static.wixstatic.com/media/8d054f_1bdb56c7acc14e2cbbcdc27ae4f12391%7Emv2.png/v1/fit/w_2500,h_1330,al_c/8d054f_1bdb56c7acc14e2cbbcdc27ae4f12391%7Emv2.png
+  survivors: ["Kaila Cumings"]
   category: blade
   product: Kaila Cumings Knives custom blades (shop)
   brand: Kaila Cumings Knives
@@ -88,6 +94,8 @@
   notes: Made-to-order/limited; no Amazon listing.
 - item: knife
   image: https://m.media-amazon.com/images/I/51wiUdivizL._AC_SL500_.jpg
+  survivors: ["Laura Zerra"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Punishment in Panama"}]
   category: blade
   product: Kershaw Outcast Bush Knife (model 1079)
   brand: Kershaw
@@ -107,6 +115,8 @@
     page loaded as 'Kershaw Outcast Bush Knife' but stock/seller not verified.
 - item: axe
   image: https://cdn.arizonacustomknives.com/images/products/orig/010130868853146839942.jpg
+  survivors: ["Hakim Isler"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Himalayan Hell"}]
   category: blade
   product: RMJ Tactical Tengu Ono (Forest Spirit Axe), Hakim Isler design
   brand: RMJ Tactical
@@ -128,6 +138,7 @@
     link was seen only in a Soldier Systems page and was not fetched.
 - item: kukri
   image: https://slysteel.com/wp-content/uploads/2020/09/Survival-Kukri-with-black-Cerakote-clean-primary-grind-with-tan-Micarta-handles.jpg
+  survivors: ["Jeff Zausch"]
   category: blade
   product: SLYSTEEL Survival Kukri
   brand: SLYSTEEL
@@ -142,6 +153,8 @@
     url: https://slysteel.com/shop/survival-kukri/
   notes: Amazon listing not found.
 - item: knife
+  survivors: ["Ali Williams"]
+  episodes: [{"series":"Naked and Afraid","season":19,"title":"Clash of the Survivalists"}]
   category: blade
   product: Stonegaard Forge 'Wayfinder' custom survival knife
   brand: Stonegaard Forge
@@ -159,6 +172,8 @@
     https://www.reddit.com/r/nakedandafraid/comments/1sxfdl5/what_21_days_in_zambia_did_to_my_knife/.
     Fan wiki episode page: https://www.nakedandafraidfan.com/episodes/419'
 - item: knife
+  survivors: ["EJ Snyder","Zack Buck"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Edge of Madness"}]
   category: blade
   product: T.M. Hunt Custom Knives M-18 (16 in, 10 in O1 blade)
   brand: T.M. Hunt Custom Knives
@@ -176,6 +191,7 @@
     and endorsed' on Naked and Afraid.
 - item: knife
   image: https://m.media-amazon.com/images/I/418Qvkn9BPL._AC_SL500_.jpg
+  survivors: ["Melissa Miller"]
   category: blade
   product: TOPS Knives B.O.B. Fieldcraft (Brothers of Bushcraft)
   brand: TOPS Knives
@@ -194,6 +210,8 @@
   notes: Interview does not say which steel/handle variant.
 - item: knife
   image: https://m.media-amazon.com/images/I/41PbyMenXFL._AC_SL500_.jpg
+  survivors: ["Zach Benton"]
+  episodes: [{"series":"Naked and Afraid","season":14,"title":"Haunted and Hungry"}]
   category: blade
   product: TOPS Knives SXB (Skullcrusher's X-treme Blade, designed by EJ Snyder)
   brand: TOPS Knives
@@ -216,6 +234,8 @@
     are SXB listings (variants); check finish before linking.
 - item: kukri
   image: https://cdn11.bigcommerce.com/s-99kn4fj7jr/products/607/images/915/35GKP__87866.1611259428.386.513.jpg?c=1
+  survivors: ["Charlie Frattini"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Colombian Conflict"}]
   category: blade
   product: Cold Steel Gurkha Kukri Plus
   brand: Cold Steel
@@ -233,6 +253,8 @@
     Steel page is the CPM-3V version. Amazon listing has almost no detail.
 - item: axe
   image: https://m.media-amazon.com/images/I/617pvb7PVBL._AC_SL500_.jpg
+  survivors: ["Jonathan Klay"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Island From Hell"}]
   category: blade
   product: Coleman Camp Axe
   brand: Coleman
@@ -250,6 +272,8 @@
     unknown. Coleman.com showed the item out of stock.
 - item: machete
   image: https://m.media-amazon.com/images/I/61CcstMelTL._AC_SL500_.jpg
+  survivors: ["Dani Julien"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Blood in the Water"}]
   category: blade
   product: Condor El Salvador Machete 18 in (black PP handle, leather sheath, 60927)
   brand: Condor Tool & Knife
@@ -266,6 +290,8 @@
     url: https://condortk.com/category/outdoors/el-salvador-machete-18-in-w-leath-sheath/
 - item: machete
   image: https://m.media-amazon.com/images/I/61FzlVR2GpL._AC_SL500_.jpg
+  survivors: ["Tom McElroy"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Argentina Impossible"}]
   category: blade
   product: Condor Golok Machete 14 in (CTK410-14HCS, walnut handle, leather sheath)
   brand: Condor Tool & Knife
@@ -281,6 +307,8 @@
   notes: Handle/sheath version used on the show is unknown.
 - item: machete
   image: https://m.media-amazon.com/images/I/61Rjr6Qy4hL._AC_SL500_.jpg
+  survivors: ["Adam Young","Fernando Calderon"]
+  episodes: [{"series":"Naked and Afraid","season":2,"title":"The Pain Forest"},{"series":"Naked and Afraid","season":3,"title":"Jungle Love"}]
   category: blade
   product: Condor Tool & Knife Bushcraft Parang Machete (13 in, model 60953 / CTK423-13HC)
   brand: Condor Tool & Knife
@@ -300,6 +328,8 @@
     url: https://condortk.com/category/survival/bushcraft-parang-machete-w-ballistic/
 - item: machete
   image: https://m.media-amazon.com/images/I/61u9ialOltL._AC_SL500_.jpg
+  survivors: ["Michael Jefferson"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Botswana Breakdown"}]
   category: blade
   product: Elk Ridge ER-279L machete
   brand: Elk Ridge
@@ -319,6 +349,7 @@
   notes: morethanjustsurviving.com's own ASIN is dead.
 - item: hatchet
   image: https://m.media-amazon.com/images/I/71w3WlJslmL._AC_SL500_.jpg
+  survivors: ["Sabrina Mergenthaler"]
   category: blade
   product: Estwing E24A Sportsman's Axe (14 in leather grip hatchet)
   brand: Estwing
@@ -333,6 +364,8 @@
     asin: B00BNQR4SG
 - item: machete
   image: https://m.media-amazon.com/images/I/51VkQ6jVx5L._AC_SL500_.jpg
+  survivors: ["Keith Busch"]
+  episodes: [{"series":"Naked and Afraid","season":2,"title":"Paradise Lost"},{"series":"Naked and Afraid","season":4,"title":"Lord of the Rats"}]
   category: blade
   product: Gerber Gator Machete (full size, nylon sheath)
   brand: Gerber
@@ -348,6 +381,8 @@
   notes: 'Amazon listing title: ''GERBER Gator Machete - Black w/ Nylon Sheath [31-000758]''.'
 - item: machete
   image: https://m.media-amazon.com/images/I/41wBebKcVYL._AC_SL500_.jpg
+  survivors: ["Carrie Booze","Cassie DePecol","Kim Shelton","Steve Hansen"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"The Jungle Curse"},{"series":"Naked and Afraid","season":2,"title":"Double Jeopardy"},{"series":"Naked and Afraid","season":3,"title":"Hearts of Darkness"},{"series":"Naked and Afraid","season":4,"title":"Rumble in the Jungle"},{"series":"Naked and Afraid","season":4,"title":"Lord of the Rats"}]
   category: blade
   product: Gerber Gator Machete Jr. (31-000759) with nylon sheath
   brand: Gerber
@@ -366,6 +401,8 @@
     not separately located on Amazon.
 - item: knife
   image: https://m.media-amazon.com/images/I/518GvWoBekL._AC_SL500_.jpg
+  survivors: ["EJ Snyder"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Terror in Tanzania"}]
   category: blade
   product: KA-BAR Black Tanto knife
   brand: KA-BAR
@@ -386,6 +423,8 @@
     listing; serration/variant not verified against the episode.'
 - item: kukri
   image: https://m.media-amazon.com/images/I/5116SIoZFnL._AC_SL500_.jpg
+  survivors: ["Ryan Holt","Trenton Harper","Tyler Steinle"]
+  episodes: [{"series":"Naked and Afraid","season":2,"title":"Man vs. Amazon"},{"series":"Naked and Afraid","season":4,"title":"Alligator Alley"},{"series":"Naked and Afraid","season":4,"title":"Fire on the Mountain"}]
   category: blade
   product: KA-BAR Kukri (2-1249-9)
   brand: KA-BAR
@@ -409,6 +448,8 @@
     Black Handle and Sheath''.'
 - item: machete
   image: https://m.media-amazon.com/images/I/51yXniuMaCL._AC_SL500_.jpg
+  survivors: ["Manu Toigo"]
+  episodes: [{"series":"Naked and Afraid","season":2,"title":"Double Jeopardy"}]
   category: blade
   product: Ontario Knife Co. 6145 / 1-18 18 in Military Machete
   brand: Ontario Knife Company
@@ -425,6 +466,8 @@
   notes: Base Amazon listing is machete only; sheath sold separately.
 - item: knife
   image: https://www.trustedknives.com/wp-content/uploads/2024/01/tops-hawkes-hellion-hkh-2020.webp
+  survivors: ["Chris Fischer"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Playing With Fire"}]
   category: blade
   product: TOPS Knives Hawke's Hellion Survivor 2020
   brand: TOPS Knives
@@ -443,6 +486,7 @@
     sellers.
 - item: knife
   image: https://m.media-amazon.com/images/I/81JNU-yGHlL._AC_SL500_.jpg
+  survivors: ["Shannon Thomas"]
   category: blade
   product: TOPS Knives Tom Brown Tracker (TBT-010)
   brand: TOPS Knives
@@ -457,6 +501,8 @@
   notes: Handle/coating variant used on the show not confirmed.
 - item: machete
   image: https://m.media-amazon.com/images/I/311E20D3T9L._AC_SL500_.jpg
+  survivors: ["Amanda Leigh"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Nicaragua Nightmare"}]
   category: blade
   product: Woodman's Pal Model 145 Long Reach
   brand: Woodman's Pal (Pro Tool Industries)
@@ -472,6 +518,8 @@
     asin: B0009DV5RU
 - item: knife
   image: https://m.media-amazon.com/images/I/61MhacvBb-L._AC_SL500_.jpg
+  survivors: ["Billy Berger"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Beware the Bayou"}]
   category: blade
   product: Buck 113 Ranger Skinner hunting knife
   brand: Buck Knives
@@ -489,6 +537,8 @@
     Equivalent only; original was custom.'
 - item: tomahawk
   image: https://m.media-amazon.com/images/I/618DI4IARoL._AC_SL500_.jpg
+  survivors: ["Luke McLaughlin"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Primal Fear"}]
   category: blade
   product: Cold Steel Frontier Hawk (90FH)
   brand: Cold Steel
@@ -522,6 +572,8 @@
   notes: The original knife was a custom piece; this is only a look-alike.
 - item: machete
   image: https://m.media-amazon.com/images/I/71GCzC2GbEL._AC_SL500_.jpg
+  survivors: ["Puma Cabra"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Breaking Borneo"}]
   category: blade
   product: Condor Tool & Knife Pack Golok / survival machete
   brand: Condor Tool & Knife
@@ -540,6 +592,7 @@
     original is not buyable.
 - item: knife
   image: https://m.media-amazon.com/images/I/61g1BJmqQML._AC_SL500_.jpg
+  survivors: ["Kaila Cumings"]
   category: blade
   product: CRKT Bugsy fixed blade (Kaila Cumings design)
   brand: CRKT
@@ -575,6 +628,7 @@
   notes: Amazon page body text showed a different ASIN than the URL; URL ASIN recorded.
 - item: knife
   image: https://cdn11.bigcommerce.com/s-9ovoti0bdi/products/93840/images/269243/LT_Wright_SMKW_Exclusive_The_Naked_G.O.A.T._Primal_Fixed_Blade_Knife_ScandiGreen_Micarta_NGPRIMAL02__29276.1772638296.386.513.jpg?c=1
+  survivors: ["EJ Snyder"]
   category: blade
   product: L.T. Wright x SMKW Naked G.O.A.T. Primal
   brand: L.T. Wright Knives / Smoky Mountain Knife Works
@@ -590,6 +644,8 @@
     page itself. May be sold out.
 - item: machete
   image: https://m.media-amazon.com/images/I/61owomVFenL._AC_SL500_.jpg
+  survivors: ["Aaron Phillips"]
+  episodes: [{"series":"Naked and Afraid","season":6,"title":"All Falls Down"}]
   category: blade
   product: SOG SOGfari 13 in Machete (MC01-N)
   brand: SOG
@@ -607,6 +663,7 @@
   notes: Brand is confirmed by the survivor; the SOGfari model is a guess among SOG
     machetes. Match is only 'similar'.
 - item: knife
+  survivors: ["Melissa Miller"]
   category: blade
   product: T.Kell Knives WharnEDC
   brand: T.Kell Knives
@@ -621,6 +678,8 @@
   notes: EDC collaboration, not a show-used tool. No Amazon listing.
 - item: axe
   image: https://m.media-amazon.com/images/I/41tVzXssicL._AC_SL500_.jpg
+  survivors: ["Alyssa Ballestero"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Mayan Sacrifice"}]
   category: carpentry tool
   product: Gransfors Bruks Small Forest Axe
   brand: Gransfors Bruks
@@ -640,6 +699,8 @@
   notes: 'Amazon title: ''Gransfors Bruks Small Forest Axe 19 Inch, 420''.'
 - item: duct tape
   image: https://m.media-amazon.com/images/I/61CHJnlMGdL._AC_SL500_.jpg
+  survivors: ["Joshua Bell"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Nicaragua Nightmare"}]
   category: comfort item
   product: Duck Brand Color Duct Tape, Blue, 1.88 in x 20 yd (model 1304959)
   brand: Duck Brand
@@ -660,6 +721,8 @@
     brand not stated.
 - item: tarp
   image: https://m.media-amazon.com/images/I/61cBf6Yts0L._AC_SL500_.jpg
+  survivors: ["Lindsay Boisclair","Steven Townes"]
+  episodes: [{"series":"Naked and Afraid","season":6,"title":"Hell or High Water"},{"series":"Naked and Afraid","season":9,"title":"Thieves in the Night"}]
   category: comfort item
   product: AquaQuest Guide Tarp 10x7 ft, 40D ripstop (olive)
   brand: AquaQuest
@@ -691,6 +754,8 @@
     on size, so check before linking.
 - item: hammock
   image: https://m.media-amazon.com/images/I/71lmd8+Cy+L._AC_SL500_.jpg
+  survivors: ["Sarah Bartell","Trent Nielsen"]
+  episodes: [{"series":"Naked and Afraid","season":5,"title":"Fear the Unknown"},{"series":"Naked and Afraid","season":10,"title":"Threesome"}]
   category: comfort item
   product: ENO (Eagles Nest Outfitters) DoubleNest Hammock
   brand: ENO
@@ -710,6 +775,8 @@
     account.
 - item: duct tape
   image: https://m.media-amazon.com/images/I/71oP3WGxjNL._AC_SL500_.jpg
+  survivors: ["Amy Zindler","Anastasia Ashley","Jonathan Short","Joshua Bell","Malu Beyonce"]
+  episodes: [{"series":"Naked and Afraid","season":7,"title":"The Lost World"},{"series":"Naked and Afraid","season":8,"title":"Belize Breakdown"},{"series":"Naked and Afraid","season":15,"title":"Not Today, Satan"},{"series":"Naked and Afraid","season":17,"title":"Put Up or Shut Up"}]
   category: comfort item
   product: Gorilla Duct Tape, Black, 1.88 in x 35 yd
   brand: Gorilla
@@ -744,6 +811,7 @@
     covers several sizes.
 - item: hide
   image: https://m.media-amazon.com/images/I/8103T-Z6amL._AC_SL500_.jpg
+  survivors: ["Darrin Reay"]
   category: comfort item
   product: Leather Unlimited A-grade deerskin leather hide, 2-3 oz
   brand: Leather Unlimited
@@ -796,6 +864,8 @@
     alternative.
 - item: mosquito net
   image: https://m.media-amazon.com/images/I/81A4W3hv1WL._AC_SL500_.jpg
+  survivors: ["Allison Frueh","Bo Stuart","Kate Wentworth","Lacey Jones"]
+  episodes: [{"series":"Naked and Afraid","season":8,"title":"Belize Breakdown"},{"series":"Naked and Afraid","season":10,"title":"Honduran Hell"},{"series":"Naked and Afraid","season":19,"title":"Flesh and Fangs"}]
   category: comfort item
   product: Sea to Summit Nano Mosquito Pyramid Net Shelter (single)
   brand: Sea to Summit
@@ -816,6 +886,7 @@
     links are the Insect Shield/permethrin-treated single. Not identified on the show.
 - item: cordage
   image: https://m.media-amazon.com/images/I/519PyM8D31L._AC_SL500_.jpg
+  survivors: ["Bulent Gurcan","Daniel Rosenberg","Kaiela Hobart","Wes Harper"]
   category: cordage
   product: "#36 tarred twisted nylon bank line, 1/4 lb (about 117 ft)"
   brand: Generic (Amazon seller listing shows brand 'Artist Unknown')
@@ -832,6 +903,7 @@
   notes: Typical bushcraft cordage; the cordage on the show is unspecified.
 - item: paracord
   image: https://m.media-amazon.com/images/I/71Sd-p-lW9L._AC_SL500_.jpg
+  survivors: ["Chev Dixon","Dawn Dussault","EJ Snyder","Greg Wells","Michael Angulo"]
   category: cordage
   product: Atwood Rope MFG 550 Paracord, 100 ft, 7-strand core
   brand: Atwood Rope MFG
@@ -850,6 +922,8 @@
   notes: Made in Ohio. Not MIL-SPEC (per TruePrepper review). Amazon listing is the
     OD color; other colors have separate ASINs.
 - item: slack line
+  survivors: ["Elijah Strongheart"]
+  episodes: [{"series":"Naked and Afraid","season":14,"title":"Night Stalkers"}]
   category: cordage
   product: Gibbon Slacklines Classic Slackline, 15 m (49 ft) kit
   brand: Gibbon Slacklines
@@ -881,6 +955,8 @@
   notes: No Amazon.com listing for this rope was seen in search results.
 - item: slack line
   image: https://m.media-amazon.com/images/I/61m5HhgWc9L._AC_SL500_.jpg
+  survivors: ["Elijah Strongheart"]
+  episodes: [{"series":"Naked and Afraid","season":14,"title":"Night Stalkers"}]
   category: cordage
   product: Slackline Industries Base Line 50 ft kit
   brand: Slackline Industries
@@ -895,6 +971,8 @@
   notes: Second option for a slackline link.
 - item: climbing rope
   image: https://m.media-amazon.com/images/I/516V6heHZ5L._AC_SL500_.jpg
+  survivors: ["Darrin Reay","Shannon Kulpa","Wes Harper"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Lord of the Rats"},{"series":"Naked and Afraid","season":7,"title":"Hangry"}]
   category: cordage
   product: Sterling VR9 9.8mm Dynamic Climbing Rope, 60 m
   brand: Sterling Ropes
@@ -964,6 +1042,8 @@
   notes: No Amazon listing for this shovel was seen in results.
 - item: shovel
   image: https://m.media-amazon.com/images/I/61Dw2q7MxsL._AC_SL500_.jpg
+  survivors: ["John Hogfoss","Russell Sage","Sarah Danser","Trish Bulinsky"]
+  episodes: [{"series":"Naked and Afraid XL","season":5,"title":"Waterworld"}]
   category: digging tool
   product: SOG Entrenching Tool (F08-N) folding shovel
   brand: SOG
@@ -1000,6 +1080,7 @@
   notes: 'Other pages seen: https://fire-fast.com/pages/about-us.'
 - item: fire starter
   image: https://purefiretactical.com/wp-content/uploads/2023/10/a31292_0d5658d3dc0b41f093966f62284a08d8mv2-e1696347314569.webp
+  episodes: [{"series":"Naked and Afraid","season":2,"title":"Man vs. Amazon"}]
   category: fire starting tool
   product: Purefire Tactical magnesium + ferro rod fire starter (Folding / Survival
     model)
@@ -1020,6 +1101,7 @@
     the item they chose on four of their own challenges (seller identity not verified).
 - item: fire starter
   image: https://m.media-amazon.com/images/I/71CBq4z-3lL._AC_SL500_.jpg
+  survivors: ["Russell Sage"]
   category: fire starting tool
   product: Coleman Magnesium Fire Starter
   brand: Coleman
@@ -1035,6 +1117,8 @@
   notes: 'Amazon page title verified: Coleman Company Magnesium Fire Starter.'
 - item: fire starter
   image: https://m.media-amazon.com/images/I/7153vU1+CBL._AC_SL500_.jpg
+  survivors: ["Alana Barfield","Justin Bullard"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Blood in the Water"}]
   category: fire starting tool
   product: Light My Fire Swedish FireSteel 2.0 Army 12,000 Strike Fire Starter with
     whistle (orange)
@@ -1055,6 +1139,7 @@
     a brand statement.
 - item: fire starter
   image: https://m.media-amazon.com/images/I/51XyP0gLvFL._AC_SL500_.jpg
+  survivors: ["EJ Snyder"]
   category: fire starting tool
   product: Purefire Tactical Firestarter, Survival Model (magnesium + ferro rod, hollow
     handle)
@@ -1077,6 +1162,8 @@
     the 2014 product may differ slightly.
 - item: fire starter
   image: https://m.media-amazon.com/images/I/51chhDV4X4L._AC_SL500_.jpg
+  survivors: ["Afften DeShazer","AK Kaye","Alison Teal","Ashley Burns","Christina McQueen","Jeff Zausch","Ky Furneaux","Samantha Pearson","Zack Buck"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Island From Hell"},{"series":"Naked and Afraid","season":1,"title":"Beware the Bayou"},{"series":"Naked and Afraid","season":2,"title":"Man vs. Amazon"},{"series":"Naked and Afraid","season":3,"title":"Botswana Breakdown"},{"series":"Naked and Afraid","season":4,"title":"Rumble in the Jungle"},{"series":"Naked and Afraid","season":4,"title":"Edge of Madness"}]
   category: fire starting tool
   product: Ultimate Survival Technologies (UST) BlastMatch Fire Starter (one-handed
     flint)
@@ -1095,6 +1182,8 @@
   notes: Most-used brought fire starter in seasons 1-4.
 - item: fire starter
   image: https://m.media-amazon.com/images/I/61A4f8eNPvL._AC_SL500_.jpg
+  survivors: ["Amber Hargrove","Jaclyn McCaffrey","Phaedra Brothers","Shane Lewis"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"The Jungle Curse"},{"series":"Naked and Afraid","season":3,"title":"Jungle Love"},{"series":"Naked and Afraid","season":3,"title":"Himalayan Hell"},{"series":"Naked and Afraid","season":4,"title":"Alligator Alley"}]
   category: fire starting tool
   product: UST StrikeForce Fire Starter (orange, flint bar with striker cap)
   brand: Ultimate Survival Technologies (UST)
@@ -1127,6 +1216,8 @@
   notes: Equivalent only.
 - item: fire starter
   image: https://m.media-amazon.com/images/I/51xIRS8vImL._AC_SL500_.jpg
+  survivors: ["Brandon Dix","Robin Barber","Tom Touw"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Garden of Evil"},{"series":"Naked and Afraid","season":6,"title":"Hell or High Water"},{"series":"Naked and Afraid","season":3,"title":"Hearts of Darkness"}]
   category: fire starting tool
   product: Generic waterproof magnesium + flint fire starter bar (SE FS374 shown)
   brand: SE
@@ -1148,6 +1239,8 @@
     Magnesium Firestarter Kit ... FS374''.'
 - item: glass magnifier lens
   image: https://m.media-amazon.com/images/I/51hj6xOtgyL._AC_SL500_.jpg
+  survivors: ["Honora Bowen"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Dunes of Despair"}]
   category: fire starting tool
   product: Glass lens handheld magnifier (SE 5x, 2 in)
   brand: SE
@@ -1164,6 +1257,7 @@
     Generic equivalent; brand on screen unknown.'
 - item: fire starter
   image: https://m.media-amazon.com/images/I/71CbXRAnOgL._AC_SL500_.jpg
+  survivors: ["EJ Snyder"]
   category: fire starting tool
   product: Live Fire Original emergency fire starter
   brand: Live Fire Gear
@@ -1179,6 +1273,7 @@
   notes: Endorsement only. Confirm the Amazon seller before linking.
 - item: bow drill kit
   image: https://m.media-amazon.com/images/I/81a9d0pNfcL._AC_SL500_.jpg
+  survivors: ["Alyssa Ballestero","Chad Keel","David Scott","Jesse Everett","Kim Kelly","Laura Zerra","Maria Corrales","Scott Thompson","Tara Skubella","Vincent Pinto"]
   category: fire starting tool
   product: Primitive Fire Bow Drill Fire Starter Kit, 7-piece set
   brand: Primitive Fire
@@ -1263,6 +1358,7 @@
   notes: Brand site only (Amazon listing not found).
 - item: ''
   image: https://m.media-amazon.com/images/I/8184qUyH5YL._AC_SL500_.jpg
+  survivors: ["Dani Beau"]
   category: fire starting tool
   product: Wazoo Survival Gear Bushcraft Bracelet / Necklace
   brand: Wazoo Survival Gear
@@ -1280,6 +1376,7 @@
     Which Amazon ASIN is bracelet vs necklace was not verified.
 - item: fishing kit
   image: https://m.media-amazon.com/images/I/81HHgHPdv8L._AC_SL500_.jpg
+  survivors: ["Melissa Miller"]
   category: fishing tool
   product: Yoyito aluminum hand line reel pocket fishing kit (Cuban-yoyo style handline)
   brand: Yoyito
@@ -1304,6 +1401,7 @@
     consent banner in my fetch, so the page title is the evidence.
 - item: snorkel mask
   image: https://m.media-amazon.com/images/I/81wwhKULVwL._AC_SL500_.jpg
+  survivors: ["Sarah Danser"]
   category: fishing tool
   product: Sea Sports low volume freediving/spearfishing mask (survivor fitted bifocal
     lenses and a slap strap)
@@ -1370,6 +1468,7 @@
   notes: Small emergency paddle, not a full-size kayak paddle.
 - item: cast net
   image: https://m.media-amazon.com/images/I/71TuhKAminL._AC_SL500_.jpg
+  survivors: ["Christopher James","Frank Eytcheson","James Lewis","Phaedra Brothers","Russell Sage"]
   category: fishing tool
   product: Betts Tyzac Series cast net with utility box, 6 ft x 3/8 inch
   brand: Betts
@@ -1386,6 +1485,7 @@
   notes: Check local cast-net regulations.
 - item: gator line and hooks
   image: https://m.media-amazon.com/images/I/8174NxGgiLL._AC_SL500_.jpg
+  survivors: ["Adam Kavanagh","Amber Hargrove","Lacey Jones","Ryan Holt","Steven Lee Hall Jr","Tori Huggins"]
   category: fishing tool
   product: 'Catahoula Gator Getter alligator kit (six 12/0 hooks, six ~30 ft lengths
     of #96 tarred twisted twine, six clothespins)'
@@ -1407,6 +1507,7 @@
   notes: Alligator regulations vary by state; check local law.
 - item: diving mask
   image: https://m.media-amazon.com/images/I/61rJhP88xKL._AC_SL500_.jpg
+  survivors: ["Max Djenohan"]
   category: fishing tool
   product: Cressi F1 frameless snorkel/dive mask
   brand: Cressi
@@ -1468,6 +1569,7 @@
   notes: Mask plus dry-top snorkel set.
 - item: fins
   image: https://m.media-amazon.com/images/I/71zzzeOV4KL._AC_SL500_.jpg
+  survivors: ["Jeff Zausch","Matt Wright"]
   category: fishing tool
   product: Cressi Rondinella full foot snorkeling fins
   brand: Cressi
@@ -1513,6 +1615,7 @@
   notes: Check local cast-net regulations.
 - item: bailer
   image: https://m.media-amazon.com/images/I/61J4Jv1Wr0L._AC_SL500_.jpg
+  survivors: ["Ben Johnson","Sarah Danser"]
   category: fishing tool
   product: Five Oceans 1 liter marine scoop bailer FO2149
   brand: Five Oceans
@@ -1576,6 +1679,8 @@
     confirm quantity.
 - item: swimming goggles
   image: https://m.media-amazon.com/images/I/61V+osYFKdL._AC_SL500_.jpg
+  survivors: ["Clint Jivoin","Jena Ocean"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Punishment in Panama"}]
   category: fishing tool
   product: Speedo Vanquisher 2.0 swim goggles
   brand: Speedo
@@ -1609,6 +1714,7 @@
     listing page.
 - item: bow
   image: https://static.wixstatic.com/media/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png/v1/fit/w_2500,h_1330,al_c/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png
+  survivors: ["Matt Wright"]
   category: hunting weapon
   product: Great Plains bows built for the show (solid diamond-wood riser, bamboo
     core, mesquite laminations)
@@ -1630,6 +1736,7 @@
     page. Custom shop, long lead times likely, not an impulse buy.
 - item: bow
   image: https://static.wixstatic.com/media/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png/v1/fit/w_2500,h_1330,al_c/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png
+  survivors: ["Brooke Wright","Matt Wright"]
   category: hunting weapon
   product: Great Plains custom traditional longbow/recurve (Matt Wright's and Brooke
     Wright's show bows; 'Piranha Bushcrafter' and 'Osage' longbow models named)
@@ -1649,6 +1756,8 @@
     I did not find a product page named 'Piranha Bushcrafter', so the exact custom
     model could not be matched to a listing.
 - item: bow
+  survivors: ["Warrick Harvey"]
+  episodes: [{"series":"Naked and Afraid","season":14,"title":"Sibling Survival"}]
   category: hunting weapon
   product: Harvey Archery handmade laminated bow (Crowned Eagle hybrid longbow is
     the listed example)
@@ -1694,6 +1803,7 @@
   notes: Includes target ammo per listing title.
 - item: bow
   image: https://m.media-amazon.com/images/I/41sg1wt6tyL._AC_SL500_.jpg
+  survivors: ["Melissa Miller"]
   category: hunting weapon
   product: Bear Archery Kodiak Hunter recurve bow (current production)
   brand: Bear Archery
@@ -1713,6 +1823,7 @@
     One dealer page flags the 50 lb as unorderable.
 - item: blow gun
   image: https://m.media-amazon.com/images/I/71wLC93o2OL._AC_SL500_.jpg
+  survivors: ["Angela Hammer","Matt Alexander","Tim Phillips"]
   category: hunting weapon
   product: Berserker Blowguns .40 cal MJOLNIR hunting blowgun with 20 darts
   brand: Berserker Blowguns
@@ -1745,6 +1856,7 @@
   notes: Amazon listing not found.
 - item: atlatl
   image: https://m.media-amazon.com/images/I/71UORWGqWfL._AC_SL500_.jpg
+  survivors: ["Steven Lee Hall Jr"]
   category: hunting weapon
   product: Catatonk Hunter atlatl with three 6 ft fletched darts (Amazon listing title)
   brand: 'Unknown (listing title only: ''Catatonk Hunter'')'
@@ -1761,6 +1873,7 @@
   notes: Generic commercial equivalent.
 - item: spear gun
   image: https://m.media-amazon.com/images/I/61Dx0P5-naL._AC_SL500_.jpg
+  survivors: ["Jena Ocean"]
   category: hunting weapon
   product: Cressi Apache aluminum speargun (entry-level, closed muzzle; sizes 35-75
     cm)
@@ -1779,6 +1892,7 @@
     are restricted or illegal in some places; check local rules.
 - item: pole spear
   image: https://m.media-amazon.com/images/I/51qmxCXSkqL._AC_SL500_.jpg
+  survivors: ["Chris Fischer","Eva Rupert","Ky Furneaux","Ryan Holt","Steven Lee Hall Jr"]
   category: hunting weapon
   product: Cressi FG2 fiberglass pole spear
   brand: Cressi
@@ -1796,6 +1910,7 @@
   notes: Budget pole spear.
 - item: sling shot
   image: https://m.media-amazon.com/images/I/61oNJ9IwgDL._AC_SL500_.jpg
+  survivors: ["Brandon Snyder","Matt Alexander","Robin Hill","Steven Lee Hall Jr"]
   category: hunting weapon
   product: Daisy P51 slingshot complete kit (wrist brace, steel ammo, replacement
     band)
@@ -1979,6 +2094,7 @@
   notes: Pure generic equivalent.
 - item: snare wire
   image: https://m.media-amazon.com/images/I/51zzm66vG0L._AC_SL500_.jpg
+  survivors: ["Jake Nodar","Jeremy McCaa"]
   category: hunting weapon
   product: SSBSS snare wire, 2 pack with fixing knob and hook, large size
   brand: SSBSS
@@ -1996,6 +2112,7 @@
     pre-made snares.
 - item: hawaiian sling
   image: https://m.media-amazon.com/images/I/01RmK+J4pJL._AC_SL500_.jpg
+  survivors: ["Matt Wright"]
   category: hunting weapon
   product: Traditional Hawaiian sling shooter with 60 inch, 9/32 inch 17-4 stainless
     shaft (Amazon listing title)
@@ -2028,6 +2145,8 @@
   notes: Darts only. Amazon listing says buyer must be 18+.
 - item: swimming goggles
   image: https://m.media-amazon.com/images/I/61mNXdp+vbL._AC_SL500_.jpg
+  survivors: ["Clint Jivoin"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Punishment in Panama"}]
   category: other
   product: Aqua Sphere Kaiman swim goggle
   brand: Aqua Sphere
@@ -2044,6 +2163,7 @@
     example; actual goggles unidentified.'
 - item: flash light
   image: https://m.media-amazon.com/images/I/611JUa69igL._AC_SL500_.jpg
+  survivors: ["Jeremy Upshaw","Trish Bulinsky"]
   category: other
   product: Maglite Mini LED Flashlight (2xAAA)
   brand: MagLite
@@ -2060,6 +2180,8 @@
   notes: Generic compact waterproof flashlight.
 - item: diving mask
   image: https://m.media-amazon.com/images/I/61nILcWoZ4L._AC_SL500_.jpg
+  survivors: ["Forrest Galante"]
+  episodes: [{"series":"Naked and Afraid","season":2,"title":"Double Jeopardy"}]
   category: other
   product: Speedo Adventure Series anti-fog swim/snorkel mask with nose cover
   brand: Speedo
@@ -2097,6 +2219,8 @@
     size on screen vary. This is the standard Junior (2-gallon) size.
 - item: pot
   image: https://m.media-amazon.com/images/I/61zQy+VAtIL._AC_SL500_.jpg
+  survivors: ["Kellie Nightlinger","Lindsey Leitelt"]
+  episodes: [{"series":"Naked and Afraid","season":1,"title":"Terror in Tanzania"},{"series":"Naked and Afraid","season":3,"title":"Primal Fear"}]
   category: pot
   product: GSI Outdoors Glacier Stainless Bottle Cup / Pot
   brand: GSI Outdoors
@@ -2214,6 +2338,8 @@
     product.
 - item: pot
   image: https://m.media-amazon.com/images/I/61E0HshliYS._AC_SL500_.jpg
+  survivors: ["Jennifer Cochran"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Fire on the Mountain"}]
   category: pot
   product: Open Country 10-quart aluminum covered kettle
   brand: Open Country
@@ -2230,6 +2356,8 @@
     large for the show; treat as loose equivalent).'
 - item: pot
   image: https://m.media-amazon.com/images/I/713DoUXDwnL._AC_SL500_.jpg
+  survivors: ["Corinne Kohlen","Julie Wright"]
+  episodes: [{"series":"Naked and Afraid","season":3,"title":"Playing With Fire"},{"series":"Naked and Afraid","season":1,"title":"Breaking Borneo"}]
   category: pot
   product: Open Country 4 Quart Aluminum Covered Kettle
   brand: Open Country
@@ -2249,6 +2377,8 @@
     reader comment says it looked heavier-duty than a billy can. Not a confirmed product.
 - item: pot
   image: https://m.media-amazon.com/images/I/81nt1ddK-AL._AC_SL500_.jpg
+  survivors: ["Afften DeShazer","Robin Barber"]
+  episodes: [{"series":"Naked and Afraid","season":4,"title":"Edge of Madness"}]
   category: pot
   product: Stansport Stainless Steel Solo II Cook Pot
   brand: Stansport
@@ -2265,6 +2395,7 @@
   notes: Closest-equivalent suggested by the blog; actual brand not identified.
 - item: ''
   image: https://m.media-amazon.com/images/I/91AmaeQFzgL._AC_SL500_.jpg
+  survivors: ["Laura Zerra"]
   category: media
   product: A Modern Guide to Knifemaking by Laura Zerra
   brand: Quarry Books
@@ -2281,6 +2412,7 @@
     in results but no Amazon link was seen.
 - item: ''
   image: https://m.media-amazon.com/images/I/81PzU4rXsnL._AC_SL500_.jpg
+  survivors: ["Ky Furneaux"]
   category: media
   product: Adventure Awaits by Ky Furneaux
   brand: Applesauce Press
@@ -2295,6 +2427,7 @@
     asin: '1400347165'
 - item: ''
   image: https://m.media-amazon.com/images/I/81aG6qOPb3L._AC_SL500_.jpg
+  survivors: ["EJ Snyder"]
   category: media
   product: Emergency Home Preparedness by EJ Snyder
   brand: Skyhorse Publishing
@@ -2415,6 +2548,7 @@
   notes: No retail DVD/Blu-ray sets for seasons 11+ found.
 - item: ''
   image: https://m.media-amazon.com/images/I/91x-ccrjO3L._AC_SL500_.jpg
+  survivors: ["Blair Braverman"]
   category: media
   product: 'Small Game: A Novel by Blair Braverman'
   brand: Ecco / HarperCollins
@@ -2431,6 +2565,7 @@
     in results.
 - item: ''
   image: https://m.media-amazon.com/images/I/81ZK0btEN7L._AC_SL500_.jpg
+  survivors: ["Ky Furneaux"]
   category: media
   product: Survive by Ky Furneaux (paperback)
   brand: Cider Mill Press
@@ -2445,6 +2580,7 @@
     asin: '1646432185'
 - item: ''
   image: https://m.media-amazon.com/images/I/81Su9qdutqL._AC_SL500_.jpg
+  survivors: ["Serena Shine"]
   category: media
   product: The Wild Twins by Amber and Serena Shine
   brand: HarperCollins
@@ -2459,6 +2595,7 @@
     asin: '1775541762'
 - item: ''
   image: https://m.media-amazon.com/images/I/713SnzsF7vL._AC_SL500_.jpg
+  survivors: ["Ky Furneaux"]
   category: media
   product: When the Grid Fails by Ky Furneaux
   brand: Cider Mill Press
@@ -2486,6 +2623,7 @@
   notes: Licence status after the rename not verified. No official toys or board games
     found.
 - item: ''
+  survivors: ["Matt Wright"]
   category: merch
   product: Extreme Instinct Savage-style hats, tees and apparel (AB Designs Co.)
   brand: Extreme Instinct
@@ -2499,6 +2637,7 @@
   notes: Cast-owned brand; not Discovery-licensed as far as seen.
 - item: ''
   image: https://www.jakenodar.com/cdn/shop/files/cw_cover_medium_fd09698c-85cb-414d-a323-4a637973c5c6.png?v=1763000382
+  survivors: ["Jake Nodar"]
   category: merch
   product: Jake Nodar merch
   brand: Jake Nodar
