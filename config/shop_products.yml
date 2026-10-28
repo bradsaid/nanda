@@ -1,0 +1,2440 @@
+# Purchasable gear tied to Naked and Afraid. Hand-edited; see ShopCatalog.
+#
+# match: confirmed = a credible primary source (brand, cast member, producer) says this exact
+#                    product was used on the show. For media/merch it means official show media
+#                    or made/sold by a cast member.
+#        likely    = several fan sources agree, or a single secondary gear list
+#        similar   = closest buyable equivalent to something seen on the show
+# Never add an ASIN or URL that was not actually seen on the live page. No prices.
+# Amazon links were checked live on 2026-10-28.
+
+- item: kukri
+  category: blade
+  product: Behring Made hand-forged kukri
+  brand: Behring Made Knives
+  match: confirmed
+  used_by: Trenton Harper, S4E5 'Fire on the Mountain' (India)
+  evidence_url: https://www.knifetalkforums.com/ubbthreads.php?Number=128125&ubb=showflat
+  evidence: Behring Made's general manager posted that the Behring Made kukri was
+    the knife Trenton Harper brought to the May 17 episode. The maker's site cites
+    the kukri on Naked and Afraid
+  buy:
+  - store: behringmade.com
+    url: https://www.behringmade.com/products/artifact-walrus-and-ox-boss-kukri
+  notes: Link is to a premium collector variant (order by contact), not the exact
+    standard model. No Amazon listing found. The maker's Facebook post is not linked.
+- item: knife
+  category: blade
+  product: Colonial Knife Defiant E.T.A.G. Bushcraft Knife (CE-400)
+  brand: Colonial Knife
+  match: confirmed
+  used_by: Eva Rupert, Season 2 Ep 2 'Damned in Africa' (also listed as her knife
+    in XL S1)
+  evidence_url: https://www.colonialknifecorp.com/products/bushcraft-defiant-model-ce-400
+  evidence: 'Manufacturer page: ''Naked And Afraid participant Eva Rupert chose to
+    use the CE-400 Bush-Craft Knife as her knife of choice, Season Two'''
+  more_sources:
+  - https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B015NGQPX6
+    asin: B015NGQPX6
+  - store: colonialknifecorp.com
+    url: https://www.colonialknifecorp.com/products/bushcraft-defiant-model-ce-400
+  notes: Manufacturer page showed the item as sold out at time of research.
+- item: knife
+  category: blade
+  product: Diving Sparrow Knife Works Mako Shark
+  brand: Diving Sparrow Knife Works
+  match: confirmed
+  used_by: Laura Zerra, S2E1 'Man vs. Amazon'
+  evidence_url: https://blademag.com/knifemaking/10-knifemaking-questions-with-naked-afraids-laura-zerra
+  evidence: BLADE Magazine interview with Laura Zerra confirms the Mako Shark in season
+    2; the maker's page says the knife appeared on Naked and Afraid
+  buy:
+  - store: dskw.ca
+    url: https://www.dskw.ca/mako-shark.php
+  notes: No Amazon listing found. Custom Canadian maker; ordering is through the maker.
+- item: knife
+  category: blade
+  product: Extreme Instinct 'The Naked and NOT Afraid' custom survival knife
+  brand: Extreme Instinct
+  match: confirmed
+  used_by: Matt Wright (personal knife on his XL challenge in Louisiana)
+  evidence_url: https://www.extremeinstinct.com/handcrafted-custom-knives.html
+  evidence: Maker page captions the knife as Matt Wright's personal knife used for
+    the 60-day Louisiana XL Legends challenge.
+  more_sources:
+  - https://www.extremeinstinct.com/store/p137/The_Naked_and_%22NOT%22_Afraid.html
+  buy:
+  - store: extremeinstinct.com
+    url: https://www.extremeinstinct.com/store/p137/The_Naked_and_%22NOT%22_Afraid.html
+  notes: Handmade by Matt Wright's shop; not on Amazon.
+- item: knife
+  category: blade
+  product: Kaila Cumings Knives custom blades (shop)
+  brand: Kaila Cumings Knives
+  match: confirmed
+  used_by: Kaila Cumings
+  evidence_url: https://www.crkt.com/community/knife-stories/where-the-metal-takes-you-get-to-know-kaila-cumings
+  evidence: 'CRKT story: Kaila forged her own knife for her Naked and Afraid appearances.'
+  buy:
+  - store: kailacumingsknives.com
+    url: https://www.kailacumingsknives.com/blades
+  notes: Made-to-order/limited; no Amazon listing.
+- item: knife
+  category: blade
+  product: Kershaw Outcast Bush Knife (model 1079)
+  brand: Kershaw
+  match: confirmed
+  used_by: S1E4 Punishment in Panama (Laura Zerra)
+  evidence_url: https://blademag.com/knifemaking/10-knifemaking-questions-with-naked-afraids-laura-zerra
+  evidence: 'BLADE Magazine interview: Laura Zerra says she brought a Kershaw Outcast
+    in season 1 (10 in blade) and used it on palm leaves and coconuts; morethanjustsurviving.com
+    also lists it.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B001TKLF2W
+    asin: B001TKLF2W
+  - store: knifecenter.com (listed as discontinued)
+    url: https://www.knifecenter.com/item/KS1079/kershaw-outcast-ken-onion-designed-fixed
+  notes: Model is discontinued per KnifeCenter and kershaw-knives.net; the Amazon
+    page loaded as 'Kershaw Outcast Bush Knife' but stock/seller not verified.
+- item: axe
+  category: blade
+  product: RMJ Tactical Tengu Ono (Forest Spirit Axe), Hakim Isler design
+  brand: RMJ Tactical
+  match: confirmed
+  used_by: Hakim Isler, S3E8 'Himalayan Hell' (India); also XL Season 1
+  evidence_url: https://soldiersystems.net/2015/02/13/hakim-isslers-tengu-ono-axe/
+  evidence: 'Soldier Systems Daily: Hakim Isler ''used a tool of his own design called
+    the Tengu Ono (Forest Spirit) Axe'' on the show; RMJ Tactical made a production
+    run'
+  more_sources:
+  - https://www.offgridweb.com/preparation/naked-and-afraid-the-naked-truth/
+  buy:
+  - store: arizonacustomknives.com
+    url: https://www.arizonacustomknives.com/index.php/products/163400/
+  - store: sportingcutlery.co.uk (pre-owned, out of stock)
+    url: https://www.sportingcutlery.co.uk/product/machetes-axes-saws-sporting-cutlery/rmj-tactical-tengu-ono/
+  notes: No Amazon listing found (the Amazon Silky Ono search result is a different
+    product). The Arizona Custom Knives listing was out of stock; the rmjtactical.com
+    link was seen only in a Soldier Systems page and was not fetched.
+- item: kukri
+  category: blade
+  product: SLYSTEEL Survival Kukri
+  brand: SLYSTEEL
+  match: confirmed
+  used_by: Jeff Zausch, 'Swimming Naked with Sharks' (Season 11 special, Bahamas,
+    2020)
+  evidence_url: https://slysteel.com/how-the-slysteel-survival-kukri-helped-me-survive-the-bermuda-triangle/
+  evidence: SLYSTEEL article by Jeff Zausch on how the SLYSTEEL Survival Kukri helped
+    him survive the Bermuda Triangle challenge.
+  buy:
+  - store: slysteel.com
+    url: https://slysteel.com/shop/survival-kukri/
+  notes: Amazon listing not found.
+- item: knife
+  category: blade
+  product: Stonegaard Forge 'Wayfinder' custom survival knife
+  brand: Stonegaard Forge
+  match: confirmed
+  used_by: Ali Williams, Season 19 Ep 8 'Clash of the Survivalists' (Zambia, 21 days);
+    she brought a knife, production gave pot and fire starter
+  evidence_url: https://www.youtube.com/watch?v=1_QzaNYCHVs
+  evidence: 'Ali Williams video: the Wayfinder is the custom knife that kept her alive
+    for 3 weeks in Zambia on Naked and Afraid, made by Craig of Stonegaard Forge (1095
+    steel, walnut handle, saw section).'
+  buy:
+  - store: etsy
+    url: https://www.etsy.com/shop/StonegaardForgeNC
+  notes: 'One-off custom; no catalog SKU for this exact knife seen. Her Reddit post:
+    https://www.reddit.com/r/nakedandafraid/comments/1sxfdl5/what_21_days_in_zambia_did_to_my_knife/.
+    Fan wiki episode page: https://www.nakedandafraidfan.com/episodes/419'
+- item: knife
+  category: blade
+  product: T.M. Hunt Custom Knives M-18 (16 in, 10 in O1 blade)
+  brand: T.M. Hunt Custom Knives
+  match: confirmed
+  used_by: Zack Buck, S4E4 'Edge of Madness' (also listed as brought by EJ Snyder
+    in Tanzania, but producers did not allow it)
+  evidence_url: https://www.bladeforums.com/threads/m-18-getting-naked-but-not-afraid.1278840/
+  evidence: Maker Todd Hunt (TMHunt) posted that he made the M-18 for the contestant
+    on the May 10 episode; the follow-up thread names Zack Buck and 'The Edge of Madness'
+  buy:
+  - store: knifejoy.com
+    url: https://www.knifejoy.com/products/t-m-hunt-custom-knives-m18-fixed-blade-with-black-micarta-and-natural-brown-liner-handles
+  notes: No Amazon listing found. Handmade custom; maker shop showed sold out. Show's
+    own knife had orange liners. KnifeJoy descriptions say the M18 'has been seen
+    and endorsed' on Naked and Afraid.
+- item: knife
+  category: blade
+  product: TOPS Knives B.O.B. Fieldcraft (Brothers of Bushcraft)
+  brand: TOPS Knives
+  match: confirmed
+  used_by: Melissa Miller, XL All-Stars challenge in South Africa (outside seasons
+    11+)
+  evidence_url: https://www.offgridweb.com/preparation/naked-and-afraid-the-naked-truth/
+  evidence: 'RECOIL OFFGRID interview: for her XL challenge in South Africa Melissa
+    Miller brought her TOPS Knives B.O.B Fieldcraft knife.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00LV66TRU
+    asin: B00LV66TRU
+  - store: topsknives.com
+    url: https://www.topsknives.com/knives/survival/fieldcraft-by-brothers-of-bushcraft
+  notes: Interview does not say which steel/handle variant.
+- item: knife
+  category: blade
+  product: TOPS Knives SXB (Skullcrusher's X-treme Blade, designed by EJ Snyder)
+  brand: TOPS Knives
+  match: confirmed
+  used_by: Zach Benton, Season 14 Ep 2 'Haunted and Hungry' (Colombia)
+  evidence_url: https://www.offgridweb.com/preparation/naked-and-afraid-the-naked-truth/
+  evidence: 'RECOIL OFFGRID interview: Zach Benton''s knife was a customized TOPS
+    Knives SXB fixed blade designed by fellow cast member EJ Snyder.'
+  more_sources:
+  - https://www.americanoutdoor.guide/survival-gear/xtreme-blade-for-xtreme-situations-e-j-snyder-and-tops-sxb-xtreme-blade-performs-in-the-field/
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B013YXH7P0
+    asin: B013YXH7P0
+  - store: topsknives.com
+    url: https://www.topsknives.com/sxb
+  - store: theknifeconnection.com
+    url: https://theknifeconnection.com/tops-knives-skullcrusher-s-x-treme-blade-sxb-black-traction-coated-9-38-blade-black-linen-micarta-handle/
+  notes: Benton's knife was customized, so cosmetic details may differ. Amazon ASINs
+    are SXB listings (variants); check finish before linking.
+- item: kukri
+  category: blade
+  product: Cold Steel Gurkha Kukri Plus
+  brand: Cold Steel
+  match: likely
+  used_by: Charlie Frattini, S4E7 'Colombian Conflict'
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Charlie Frattini Cold Steel Gurkha Kukri Plus'' (fan item
+    database also lists a kukri for this episode)'
+  buy:
+  - store: coldsteel.com
+    url: https://www.coldsteel.com/gurkha-kukri-plus-cpm-3v/
+  - store: tractorsupply.com
+    url: https://www.tractorsupply.com/tsc/product/cold-steel-gurkha-kukri-plus-40344-stainless-steel-cs-35gkp
+  notes: Steel variant (4034SS vs CPM-3V) used on the show is unknown; current Cold
+    Steel page is the CPM-3V version. Amazon listing has almost no detail.
+- item: axe
+  category: blade
+  product: Coleman Camp Axe
+  brand: Coleman
+  match: likely
+  used_by: Jonathan Klay, S1E3 'Island From Hell' (morethanjustsurviving.com numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Jonathan Klay Coleman Camp Axe'''
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00168XMDM
+    asin: B00168XMDM
+  - store: coleman.com
+    url: https://www.coleman.com/camp-sports/outdoor-essentials/camp-essentials/camp-axe/SP_1201981.html
+  notes: Coleman has made several camp axe versions; the exact one used in 2013 is
+    unknown. Coleman.com showed the item out of stock.
+- item: machete
+  category: blade
+  product: Condor El Salvador Machete 18 in (black PP handle, leather sheath, 60927)
+  brand: Condor Tool & Knife
+  match: likely
+  used_by: Dani Julien, S3E3 'Blood in the Water' (morethanjustsurviving.com numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Dani Julien Condor Tool and Knife 18-Inch Black El Salvador
+    Machete'''
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B002CEVSZ8
+    asin: B002CEVSZ8
+  - store: condortk.com
+    url: https://condortk.com/category/outdoors/el-salvador-machete-18-in-w-leath-sheath/
+- item: machete
+  category: blade
+  product: Condor Golok Machete 14 in (CTK410-14HCS, walnut handle, leather sheath)
+  brand: Condor Tool & Knife
+  match: likely
+  used_by: Tom McElroy, S3E6 'Argentina Impossible' (morethanjustsurviving.com numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Tom Mcelroy Condor Tool and Knife 14-Inch Golok Machete'';
+    the fan database confirms he brought a machete'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B004WMFNRW
+    asin: B004WMFNRW
+  notes: Handle/sheath version used on the show is unknown.
+- item: machete
+  category: blade
+  product: Condor Tool & Knife Bushcraft Parang Machete (13 in, model 60953 / CTK423-13HC)
+  brand: Condor Tool & Knife
+  match: likely
+  used_by: Fernando Calderon (S2E5 The Pain Forest) and Adam Young (S3E5 Jungle Love),
+    morethanjustsurviving.com numbering
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: Gear list names Condor Tool & Knife Bushcraft Parang Machete for both
+    survivors
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00CW3SJHY
+    asin: B00CW3SJHY
+  - store: knifecenter.com
+    url: https://knifecenter.com/item/CN42313HC/condor-tool-knife-ctk423-13hc-bushcraft-parang-machete
+  - store: condortk.com
+    url: https://condortk.com/category/survival/bushcraft-parang-machete-w-ballistic/
+- item: machete
+  category: blade
+  product: Elk Ridge ER-279L machete
+  brand: Elk Ridge
+  match: likely
+  used_by: S3E10 Botswana Breakdown (Michael Jefferson)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com gear list: Michael Jefferson brought the Elk
+    Ridge ER-279L machete.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0DK7SFFBC
+    asin: B0DK7SFFBC
+  - store: sharperedges.com
+    url: https://sharperedges.com/elk-ridge-er-279l-machete-24-5-overall.html
+  - store: mastercutlery.com
+    url: https://mastercutlery.com/product/product_details/product_id_enc/2521/category_id_enc_p/46
+  notes: morethanjustsurviving.com's own ASIN is dead.
+- item: hatchet
+  category: blade
+  product: Estwing E24A Sportsman's Axe (14 in leather grip hatchet)
+  brand: Estwing
+  match: likely
+  used_by: Sabrina Mergenthaler, S2E6 'Meltdown in Bolivia' (morethanjustsurviving.com
+    numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Sabrina Mergenthaler Estwing E24A Sportsman''s Hatchet'''
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00BNQR4SG
+    asin: B00BNQR4SG
+- item: machete
+  category: blade
+  product: Gerber Gator Machete (full size, nylon sheath)
+  brand: Gerber
+  match: likely
+  used_by: S2E3 Paradise Lost (Keith Busch); S4E6 Lord of the Rats (Angela Mellinger)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com gear list: Keith Busch (S2E3) and Angela Mellinger
+    (S4E6) brought a Gerber Gator Machete.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B004A1IXRC
+    asin: B004A1IXRC
+  notes: 'Amazon listing title: ''GERBER Gator Machete - Black w/ Nylon Sheath [31-000758]''.'
+- item: machete
+  category: blade
+  product: Gerber Gator Machete Jr. (31-000759) with nylon sheath
+  brand: Gerber
+  match: likely
+  used_by: Kim Shelton (S1E1 The Jungle Curse), Cassie DePecol (Double Jeopardy),
+    Carrie Booze (S3E4 Hearts of Darkness), Steve Hansen (S4E2 Rumble in the Jungle),
+    Angela Mellinger (S4E6 Lord of the Rats), all morethanjustsurviving.com numbering
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: Episode-by-episode gear list names the Gerber Gator Machete Junior with
+    Nylon Sheath for these survivors
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B004BSGFPG
+    asin: B004BSGFPG
+  notes: Most-repeated machete on the show. Full-size Gator Machete (Keith Busch)
+    not separately located on Amazon.
+- item: knife
+  category: blade
+  product: KA-BAR Black Tanto knife
+  brand: KA-BAR
+  match: likely
+  used_by: S1E2 Terror in Tanzania (EJ Snyder)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com lists a Ka-Bar Black Tanto for EJ; in the page
+    comments EJ Snyder replies 'My knife is correct' (the pommel and handle later
+    broke).
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B000BT1G6W
+    asin: B000BT1G6W
+  - store: kabar.com
+    url: https://www.kabar.com/category/military-tactical
+  notes: 'Live Amazon title: ''KA-BAR Tanto Half-Serrated Fixed Blade Knife 8 in ...
+    1095 Cro-Van Black Powder Coat''. This is the morethanjustsurviving.com-linked
+    listing; serration/variant not verified against the episode.'
+- item: kukri
+  category: blade
+  product: KA-BAR Kukri (2-1249-9)
+  brand: KA-BAR
+  match: likely
+  used_by: S2E1 Man vs. Amazon (Tyler Steinle); S4E1 Alligator Alley (Ryan Holt);
+    S4E5 Fire on the Mountain (Trenton Harper brought a custom kukri; Ka-Bar called
+    similar)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com names a Ka-Bar Kukri for Steinle and Holt; for
+    Harper it says his Begring Made kukri is 'similar to Ka-Bar Kukri'. Reddit r/Bushcraft
+    also says N&A cast usually go with Ka-Bar-style kukris.
+  more_sources:
+  - https://www.bladeforums.com/threads/is-that-a-kabar-kukri-on-naked-and-afraid-season-premier.1282286/
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B001H53Q8A
+    asin: B001H53Q8A
+  - store: knifecenter.com
+    url: https://knifecenter.com/item/KA1249/ka-bar-1249-kukri-machete-kraton-g-handle-leather-cordura-sheath
+  notes: 'Amazon title: ''KA-BAR 2-1249-9 Kukri Fixed Blade Knife Black Blade with
+    Black Handle and Sheath''.'
+- item: machete
+  category: blade
+  product: Ontario Knife Co. 6145 / 1-18 18 in Military Machete
+  brand: Ontario Knife Company
+  match: likely
+  used_by: Manu Toigo, Double Jeopardy (morethanjustsurviving.com lists it as S1E8)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Manu Toigo Ontario 6145 18-inch Military Machete Knife'''
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0001WBIEY
+    asin: B0001WBIEY
+  - store: ontarioknife.com
+    url: https://ontarioknife.com/products/okc-6145-18-black-carbon-steel-machete
+  notes: Base Amazon listing is machete only; sheath sold separately.
+- item: knife
+  category: blade
+  product: TOPS Knives Hawke's Hellion Survivor 2020
+  brand: TOPS Knives
+  match: likely
+  used_by: S3E7 Playing With Fire (Chris Fischer)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com gear list: Chris Fischer brought the TOPS Hawke''s
+    Hellion survival knife.'
+  buy:
+  - store: trustedknives.com
+    url: https://www.trustedknives.com/tops-knives-hawkes-hellion-survivor-2020-fixed-blade-knife-9-black-plain/
+  - store: topknifesale.com
+    url: https://www.topknifesale.com/attractive-tops-knives-hawkes-hellion-survivor-2020-fixed-blade-knife-9-camo-plain/
+  notes: Amazon listing not found (morethanjustsurviving.com's ASIN is a 404). Hand-tools.com
+    lists the standard and Elite versions as discontinued; verify stock at third-party
+    sellers.
+- item: knife
+  category: blade
+  product: TOPS Knives Tom Brown Tracker (TBT-010)
+  brand: TOPS Knives
+  match: likely
+  used_by: Shannon Thomas, S2E4 'Mayan Misery' (morethanjustsurviving.com numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Shannon Thomas Tops Knives T010 Tom Brown Tracker Knife'''
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B001DZQWYE
+    asin: B001DZQWYE
+  notes: Handle/coating variant used on the show not confirmed.
+- item: machete
+  category: blade
+  product: Woodman's Pal Model 145 Long Reach
+  brand: Woodman's Pal (Pro Tool Industries)
+  match: likely
+  used_by: Amanda Leigh, S3E9 'Nicaragua Nightmare' (morethanjustsurviving.com numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Amanda Leigh Pro Tool Industries 145 Woodman''s Pal Long
+    Reach Fixed Blade Knife''; Discovery+ blurb says the episode had only a machete
+    and duct tape'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0009DV5RU
+    asin: B0009DV5RU
+- item: knife
+  category: blade
+  product: Buck 113 Ranger Skinner hunting knife
+  brand: Buck Knives
+  match: similar
+  used_by: S1E6 Beware the Bayou (Billy Berger brought a custom knife; morethanjustsurviving.com
+    says Buck Ranger is similar)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com: Billy Berger''s custom knife is ''similar
+    to Buck Ranger Skinner Hunting Knife''.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B004NJ2ETY
+    asin: B004NJ2ETY
+  notes: 'Amazon title: ''Buck Knives 113 Ranger Skinner Hunting Knife with Sheath''.
+    Equivalent only; original was custom.'
+- item: tomahawk
+  category: blade
+  product: Cold Steel Frontier Hawk (90FH)
+  brand: Cold Steel
+  match: similar
+  used_by: Luke McLaughlin, S3E2 'Primal Fear' brought a tomahawk (morethanjustsurviving.com
+    numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Luke McLaughlin Tomahawk (very similar to Cold Steel Frontier
+    Hawk)''; exact brand not identified'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0030DDG9Q
+    asin: B0030DDG9Q
+  notes: Listed only as a look-alike, not a confirmed brand.
+- item: knife
+  category: blade
+  product: Condor Pack Golok Knife (11 in, CTK252-11HC)
+  brand: Condor Tool & Knife
+  match: similar
+  used_by: Closest equivalent to Puma Cabra's custom knife, S1E5 'Breaking Borneo'
+    (morethanjustsurviving.com numbering)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'Gear list: ''Puma Cabra Custom Knife (similar to Condor Pack Golok Knife)'''
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00KGZCXI6
+    asin: B00KGZCXI6
+  - store: knifecenter.com
+    url: https://www.knifecenter.com/item/CN25211HC/condor-tool-and-knife-ctk252-11hc-pack-golok-survival-knife-carbon-steel-blade-hardwood-handles-leather-sheath
+  notes: The original knife was a custom piece; this is only a look-alike.
+- item: machete
+  category: blade
+  product: Condor Tool & Knife Pack Golok / survival machete
+  brand: Condor Tool & Knife
+  match: similar
+  used_by: S1E5 Breaking Borneo (Puma Cabra brought a custom knife; morethanjustsurviving.com
+    says the Condor is similar)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com: Puma Cabra''s custom knife is ''similar to
+    Condor Pack Golok Knife''.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B007MC3ZNS
+    asin: B007MC3ZNS
+  notes: Live Amazon title is 'Condor Tool & Knife Survival Machete with Walnut Handle'
+    (may be a re-titled listing); verify it is the Pack Golok before linking. Custom
+    original is not buyable.
+- item: knife
+  category: blade
+  product: CRKT Bugsy fixed blade (Kaila Cumings design)
+  brand: CRKT
+  match: similar
+  used_by: Kaila Cumings, who forged custom knives for her four Naked and Afraid appearances;
+    the Bugsy is her CRKT production design
+  evidence_url: https://www.crkt.com/community/knife-stories/where-the-metal-takes-you-get-to-know-kaila-cumings
+  evidence: CRKT profile says Kaila forged a custom knife for each Naked and Afraid
+    appearance and that the Bugsy is a smaller production version of her design
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0BVMZ6WBX
+    asin: B0BVMZ6WBX
+  - store: crkt.com
+    url: https://www.crkt.com/knife/bugsy-fixed-blade-with-sheath
+  notes: Survivalist-signature knife, but NOT the knife used on the show; that was
+    a handmade custom. BladeHQ says it was produced by TOPS. Verify origin before
+    publishing.
+- item: machete
+  category: blade
+  product: Kershaw Camp 10 machete (model 1077)
+  brand: Kershaw
+  match: similar
+  used_by: Closest in-production equivalent to Laura Zerra's Kershaw Outcast (S1E4)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: Gear list says the Outcast is discontinued and suggests the Kershaw Camp
+    10 as a good alternative
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B014SK7GOA
+    asin: B014SK7GOA
+  notes: Amazon page body text showed a different ASIN than the URL; URL ASIN recorded.
+- item: knife
+  category: blade
+  product: L.T. Wright x SMKW Naked G.O.A.T. Primal
+  brand: L.T. Wright Knives / Smoky Mountain Knife Works
+  match: similar
+  used_by: Collaboration associated with EJ Snyder; not seen on screen
+  evidence_url: https://smkw.com/lt-wright-exclusive-the-naked-goat-primal-scandi-green-micarta/
+  evidence: SMKW product page for the exclusive L.T. Wright Naked G.O.A.T. Primal
+    (green Micarta, Scandi grind).
+  buy:
+  - store: smkw.com
+    url: https://smkw.com/lt-wright-exclusive-the-naked-goat-primal-scandi-green-micarta/
+  notes: Link to EJ Snyder came from the search result summary, not verified on the
+    page itself. May be sold out.
+- item: machete
+  category: blade
+  product: SOG SOGfari 13 in Machete (MC01-N)
+  brand: SOG
+  match: similar
+  used_by: Aaron Phillips, S6E6 'All Falls Down' (Belize) brought a SOG machete
+  evidence_url: https://knifenewsroom.com/2017/08/aaron-phillips-wekiva-knife/
+  evidence: 'Aaron Phillips interview: ''I grabbed the SOG machete at the last second
+    ... They chose the machete.'' The specific SOG model is not named'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00PVJLUH2
+    asin: B00PVJLUH2
+  - store: knifeworks.com
+    url: https://knifeworks.com/sog-sogfari-machete/
+  notes: Brand is confirmed by the survivor; the SOGfari model is a guess among SOG
+    machetes. Match is only 'similar'.
+- item: knife
+  category: blade
+  product: T.Kell Knives WharnEDC
+  brand: T.Kell Knives
+  match: similar
+  used_by: Melissa Miller collaboration (cast member)
+  evidence_url: https://www.tkellknives.com/products/wharn-edc
+  evidence: T.Kell Knives product page for the WharnEDC, a collaboration with Melissa
+    Miller.
+  buy:
+  - store: tkellknives.com
+    url: https://www.tkellknives.com/products/wharn-edc
+  notes: EDC collaboration, not a show-used tool. No Amazon listing.
+- item: axe
+  category: carpentry tool
+  product: Gransfors Bruks Small Forest Axe
+  brand: Gransfors Bruks
+  match: likely
+  used_by: S4E3 Mayan Sacrifice (Alyssa Ballestero)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com gear list: Alyssa Ballestero brought a Gransfors
+    Bruks Small Forest Axe.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B000WIROX6
+    asin: B000WIROX6
+  - store: gransforsus.com
+    url: https://gransforsus.com/product/small-foreest-axe/
+  - store: gransforsbruk.com
+    url: https://www.gransforsbruk.com/en/p/small-forest-axe
+  notes: 'Amazon title: ''Gransfors Bruks Small Forest Axe 19 Inch, 420''.'
+- item: duct tape
+  category: comfort item
+  product: Duck Brand Color Duct Tape, Blue, 1.88 in x 20 yd (model 1304959)
+  brand: Duck Brand
+  match: likely
+  used_by: Joshua Bell, Season 3 Episode 9 'Nicaragua Nightmare' (2014); he made a
+    cup, blanket and a bra for his partner from it
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: Season 3 gear table lists 'Joshua Bell Duck Brand Blue Duct Tape' for
+    S3E9; recaps at staytunedmag.com and realitywanted.com confirm he brought a roll
+    of duct tape.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B002TOL400
+    asin: B002TOL400
+  - store: duckbrand.com
+    url: https://www.duckbrand.com/products/duck-tape/colors/blue-188-in-x-20-yd
+  notes: Only S3E9 has a brand source. Joshua Bell brought duct tape again in XL S6,
+    brand not stated.
+- item: tarp
+  category: comfort item
+  product: AquaQuest Guide Tarp 10x7 ft, 40D ripstop (olive)
+  brand: AquaQuest
+  match: similar
+  used_by: Lindsay Boisclair S6E8 'Hell or High Water' (Thailand, 2016; staytunedmag
+    recap says it kept them dry through 19 inches of rain); Steven Townes S9E6 'Thieves
+    in the Night' (Mexico)
+  evidence_url: https://staytunedmag.com/tv-news/2016/04/25/recap-naked-and-afraid-thailand-hell-or-high-water/
+  evidence: Recap says Lindsay brought a tarp and credits it for shelter during heavy
+    rain. Fan wiki tarp page lists the three tarp picks. No brand or size given.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01B5D0C6W
+    asin: B01B5D0C6W
+  notes: Brand of the tarp used is unknown. Zach Benton (S14, Haunted and Hungry)
+    also says he submitted a tarp as one of four items but it was not the one used.
+- item: mosquito net
+  category: comfort item
+  product: Coghlan's Travellers Mosquito Net
+  brand: Coghlan's
+  match: similar
+  used_by: Generic equivalent of the brought and given mosquito nets
+  evidence_url: https://www.nakedandafraidfan.com/items/17
+  evidence: Fan wiki item page for mosquito net; no brand named for the show's nets.
+  buy:
+  - store: coghlans.com
+    url: https://coghlans.com/products/travellers-mosquito-net
+  notes: Round single-point-suspension net with hanging kit. Coghlan's own pages disagree
+    on size, so check before linking.
+- item: hammock
+  category: comfort item
+  product: ENO (Eagles Nest Outfitters) DoubleNest Hammock
+  brand: ENO
+  match: similar
+  used_by: Trent Nielsen, S5E2 'Fear the Unknown' (Belize, 2015), used only as cordage
+    for bow, shelter and traps; Sarah Bartell, S10E5 'Threesome' (Ecuador, 2019)
+  evidence_url: https://staytunedmag.com/tv-news/2015/10/11/recap-naked-and-afraid-fear-the-unknown-season-5-episode-2/
+  evidence: Recap says Trent brought a hammock; a comment attributed to Trent says
+    he never intended to sleep in it and used it solely as cordage. Fan wiki lists
+    Sarah Bartell's hammock in S10E5. Brand and model not stated.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B003BIV1AQ
+    asin: B003BIV1AQ
+  notes: Suspension straps sold separately. Brand of the hammocks on the show was
+    not identified. Source of the Trent quote is a blog comment, not verified as his
+    account.
+- item: duct tape
+  category: comfort item
+  product: Gorilla Duct Tape, Black, 1.88 in x 35 yd
+  brand: Gorilla
+  match: similar
+  used_by: 'Closest heavy-duty equivalent for later duct-tape picks: Jonathan Short
+    (S7E6), Anastasia Ashley (S8E6, made a bikini), Joshua Bell (XL S6), Amy Zindler
+    (S15E10, foot wraps and a water bowl), Malu Beyonce (S17E7, S18, Shipwrecked)'
+  evidence_url: https://www.nakedandafraidfan.com/items/11
+  evidence: Fan wiki lists duct tape as brought in 8 challenges; no source names the
+    brand of the tape in any episode after S3E9.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B000CSS8UE
+    asin: B000CSS8UE
+  notes: Brand used in those episodes is unknown. This is just a common heavy-duty
+    duct tape.
+- item: tarp
+  category: comfort item
+  product: Kelty Noah's Tarp
+  brand: Kelty
+  match: similar
+  used_by: Same tarp picks as above
+  evidence_url: https://www.nakedandafraidfan.com/items/23
+  evidence: Fan wiki tarp page lists three episodes where a tarp was brought; no brand
+    named.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00AA6SX8A
+    asin: B00AA6SX8A
+  notes: Heavier group-camping tarp (16x16 ft version about 3 lb 10 oz). Amazon page
+    covers several sizes.
+- item: hide
+  category: comfort item
+  product: Leather Unlimited A-grade deerskin leather hide, 2-3 oz
+  brand: Leather Unlimited
+  match: similar
+  used_by: Darrin Reay brought a buckskin hide in XL S2 'Lions at the Gate' (2016);
+    hides were given to teams in Alaska (S10), Montana (XL Frozen), Namibia (S19)
+    and the 2026 Showdown episodes
+  evidence_url: https://staytunedmag.com/tv-news/2016/07/25/recap-naked-and-afraid-xl-episode-3-human-prey/
+  evidence: XL recap lists 'Darrin - Buck Skin'. Fan wiki hide page lists the given
+    hides. Sellers or sizes of the show's hides are not stated; XL Frozen's hides
+    were issued because of extreme cold.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07TLCN7L8
+    asin: B07TLCN7L8
+  notes: Thin craft-weight leather, not an insulating hide. Poor stand-in for the
+    hides in cold episodes, so label clearly as a leather craft hide.
+- item: mosquito net
+  category: comfort item
+  product: Lifesystems BoxNet Mosquito Net, single (model 5550)
+  brand: Lifesystems
+  match: similar
+  used_by: Generic equivalent of the brought and given mosquito nets in 40+ episodes
+  evidence_url: https://www.nakedandafraidfan.com/items/17
+  evidence: Fan wiki item page for mosquito net; brand and model of the show's nets
+    are not stated anywhere found.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00JY49WDE
+    asin: B00JY49WDE
+  - store: lifesystems.co.uk
+    url: https://www.lifesystems.co.uk/products/boxnet-single
+  notes: 4-point box net, EX8 anti-mosquito treated, 390 g. The Amazon.com listing
+    title is in French but the page is the single BoxNet, model 5550.
+- item: tarp
+  category: comfort item
+  product: Sea to Summit Escapist Tarp, Evo Medium
+  brand: Sea to Summit
+  match: similar
+  used_by: Same tarp picks as above
+  evidence_url: https://www.nakedandafraidfan.com/items/23
+  evidence: Fan wiki tarp page; no brand named.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0GFXYN7HG
+    asin: B0GFXYN7HG
+  notes: Ultralight trekking-pole tarp, 12.5 oz. High-priced; listed as an ultralight
+    alternative.
+- item: mosquito net
+  category: comfort item
+  product: Sea to Summit Nano Mosquito Pyramid Net Shelter (single)
+  brand: Sea to Summit
+  match: similar
+  used_by: Brought by contestants in 35 episodes (e.g., Bo Stuart S4 Guyana, Lacey
+    Jones XL S3, Kate Wentworth S10, Allison Frueh S18) and given by production in
+    6 (e.g., Belize Breakdown S8, Honduran Hell S10, Flesh and Fangs S19)
+  evidence_url: https://www.nakedandafraidfan.com/items/17
+  evidence: Fan wiki lists mosquito net as a brought item in 35 episodes and a given
+    item in 6; no source names a brand or model.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00BTO433Q
+    asin: B00BTO433Q
+  - store: seatosummit.com
+    url: https://seatosummit.com/products/nano-mosquito-pyramid-net
+  notes: Ultralight pyramid net with no zip door, hangs from one point. Both Amazon
+    links are the Insect Shield/permethrin-treated single. Not identified on the show.
+- item: cordage
+  category: cordage
+  product: "#36 tarred twisted nylon bank line, 1/4 lb (about 117 ft)"
+  brand: Generic (Amazon seller listing shows brand 'Artist Unknown')
+  match: similar
+  used_by: Cordage was brought by Daniel Rosenberg (S11), Bulent Gurcan (S11), Kaiela
+    Hobart (S11), Wes Harper (S12) and given in two episodes
+  evidence_url: https://www.nakedandafraidfan.com/items/29
+  evidence: Fan wiki lists cordage as brought in 4 episodes and given in 2; the type
+    of cordage is not specified.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00J4YONGK
+    asin: B00J4YONGK
+  notes: Typical bushcraft cordage; the cordage on the show is unspecified.
+- item: paracord
+  category: cordage
+  product: Atwood Rope MFG 550 Paracord, 100 ft, 7-strand core
+  brand: Atwood Rope MFG
+  match: similar
+  used_by: Paracord was brought in 20 episodes (e.g., Greg Wells S6, Dawn Dussault
+    S7, EJ Snyder XL S8, Michael Angulo S15, Chev Dixon S18) and given in 4
+  evidence_url: https://www.nakedandafraidfan.com/items/19
+  evidence: Fan wiki lists paracord as brought in 20 episodes and given in 4; no brand
+    is named by any source found.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07TFB6DRL
+    asin: B07TFB6DRL
+  - store: atwoodrope.com
+    url: https://atwoodrope.com/products/550-x-100ft-paracord-black
+  notes: Made in Ohio. Not MIL-SPEC (per TruePrepper review). Amazon listing is the
+    OD color; other colors have separate ASINs.
+- item: slack line
+  category: cordage
+  product: Gibbon Slacklines Classic Slackline, 15 m (49 ft) kit
+  brand: Gibbon Slacklines
+  match: similar
+  used_by: Elijah Strongheart, S14E5 'Night Stalkers' (Botswana, 2022); a transcript
+    has him describing highlining/slacklining skills and the fan wiki lists a slack
+    line as his one brought item
+  evidence_url: https://www.nakedandafraidfan.com/episodes/139
+  evidence: Fan wiki lists Elijah Strongheart's brought item as slack line. The show's
+    transcript shows he guides climbing and does highlining. Brand of his line is
+    not stated.
+  buy:
+  - store: rei.com
+    url: https://www.rei.com/product/153744/gibbon-classic-line-treewear-slackline-set
+  notes: Whether he brought a full kit or just webbing is unknown; 2-inch kit with
+    ratchet.
+- item: climbing rope
+  category: cordage
+  product: Mammut 9.8 Crag Classic Rope 60 m
+  brand: Mammut
+  match: similar
+  used_by: Same climbing-rope picks as above
+  evidence_url: https://www.nakedandafraidfan.com/items/14
+  evidence: Fan wiki climbing rope page; brand not identified for any pick.
+  buy:
+  - store: mammut.com
+    url: https://www.mammut.com/us/en/products/2010-05860-2107/9-8-crag-classic-rope-60m
+  notes: No Amazon.com listing for this rope was seen in search results.
+- item: slack line
+  category: cordage
+  product: Slackline Industries Base Line 50 ft kit
+  brand: Slackline Industries
+  match: similar
+  used_by: Elijah Strongheart, S14E5 'Night Stalkers'
+  evidence_url: https://www.nakedandafraidfan.com/episodes/139
+  evidence: Fan wiki episode page lists slack line as Elijah's item. Brand unknown.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00WDVAG3K
+    asin: B00WDVAG3K
+  notes: Second option for a slackline link.
+- item: climbing rope
+  category: cordage
+  product: Sterling VR9 9.8mm Dynamic Climbing Rope, 60 m
+  brand: Sterling Ropes
+  match: similar
+  used_by: Darrin Reay S4E6 'Lord of the Rats' (Thailand, 2015; made sandals and hung
+    bananas); Shannon Kulpa S7E3 'Hangry' (Trinidad); Wes Harper S10 'Stalked on the
+    Savannah' (Brazil); Reay again in Shipwrecked (2026)
+  evidence_url: https://www.nakedandafraidfan.com/items/14
+  evidence: Fan wiki lists climbing rope as brought in 4 episodes. RealityWanted's
+    recap of 'Lord of the Rats' says Darrin brought rope and made sandals from it.
+    Brand, length and diameter are not stated anywhere.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07GH9ST54
+    asin: B07GH9ST54
+  notes: Life-safety item. Linked only as a typical climbing rope, not as the show's
+    rope. A rope-guide who sells to climbers may want a human review before this goes
+    live.
+- item: paracord
+  category: cordage
+  product: TOUGH-GRID 550lb Paracord, 100 ft, Type III mil-spec
+  brand: TOUGH-GRID
+  match: similar
+  used_by: Generic equivalent of the 20 paracord picks and 4 given-paracord episodes
+  evidence_url: https://www.nakedandafraidfan.com/items/19
+  evidence: Fan wiki paracord page. A search for TOUGH-GRID with Naked and Afraid
+    found no link between the brand and the show.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B06X9HTMXV
+    asin: B06X9HTMXV
+  - store: toughgrid.com
+    url: https://toughgrid.com/product/tough-grid-550lb-mil-spec-paracord/
+  notes: Made in USA. Amazon link is the Desert Camo 100 ft variant; other colors
+    have their own ASINs.
+- item: pulaski
+  category: digging tool
+  product: Council Tool Pulaski axe (3.75 lb, 36 in hickory handle)
+  brand: Council Tool
+  match: similar
+  used_by: A Pulaski appears in the all-star 'Abandon Ship' episode (Philippines)
+    per the fan database; an all-star pairing clip shows a survivalist saying 'It's
+    called a Pulaski'
+  evidence_url: https://www.nakedandafraidfan.com/items/types/blade
+  evidence: Fan item database lists a pulaski for 'Abandon Ship' (2026); a Discovery
+    clip (https://www.youtube.com/watch?v=WCpOXyrolR8) has a survivalist presenting
+    a pulaski. The brand was not identified
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B005AJD8EQ
+    asin: B005AJD8EQ
+  notes: Brand used on the show is unknown; Council Tool is a generic, widely available
+    Pulaski.
+- item: shovel
+  category: digging tool
+  product: Gerber Gorge folding shovel
+  brand: Gerber
+  match: similar
+  used_by: Same shovel picks as above
+  evidence_url: https://www.nakedandafraidfan.com/items/45
+  evidence: Fan wiki shovel page; no brand named.
+  buy:
+  - store: gerbergear.com
+    url: https://gerbergear.com/products/gorge-22-41578n
+  notes: No Amazon listing for this shovel was seen in results.
+- item: shovel
+  category: digging tool
+  product: SOG Entrenching Tool (F08-N) folding shovel
+  brand: SOG
+  match: similar
+  used_by: Sarah Danser (XL S4), Russell Sage (XL S5E2 'Waterworld'), Trish Bulinsky
+    (XL Frozen), John Hogfoss (S16 'Blood and Money')
+  evidence_url: https://www.nakedandafraidfan.com/items/types/digging%20tool
+  evidence: Fan wiki digging-tool page lists shovel as brought in 4 episodes; a Reddit
+    thread discussing XL Season 3 gear suggests a folding shovel in the jungle. No
+    source names the shovel brand or model.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0038A05X6
+    asin: B0038A05X6
+  notes: Whether the shovels were folding E-tools is unknown.
+- item: fire starter
+  category: fire starting tool
+  product: Fire-Fast Trekker waterproof fire starter
+  brand: Fire-Fast
+  match: confirmed
+  used_by: Sunny Mia, Season 17 Ep 5 'Runaway Bride' (Colombia); supplied by production
+    as the given fire starter
+  evidence_url: https://fire-fast.com/blogs/news/naked-and-afraid-fire-starter
+  evidence: Fire-Fast blog says Sunny Mia used the Trekker in S17E5 and Executive
+    Producer David Story endorsed it; about page says it became the show's official
+    fire starter.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00US61QQI
+    asin: B00US61QQI
+  - store: fire-fast.com
+    url: https://fire-fast.com/products/trekker-waterproof-fire-starter
+  notes: 'Other pages seen: https://fire-fast.com/pages/about-us.'
+- item: fire starter
+  category: fire starting tool
+  product: Purefire Tactical magnesium + ferro rod fire starter (Folding / Survival
+    model)
+  brand: Purefire Tactical
+  match: confirmed
+  used_by: S2E1 Man vs. Amazon (EJ Snyder's fire starter)
+  evidence_url: https://ejsnyder333.wixsite.com/skullcrusher/gear--gadget-reviews
+  evidence: 'EJ Snyder writes that he used the Purefire Tactical starter on Naked
+    and Afraid: Man vs Amazon in heavy rain (and told morethanjustsurviving.com commenters
+    it was his fire starter).'
+  buy:
+  - store: purefiretactical.com
+    url: https://purefiretactical.com/ferro-rod-with-magnesium/
+  - store: etsy (ArcticPines listing, 'From Naked and Afraid')
+    url: https://www.etsy.com/listing/955215062/from-naked-and-afraid-magnesium-ferro
+  notes: Amazon listing not found. EJ's morethanjustsurviving.com comment says it
+    was linked on Amazon at the time, but no ASIN was seen. Etsy seller says it was
+    the item they chose on four of their own challenges (seller identity not verified).
+- item: fire starter
+  category: fire starting tool
+  product: Coleman Magnesium Fire Starter
+  brand: Coleman
+  match: likely
+  used_by: Season 1 Ep 8 'Double Jeopardy' (Russell Sage)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com season 1 list names 'Coleman Magnesium Fire
+    Starter' for Russell Sage
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B004OZNF6S
+    asin: B004OZNF6S
+  notes: 'Amazon page title verified: Coleman Company Magnesium Fire Starter.'
+- item: fire starter
+  category: fire starting tool
+  product: Light My Fire Swedish FireSteel 2.0 Army 12,000 Strike Fire Starter with
+    whistle (orange)
+  brand: Light My Fire
+  match: likely
+  used_by: S2E3 Alana Barfield; S3E3 Justin Bullard; S4E7 Danielle Beauchemin (2.0
+    with whistle); also brought by Alana Barfield in XL S1
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com per-episode gear lists name 'Light My Fire Swedish
+    FireSteel 12,000 Strike Fire Starter' (and 'FireSteel 2.0 with Emergency Whistle'
+    for S4E7)
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00440VIYY
+    asin: B00440VIYY
+  notes: Brand site shows the current model as 'FireSteel Army 2in1'. Alana Barfield's
+    XL S1 starter is from the fan wiki (items listed as 'fire starter' only), not
+    a brand statement.
+- item: fire starter
+  category: fire starting tool
+  product: Purefire Tactical Firestarter, Survival Model (magnesium + ferro rod, hollow
+    handle)
+  brand: Purefire Tactical
+  match: likely
+  used_by: EJ Snyder, Season 2 Ep 1 'Man vs. Amazon' (the 'large green fire steel'
+    on the morethanjustsurviving.com list)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'EJ Snyder himself comments on the morethanjustsurviving.com page: his
+    fire starter on the show ''is a Purefire Tactical Fire Starter, Survival Model'',
+    hand-crafted by Bobby Linn (purefiretactical.com)'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0CP9ZZ628
+    asin: B0CP9ZZ628
+  - store: purefiretactical.com
+    url: https://purefiretactical.com/our-products/
+  notes: Cast-member statement, though posted as a blog comment (we cannot verify
+    the account). Current Amazon listing is a newer one (first available Dec 2023);
+    the 2014 product may differ slightly.
+- item: fire starter
+  category: fire starting tool
+  product: Ultimate Survival Technologies (UST) BlastMatch Fire Starter (one-handed
+    flint)
+  brand: Ultimate Survival Technologies (UST)
+  match: likely
+  used_by: S1E3 Alison Teal; S1E6 Ky Furneaux (All Weather); S2E1 AK Kaye; S2E2 Jeff
+    Zausch; S2E5 Samantha Pearson; S3E10 Ashley Burns; S4E2 Christina McQueen; S4E4
+    Zack Buck and Afften DeShazer
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com per-episode gear lists name UST BlastMatch (Fire
+    Starter / All Weather Firestarter) as the chosen item for each of these survivors
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00930XV18
+    asin: B00930XV18
+  notes: Most-used brought fire starter in seasons 1-4.
+- item: fire starter
+  category: fire starting tool
+  product: UST StrikeForce Fire Starter (orange, flint bar with striker cap)
+  brand: Ultimate Survival Technologies (UST)
+  match: likely
+  used_by: S1E1 Shane Lewis; S3E5 Jaclyn McCaffrey; S3E8 Phaedra Brothers; S4E1 Amber
+    Hargrove
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com per-episode gear lists name 'Orange UST Strike
+    Force Fire Starter' for each of these survivors
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00930Y4YG
+    asin: B00930Y4YG
+  notes: Amazon listing currently shows 'Currently unavailable' (no restock date)
+    when checked; the orange color is not confirmed on that listing.
+- item: bow drill kit
+  category: fire starting tool
+  product: Channel Craft Campfire Bow Drill Kit (7-piece, made in USA)
+  brand: Channel Craft
+  match: similar
+  used_by: Generic bow drill kit (see other entry for survivors)
+  evidence_url: https://www.nakedandafraidfan.com/items/9
+  evidence: Fan database lists bow drill kits brought/given in 12 episodes; no brand
+    given
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07HLBSL7S
+    asin: B07HLBSL7S
+  notes: Equivalent only.
+- item: fire starter
+  category: fire starting tool
+  product: Generic waterproof magnesium + flint fire starter bar (SE FS374 shown)
+  brand: SE
+  match: similar
+  used_by: S2E4 (Cass); S3E4 (Tom Touw); S4E8 Garden of Evil (Brandon Dix and Robin
+    Barber); S6E8 Hell or High Water (show-provided magnesium starter)
+  evidence_url: https://staytunedmag.com/tv-news/2016/04/25/recap-naked-and-afraid-thailand-hell-or-high-water/
+  evidence: 'StayTunedMag S6E8 recap: ''a magnesium fire starter provided by the show''.
+    morethanjustsurviving.com lists unnamed ''Magnesium Fire Starter'' for Cass, Touw,
+    Dix and Barber and linked this product.'
+  more_sources:
+  - https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0010O748Q
+    asin: B0010O748Q
+  notes: 'Brand on screen is not identified; the ASIN is morethanjustsurviving.com''s
+    link for the generic ''Magnesium Fire Starter''. Amazon title: ''SE Waterproof
+    Magnesium Firestarter Kit ... FS374''.'
+- item: magnifier lens
+  category: fire starting tool
+  product: Glass lens handheld magnifier (SE 5x, 2 in)
+  brand: SE
+  match: similar
+  used_by: S3E11 Dunes of Despair (Honora Bowen)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com: Honora Bowen brought a ''Glass Lens Hand Held
+    Magnifier'' and links this listing.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B001HBTFL6
+    asin: B001HBTFL6
+  notes: 'Amazon title: ''SE 5x Handheld Magnifier, 2 in Glass Lens Dia. - MH7005C''.
+    Generic equivalent; brand on screen unknown.'
+- item: fire starter
+  category: fire starting tool
+  product: Live Fire Original emergency fire starter
+  brand: Live Fire Gear
+  match: similar
+  used_by: EJ Snyder, brand team member (promotion, not on-show use)
+  evidence_url: https://www.livefiregear.com/blog/ej-snyder-joins-live-fire-gear-team/
+  evidence: Live Fire Gear blog announces EJ Snyder of Naked and Afraid joining the
+    Live Fire team.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00IIPE2XK
+    asin: B00IIPE2XK
+  notes: Endorsement only. Confirm the Amazon seller before linking.
+- item: bow drill kit
+  category: fire starting tool
+  product: Primitive Fire Bow Drill Fire Starter Kit, 7-piece set
+  brand: Primitive Fire
+  match: similar
+  used_by: 'Brought bow drill kits: Vincent Pinto (S2E6 Bolivia), Laura Zerra (XL
+    S1), Kim Kelly and Tara Skubella (S5 Panama), Alyssa Ballestero (XL S2), Chad
+    Keel (S7), Maria Corrales (S7), David Scott (S7), Scott Thompson (S8), Jesse Everett
+    (S10). Given in S4 ''Surthrive'' and S6 ''From the Ashes'''
+  evidence_url: https://www.nakedandafraidfan.com/items/9
+  evidence: Fan database lists these episodes/survivors for 'bow drill kit' (brand
+    not identified); morethanjustsurviving.com describes S2E6's as a 'firemaking kit
+    of 2 sticks and a container'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00CWQ9GIM
+    asin: B00CWQ9GIM
+  notes: No show-used brand identified; most survivors bring self-made kits. Buyable
+    equivalent only.
+- item: bow drill kit
+  category: fire starting tool
+  product: Primitive Fire Bow Drill Fire Starter Scout Kit, 5-piece set
+  brand: Primitive Fire
+  match: similar
+  used_by: Generic bow drill kit (see other entry for survivors)
+  evidence_url: https://www.nakedandafraidfan.com/items/9
+  evidence: Fan database lists bow drill kits brought/given in 12 episodes; no brand
+    given
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00CWPX2K6
+    asin: B00CWPX2K6
+  notes: Cheaper basic variant.
+- item: bow drill kit
+  category: fire starting tool
+  product: Primitive Progression Bow Drill Friction Fire Set (osage bow, stone handhold,
+    coal catcher, paracord strings)
+  brand: Primitive Progression
+  match: similar
+  used_by: Generic bow drill kit (see other entry for survivors)
+  evidence_url: https://www.nakedandafraidfan.com/items/9
+  evidence: Fan database lists bow drill kits brought/given in 12 episodes; no brand
+    given
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00GP482TQ
+    asin: B00GP482TQ
+  notes: More complete, handmade-style kit; closest buyable to self-made survivor
+    kits.
+- item: fire starter
+  category: fire starting tool
+  product: Purefire Tactical Firestarter, Folding Model
+  brand: Purefire Tactical
+  match: similar
+  used_by: Same maker as EJ Snyder's S2E1 starter; folding variant not seen on the
+    show
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: EJ Snyder's comment names Purefire Tactical (Survival Model); the Folding
+    Model is the same brand's pocket variant
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0CP9ZGDVL
+    asin: B0CP9ZGDVL
+  - store: purefiretactical.com
+    url: https://purefiretactical.com/our-products/
+  notes: Optional alternative; the Survival Model is the one EJ named.
+- item: bow drill kit
+  category: fire starting tool
+  product: Sparks Fly Bow Drill Fire Starter kit
+  brand: Sparks Fly (ScoutSkills)
+  match: similar
+  used_by: Generic bow drill kit (see other entry for survivors)
+  evidence_url: https://www.nakedandafraidfan.com/items/9
+  evidence: Fan database lists bow drill kits brought/given in 12 episodes; no brand
+    given
+  buy:
+  - store: scoutskills.com
+    url: https://scoutskills.com/
+  notes: Brand site only (Amazon listing not found).
+- item: ''
+  category: fire starting tool
+  product: Wazoo Survival Gear Bushcraft Bracelet / Necklace
+  brand: Wazoo Survival Gear
+  match: similar
+  used_by: Dani Beau (Colombia 21-day and XL 40-day challenges), Wazoo brand ambassador
+  evidence_url: https://wazoogear.com/blogs/news/featured-american-survival-guide-march-2016-with-naked-and-afraid-star-dani-beau
+  evidence: 'Wazoo blog: March 2016 ad featuring Dani Beau showcasing the Bushcraft
+    Necklace and Bushcraft Bracelet; Wazoo calls her a Brand Ambassador.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00GWAQSDA
+    asin: B00GWAQSDA
+  notes: Dani's TikTok https://www.tiktok.com/@xdanibeau/video/7140284700999994670
+    shows 'the actual bag and necklace' from one of her challenges (brand not stated).
+    Which Amazon ASIN is bracelet vs necklace was not verified.
+- item: fishing kit
+  category: fishing tool
+  product: Yoyito aluminum hand line reel pocket fishing kit (Cuban-yoyo style handline)
+  brand: Yoyito
+  match: confirmed
+  used_by: Melissa Miller, S7 'Worlds Collide' (Ecuador Amazon, aired 2017-05-21);
+    she caught red-bellied piranha
+  evidence_url: https://www.fishingyoyito.com/nake_and_afraid-2/
+  evidence: Brand site page titled 'The Yoyito handline reel on Discovery's Naked
+    and Afraid with Melissa Miller fishing for piranha in the Amazon Jungle'; brand
+    copy also quoted on a forum says 'Watch episode Worlds Collide... to see the awesome
+    Melissa Miller catch piranha with the Yoyito'. Fan database lists Melissa Miller
+    bringing a fishing kit in Worlds Collide, and her diary says 'I caught 7 piranha
+    with my fishing line' (https://melissabackwoods.com/naked-and-afraid-ecuador/).
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01GM3UHYC
+    asin: B01GM3UHYC
+  - store: fishingyoyito.com (The Reel)
+    url: https://www.fishingyoyito.com/pages/the-reel
+  notes: Brand-level link is explicit; which Yoyito variant she carried (aluminum
+    vs urethane, line weight) is not stated. The brand's N&A page body was only a
+    consent banner in my fetch, so the page title is the evidence.
+- item: snorkel mask
+  category: fishing tool
+  product: Sea Sports low volume freediving/spearfishing mask (survivor fitted bifocal
+    lenses and a slap strap)
+  brand: Sea Sports
+  match: likely
+  used_by: Sarah Danser, S8 'Lost at Sea' (Bahamas, aired 2017-07-30)
+  evidence_url: https://blog.padi.com/naked-and-afraid-a-girl-and-her-mask/
+  evidence: 'PADI blog quotes Sarah Danser: ''I chose to bring was my SeaSports freediving
+    mask. I equipped it with bifocal lenses and a slap-strap''; she also used the
+    lenses to start a fire. Fan database lists her bringing a snorkel mask in Lost
+    at Sea.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00M6PMI1Q
+    asin: B00M6PMI1Q
+  - store: westsidedive.com (Sea Sports Low Volume 1527-02)
+    url: https://westsidedive.com/products/sea-sports-low-volume-freedive-mask-1527-02
+  notes: 'Brand is confirmed by the survivor; the exact SeaSports model is not named,
+    so the links are SeaSports low-volume masks (Amazon title: Low Volume Amber View).
+    Her bifocal lenses and strap were her own modifications.'
+- item: swimming goggles
+  category: fishing tool
+  product: Aqua Sphere Kayenne swim goggles with polarized lens
+  brand: Aqua Sphere
+  match: similar
+  used_by: Generic open-water goggle equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/6
+  evidence: Fan item page lists swimming goggles brought by Clint Jivoin and Jena
+    Ocean; no brand.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01N9T07S1
+    asin: B01N9T07S1
+  notes: Wider-lens open-water style.
+- item: fishing kit
+  category: fishing tool
+  product: Best Glide ASE Survival Fishing Kit (standard)
+  brand: Best Glide ASE
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/25
+  evidence: Same as above, no brand documented for the show's fishing kits.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B004HPQ72E
+    asin: B004HPQ72E
+  notes: Compact tin-style survival fishing kit.
+- item: paddles
+  category: fishing tool
+  product: Better Boat telescoping collapsible emergency paddle (19 to 35 inches)
+  brand: Better Boat
+  match: similar
+  used_by: Paddles given in 'Naked and Afraid Of Sharks' (Bahamas, aired 2018-07-29)
+  evidence_url: https://www.nakedandafraidfan.com/items/34
+  evidence: 'Fan item page: paddles given once, to the Naked and Afraid Of Sharks
+    team; no brand.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07R632RMN
+    asin: B07R632RMN
+  notes: Small emergency paddle, not a full-size kayak paddle.
+- item: cast net
+  category: fishing tool
+  product: Betts Tyzac Series cast net with utility box, 6 ft x 3/8 inch
+  brand: Betts
+  match: similar
+  used_by: Cast nets brought by Phaedra Brothers (XL S2 2016), Russell Sage (XL S3
+    2017), James Lewis (S9 2018), Frank Eytcheson (S16 Tobago 2023), Christopher James
+    (XL S10 2024); given in two 2026 Global Showdown episodes
+  evidence_url: https://www.nakedandafraidfan.com/items/30
+  evidence: Fan database lists cast net use but no brand or size.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B001PR9POY
+    asin: B001PR9POY
+  notes: Check local cast-net regulations.
+- item: gator line and hooks
+  category: fishing tool
+  product: 'Catahoula Gator Getter alligator kit (six 12/0 hooks, six ~30 ft lengths
+    of #96 tarred twisted twine, six clothespins)'
+  brand: Catahoula Manufacturing
+  match: similar
+  used_by: Lacey Jones (XL S4 2018); Amber Hargrove, Ryan Holt, Steven Lee Hall Jr
+    (XL S7 Louisiana 2021); Adam Kavanagh (XL S10 Colombia 2024); Tori Huggins (S19
+    'Flesh and Fangs', Florida, 2026-02-15)
+  evidence_url: https://www.nakedandafraidfan.com/items/53
+  evidence: Fan database lists 'gator line and hooks' brought by those survivors.
+    Show brand not identified; the Catahoula kit is the common commercial equivalent
+    (heavy tarred line + 12/0 hook + clothespin).
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01I289732
+    asin: B01I289732
+  - store: maybruns.com (Nets & More, single or 6-pack kits)
+    url: https://www.maybruns.com/all-categories/50-products/fishing-nets-supplies/hooks/351-gator-getter
+  notes: Alligator regulations vary by state; check local law.
+- item: diving mask
+  category: fishing tool
+  product: Cressi F1 frameless snorkel/dive mask
+  brand: Cressi
+  match: similar
+  used_by: Given to all 12 survivors in 'Abandon Ship' (Shipwrecked S1, Philippines,
+    aired 2026-08-02); brought by Max Djenohan in XL S5 'Waterworld' (2019)
+  evidence_url: https://www.nakedandafraidfan.com/items/54
+  evidence: 'Fan item page: diving mask given once (12 recipients) and brought once.
+    No brand identified.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0GHZVTK77
+    asin: B0GHZVTK77
+  notes: Budget frameless mask.
+- item: fins
+  category: fishing tool
+  product: 'Cressi full-foot diving fins (Amazon title: self-adjusting foot pocket,
+    beginner-friendly, energy-return blade)'
+  brand: Cressi
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/32
+  evidence: Same as above.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0GWFCT94D
+    asin: B0GWFCT94D
+  notes: Listing checked shows size 40/41 variant; confirm size.
+- item: diving mask
+  category: fishing tool
+  product: Cressi Nano low-volume freediving mask
+  brand: Cressi
+  match: similar
+  used_by: Generic freediving equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/54
+  evidence: Same as above, no brand identified for given/brought masks.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01CTU3QU4
+    asin: B01CTU3QU4
+  notes: Amazon listing is the black/green version.
+- item: snorkel mask
+  category: fishing tool
+  product: Cressi Pano 4 mask with Supernova Dry snorkel set
+  brand: Cressi
+  match: similar
+  used_by: Snorkel masks given in 'Naked and Afraid Of Sharks' (2018), 'Swimming Naked
+    with Sharks' (2020), 'Smoking the Competition' (2026)
+  evidence_url: https://www.nakedandafraidfan.com/items/7
+  evidence: Fan item page lists snorkel mask given in 3 episodes and brought in 3.
+    No brand except Sarah Danser's SeaSports (separate entry).
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0CKYNJ4DG
+    asin: B0CKYNJ4DG
+  notes: Mask plus dry-top snorkel set.
+- item: fins
+  category: fishing tool
+  product: Cressi Rondinella full foot snorkeling fins
+  brand: Cressi
+  match: similar
+  used_by: Fins given in 'Naked and Afraid Of Sharks' (2018), 'Swimming Naked with
+    Sharks' (2020, incl. Matt Wright and Jeff Zausch), and 'Abandon Ship' (2026)
+  evidence_url: https://www.nakedandafraidfan.com/items/32
+  evidence: 'Fan item page: fins given in 3 episodes (22 recipients). No brand.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00TEAYA76
+    asin: B00TEAYA76
+  notes: Sold by size; confirm size and availability.
+- item: fishing kit
+  category: fishing tool
+  product: Exotac xREEL handline survival pocket fishing kit
+  brand: Exotac
+  match: similar
+  used_by: Generic equivalent for the pocket handline 'fishing kit' brought in 34
+    episodes and given in 5
+  evidence_url: https://www.nakedandafraidfan.com/items/25
+  evidence: 'Fan database: fishing kit brought in 34 episodes and given in 5 (e.g.
+    Swimming Naked with Sharks, Abandon Ship); no brand identified.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B09RDVRV3V
+    asin: B09RDVRV3V
+  notes: Amazon title lists 6 hooks, 6 split shot and 2 floats.
+- item: cast net
+  category: fishing tool
+  product: Fitec EZ-Throw 750 cast net, 6 ft radius, 3/8 inch mesh
+  brand: Fitec
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/30
+  evidence: Same as above, no brand documented.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00QMSEA00
+    asin: B00QMSEA00
+  notes: Check local cast-net regulations.
+- item: bailer
+  category: fishing tool
+  product: Five Oceans 1 liter marine scoop bailer FO2149
+  brand: Five Oceans
+  match: similar
+  used_by: Bailer given to Ben Johnson and Sarah Danser in S8 'Lost at Sea' (Bahamas,
+    aired 2017-07-30)
+  evidence_url: https://www.nakedandafraidfan.com/items/26
+  evidence: 'Fan item page: bailer given once, in Lost at Sea. No brand.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00GHYTAVI
+    asin: B00GHYTAVI
+  notes: Generic hand scoop bailer.
+- item: gator line and hooks
+  category: fishing tool
+  product: Gator Pro 12/0 weighted alligator snatch hook with leader and swivel (Amazon
+    title lists brand Yifantacy)
+  brand: Yifantacy
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/53
+  evidence: Same fan item page; the show's hook brand is not named.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B071ZZHL94
+    asin: B071ZZHL94
+  notes: Snatch hook is a different technique from the baited-line method, so this
+    is a looser equivalent.
+- item: boat
+  category: fishing tool
+  product: Intex Explorer K2 inflatable 2-person kayak set with 86 inch oars and pump
+  brand: Intex
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/33
+  evidence: Same as above.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B08RDMM33X
+    asin: B08RDMM33X
+  notes: Intended for calm lakes and mild rivers.
+- item: boat
+  category: fishing tool
+  product: Intex Seahawk 2 inflatable 2-person boat with oars and pump (Amazon listing
+    is a 2-pack)
+  brand: Intex
+  match: similar
+  used_by: Boat given in 'Naked and Afraid Of Sharks' (Bahamas 2018), 'Swimming Naked
+    with Sharks' (Bahamas 2020) and 'This Is Gonna Suck So Bad' (Botswana, 2026-03-15)
+  evidence_url: https://www.nakedandafraidfan.com/items/33
+  evidence: 'Fan item page: boat given in 3 episodes, no brand or model. The actual
+    ''boat'' varies and may be a life raft or a makeshift raft.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07HQXGCLV
+    asin: B07HQXGCLV
+  notes: Generic inflatable equivalent. The checked listing title says '2 Pack', so
+    confirm quantity.
+- item: swimming goggles
+  category: fishing tool
+  product: Speedo Vanquisher 2.0 swim goggles
+  brand: Speedo
+  match: similar
+  used_by: Clint Jivoin (S1E4 'Punishment in Panama', aired 2013-07-14); Jena Ocean
+    (S19 'Like, Subscribe, Survive', Thailand, 2026-03-01)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: Gear list names Clint Jivoin's S1E4 item as 'Generic Swimming Goggles
+    (example)'; fan database lists swimming goggles brought by Clint Jivoin and Jena
+    Ocean. No brand identified for either.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01IYAW3JS
+    asin: B01IYAW3JS
+  notes: Generic example only.
+- item: gator line and hooks
+  category: fishing tool
+  product: 'Tarred black twisted nylon twine, size #96 (alligator line)'
+  brand: Super Brand
+  match: similar
+  used_by: Generic equivalent for the heavy line in 'gator line and hooks'
+  evidence_url: https://www.nakedandafraidfan.com/items/53
+  evidence: 'Item brought in 4 episodes per the fan database; line type not identified.
+    Catahoula''s own kit uses #96 tarred twisted twine.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01EMA22E0
+    asin: B01EMA22E0
+  notes: Brand 'Super Brand' is from an earlier search result, not re-checked on the
+    listing page.
+- item: bow
+  category: hunting weapon
+  product: Great Plains bows built for the show (solid diamond-wood riser, bamboo
+    core, mesquite laminations)
+  brand: Great Plains Traditional Bow Company
+  match: confirmed
+  used_by: Production-linked bows (bowyer's post dated Aug 2022); a Reddit commenter
+    asks whether the shop provided the bows for Matt Wright
+  evidence_url: https://www.reddit.com/r/Archery/comments/x2iil0/edge_sanding_the_bows_for_naked_and_afraid/
+  evidence: Account u/Greatplainsbows (Aug 31, 2022) posted 'the process of making
+    the bows for the show naked and afraid. These bows have a solid diamond wood riser
+    with bamboo core and mesquite laminations.' A companion post in r/nakedandafraid
+    (https://www.reddit.com/r/nakedandafraid/comments/x2im3g/getting_the_bows_for_naked_and_afraid_made/)
+    was seen in search results and reportedly gives a 60-inch length; that page could
+    not be fetched.
+  buy:
+  - store: greatplainsbow.com
+    url: https://www.greatplainsbow.com/
+  notes: Exact model and length of the show bows were not confirmed from a fetched
+    page. Custom shop, long lead times likely, not an impulse buy.
+- item: bow
+  category: hunting weapon
+  product: Great Plains custom traditional longbow/recurve (Matt Wright's and Brooke
+    Wright's show bows; 'Piranha Bushcrafter' and 'Osage' longbow models named)
+  brand: Great Plains Traditional Bow Company
+  match: confirmed
+  used_by: Matt Wright (Amazon, Ecuador, and South Africa); Brooke Wright (Mozambique,
+    'Bite Club', aired 2019-03-31)
+  evidence_url: https://www.extremeinstinct.com/sponsors.html
+  evidence: Matt Wright's own Extreme Instinct sponsor page says Great Plains Traditional
+    Bows offers 'the custom long bow Matt used during his Naked and Afraid survival
+    in the Amazon and South Africa and Brooke's custom long bow used in Mozambique',
+    and names the 'Piranha Bushcrafter' and 'Osage' models.
+  buy:
+  - store: greatplainsbow.com
+    url: https://www.greatplainsbow.com/
+  notes: Custom order via the bowyer (the sponsor page says to mention 'Matt Wright').
+    I did not find a product page named 'Piranha Bushcrafter', so the exact custom
+    model could not be matched to a listing.
+- item: bow
+  category: hunting weapon
+  product: Harvey Archery handmade laminated bow (Crowned Eagle hybrid longbow is
+    the listed example)
+  brand: Harvey Archery
+  match: likely
+  used_by: Warrick Harvey, S14E4 'Sibling Survival' (Zambia, aired 2022-03-06)
+  evidence_url: https://www.nakedandafraidfan.com/survivors/warrick-harvey
+  evidence: Fan database says Warrick Harvey is a South African bowyer who runs Harvey
+    Archery, where he handcrafts traditional bows, and lists a bow as his brought
+    item in S14E4. It does not say which Harvey Archery model he brought.
+  buy:
+  - store: harveyarchery.com (Crowned Eagle)
+    url: https://harveyarchery.com/product/custom-crowned-eagle/
+  notes: Brand is a reasonable inference (his own company), model is not identified.
+    Custom-order. Amazon listing not found.
+- item: atlatl
+  category: hunting weapon
+  product: Atlatl Madness atlatl handle and 5 ft dart set
+  brand: Atlatl Madness
+  match: similar
+  used_by: Generic lower-cost equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/49
+  evidence: Same as above.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07PX4DFQ5
+    asin: B07PX4DFQ5
+  notes: May be target-type darts; check tips before hunting use.
+- item: sling shot
+  category: hunting weapon
+  product: Barnett Diablo slingshot with wrist brace and contoured soft-touch grip
+  brand: Barnett
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/22
+  evidence: Same as above.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B000HE8NK8
+    asin: B000HE8NK8
+  notes: Includes target ammo per listing title.
+- item: bow
+  category: hunting weapon
+  product: Bear Archery Kodiak Hunter recurve bow (current production)
+  brand: Bear Archery
+  match: similar
+  used_by: Naked and Afraid XL S4 South Africa, 2018 (Melissa Miller brought a vintage
+    Bear Kodiak Hunter)
+  evidence_url: https://www.offgridweb.com/preparation/naked-and-afraid-the-naked-truth/
+  evidence: 'Melissa Miller: ''It was a vintage Bear Archery Kodiak Hunter'' that
+    she used to bow-fish catfish.'
+  more_sources:
+  - https://melissabackwoods.com/naked-and-afraid-xl-south-africa/
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B09J1RDBZL
+    asin: B09J1RDBZL
+  notes: Hers was a vintage model; these are the 2022 re-issue (50 lb and 45 lb right-hand).
+    One dealer page flags the 50 lb as unorderable.
+- item: blow gun
+  category: hunting weapon
+  product: Berserker Blowguns .40 cal MJOLNIR hunting blowgun with 20 darts
+  brand: Berserker Blowguns
+  match: similar
+  used_by: Matt Alexander (XL S3 'Heart of Darkness', Ecuador 2017), Angela Hammer
+    (XL S5 'Waterworld', Philippines 2019), Tim Phillips (XL S8 'I'm In Big Trouble',
+    Peru 2022)
+  evidence_url: https://www.nakedandafraidfan.com/items/51
+  evidence: Fan database lists the three survivors who brought a blow gun; no brand
+    identified.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07K4YDF42
+    asin: B07K4YDF42
+  notes: Modern commercial equivalent only. The Amazon listing showed 'currently unavailable'
+    when checked. Blowguns restricted in some places.
+- item: hawaiian sling
+  category: hunting weapon
+  product: Black Reef Ka Ma'a C.F. Hawaiian roller sling (band, shaft cup and sling;
+    shaft sold separately)
+  brand: Black Reef Company
+  match: similar
+  used_by: Generic higher-end equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/191
+  evidence: Fan item page lists the given item without a brand.
+  buy:
+  - store: blackreefcompany.com
+    url: https://www.blackreefcompany.com/product-page/ka-ma-a-c-f-hawaiian-roller-sling
+  notes: Amazon listing not found.
+- item: atlatl
+  category: hunting weapon
+  product: Catatonk Hunter atlatl with three 6 ft fletched darts (Amazon listing title)
+  brand: 'Unknown (listing title only: ''Catatonk Hunter'')'
+  match: similar
+  used_by: 'Steven Lee Hall Jr, Naked and Afraid XL S2 ''XL: Lions at the Gate'' (South
+    Africa, aired 2016-07-10)'
+  evidence_url: https://www.nakedandafraidfan.com/items/49
+  evidence: Fan database lists the atlatl as brought once, by Steven Lee Hall Jr;
+    no brand or model identified.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00HTSV8MK
+    asin: B00HTSV8MK
+  notes: Generic commercial equivalent.
+- item: spear gun
+  category: hunting weapon
+  product: Cressi Apache aluminum speargun (entry-level, closed muzzle; sizes 35-75
+    cm)
+  brand: Cressi
+  match: similar
+  used_by: Jena Ocean brought a spear gun (S19 'Like, Subscribe, Survive', Thailand,
+    aired 2026-03-01)
+  evidence_url: https://www.nakedandafraidfan.com/items/59
+  evidence: 'Fan item page: spear gun brought once, by Jena Ocean in Like, Subscribe,
+    Survive. Brand and model not identified.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00D2OWV1C
+    asin: B00D2OWV1C
+  notes: ASIN shown is the 60 cm size. Amazon reviews are mixed on durability. Spearguns
+    are restricted or illegal in some places; check local rules.
+- item: pole spear
+  category: hunting weapon
+  product: Cressi FG2 fiberglass pole spear
+  brand: Cressi
+  match: similar
+  used_by: Given to the five-person team (Chris Fischer, Eva Rupert, Ky Furneaux,
+    Ryan Holt, Steven Lee Hall Jr) in 'Naked and Afraid Of Sharks' (Bahamas, aired
+    2018-07-29)
+  evidence_url: https://www.nakedandafraidfan.com/items/35
+  evidence: 'Fan item page: pole spear given once, in Naked and Afraid Of Sharks.
+    No brand identified.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0BNM1Q9XG
+    asin: B0BNM1Q9XG
+  notes: Budget pole spear.
+- item: sling shot
+  category: hunting weapon
+  product: Daisy P51 slingshot complete kit (wrist brace, steel ammo, replacement
+    band)
+  brand: Daisy
+  match: similar
+  used_by: Slingshots brought by Matt Alexander (S6 'Contamination', Philippines 2016),
+    Brandon Snyder (S13 'USA vs. World' 2021), Robin Hill (S16 'Odd Man Out', Zambia
+    2023), Steven Lee Hall Jr (S18 'Return of the King', Kentucky 2025)
+  evidence_url: https://www.nakedandafraidfan.com/items/22
+  evidence: Fan database lists the four survivors who brought a slingshot. No brand
+    named.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00419DPIU
+    asin: B00419DPIU
+  notes: Generic equivalent only. Amazon listing will not ship to New York per its
+    description.
+- item: bow
+  category: hunting weapon
+  product: Easton Axis Traditional arrows, 4-inch feather fletched (6 pack)
+  brand: Easton
+  match: similar
+  used_by: Generic equivalent for the feathered arrows with steel broadheads seen
+    on Matt Wright's bow
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/b5y862/matts_bow_is_it_store_bought_are_the_arrows/
+  evidence: Reddit commenter (Apr 1, 2019) says Matt's bow is a factory-made laminated
+    recurve and the arrows have steel broadheads and plastic nocks. No arrow brand
+    is named anywhere I found.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00BD51I2K
+    asin: B00BD51I2K
+  notes: Arrows, filed under item 'bow'. Spine must match draw weight. Broadheads
+    sold separately.
+- item: bow
+  category: hunting weapon
+  product: Gold Tip Traditional arrows, 4-inch feather fletched (6 pack)
+  brand: Gold Tip
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/b5y862/matts_bow_is_it_store_bought_are_the_arrows/
+  evidence: 'Same as above: the show''s arrow brands are not documented. Gold Tip
+    Traditional is a comparable feathered carbon arrow for recurve/longbow.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00XRFDPNO
+    asin: B00XRFDPNO
+  notes: Arrows, filed under item 'bow'. The listed ASIN is the 340 spine. Match spine
+    to the bow.
+- item: bow
+  category: hunting weapon
+  product: Great Plains SR Swift Long Curve takedown recurve ('Green Mamba' on Amazon),
+    58-inch
+  brand: Great Plains Traditional Bow Company
+  match: similar
+  used_by: Closest Amazon-buyable bow from the maker of the show's bows; not itself
+    identified on screen
+  evidence_url: https://www.extremeinstinct.com/sponsors.html
+  evidence: Same maker as Matt and Brooke Wright's custom show bows. The Amazon listings
+    (brand 'Great Plains Tradtional Bow Company' as spelled on Amazon) describe the
+    SR Swift Long Curve, 58-inch recurve, 'Green Mamba' finish. No source says this
+    model is the one used on the show.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01MSU7UNQ
+    asin: B01MSU7UNQ
+  - store: greatplainsbow.com (SR Swift Takedown Recurve)
+    url: https://www.greatplainsbow.com/product-page/sr-swift-takedown-recurve
+- item: hawaiian sling
+  category: hunting weapon
+  product: HammerHead Traditional Hawaiian Sling (all-wood, pre-tied; sold with or
+    without a 60-inch shaft)
+  brand: HammerHead
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/191
+  evidence: Fan item page lists the given item without a brand.
+  buy:
+  - store: spearfishingworld.com
+    url: https://www.spearfishingworld.com/product/hammerhead-traditional-hawaiian-sling/
+  - store: hammerheadwebstore.com (sling shafts)
+    url: https://hammerheadwebstore.com/products/hawaiian-sling-shafts.html
+  notes: Amazon listing for the HammerHead sling not found. Spearfishing World notes
+    it suits no-speargun areas like the Bahamas.
+- item: hawaiian sling
+  category: hunting weapon
+  product: Hawaiian sling spear shaft with slide ring and heavy-duty flopper, 9/32
+    inch x 60 inch (for reel-and-line slings)
+  brand: Spearfishing World
+  match: similar
+  used_by: Generic equivalent shaft for the given Hawaiian slings
+  evidence_url: https://www.nakedandafraidfan.com/items/191
+  evidence: 'Fan item page: Hawaiian sling given in 2 episodes. No brand.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0BSG26MXG
+    asin: B0BSG26MXG
+  notes: Shaft only; needs a sling shooter (see other entries).
+- item: snare wire
+  category: hunting weapon
+  product: Jamie Burleigh Signature Trapping Survival Card (credit-card trapping kit)
+  brand: Jamie Burleigh
+  match: similar
+  used_by: Generic compact trapping equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/21
+  evidence: Fan item page lists snare wire brought twice, no brand.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B09RHKQMSH
+    asin: B09RHKQMSH
+  notes: A trap-parts card, not a roll of wire.
+- item: pole spear
+  category: hunting weapon
+  product: JBL Spearguns 6 ft Shaka Black carbon pole spear, 3-piece
+  brand: JBL
+  match: similar
+  used_by: Generic higher-end equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/35
+  evidence: 'Same as above: pole spear given, no brand.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0871JTDJX
+    asin: B0871JTDJX
+  - store: jblspearguns.com (Shaka Hybrid Carbon, a different model)
+    url: https://jblspearguns.com/products/shaka-hybrid-carbon-pole-spears
+  - store: spearfishingworld.com (Shaka Carbon Hybrid)
+    url: https://www.spearfishingworld.com/product/jbl-3-piece-shaka-carbon-hybrid-polespear/
+  notes: The Amazon listing is the Shaka Black; the two store links are the Shaka
+    Hybrid Carbon.
+- item: pole spear
+  category: hunting weapon
+  product: Riffe 6 ft carbon fiber pole spear, 2 piece
+  brand: Riffe
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/35
+  evidence: 'Same as above: pole spear given, no brand.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B081DBQ1X8
+    asin: B081DBQ1X8
+  notes: Carbon option.
+- item: spear gun
+  category: hunting weapon
+  product: Salvimar Metal speargun, 75 cm (aluminum barrel, double 14 mm bands, with
+    reel)
+  brand: Salvimar
+  match: similar
+  used_by: Generic equivalent only
+  evidence_url: https://www.nakedandafraidfan.com/items/59
+  evidence: Same as above, no brand identified.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01N1JJGZM
+    asin: B01N1JJGZM
+  notes: Larger and more powerful than the Apache.
+- item: bow
+  category: hunting weapon
+  product: Samick Sage 62-inch takedown recurve (budget takedown recurve)
+  brand: Samick
+  match: similar
+  used_by: No survivor identified. Included as a budget takedown-recurve equivalent
+    only
+  evidence_url: https://www.nakedandafraidfan.com/items/types/hunting%20weapon
+  evidence: Fan database lists bows brought in dozens of episodes but names no brands.
+    I found no source tying a Samick Sage to this show.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B007PD8B0G
+    asin: B007PD8B0G
+  notes: Pure generic equivalent.
+- item: snare wire
+  category: hunting weapon
+  product: SSBSS snare wire, 2 pack with fixing knob and hook, large size
+  brand: SSBSS
+  match: similar
+  used_by: 'Jake Nodar (XL S2 ''XL: Lions at the Gate'', 2016); Jeremy McCaa (S5 ''All
+    or Nothing'', Philippines, aired 2015-11-01)'
+  evidence_url: https://www.nakedandafraidfan.com/episodes/204
+  evidence: 'Fan episode page for XL: Lions at the Gate lists Jake Nodar''s brought
+    item as snare wire; fan item page lists snare wire brought twice. Brand not identified.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0DK1WBWJ1
+    asin: B0DK1WBWJ1
+  notes: Thin Amazon listing. The show items were probably a plain roll of wire, not
+    pre-made snares.
+- item: hawaiian sling
+  category: hunting weapon
+  product: Traditional Hawaiian sling shooter with 60 inch, 9/32 inch 17-4 stainless
+    shaft (Amazon listing title)
+  brand: Unknown (seller listing, brand not captured)
+  match: similar
+  used_by: Given to all 12 survivors in 'Abandon Ship' (Shipwrecked S1, Philippines,
+    aired 2026-08-02) and to six survivors including Matt Wright in 'Smoking the Competition'
+    (Global Showdown S1, South Africa, 2026-07-12)
+  evidence_url: https://www.nakedandafraidfan.com/items/191
+  evidence: Fan item page lists the Hawaiian sling given in those two episodes (18
+    recipients); no brand identified.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00DCEVP1Y
+    asin: B00DCEVP1Y
+  notes: Generic equivalent; shooter with shaft per listing title.
+- item: blow gun
+  category: hunting weapon
+  product: Venom Blowguns 5-inch .40 cal Pro-Length hunting series darts (25 pack)
+  brand: Venom Blowguns
+  match: similar
+  used_by: Generic dart refill for .40 cal blowguns
+  evidence_url: https://www.nakedandafraidfan.com/items/51
+  evidence: 'Same as above: blow guns brought three times, no dart brand documented.'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01HKJAZEO
+    asin: B01HKJAZEO
+  notes: Darts only. Amazon listing says buyer must be 18+.
+- item: swimming goggles
+  category: other
+  product: Aqua Sphere Kaiman swim goggle
+  brand: Aqua Sphere
+  match: similar
+  used_by: S1E4 Punishment in Panama (Clint Jivoin brought swimming goggles)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com lists 'Generic Swimming Goggles (example)' for
+    Clint Jivoin and links this product as the example.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B000ENST92
+    asin: B000ENST92
+  notes: 'Amazon title: ''Aqua Sphere Kaiman Swim Goggle, Made In Italy''. Only an
+    example; actual goggles unidentified.'
+- item: flashlight
+  category: other
+  product: Maglite Mini LED Flashlight (2xAAA)
+  brand: MagLite
+  match: similar
+  used_by: Jeremy Upshaw and Trish Bulinsky, S10 'Don't Let the Jungle Bugs Bite'
+    (Colombia, 2019) were given a flashlight
+  evidence_url: https://www.nakedandafraidfan.com/items/40
+  evidence: Fan wiki lists a flash light as given in that one episode; make and model
+    not stated.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B009SKX3QG
+    asin: B009SKX3QG
+  notes: Generic compact waterproof flashlight.
+- item: diving mask
+  category: other
+  product: Speedo Adventure Series anti-fog swim/snorkel mask with nose cover
+  brand: Speedo
+  match: similar
+  used_by: S1E8 Double Jeopardy (Forrest Galante brought diving goggles)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com lists 'Generic Diving Goggles (example)' for
+    Forrest Galante and links this product as the example.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B002MBHGWA
+    asin: B002MBHGWA
+  notes: 'Amazon title: ''Speedo Unisex-Adult Swim Snorkel Dive Mask Anti-Fog with
+    Nose Cover Adventure Series''. Only an example; actual mask unidentified.'
+- item: pot
+  category: pot
+  product: CanCooker Junior 2-gallon steam cooker
+  brand: CanCooker
+  match: likely
+  used_by: The locking-lid pot given to survivors in most seasons; identified from
+    Season 8 XL (Peru, 2022)
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/1ns1u4i/looking_for_the_pot_used_in_the_show/
+  evidence: Fans identify it as a CanCooker; a commenter posting as EJ Snyder replies
+    'Yep Can Cooker', and a Season 8 XL thread names the Junior 2 gal.
+  more_sources:
+  - https://www.reddit.com/r/NakedandAfraidXL/comments/vvh6wx/found_the_cooking_pot_from_season_8/
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00B22G0PO
+    asin: B00B22G0PO
+  - store: cancooker.com
+    url: https://www.cancooker.com/
+  notes: Identified by fans, not confirmed by the production; the exact model and
+    size on screen vary. This is the standard Junior (2-gallon) size.
+- item: pot
+  category: pot
+  product: GSI Outdoors Glacier Stainless Bottle Cup / Pot
+  brand: GSI Outdoors
+  match: likely
+  used_by: S3E2 Primal Fear (Lindsey Leitelt); S1E2 Terror in Tanzania (Kellie Nightlinger
+    - morethanjustsurviving.com says her pot was 'similar')
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com names the GSI Glacier Stainless cup/pot for
+    Leitelt and as the closest match to Nightlinger's pot; EJ Snyder's comment calls
+    Kellie's pot durable but not the brand.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B001LF3IB6
+    asin: B001LF3IB6
+  notes: 'Amazon title: ''GSI Outdoors Glacier Stainless Steel Bottle Cup I Lightweight
+    Cup or Pot ... 20 oz''.'
+- item: pot
+  category: pot
+  product: Bruntmor 10 qt Cast Iron Pre-Seasoned Potjie African Pot with Lid (Size
+    4, SC634)
+  brand: Bruntmor
+  match: similar
+  used_by: XL Season 6 (South Africa 'banishment' challenge) shallow, heavy 3-footed
+    cast-iron pots given to each team
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/uuxtkh/cast_iron_pots_in_s6_naaxl/
+  evidence: 'r/nakedandafraid thread: S6 XL pots were heavy cast iron with small feet;
+    a South African commenter identifies the style as ''potjie pots'''
+  buy:
+  - store: homedepot.com
+    url: https://www.homedepot.com/p/Bruntmor-10-qt-Cast-Iron-Pre-Seasoned-Potjie-African-Pot-with-Lid-Size-4-SC634/317951802
+  notes: Style match (potjie), not a brand identification. Amazon listing for Bruntmor
+    not found.
+- item: pot
+  category: pot
+  product: CanCooker Original 4-gallon convection steam cooker
+  brand: CanCooker
+  match: similar
+  used_by: Larger CanCooker sizes appear to be what the show's locking-lid pots are
+    modeled on; XL-era thread says 'Can Cooker' in various sizes
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/wc9v1x/containers_used_in_xl_challenges/
+  evidence: 'r/nakedandafraid thread on XL containers: commenters (incl. user ejsnyder333)
+    say the latched aluminum pots are Can Cookers sold in various sizes at Sportsman''s
+    Warehouse'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01EMO0ET6
+    asin: B01EMO0ET6
+  - store: cancooker.com
+    url: https://www.cancooker.com/
+  notes: Size actually used on the show is unconfirmed; the 2 gal Jr is the more likely
+    match.
+- item: pot
+  category: pot
+  product: Cuisiland 10QT Cast Iron Potjie Cauldron Pot with Lid & 3 Legs
+  brand: Cuisiland
+  match: similar
+  used_by: Style of the cast-iron pots given in XL Season 6 (South Africa)
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/uuxtkh/cast_iron_pots_in_s6_naaxl/
+  evidence: Reddit thread identifies the S6 XL pots as South African potjie-style
+    cast iron
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B07GX37F9S
+    asin: B07GX37F9S
+  notes: Look-alike only.
+- item: pot
+  category: pot
+  product: Cuisiland 3.2QT Cast Iron Potjie Cauldron Pot with Lid & 3 Legs
+  brand: Cuisiland
+  match: similar
+  used_by: Style of the cast-iron pots given in XL Season 6 (South Africa); smaller,
+    more portable size
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/uuxtkh/cast_iron_pots_in_s6_naaxl/
+  evidence: Reddit thread identifies the S6 XL pots as South African potjie-style
+    cast iron
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0BYCBSSR3
+    asin: B0BYCBSSR3
+  notes: Look-alike only; the show's pots were reported as shallow and very heavy.
+- item: pot
+  category: pot
+  product: Cuisiland 8.5QT Cast Iron Potjie Cauldron Pot with Lid & 3 Legs
+  brand: Cuisiland
+  match: similar
+  used_by: Style of the cast-iron pots given in XL Season 6 (South Africa)
+  evidence_url: https://www.reddit.com/r/nakedandafraid/comments/uuxtkh/cast_iron_pots_in_s6_naaxl/
+  evidence: Reddit thread identifies the S6 XL pots as South African potjie-style
+    cast iron; this is a buyable Amazon potjie
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B081S9972V
+    asin: B081S9972V
+  notes: Look-alike for the potjie style only. Two Amazon listings for the same 8.5
+    qt size.
+- item: pot
+  category: pot
+  product: Cuisinart Chef's Classic Enameled Cast Iron Dutch Oven, 7-quart
+  brand: Cuisinart
+  match: similar
+  used_by: Season 4 Ep 3 'Mayan Sacrifice' (Luke Pytlik's pot)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: 'morethanjustsurviving.com season 4 list: Luke Pytlik ''Pot similar to
+    this one'' (link resolves to this Amazon listing)'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0017HRLFC
+    asin: B0017HRLFC
+  notes: Dutch-oven look-alike only. Heavy; kitchen enameled cast iron, not a campfire-specific
+    product.
+- item: pot
+  category: pot
+  product: Open Country 10-quart aluminum covered kettle
+  brand: Open Country
+  match: similar
+  used_by: S4E5 Fire on the Mountain (Jennifer Cochran - aluminum pot)
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com says Jennifer Cochran's aluminum pot is 'similar
+    to this one' and links this listing.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B000M0KYRW
+    asin: B000M0KYRW
+  notes: 'Amazon title: ''Open Country Aluminum Coverd Kettle- 10 Quart'' (10 qt looks
+    large for the show; treat as loose equivalent).'
+- item: pot
+  category: pot
+  product: Open Country 4 Quart Aluminum Covered Kettle
+  brand: Open Country
+  match: similar
+  used_by: Season 3 Ep 7 'Playing With Fire' (Corinne Kohlen, stainless pot 'similar
+    to' this); Season 1 Ep 5 'Breaking Borneo' (Julie Wright, generic camping pot
+    'example')
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com list links this Open Country covered kettle
+    as the closest buyable equivalent for Corinne Kohlen's S3E7 pot and as the 'example'
+    for Julie Wright's S1E5 pot
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B001OPHFN0
+    asin: B001OPHFN0
+  notes: morethanjustsurviving.com itself calls Julie Wright's pot 'generic' and a
+    reader comment says it looked heavier-duty than a billy can. Not a confirmed product.
+- item: pot
+  category: pot
+  product: Stansport Stainless Steel Solo II Cook Pot
+  brand: Stansport
+  match: similar
+  used_by: Season 4 Ep 4 'Edge of Madness' (Afften DeShazer) and Season 4 Ep 8 'Garden
+    of Evil' (Robin Barber), stainless steel pots
+  evidence_url: https://morethanjustsurviving.com/naked-and-afraid-survival-gear/
+  evidence: morethanjustsurviving.com season 4 list gives 'Stainless steel pot similar
+    to this one' for both survivors (link resolves to this Amazon listing)
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B004Z10XTI
+    asin: B004Z10XTI
+  notes: Closest-equivalent suggested by the blog; actual brand not identified.
+- item: ''
+  category: media
+  product: A Modern Guide to Knifemaking by Laura Zerra
+  brand: Quarry Books
+  match: confirmed
+  used_by: Laura Zerra (cast member)
+  evidence_url: https://www.amazon.com/dp/1631595059
+  evidence: Amazon listing for a knifemaking book by Laura Zerra, a Naked and Afraid
+    cast member.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/1631595059
+    asin: '1631595059'
+  notes: A second Zerra title, Modern Knifemaking for Beginners (Quarto), was mentioned
+    in results but no Amazon link was seen.
+- item: ''
+  category: media
+  product: Adventure Awaits by Ky Furneaux
+  brand: Applesauce Press
+  match: confirmed
+  used_by: Ky Furneaux
+  evidence_url: https://www.amazon.com/dp/1400347165
+  evidence: Amazon listing for an outdoors guide by Ky Furneaux, a Naked and Afraid
+    cast member.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/1400347165
+    asin: '1400347165'
+- item: ''
+  category: media
+  product: Emergency Home Preparedness by EJ Snyder
+  brand: Skyhorse Publishing
+  match: confirmed
+  used_by: EJ Snyder (cast member)
+  evidence_url: https://www.amazon.com/dp/151077954X
+  evidence: Amazon listing for a preparedness book by EJ Snyder, a Naked and Afraid
+    cast member.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/151077954X
+    asin: 151077954X
+- item: ''
+  category: media
+  product: 'Naked & Afraid: Lost in Paradise (DVD)'
+  brand: Discovery
+  match: confirmed
+  used_by: Compilation release
+  evidence_url: https://www.amazon.com/dp/B01I06MJAE
+  evidence: Amazon DVD listing.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01I06MJAE
+    asin: B01I06MJAE
+- item: ''
+  category: media
+  product: Naked And Afraid - Season 2 Collection 1 and Collection 2 (DVD-R, PAL)
+  brand: Discovery
+  match: confirmed
+  used_by: Season 2
+  evidence_url: https://www.amazon.com/dp/B0BNXF133Q
+  evidence: Amazon listings say manufactured on DVD-R under exclusive license from
+    Discovery Channel (PAL, 4 discs each, Dec 2022).
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0BNXF133Q
+    asin: B0BNXF133Q
+  notes: PAL / on-demand discs, not Region 1 retail pressings.
+- item: ''
+  category: media
+  product: Naked and Afraid XL, Season 10 (Prime Video)
+  brand: Discovery
+  match: confirmed
+  used_by: XL Season 10
+  evidence_url: https://www.amazon.com/dp/B0D3DTF49W
+  evidence: Amazon Prime Video XL season page.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0D3DTF49W
+    asin: B0D3DTF49W
+  notes: XL seasons 6-8 pages not retrieved.
+- item: ''
+  category: media
+  product: Naked and Afraid XL, Season 9 (Prime Video)
+  brand: Discovery
+  match: confirmed
+  used_by: XL Season 9
+  evidence_url: https://www.amazon.com/dp/B0B5M1JBBD
+  evidence: Official Prime Video season page for Naked and Afraid XL Season 9.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0DPLQNGKC
+    asin: B0DPLQNGKC
+- item: ''
+  category: media
+  product: 'Naked and Afraid XL: Season 1 (DVD + Digital)'
+  brand: Discovery
+  match: confirmed
+  used_by: XL Season 1
+  evidence_url: https://www.amazon.com/dp/B01F2R9WVI
+  evidence: 'Amazon listing: 12 survival experts take on a 40-day challenge (NTSC,
+    release Jul 12 2016).'
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B01F2R9WVI
+    asin: B01F2R9WVI
+- item: ''
+  category: media
+  product: Naked and Afraid, Season 19 (Prime Video)
+  brand: Discovery
+  match: confirmed
+  used_by: Season 19 (2026)
+  evidence_url: https://www.amazon.com/dp/B0GLV8K4K3
+  evidence: Amazon Prime Video season page.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0GLV8K4K3
+    asin: B0GLV8K4K3
+- item: ''
+  category: media
+  product: 'Naked and Afraid: Global Showdown, Season 1 (Prime Video)'
+  brand: Discovery
+  match: confirmed
+  used_by: Global Showdown
+  evidence_url: https://www.amazon.com/dp/B0GZKJ9CXT
+  evidence: Amazon Prime Video season page.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B0GZKJ9CXT
+    asin: B0GZKJ9CXT
+- item: ''
+  category: media
+  product: 'Naked and Afraid: Season 1 (DVD)'
+  brand: Discovery
+  match: confirmed
+  used_by: Season 1
+  evidence_url: https://www.amazon.com/dp/B00S4YGX5A
+  evidence: Amazon DVD listing for Naked and Afraid Season 1 (NTSC, release Apr 21
+    2015).
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00S4YGX5A
+    asin: B00S4YGX5A
+  notes: No retail DVD/Blu-ray sets for seasons 11+ found.
+- item: ''
+  category: media
+  product: 'Small Game: A Novel by Blair Braverman'
+  brand: Ecco / HarperCollins
+  match: confirmed
+  used_by: Blair Braverman (cast member)
+  evidence_url: https://www.amazon.com/dp/0063066173
+  evidence: Amazon listing for a novel by Blair Braverman, a Naked and Afraid cast
+    member.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/0063066173
+    asin: '0063066173'
+  notes: Fiction, not an official N&A product. Other ASINs are alternate formats seen
+    in results.
+- item: ''
+  category: media
+  product: Survive by Ky Furneaux (paperback)
+  brand: Cider Mill Press
+  match: confirmed
+  used_by: Ky Furneaux (cast member)
+  evidence_url: https://www.amazon.com/dp/1646432185
+  evidence: Amazon listing for a survival book by Ky Furneaux, a Naked and Afraid
+    cast member.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/1646432185
+    asin: '1646432185'
+- item: ''
+  category: media
+  product: The Wild Twins by Amber and Serena Shine
+  brand: HarperCollins
+  match: confirmed
+  used_by: Amber and Serena Shine (cast members, Season 11 'Twinning')
+  evidence_url: https://www.amazon.com/dp/1775541762
+  evidence: Amazon listing for a memoir by Amber and Serena Shine, Naked and Afraid
+    cast members.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/1775541762
+    asin: '1775541762'
+- item: ''
+  category: media
+  product: When the Grid Fails by Ky Furneaux
+  brand: Cider Mill Press
+  match: confirmed
+  used_by: Ky Furneaux
+  evidence_url: https://www.amazon.com/dp/1646432533
+  evidence: Amazon listing for a preparedness book by Ky Furneaux, a Naked and Afraid
+    cast member.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/1646432533
+    asin: '1646432533'
+- item: ''
+  category: media
+  product: 'Naked and Afraid: The Game / Lost in Tropics (Steam)'
+  brand: Steam
+  match: similar
+  used_by: Licensed PC game
+  evidence_url: https://store.steampowered.com/app/1082410
+  evidence: Steam app 1082410; the title appears to have been renamed Lost in Tropics.
+  buy:
+  - store: steam
+    url: https://store.steampowered.com/app/1082410
+  notes: Licence status after the rename not verified. No official toys or board games
+    found.
+- item: ''
+  category: merch
+  product: Extreme Instinct Savage-style hats, tees and apparel (AB Designs Co.)
+  brand: Extreme Instinct
+  match: confirmed
+  used_by: Matt Wright
+  evidence_url: https://abdesignsco.com/pages/extreme-instinct
+  evidence: AB Designs Co. page for Extreme Instinct apparel.
+  buy:
+  - store: abdesignsco.com
+    url: https://abdesignsco.com/pages/extreme-instinct
+  notes: Cast-owned brand; not Discovery-licensed as far as seen.
+- item: ''
+  category: merch
+  product: Jake Nodar merch
+  brand: Jake Nodar
+  match: confirmed
+  used_by: Jake Nodar
+  evidence_url: https://www.jakenodar.com/
+  evidence: Cast member's own site with a merch store.
+  buy:
+  - store: jakenodar.com
+    url: https://www.jakenodar.com/
+  notes: Novelty merch, not survival gear. No Nodar gear line found.
+- item: ''
+  category: merch
+  product: Naked and Afraid Men's Censored T-Shirt
+  brand: Discovery
+  match: confirmed
+  used_by: Official Discovery apparel
+  evidence_url: https://www.amazon.com/dp/B00QKO4NAI
+  evidence: Amazon listing for the men's Censored multicolor tee, returned alongside
+    the Discovery Channel Store N&A shirts.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00QKO4NAI
+    asin: B00QKO4NAI
+  notes: Size-specific ASIN (XXL). Brand/seller not verified on the page.
+- item: ''
+  category: merch
+  product: Naked and Afraid Unisex Silhouettes T-Shirt, Heather Grey
+  brand: Discovery Channel Store
+  match: confirmed
+  used_by: Official Discovery apparel
+  evidence_url: https://www.amazon.com/dp/B00IIUEY92
+  evidence: Amazon listing, brand Discovery Channel Store, heather grey.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00IIUEY92
+    asin: B00IIUEY92
+  notes: Size-specific ASIN (XXL).
+- item: ''
+  category: merch
+  product: Naked and Afraid Unisex T-Shirt, Charcoal
+  brand: Discovery Channel Store
+  match: confirmed
+  used_by: Official Discovery apparel
+  evidence_url: https://www.amazon.com/dp/B00IIUF54U
+  evidence: Amazon listing, brand Discovery Channel Store, 100% cotton, first available
+    Feb 4 2014.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00IIUF54U
+    asin: B00IIUF54U
+- item: ''
+  category: merch
+  product: Naked and Afraid Women's T-Shirt, Navy
+  brand: Discovery Channel Store
+  match: confirmed
+  used_by: Official Discovery apparel
+  evidence_url: https://www.amazon.com/dp/B00IIUF6WG
+  evidence: Amazon listing, brand Discovery Channel Store, women's relaxed fit, navy.
+  buy:
+  - store: amazon
+    url: https://www.amazon.com/dp/B00IIUF6WG
+    asin: B00IIUF6WG
+- item: ''
+  category: merch
+  product: Discovery ABA official merchandise store (Bonfire)
+  brand: Discovery (via Bonfire)
+  match: similar
+  used_by: Discovery-branded print-on-demand store
+  evidence_url: https://www.bonfire.com/store/discovery-aba/
+  evidence: Bonfire store titled 'Discovery ABA | Official Merchandise'.
+  buy:
+  - store: bonfire
+    url: https://www.bonfire.com/store/discovery-aba/
+  notes: Page content did not render in fetch, so Naked and Afraid designs there are
+    UNVERIFIED.
