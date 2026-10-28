@@ -4,6 +4,7 @@ require "minitest/mock"
 class Admin::ShopControllerTest < ActionDispatch::IntegrationTest
   PRODUCTS = [
     { item: "pot", category: "pot", product: "CanCooker Jr.", brand: "CanCooker", match: "likely",
+      image: "https://m.media-amazon.com/images/I/abc._AC_SL500_.jpg",
       used_by: "Season 8", evidence_url: "https://example.com/e", evidence: "Fans say so",
       more_sources: ["https://example.com/e2"],
       buy: [{ store: "amazon", url: "https://www.amazon.com/dp/B0B74MT6VM", asin: "B0B74MT6VM" },
@@ -108,6 +109,17 @@ class Admin::ShopControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "each card shows its product photo, or a placeholder when there is none" do
+    sign_in(users(:admin))
+    with_products do
+      get admin_shop_path
+      assert_select "li.shop-product img[src=?][alt=?]", "https://m.media-amazon.com/images/I/abc._AC_SL500_.jpg", "CanCooker Jr."
+      assert_select "li.shop-product", 3
+      assert_select "li.shop-product img", 1
+      assert_select "li.shop-product .shop-product-image", 3
+    end
+  end
+
   test "the associate tag is appended to amazon links only when configured" do
     link = PRODUCTS[0][:buy][0]
     assert_equal "https://www.amazon.com/dp/B0B74MT6VM", ShopCatalog.buy_url(link, tag: nil)
@@ -125,6 +137,14 @@ class ShopCatalogDataTest < ActiveSupport::TestCase
       REQUIRED.each { |k| assert p[k].present?, "#{p[:product].inspect} is missing #{k}" }
       assert_includes ShopCatalog::MATCHES, p[:match], "#{p[:product]}: bad match #{p[:match].inspect}"
       assert p[:buy].is_a?(Array) && p[:buy].any?, "#{p[:product]} has no buy links"
+    end
+  end
+
+  test "product images are https image urls" do
+    with_image = ShopCatalog.products.select { |p| p[:image].present? }
+    assert with_image.size > 100, "expected most products to have a photo"
+    with_image.each do |p|
+      assert_match %r{\Ahttps://\S+\z}, p[:image], "#{p[:product]}: bad image url"
     end
   end
 

@@ -4,7 +4,13 @@
 - badge_label = "Official / cast-made" if ShopCatalog::NON_GEAR.include?(product[:category]) && product[:match] == "confirmed"
 li.list-group-item.shop-product
   .d-flex.flex-wrap.justify-content-between.gap-3
-    .flex-grow-1(style="min-width: 260px;")
+    .shop-product-image.flex-shrink-0.d-flex.align-items-center.justify-content-center.border.rounded.bg-white(style="width: 96px; height: 96px;")
+      - if product[:image].present?
+        = image_tag product[:image], alt: product[:product], loading: "lazy", referrerpolicy: "no-referrer",
+          style: "max-width: 100%; max-height: 100%; object-fit: contain;"
+      - else
+        span.fs-2.text-muted aria-hidden="true" 🛒
+    .flex-grow-1(style="min-width: 220px;")
       .fw-semibold
         = product[:product]
         span.badge.ms-2 class=badge_class = badge_label

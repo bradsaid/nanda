@@ -6,7 +6,8 @@
 #        likely    = several fan sources agree, or a single secondary gear list
 #        similar   = closest buyable equivalent to something seen on the show
 # Never add an ASIN or URL that was not actually seen on the live page. No prices.
-# Amazon links were checked live on 2026-10-28.
+# Amazon links and images were checked live on 2026-10-28. image: product photo URL (Amazon CDN or the
+# store's og:image); optional. Amazon image URLs can go stale; swap in PA-API images before going public.
 
 - item: kukri
   category: blade
@@ -24,6 +25,7 @@
   notes: Link is to a premium collector variant (order by contact), not the exact
     standard model. No Amazon listing found. The maker's Facebook post is not linked.
 - item: knife
+  image: https://m.media-amazon.com/images/I/314PPzUZv7L._AC_SL500_.jpg
   category: blade
   product: Colonial Knife Defiant E.T.A.G. Bushcraft Knife (CE-400)
   brand: Colonial Knife
@@ -56,6 +58,7 @@
     url: https://www.dskw.ca/mako-shark.php
   notes: No Amazon listing found. Custom Canadian maker; ordering is through the maker.
 - item: knife
+  image: https://www.extremeinstinct.com/uploads/5/8/0/1/5801928/s504521426379210152_p137_i1_w640.jpeg
   category: blade
   product: Extreme Instinct 'The Naked and NOT Afraid' custom survival knife
   brand: Extreme Instinct
@@ -71,6 +74,7 @@
     url: https://www.extremeinstinct.com/store/p137/The_Naked_and_%22NOT%22_Afraid.html
   notes: Handmade by Matt Wright's shop; not on Amazon.
 - item: knife
+  image: https://static.wixstatic.com/media/8d054f_1bdb56c7acc14e2cbbcdc27ae4f12391%7Emv2.png/v1/fit/w_2500,h_1330,al_c/8d054f_1bdb56c7acc14e2cbbcdc27ae4f12391%7Emv2.png
   category: blade
   product: Kaila Cumings Knives custom blades (shop)
   brand: Kaila Cumings Knives
@@ -83,6 +87,7 @@
     url: https://www.kailacumingsknives.com/blades
   notes: Made-to-order/limited; no Amazon listing.
 - item: knife
+  image: https://m.media-amazon.com/images/I/51wiUdivizL._AC_SL500_.jpg
   category: blade
   product: Kershaw Outcast Bush Knife (model 1079)
   brand: Kershaw
@@ -101,6 +106,7 @@
   notes: Model is discontinued per KnifeCenter and kershaw-knives.net; the Amazon
     page loaded as 'Kershaw Outcast Bush Knife' but stock/seller not verified.
 - item: axe
+  image: https://cdn.arizonacustomknives.com/images/products/orig/010130868853146839942.jpg
   category: blade
   product: RMJ Tactical Tengu Ono (Forest Spirit Axe), Hakim Isler design
   brand: RMJ Tactical
@@ -121,6 +127,7 @@
     product). The Arizona Custom Knives listing was out of stock; the rmjtactical.com
     link was seen only in a Soldier Systems page and was not fetched.
 - item: kukri
+  image: https://slysteel.com/wp-content/uploads/2020/09/Survival-Kukri-with-black-Cerakote-clean-primary-grind-with-tan-Micarta-handles.jpg
   category: blade
   product: SLYSTEEL Survival Kukri
   brand: SLYSTEEL
@@ -168,6 +175,7 @@
     own knife had orange liners. KnifeJoy descriptions say the M18 'has been seen
     and endorsed' on Naked and Afraid.
 - item: knife
+  image: https://m.media-amazon.com/images/I/418Qvkn9BPL._AC_SL500_.jpg
   category: blade
   product: TOPS Knives B.O.B. Fieldcraft (Brothers of Bushcraft)
   brand: TOPS Knives
@@ -185,6 +193,7 @@
     url: https://www.topsknives.com/knives/survival/fieldcraft-by-brothers-of-bushcraft
   notes: Interview does not say which steel/handle variant.
 - item: knife
+  image: https://m.media-amazon.com/images/I/41PbyMenXFL._AC_SL500_.jpg
   category: blade
   product: TOPS Knives SXB (Skullcrusher's X-treme Blade, designed by EJ Snyder)
   brand: TOPS Knives
@@ -206,6 +215,7 @@
   notes: Benton's knife was customized, so cosmetic details may differ. Amazon ASINs
     are SXB listings (variants); check finish before linking.
 - item: kukri
+  image: https://cdn11.bigcommerce.com/s-99kn4fj7jr/products/607/images/915/35GKP__87866.1611259428.386.513.jpg?c=1
   category: blade
   product: Cold Steel Gurkha Kukri Plus
   brand: Cold Steel
@@ -222,6 +232,7 @@
   notes: Steel variant (4034SS vs CPM-3V) used on the show is unknown; current Cold
     Steel page is the CPM-3V version. Amazon listing has almost no detail.
 - item: axe
+  image: https://m.media-amazon.com/images/I/617pvb7PVBL._AC_SL500_.jpg
   category: blade
   product: Coleman Camp Axe
   brand: Coleman
@@ -238,6 +249,7 @@
   notes: Coleman has made several camp axe versions; the exact one used in 2013 is
     unknown. Coleman.com showed the item out of stock.
 - item: machete
+  image: https://m.media-amazon.com/images/I/61CcstMelTL._AC_SL500_.jpg
   category: blade
   product: Condor El Salvador Machete 18 in (black PP handle, leather sheath, 60927)
   brand: Condor Tool & Knife
@@ -253,6 +265,7 @@
   - store: condortk.com
     url: https://condortk.com/category/outdoors/el-salvador-machete-18-in-w-leath-sheath/
 - item: machete
+  image: https://m.media-amazon.com/images/I/61FzlVR2GpL._AC_SL500_.jpg
   category: blade
   product: Condor Golok Machete 14 in (CTK410-14HCS, walnut handle, leather sheath)
   brand: Condor Tool & Knife
@@ -267,6 +280,7 @@
     asin: B004WMFNRW
   notes: Handle/sheath version used on the show is unknown.
 - item: machete
+  image: https://m.media-amazon.com/images/I/61Rjr6Qy4hL._AC_SL500_.jpg
   category: blade
   product: Condor Tool & Knife Bushcraft Parang Machete (13 in, model 60953 / CTK423-13HC)
   brand: Condor Tool & Knife
@@ -285,6 +299,7 @@
   - store: condortk.com
     url: https://condortk.com/category/survival/bushcraft-parang-machete-w-ballistic/
 - item: machete
+  image: https://m.media-amazon.com/images/I/61u9ialOltL._AC_SL500_.jpg
   category: blade
   product: Elk Ridge ER-279L machete
   brand: Elk Ridge
@@ -303,6 +318,7 @@
     url: https://mastercutlery.com/product/product_details/product_id_enc/2521/category_id_enc_p/46
   notes: morethanjustsurviving.com's own ASIN is dead.
 - item: hatchet
+  image: https://m.media-amazon.com/images/I/71w3WlJslmL._AC_SL500_.jpg
   category: blade
   product: Estwing E24A Sportsman's Axe (14 in leather grip hatchet)
   brand: Estwing
@@ -316,6 +332,7 @@
     url: https://www.amazon.com/dp/B00BNQR4SG
     asin: B00BNQR4SG
 - item: machete
+  image: https://m.media-amazon.com/images/I/51VkQ6jVx5L._AC_SL500_.jpg
   category: blade
   product: Gerber Gator Machete (full size, nylon sheath)
   brand: Gerber
@@ -330,6 +347,7 @@
     asin: B004A1IXRC
   notes: 'Amazon listing title: ''GERBER Gator Machete - Black w/ Nylon Sheath [31-000758]''.'
 - item: machete
+  image: https://m.media-amazon.com/images/I/41wBebKcVYL._AC_SL500_.jpg
   category: blade
   product: Gerber Gator Machete Jr. (31-000759) with nylon sheath
   brand: Gerber
@@ -347,6 +365,7 @@
   notes: Most-repeated machete on the show. Full-size Gator Machete (Keith Busch)
     not separately located on Amazon.
 - item: knife
+  image: https://m.media-amazon.com/images/I/518GvWoBekL._AC_SL500_.jpg
   category: blade
   product: KA-BAR Black Tanto knife
   brand: KA-BAR
@@ -366,6 +385,7 @@
     1095 Cro-Van Black Powder Coat''. This is the morethanjustsurviving.com-linked
     listing; serration/variant not verified against the episode.'
 - item: kukri
+  image: https://m.media-amazon.com/images/I/5116SIoZFnL._AC_SL500_.jpg
   category: blade
   product: KA-BAR Kukri (2-1249-9)
   brand: KA-BAR
@@ -388,6 +408,7 @@
   notes: 'Amazon title: ''KA-BAR 2-1249-9 Kukri Fixed Blade Knife Black Blade with
     Black Handle and Sheath''.'
 - item: machete
+  image: https://m.media-amazon.com/images/I/51yXniuMaCL._AC_SL500_.jpg
   category: blade
   product: Ontario Knife Co. 6145 / 1-18 18 in Military Machete
   brand: Ontario Knife Company
@@ -403,6 +424,7 @@
     url: https://ontarioknife.com/products/okc-6145-18-black-carbon-steel-machete
   notes: Base Amazon listing is machete only; sheath sold separately.
 - item: knife
+  image: https://www.trustedknives.com/wp-content/uploads/2024/01/tops-hawkes-hellion-hkh-2020.webp
   category: blade
   product: TOPS Knives Hawke's Hellion Survivor 2020
   brand: TOPS Knives
@@ -420,6 +442,7 @@
     lists the standard and Elite versions as discontinued; verify stock at third-party
     sellers.
 - item: knife
+  image: https://m.media-amazon.com/images/I/81JNU-yGHlL._AC_SL500_.jpg
   category: blade
   product: TOPS Knives Tom Brown Tracker (TBT-010)
   brand: TOPS Knives
@@ -433,6 +456,7 @@
     asin: B001DZQWYE
   notes: Handle/coating variant used on the show not confirmed.
 - item: machete
+  image: https://m.media-amazon.com/images/I/311E20D3T9L._AC_SL500_.jpg
   category: blade
   product: Woodman's Pal Model 145 Long Reach
   brand: Woodman's Pal (Pro Tool Industries)
@@ -447,6 +471,7 @@
     url: https://www.amazon.com/dp/B0009DV5RU
     asin: B0009DV5RU
 - item: knife
+  image: https://m.media-amazon.com/images/I/61MhacvBb-L._AC_SL500_.jpg
   category: blade
   product: Buck 113 Ranger Skinner hunting knife
   brand: Buck Knives
@@ -463,6 +488,7 @@
   notes: 'Amazon title: ''Buck Knives 113 Ranger Skinner Hunting Knife with Sheath''.
     Equivalent only; original was custom.'
 - item: tomahawk
+  image: https://m.media-amazon.com/images/I/618DI4IARoL._AC_SL500_.jpg
   category: blade
   product: Cold Steel Frontier Hawk (90FH)
   brand: Cold Steel
@@ -478,6 +504,7 @@
     asin: B0030DDG9Q
   notes: Listed only as a look-alike, not a confirmed brand.
 - item: knife
+  image: https://m.media-amazon.com/images/I/71GCzC2GbEL._AC_SL500_.jpg
   category: blade
   product: Condor Pack Golok Knife (11 in, CTK252-11HC)
   brand: Condor Tool & Knife
@@ -494,6 +521,7 @@
     url: https://www.knifecenter.com/item/CN25211HC/condor-tool-and-knife-ctk252-11hc-pack-golok-survival-knife-carbon-steel-blade-hardwood-handles-leather-sheath
   notes: The original knife was a custom piece; this is only a look-alike.
 - item: machete
+  image: https://m.media-amazon.com/images/I/71GCzC2GbEL._AC_SL500_.jpg
   category: blade
   product: Condor Tool & Knife Pack Golok / survival machete
   brand: Condor Tool & Knife
@@ -511,6 +539,7 @@
     (may be a re-titled listing); verify it is the Pack Golok before linking. Custom
     original is not buyable.
 - item: knife
+  image: https://m.media-amazon.com/images/I/61g1BJmqQML._AC_SL500_.jpg
   category: blade
   product: CRKT Bugsy fixed blade (Kaila Cumings design)
   brand: CRKT
@@ -530,6 +559,7 @@
     a handmade custom. BladeHQ says it was produced by TOPS. Verify origin before
     publishing.
 - item: machete
+  image: https://m.media-amazon.com/images/I/51CyXTt1s1L._AC_SL500_.jpg
   category: blade
   product: Kershaw Camp 10 machete (model 1077)
   brand: Kershaw
@@ -544,6 +574,7 @@
     asin: B014SK7GOA
   notes: Amazon page body text showed a different ASIN than the URL; URL ASIN recorded.
 - item: knife
+  image: https://cdn11.bigcommerce.com/s-9ovoti0bdi/products/93840/images/269243/LT_Wright_SMKW_Exclusive_The_Naked_G.O.A.T._Primal_Fixed_Blade_Knife_ScandiGreen_Micarta_NGPRIMAL02__29276.1772638296.386.513.jpg?c=1
   category: blade
   product: L.T. Wright x SMKW Naked G.O.A.T. Primal
   brand: L.T. Wright Knives / Smoky Mountain Knife Works
@@ -558,6 +589,7 @@
   notes: Link to EJ Snyder came from the search result summary, not verified on the
     page itself. May be sold out.
 - item: machete
+  image: https://m.media-amazon.com/images/I/61owomVFenL._AC_SL500_.jpg
   category: blade
   product: SOG SOGfari 13 in Machete (MC01-N)
   brand: SOG
@@ -588,6 +620,7 @@
     url: https://www.tkellknives.com/products/wharn-edc
   notes: EDC collaboration, not a show-used tool. No Amazon listing.
 - item: axe
+  image: https://m.media-amazon.com/images/I/41tVzXssicL._AC_SL500_.jpg
   category: carpentry tool
   product: Gransfors Bruks Small Forest Axe
   brand: Gransfors Bruks
@@ -606,6 +639,7 @@
     url: https://www.gransforsbruk.com/en/p/small-forest-axe
   notes: 'Amazon title: ''Gransfors Bruks Small Forest Axe 19 Inch, 420''.'
 - item: duct tape
+  image: https://m.media-amazon.com/images/I/61CHJnlMGdL._AC_SL500_.jpg
   category: comfort item
   product: Duck Brand Color Duct Tape, Blue, 1.88 in x 20 yd (model 1304959)
   brand: Duck Brand
@@ -625,6 +659,7 @@
   notes: Only S3E9 has a brand source. Joshua Bell brought duct tape again in XL S6,
     brand not stated.
 - item: tarp
+  image: https://m.media-amazon.com/images/I/61cBf6Yts0L._AC_SL500_.jpg
   category: comfort item
   product: AquaQuest Guide Tarp 10x7 ft, 40D ripstop (olive)
   brand: AquaQuest
@@ -655,6 +690,7 @@
   notes: Round single-point-suspension net with hanging kit. Coghlan's own pages disagree
     on size, so check before linking.
 - item: hammock
+  image: https://m.media-amazon.com/images/I/71lmd8+Cy+L._AC_SL500_.jpg
   category: comfort item
   product: ENO (Eagles Nest Outfitters) DoubleNest Hammock
   brand: ENO
@@ -673,6 +709,7 @@
     not identified. Source of the Trent quote is a blog comment, not verified as his
     account.
 - item: duct tape
+  image: https://m.media-amazon.com/images/I/71oP3WGxjNL._AC_SL500_.jpg
   category: comfort item
   product: Gorilla Duct Tape, Black, 1.88 in x 35 yd
   brand: Gorilla
@@ -690,6 +727,7 @@
   notes: Brand used in those episodes is unknown. This is just a common heavy-duty
     duct tape.
 - item: tarp
+  image: https://m.media-amazon.com/images/I/51hCgVQTkxL._AC_SL500_.jpg
   category: comfort item
   product: Kelty Noah's Tarp
   brand: Kelty
@@ -705,6 +743,7 @@
   notes: Heavier group-camping tarp (16x16 ft version about 3 lb 10 oz). Amazon page
     covers several sizes.
 - item: hide
+  image: https://m.media-amazon.com/images/I/8103T-Z6amL._AC_SL500_.jpg
   category: comfort item
   product: Leather Unlimited A-grade deerskin leather hide, 2-3 oz
   brand: Leather Unlimited
@@ -723,6 +762,7 @@
   notes: Thin craft-weight leather, not an insulating hide. Poor stand-in for the
     hides in cold episodes, so label clearly as a leather craft hide.
 - item: mosquito net
+  image: https://m.media-amazon.com/images/I/81qtiFnUPyL._AC_SL500_.jpg
   category: comfort item
   product: Lifesystems BoxNet Mosquito Net, single (model 5550)
   brand: Lifesystems
@@ -740,6 +780,7 @@
   notes: 4-point box net, EX8 anti-mosquito treated, 390 g. The Amazon.com listing
     title is in French but the page is the single BoxNet, model 5550.
 - item: tarp
+  image: https://m.media-amazon.com/images/I/51miPeI-zwL._AC_SL500_.jpg
   category: comfort item
   product: Sea to Summit Escapist Tarp, Evo Medium
   brand: Sea to Summit
@@ -754,6 +795,7 @@
   notes: Ultralight trekking-pole tarp, 12.5 oz. High-priced; listed as an ultralight
     alternative.
 - item: mosquito net
+  image: https://m.media-amazon.com/images/I/81A4W3hv1WL._AC_SL500_.jpg
   category: comfort item
   product: Sea to Summit Nano Mosquito Pyramid Net Shelter (single)
   brand: Sea to Summit
@@ -773,6 +815,7 @@
   notes: Ultralight pyramid net with no zip door, hangs from one point. Both Amazon
     links are the Insect Shield/permethrin-treated single. Not identified on the show.
 - item: cordage
+  image: https://m.media-amazon.com/images/I/519PyM8D31L._AC_SL500_.jpg
   category: cordage
   product: "#36 tarred twisted nylon bank line, 1/4 lb (about 117 ft)"
   brand: Generic (Amazon seller listing shows brand 'Artist Unknown')
@@ -788,6 +831,7 @@
     asin: B00J4YONGK
   notes: Typical bushcraft cordage; the cordage on the show is unspecified.
 - item: paracord
+  image: https://m.media-amazon.com/images/I/71Sd-p-lW9L._AC_SL500_.jpg
   category: cordage
   product: Atwood Rope MFG 550 Paracord, 100 ft, 7-strand core
   brand: Atwood Rope MFG
@@ -823,6 +867,7 @@
   notes: Whether he brought a full kit or just webbing is unknown; 2-inch kit with
     ratchet.
 - item: climbing rope
+  image: https://static.mammut.com/cdn-cgi/image/width=320,quality=85,f=auto,metadata=none/master/2010-05860-2107_main_265167.jpg
   category: cordage
   product: Mammut 9.8 Crag Classic Rope 60 m
   brand: Mammut
@@ -835,6 +880,7 @@
     url: https://www.mammut.com/us/en/products/2010-05860-2107/9-8-crag-classic-rope-60m
   notes: No Amazon.com listing for this rope was seen in search results.
 - item: slack line
+  image: https://m.media-amazon.com/images/I/61m5HhgWc9L._AC_SL500_.jpg
   category: cordage
   product: Slackline Industries Base Line 50 ft kit
   brand: Slackline Industries
@@ -848,6 +894,7 @@
     asin: B00WDVAG3K
   notes: Second option for a slackline link.
 - item: climbing rope
+  image: https://m.media-amazon.com/images/I/516V6heHZ5L._AC_SL500_.jpg
   category: cordage
   product: Sterling VR9 9.8mm Dynamic Climbing Rope, 60 m
   brand: Sterling Ropes
@@ -867,6 +914,7 @@
     rope. A rope-guide who sells to climbers may want a human review before this goes
     live.
 - item: paracord
+  image: https://m.media-amazon.com/images/I/91AEFDoEfZL._AC_SL500_.jpg
   category: cordage
   product: TOUGH-GRID 550lb Paracord, 100 ft, Type III mil-spec
   brand: TOUGH-GRID
@@ -884,6 +932,7 @@
   notes: Made in USA. Amazon link is the Desert Camo 100 ft variant; other colors
     have their own ASINs.
 - item: pulaski
+  image: https://m.media-amazon.com/images/I/611GHYkhqWL._AC_SL500_.jpg
   category: digging tool
   product: Council Tool Pulaski axe (3.75 lb, 36 in hickory handle)
   brand: Council Tool
@@ -914,6 +963,7 @@
     url: https://gerbergear.com/products/gorge-22-41578n
   notes: No Amazon listing for this shovel was seen in results.
 - item: shovel
+  image: https://m.media-amazon.com/images/I/61Dw2q7MxsL._AC_SL500_.jpg
   category: digging tool
   product: SOG Entrenching Tool (F08-N) folding shovel
   brand: SOG
@@ -930,6 +980,7 @@
     asin: B0038A05X6
   notes: Whether the shovels were folding E-tools is unknown.
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/71Y+BsYqtsL._AC_SL500_.jpg
   category: fire starting tool
   product: Fire-Fast Trekker waterproof fire starter
   brand: Fire-Fast
@@ -948,6 +999,7 @@
     url: https://fire-fast.com/products/trekker-waterproof-fire-starter
   notes: 'Other pages seen: https://fire-fast.com/pages/about-us.'
 - item: fire starter
+  image: https://purefiretactical.com/wp-content/uploads/2023/10/a31292_0d5658d3dc0b41f093966f62284a08d8mv2-e1696347314569.webp
   category: fire starting tool
   product: Purefire Tactical magnesium + ferro rod fire starter (Folding / Survival
     model)
@@ -967,6 +1019,7 @@
     was linked on Amazon at the time, but no ASIN was seen. Etsy seller says it was
     the item they chose on four of their own challenges (seller identity not verified).
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/71CBq4z-3lL._AC_SL500_.jpg
   category: fire starting tool
   product: Coleman Magnesium Fire Starter
   brand: Coleman
@@ -981,6 +1034,7 @@
     asin: B004OZNF6S
   notes: 'Amazon page title verified: Coleman Company Magnesium Fire Starter.'
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/7153vU1+CBL._AC_SL500_.jpg
   category: fire starting tool
   product: Light My Fire Swedish FireSteel 2.0 Army 12,000 Strike Fire Starter with
     whistle (orange)
@@ -1000,6 +1054,7 @@
     XL S1 starter is from the fan wiki (items listed as 'fire starter' only), not
     a brand statement.
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/51XyP0gLvFL._AC_SL500_.jpg
   category: fire starting tool
   product: Purefire Tactical Firestarter, Survival Model (magnesium + ferro rod, hollow
     handle)
@@ -1021,6 +1076,7 @@
     the account). Current Amazon listing is a newer one (first available Dec 2023);
     the 2014 product may differ slightly.
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/51chhDV4X4L._AC_SL500_.jpg
   category: fire starting tool
   product: Ultimate Survival Technologies (UST) BlastMatch Fire Starter (one-handed
     flint)
@@ -1038,6 +1094,7 @@
     asin: B00930XV18
   notes: Most-used brought fire starter in seasons 1-4.
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/61A4f8eNPvL._AC_SL500_.jpg
   category: fire starting tool
   product: UST StrikeForce Fire Starter (orange, flint bar with striker cap)
   brand: Ultimate Survival Technologies (UST)
@@ -1054,6 +1111,7 @@
   notes: Amazon listing currently shows 'Currently unavailable' (no restock date)
     when checked; the orange color is not confirmed on that listing.
 - item: bow drill kit
+  image: https://m.media-amazon.com/images/I/61eP920XICL._AC_SL500_.jpg
   category: fire starting tool
   product: Channel Craft Campfire Bow Drill Kit (7-piece, made in USA)
   brand: Channel Craft
@@ -1068,6 +1126,7 @@
     asin: B07HLBSL7S
   notes: Equivalent only.
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/51xIRS8vImL._AC_SL500_.jpg
   category: fire starting tool
   product: Generic waterproof magnesium + flint fire starter bar (SE FS374 shown)
   brand: SE
@@ -1088,6 +1147,7 @@
     link for the generic ''Magnesium Fire Starter''. Amazon title: ''SE Waterproof
     Magnesium Firestarter Kit ... FS374''.'
 - item: glass magnifier lens
+  image: https://m.media-amazon.com/images/I/51hj6xOtgyL._AC_SL500_.jpg
   category: fire starting tool
   product: Glass lens handheld magnifier (SE 5x, 2 in)
   brand: SE
@@ -1103,6 +1163,7 @@
   notes: 'Amazon title: ''SE 5x Handheld Magnifier, 2 in Glass Lens Dia. - MH7005C''.
     Generic equivalent; brand on screen unknown.'
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/71CbXRAnOgL._AC_SL500_.jpg
   category: fire starting tool
   product: Live Fire Original emergency fire starter
   brand: Live Fire Gear
@@ -1117,6 +1178,7 @@
     asin: B00IIPE2XK
   notes: Endorsement only. Confirm the Amazon seller before linking.
 - item: bow drill kit
+  image: https://m.media-amazon.com/images/I/81a9d0pNfcL._AC_SL500_.jpg
   category: fire starting tool
   product: Primitive Fire Bow Drill Fire Starter Kit, 7-piece set
   brand: Primitive Fire
@@ -1136,6 +1198,7 @@
   notes: No show-used brand identified; most survivors bring self-made kits. Buyable
     equivalent only.
 - item: bow drill kit
+  image: https://m.media-amazon.com/images/I/7143QPrH3ML._AC_SL500_.jpg
   category: fire starting tool
   product: Primitive Fire Bow Drill Fire Starter Scout Kit, 5-piece set
   brand: Primitive Fire
@@ -1150,6 +1213,7 @@
     asin: B00CWPX2K6
   notes: Cheaper basic variant.
 - item: bow drill kit
+  image: https://m.media-amazon.com/images/I/914do-+eZPL._AC_SL500_.jpg
   category: fire starting tool
   product: Primitive Progression Bow Drill Friction Fire Set (osage bow, stone handhold,
     coal catcher, paracord strings)
@@ -1166,6 +1230,7 @@
   notes: More complete, handmade-style kit; closest buyable to self-made survivor
     kits.
 - item: fire starter
+  image: https://m.media-amazon.com/images/I/61raexaZdKL._AC_SL500_.jpg
   category: fire starting tool
   product: Purefire Tactical Firestarter, Folding Model
   brand: Purefire Tactical
@@ -1183,6 +1248,7 @@
     url: https://purefiretactical.com/our-products/
   notes: Optional alternative; the Survival Model is the one EJ named.
 - item: bow drill kit
+  image: https://scoutskills.com/wp-content/uploads/2021/11/quotes.svg
   category: fire starting tool
   product: Sparks Fly Bow Drill Fire Starter kit
   brand: Sparks Fly (ScoutSkills)
@@ -1196,6 +1262,7 @@
     url: https://scoutskills.com/
   notes: Brand site only (Amazon listing not found).
 - item: ''
+  image: https://m.media-amazon.com/images/I/8184qUyH5YL._AC_SL500_.jpg
   category: fire starting tool
   product: Wazoo Survival Gear Bushcraft Bracelet / Necklace
   brand: Wazoo Survival Gear
@@ -1212,6 +1279,7 @@
     shows 'the actual bag and necklace' from one of her challenges (brand not stated).
     Which Amazon ASIN is bracelet vs necklace was not verified.
 - item: fishing kit
+  image: https://m.media-amazon.com/images/I/81HHgHPdv8L._AC_SL500_.jpg
   category: fishing tool
   product: Yoyito aluminum hand line reel pocket fishing kit (Cuban-yoyo style handline)
   brand: Yoyito
@@ -1235,6 +1303,7 @@
     vs urethane, line weight) is not stated. The brand's N&A page body was only a
     consent banner in my fetch, so the page title is the evidence.
 - item: snorkel mask
+  image: https://m.media-amazon.com/images/I/81wwhKULVwL._AC_SL500_.jpg
   category: fishing tool
   product: Sea Sports low volume freediving/spearfishing mask (survivor fitted bifocal
     lenses and a slap strap)
@@ -1256,6 +1325,7 @@
     so the links are SeaSports low-volume masks (Amazon title: Low Volume Amber View).
     Her bifocal lenses and strap were her own modifications.'
 - item: swimming goggles
+  image: https://m.media-amazon.com/images/I/71BSuNx6jPL._AC_SL500_.jpg
   category: fishing tool
   product: Aqua Sphere Kayenne swim goggles with polarized lens
   brand: Aqua Sphere
@@ -1270,6 +1340,7 @@
     asin: B01N9T07S1
   notes: Wider-lens open-water style.
 - item: fishing kit
+  image: https://m.media-amazon.com/images/I/81Uljad1B+L._AC_SL500_.jpg
   category: fishing tool
   product: Best Glide ASE Survival Fishing Kit (standard)
   brand: Best Glide ASE
@@ -1283,6 +1354,7 @@
     asin: B004HPQ72E
   notes: Compact tin-style survival fishing kit.
 - item: paddles
+  image: https://m.media-amazon.com/images/I/71is4GqJtsL._AC_SL500_.jpg
   category: fishing tool
   product: Better Boat telescoping collapsible emergency paddle (19 to 35 inches)
   brand: Better Boat
@@ -1297,6 +1369,7 @@
     asin: B07R632RMN
   notes: Small emergency paddle, not a full-size kayak paddle.
 - item: cast net
+  image: https://m.media-amazon.com/images/I/71TuhKAminL._AC_SL500_.jpg
   category: fishing tool
   product: Betts Tyzac Series cast net with utility box, 6 ft x 3/8 inch
   brand: Betts
@@ -1312,6 +1385,7 @@
     asin: B001PR9POY
   notes: Check local cast-net regulations.
 - item: gator line and hooks
+  image: https://m.media-amazon.com/images/I/8174NxGgiLL._AC_SL500_.jpg
   category: fishing tool
   product: 'Catahoula Gator Getter alligator kit (six 12/0 hooks, six ~30 ft lengths
     of #96 tarred twisted twine, six clothespins)'
@@ -1332,6 +1406,7 @@
     url: https://www.maybruns.com/all-categories/50-products/fishing-nets-supplies/hooks/351-gator-getter
   notes: Alligator regulations vary by state; check local law.
 - item: diving mask
+  image: https://m.media-amazon.com/images/I/61rJhP88xKL._AC_SL500_.jpg
   category: fishing tool
   product: Cressi F1 frameless snorkel/dive mask
   brand: Cressi
@@ -1347,6 +1422,7 @@
     asin: B0GHZVTK77
   notes: Budget frameless mask.
 - item: fins
+  image: https://m.media-amazon.com/images/I/6159GzuTXpL._AC_SL500_.jpg
   category: fishing tool
   product: 'Cressi full-foot diving fins (Amazon title: self-adjusting foot pocket,
     beginner-friendly, energy-return blade)'
@@ -1361,6 +1437,7 @@
     asin: B0GWFCT94D
   notes: Listing checked shows size 40/41 variant; confirm size.
 - item: diving mask
+  image: https://m.media-amazon.com/images/I/718wUP2DvpL._AC_SL500_.jpg
   category: fishing tool
   product: Cressi Nano low-volume freediving mask
   brand: Cressi
@@ -1374,6 +1451,7 @@
     asin: B01CTU3QU4
   notes: Amazon listing is the black/green version.
 - item: snorkel mask
+  image: https://m.media-amazon.com/images/I/71bM2oC7arL._AC_SL500_.jpg
   category: fishing tool
   product: Cressi Pano 4 mask with Supernova Dry snorkel set
   brand: Cressi
@@ -1389,6 +1467,7 @@
     asin: B0CKYNJ4DG
   notes: Mask plus dry-top snorkel set.
 - item: fins
+  image: https://m.media-amazon.com/images/I/71zzzeOV4KL._AC_SL500_.jpg
   category: fishing tool
   product: Cressi Rondinella full foot snorkeling fins
   brand: Cressi
@@ -1403,6 +1482,7 @@
     asin: B00TEAYA76
   notes: Sold by size; confirm size and availability.
 - item: fishing kit
+  image: https://m.media-amazon.com/images/I/71gjDtxV6DL._AC_SL500_.jpg
   category: fishing tool
   product: Exotac xREEL handline survival pocket fishing kit
   brand: Exotac
@@ -1418,6 +1498,7 @@
     asin: B09RDVRV3V
   notes: Amazon title lists 6 hooks, 6 split shot and 2 floats.
 - item: cast net
+  image: https://m.media-amazon.com/images/I/61+XnXMdT1L._AC_SL500_.jpg
   category: fishing tool
   product: Fitec EZ-Throw 750 cast net, 6 ft radius, 3/8 inch mesh
   brand: Fitec
@@ -1431,6 +1512,7 @@
     asin: B00QMSEA00
   notes: Check local cast-net regulations.
 - item: bailer
+  image: https://m.media-amazon.com/images/I/61J4Jv1Wr0L._AC_SL500_.jpg
   category: fishing tool
   product: Five Oceans 1 liter marine scoop bailer FO2149
   brand: Five Oceans
@@ -1445,6 +1527,7 @@
     asin: B00GHYTAVI
   notes: Generic hand scoop bailer.
 - item: gator line and hooks
+  image: https://m.media-amazon.com/images/I/A14tE7zK1-L._AC_SL500_.jpg
   category: fishing tool
   product: Gator Pro 12/0 weighted alligator snatch hook with leader and swivel (Amazon
     title lists brand Yifantacy)
@@ -1460,6 +1543,7 @@
   notes: Snatch hook is a different technique from the baited-line method, so this
     is a looser equivalent.
 - item: boat
+  image: https://m.media-amazon.com/images/I/71BClfpJlJL._AC_SL500_.jpg
   category: fishing tool
   product: Intex Explorer K2 inflatable 2-person kayak set with 86 inch oars and pump
   brand: Intex
@@ -1473,6 +1557,7 @@
     asin: B08RDMM33X
   notes: Intended for calm lakes and mild rivers.
 - item: boat
+  image: https://m.media-amazon.com/images/I/71CwBAjyzsL._AC_SL500_.jpg
   category: fishing tool
   product: Intex Seahawk 2 inflatable 2-person boat with oars and pump (Amazon listing
     is a 2-pack)
@@ -1490,6 +1575,7 @@
   notes: Generic inflatable equivalent. The checked listing title says '2 Pack', so
     confirm quantity.
 - item: swimming goggles
+  image: https://m.media-amazon.com/images/I/61V+osYFKdL._AC_SL500_.jpg
   category: fishing tool
   product: Speedo Vanquisher 2.0 swim goggles
   brand: Speedo
@@ -1506,6 +1592,7 @@
     asin: B01IYAW3JS
   notes: Generic example only.
 - item: gator line and hooks
+  image: https://m.media-amazon.com/images/I/71kiLH6QkdL._AC_SL500_.jpg
   category: fishing tool
   product: 'Tarred black twisted nylon twine, size #96 (alligator line)'
   brand: Super Brand
@@ -1521,6 +1608,7 @@
   notes: Brand 'Super Brand' is from an earlier search result, not re-checked on the
     listing page.
 - item: bow
+  image: https://static.wixstatic.com/media/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png/v1/fit/w_2500,h_1330,al_c/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png
   category: hunting weapon
   product: Great Plains bows built for the show (solid diamond-wood riser, bamboo
     core, mesquite laminations)
@@ -1541,6 +1629,7 @@
   notes: Exact model and length of the show bows were not confirmed from a fetched
     page. Custom shop, long lead times likely, not an impulse buy.
 - item: bow
+  image: https://static.wixstatic.com/media/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png/v1/fit/w_2500,h_1330,al_c/dc2dca_92ed8e7d3b8e408c99e1316f0dc10962%7Emv2.png
   category: hunting weapon
   product: Great Plains custom traditional longbow/recurve (Matt Wright's and Brooke
     Wright's show bows; 'Piranha Bushcrafter' and 'Osage' longbow models named)
@@ -1576,6 +1665,7 @@
   notes: Brand is a reasonable inference (his own company), model is not identified.
     Custom-order. Amazon listing not found.
 - item: atlatl
+  image: https://m.media-amazon.com/images/I/81N-DexlZ-L._AC_SL500_.jpg
   category: hunting weapon
   product: Atlatl Madness atlatl handle and 5 ft dart set
   brand: Atlatl Madness
@@ -1589,6 +1679,7 @@
     asin: B07PX4DFQ5
   notes: May be target-type darts; check tips before hunting use.
 - item: sling shot
+  image: https://m.media-amazon.com/images/I/7118ikpcKgL._AC_SL500_.jpg
   category: hunting weapon
   product: Barnett Diablo slingshot with wrist brace and contoured soft-touch grip
   brand: Barnett
@@ -1602,6 +1693,7 @@
     asin: B000HE8NK8
   notes: Includes target ammo per listing title.
 - item: bow
+  image: https://m.media-amazon.com/images/I/41sg1wt6tyL._AC_SL500_.jpg
   category: hunting weapon
   product: Bear Archery Kodiak Hunter recurve bow (current production)
   brand: Bear Archery
@@ -1620,6 +1712,7 @@
   notes: Hers was a vintage model; these are the 2022 re-issue (50 lb and 45 lb right-hand).
     One dealer page flags the 50 lb as unorderable.
 - item: blow gun
+  image: https://m.media-amazon.com/images/I/71wLC93o2OL._AC_SL500_.jpg
   category: hunting weapon
   product: Berserker Blowguns .40 cal MJOLNIR hunting blowgun with 20 darts
   brand: Berserker Blowguns
@@ -1637,6 +1730,7 @@
   notes: Modern commercial equivalent only. The Amazon listing showed 'currently unavailable'
     when checked. Blowguns restricted in some places.
 - item: hawaiian sling
+  image: https://static.wixstatic.com/media/3dab43_3425f637cb7d48d8b51ed6a4fd10ef83~mv2.png/v1/fit/w_500,h_500,q_90/file.png
   category: hunting weapon
   product: Black Reef Ka Ma'a C.F. Hawaiian roller sling (band, shaft cup and sling;
     shaft sold separately)
@@ -1650,6 +1744,7 @@
     url: https://www.blackreefcompany.com/product-page/ka-ma-a-c-f-hawaiian-roller-sling
   notes: Amazon listing not found.
 - item: atlatl
+  image: https://m.media-amazon.com/images/I/71UORWGqWfL._AC_SL500_.jpg
   category: hunting weapon
   product: Catatonk Hunter atlatl with three 6 ft fletched darts (Amazon listing title)
   brand: 'Unknown (listing title only: ''Catatonk Hunter'')'
@@ -1665,6 +1760,7 @@
     asin: B00HTSV8MK
   notes: Generic commercial equivalent.
 - item: spear gun
+  image: https://m.media-amazon.com/images/I/61Dx0P5-naL._AC_SL500_.jpg
   category: hunting weapon
   product: Cressi Apache aluminum speargun (entry-level, closed muzzle; sizes 35-75
     cm)
@@ -1682,6 +1778,7 @@
   notes: ASIN shown is the 60 cm size. Amazon reviews are mixed on durability. Spearguns
     are restricted or illegal in some places; check local rules.
 - item: pole spear
+  image: https://m.media-amazon.com/images/I/51qmxCXSkqL._AC_SL500_.jpg
   category: hunting weapon
   product: Cressi FG2 fiberglass pole spear
   brand: Cressi
@@ -1698,6 +1795,7 @@
     asin: B0BNM1Q9XG
   notes: Budget pole spear.
 - item: sling shot
+  image: https://m.media-amazon.com/images/I/61oNJ9IwgDL._AC_SL500_.jpg
   category: hunting weapon
   product: Daisy P51 slingshot complete kit (wrist brace, steel ammo, replacement
     band)
@@ -1716,6 +1814,7 @@
   notes: Generic equivalent only. Amazon listing will not ship to New York per its
     description.
 - item: bow
+  image: https://m.media-amazon.com/images/I/41UwNA0cwaL._AC_SL500_.jpg
   category: hunting weapon
   product: Easton Axis Traditional arrows, 4-inch feather fletched (6 pack)
   brand: Easton
@@ -1733,6 +1832,7 @@
   notes: Arrows, filed under item 'bow'. Spine must match draw weight. Broadheads
     sold separately.
 - item: bow
+  image: https://m.media-amazon.com/images/I/71RrOFIJsxL._AC_SL500_.jpg
   category: hunting weapon
   product: Gold Tip Traditional arrows, 4-inch feather fletched (6 pack)
   brand: Gold Tip
@@ -1748,6 +1848,7 @@
   notes: Arrows, filed under item 'bow'. The listed ASIN is the 340 spine. Match spine
     to the bow.
 - item: bow
+  image: https://m.media-amazon.com/images/I/41du36ienHL._AC_SL500_.jpg
   category: hunting weapon
   product: Great Plains SR Swift Long Curve takedown recurve ('Green Mamba' on Amazon),
     58-inch
@@ -1767,6 +1868,7 @@
   - store: greatplainsbow.com (SR Swift Takedown Recurve)
     url: https://www.greatplainsbow.com/product-page/sr-swift-takedown-recurve
 - item: hawaiian sling
+  image: https://cdn11.bigcommerce.com/s-9842s2iis2/products/324/images/2255/Sling_shaft__45037.1745857010.500.500.JPG?c=2
   category: hunting weapon
   product: HammerHead Traditional Hawaiian Sling (all-wood, pre-tied; sold with or
     without a 60-inch shaft)
@@ -1783,6 +1885,7 @@
   notes: Amazon listing for the HammerHead sling not found. Spearfishing World notes
     it suits no-speargun areas like the Bahamas.
 - item: hawaiian sling
+  image: https://m.media-amazon.com/images/I/41hKXzgcdGL._AC_SL500_.jpg
   category: hunting weapon
   product: Hawaiian sling spear shaft with slide ring and heavy-duty flopper, 9/32
     inch x 60 inch (for reel-and-line slings)
@@ -1797,6 +1900,7 @@
     asin: B0BSG26MXG
   notes: Shaft only; needs a sling shooter (see other entries).
 - item: snare wire
+  image: https://m.media-amazon.com/images/I/71KG1FvRnyL._AC_SL500_.jpg
   category: hunting weapon
   product: Jamie Burleigh Signature Trapping Survival Card (credit-card trapping kit)
   brand: Jamie Burleigh
@@ -1810,6 +1914,7 @@
     asin: B09RHKQMSH
   notes: A trap-parts card, not a roll of wire.
 - item: pole spear
+  image: https://m.media-amazon.com/images/I/51CbGPdUMmL._AC_SL500_.jpg
   category: hunting weapon
   product: JBL Spearguns 6 ft Shaka Black carbon pole spear, 3-piece
   brand: JBL
@@ -1828,6 +1933,7 @@
   notes: The Amazon listing is the Shaka Black; the two store links are the Shaka
     Hybrid Carbon.
 - item: pole spear
+  image: https://m.media-amazon.com/images/I/51qT9FW37oL._AC_SL500_.jpg
   category: hunting weapon
   product: Riffe 6 ft carbon fiber pole spear, 2 piece
   brand: Riffe
@@ -1841,6 +1947,7 @@
     asin: B081DBQ1X8
   notes: Carbon option.
 - item: spear gun
+  image: https://m.media-amazon.com/images/I/51tGHuqZ4NL._AC_SL500_.jpg
   category: hunting weapon
   product: Salvimar Metal speargun, 75 cm (aluminum barrel, double 14 mm bands, with
     reel)
@@ -1855,6 +1962,7 @@
     asin: B01N1JJGZM
   notes: Larger and more powerful than the Apache.
 - item: bow
+  image: https://m.media-amazon.com/images/I/414Cv9FlFsL._AC_SL500_.jpg
   category: hunting weapon
   product: Samick Sage 62-inch takedown recurve (budget takedown recurve)
   brand: Samick
@@ -1870,6 +1978,7 @@
     asin: B007PD8B0G
   notes: Pure generic equivalent.
 - item: snare wire
+  image: https://m.media-amazon.com/images/I/51zzm66vG0L._AC_SL500_.jpg
   category: hunting weapon
   product: SSBSS snare wire, 2 pack with fixing knob and hook, large size
   brand: SSBSS
@@ -1886,6 +1995,7 @@
   notes: Thin Amazon listing. The show items were probably a plain roll of wire, not
     pre-made snares.
 - item: hawaiian sling
+  image: https://m.media-amazon.com/images/I/01RmK+J4pJL._AC_SL500_.jpg
   category: hunting weapon
   product: Traditional Hawaiian sling shooter with 60 inch, 9/32 inch 17-4 stainless
     shaft (Amazon listing title)
@@ -1903,6 +2013,7 @@
     asin: B00DCEVP1Y
   notes: Generic equivalent; shooter with shaft per listing title.
 - item: blow gun
+  image: https://m.media-amazon.com/images/I/51FXdyaRmgL._AC_SL500_.jpg
   category: hunting weapon
   product: Venom Blowguns 5-inch .40 cal Pro-Length hunting series darts (25 pack)
   brand: Venom Blowguns
@@ -1916,6 +2027,7 @@
     asin: B01HKJAZEO
   notes: Darts only. Amazon listing says buyer must be 18+.
 - item: swimming goggles
+  image: https://m.media-amazon.com/images/I/61mNXdp+vbL._AC_SL500_.jpg
   category: other
   product: Aqua Sphere Kaiman swim goggle
   brand: Aqua Sphere
@@ -1931,6 +2043,7 @@
   notes: 'Amazon title: ''Aqua Sphere Kaiman Swim Goggle, Made In Italy''. Only an
     example; actual goggles unidentified.'
 - item: flash light
+  image: https://m.media-amazon.com/images/I/611JUa69igL._AC_SL500_.jpg
   category: other
   product: Maglite Mini LED Flashlight (2xAAA)
   brand: MagLite
@@ -1946,6 +2059,7 @@
     asin: B009SKX3QG
   notes: Generic compact waterproof flashlight.
 - item: diving mask
+  image: https://m.media-amazon.com/images/I/61nILcWoZ4L._AC_SL500_.jpg
   category: other
   product: Speedo Adventure Series anti-fog swim/snorkel mask with nose cover
   brand: Speedo
@@ -1961,6 +2075,7 @@
   notes: 'Amazon title: ''Speedo Unisex-Adult Swim Snorkel Dive Mask Anti-Fog with
     Nose Cover Adventure Series''. Only an example; actual mask unidentified.'
 - item: pot
+  image: https://m.media-amazon.com/images/I/51+H5wtD2OL._AC_SL500_.jpg
   category: pot
   product: CanCooker Junior 2-gallon steam cooker
   brand: CanCooker
@@ -1981,6 +2096,7 @@
   notes: Identified by fans, not confirmed by the production; the exact model and
     size on screen vary. This is the standard Junior (2-gallon) size.
 - item: pot
+  image: https://m.media-amazon.com/images/I/61zQy+VAtIL._AC_SL500_.jpg
   category: pot
   product: GSI Outdoors Glacier Stainless Bottle Cup / Pot
   brand: GSI Outdoors
@@ -2014,6 +2130,7 @@
   notes: Style match (potjie), not a brand identification. Amazon listing for Bruntmor
     not found.
 - item: pot
+  image: https://m.media-amazon.com/images/I/51DFKtXC-hL._AC_SL500_.jpg
   category: pot
   product: CanCooker Original 4-gallon convection steam cooker
   brand: CanCooker
@@ -2033,6 +2150,7 @@
   notes: Size actually used on the show is unconfirmed; the 2 gal Jr is the more likely
     match.
 - item: pot
+  image: https://m.media-amazon.com/images/I/71zm48siMNL._AC_SL500_.jpg
   category: pot
   product: Cuisiland 10QT Cast Iron Potjie Cauldron Pot with Lid & 3 Legs
   brand: Cuisiland
@@ -2047,6 +2165,7 @@
     asin: B07GX37F9S
   notes: Look-alike only.
 - item: pot
+  image: https://m.media-amazon.com/images/I/8104dJVXYaL._AC_SL500_.jpg
   category: pot
   product: Cuisiland 3.2QT Cast Iron Potjie Cauldron Pot with Lid & 3 Legs
   brand: Cuisiland
@@ -2062,6 +2181,7 @@
     asin: B0BYCBSSR3
   notes: Look-alike only; the show's pots were reported as shallow and very heavy.
 - item: pot
+  image: https://m.media-amazon.com/images/I/61T9tddXRcL._AC_SL500_.jpg
   category: pot
   product: Cuisiland 8.5QT Cast Iron Potjie Cauldron Pot with Lid & 3 Legs
   brand: Cuisiland
@@ -2077,6 +2197,7 @@
   notes: Look-alike for the potjie style only. Two Amazon listings for the same 8.5
     qt size.
 - item: pot
+  image: https://m.media-amazon.com/images/I/7181RfywcnL._AC_SL500_.jpg
   category: pot
   product: Cuisinart Chef's Classic Enameled Cast Iron Dutch Oven, 7-quart
   brand: Cuisinart
@@ -2092,6 +2213,7 @@
   notes: Dutch-oven look-alike only. Heavy; kitchen enameled cast iron, not a campfire-specific
     product.
 - item: pot
+  image: https://m.media-amazon.com/images/I/61E0HshliYS._AC_SL500_.jpg
   category: pot
   product: Open Country 10-quart aluminum covered kettle
   brand: Open Country
@@ -2107,6 +2229,7 @@
   notes: 'Amazon title: ''Open Country Aluminum Coverd Kettle- 10 Quart'' (10 qt looks
     large for the show; treat as loose equivalent).'
 - item: pot
+  image: https://m.media-amazon.com/images/I/713DoUXDwnL._AC_SL500_.jpg
   category: pot
   product: Open Country 4 Quart Aluminum Covered Kettle
   brand: Open Country
@@ -2125,6 +2248,7 @@
   notes: morethanjustsurviving.com itself calls Julie Wright's pot 'generic' and a
     reader comment says it looked heavier-duty than a billy can. Not a confirmed product.
 - item: pot
+  image: https://m.media-amazon.com/images/I/81nt1ddK-AL._AC_SL500_.jpg
   category: pot
   product: Stansport Stainless Steel Solo II Cook Pot
   brand: Stansport
@@ -2140,6 +2264,7 @@
     asin: B004Z10XTI
   notes: Closest-equivalent suggested by the blog; actual brand not identified.
 - item: ''
+  image: https://m.media-amazon.com/images/I/91AmaeQFzgL._AC_SL500_.jpg
   category: media
   product: A Modern Guide to Knifemaking by Laura Zerra
   brand: Quarry Books
@@ -2155,6 +2280,7 @@
   notes: A second Zerra title, Modern Knifemaking for Beginners (Quarto), was mentioned
     in results but no Amazon link was seen.
 - item: ''
+  image: https://m.media-amazon.com/images/I/81PzU4rXsnL._AC_SL500_.jpg
   category: media
   product: Adventure Awaits by Ky Furneaux
   brand: Applesauce Press
@@ -2168,6 +2294,7 @@
     url: https://www.amazon.com/dp/1400347165
     asin: '1400347165'
 - item: ''
+  image: https://m.media-amazon.com/images/I/81aG6qOPb3L._AC_SL500_.jpg
   category: media
   product: Emergency Home Preparedness by EJ Snyder
   brand: Skyhorse Publishing
@@ -2181,6 +2308,7 @@
     url: https://www.amazon.com/dp/151077954X
     asin: 151077954X
 - item: ''
+  image: https://m.media-amazon.com/images/I/81BU5sSBfeL._AC_SL500_.jpg
   category: media
   product: 'Naked & Afraid: Lost in Paradise (DVD)'
   brand: Discovery
@@ -2193,6 +2321,7 @@
     url: https://www.amazon.com/dp/B01I06MJAE
     asin: B01I06MJAE
 - item: ''
+  image: https://m.media-amazon.com/images/I/91aPWtK8VdL._AC_SL500_.jpg
   category: media
   product: Naked And Afraid - Season 2 Collection 1 and Collection 2 (DVD-R, PAL)
   brand: Discovery
@@ -2232,6 +2361,7 @@
     url: https://www.amazon.com/dp/B0DPLQNGKC
     asin: B0DPLQNGKC
 - item: ''
+  image: https://m.media-amazon.com/images/I/51XzJ86yT2L._AC_SL500_.jpg
   category: media
   product: 'Naked and Afraid XL: Season 1 (DVD + Digital)'
   brand: Discovery
@@ -2269,6 +2399,7 @@
     url: https://www.amazon.com/dp/B0GZKJ9CXT
     asin: B0GZKJ9CXT
 - item: ''
+  image: https://m.media-amazon.com/images/I/91itRChlqOL._AC_SL500_.jpg
   category: media
   product: 'Naked and Afraid: Season 1 (DVD)'
   brand: Discovery
@@ -2283,6 +2414,7 @@
     asin: B00S4YGX5A
   notes: No retail DVD/Blu-ray sets for seasons 11+ found.
 - item: ''
+  image: https://m.media-amazon.com/images/I/91x-ccrjO3L._AC_SL500_.jpg
   category: media
   product: 'Small Game: A Novel by Blair Braverman'
   brand: Ecco / HarperCollins
@@ -2298,6 +2430,7 @@
   notes: Fiction, not an official N&A product. Other ASINs are alternate formats seen
     in results.
 - item: ''
+  image: https://m.media-amazon.com/images/I/81ZK0btEN7L._AC_SL500_.jpg
   category: media
   product: Survive by Ky Furneaux (paperback)
   brand: Cider Mill Press
@@ -2311,6 +2444,7 @@
     url: https://www.amazon.com/dp/1646432185
     asin: '1646432185'
 - item: ''
+  image: https://m.media-amazon.com/images/I/81Su9qdutqL._AC_SL500_.jpg
   category: media
   product: The Wild Twins by Amber and Serena Shine
   brand: HarperCollins
@@ -2324,6 +2458,7 @@
     url: https://www.amazon.com/dp/1775541762
     asin: '1775541762'
 - item: ''
+  image: https://m.media-amazon.com/images/I/713SnzsF7vL._AC_SL500_.jpg
   category: media
   product: When the Grid Fails by Ky Furneaux
   brand: Cider Mill Press
@@ -2337,6 +2472,7 @@
     url: https://www.amazon.com/dp/1646432533
     asin: '1646432533'
 - item: ''
+  image: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1082410/capsule_616x353.jpg?t=1724958244
   category: media
   product: 'Naked and Afraid: The Game / Lost in Tropics (Steam)'
   brand: Steam
@@ -2362,6 +2498,7 @@
     url: https://abdesignsco.com/pages/extreme-instinct
   notes: Cast-owned brand; not Discovery-licensed as far as seen.
 - item: ''
+  image: https://www.jakenodar.com/cdn/shop/files/cw_cover_medium_fd09698c-85cb-414d-a323-4a637973c5c6.png?v=1763000382
   category: merch
   product: Jake Nodar merch
   brand: Jake Nodar
@@ -2374,6 +2511,7 @@
     url: https://www.jakenodar.com/
   notes: Novelty merch, not survival gear. No Nodar gear line found.
 - item: ''
+  image: https://m.media-amazon.com/images/I/719eLwA376L._AC_SL500_.jpg
   category: merch
   product: Naked and Afraid Men's Censored T-Shirt
   brand: Discovery
@@ -2388,6 +2526,7 @@
     asin: B00QKO4NAI
   notes: Size-specific ASIN (XXL). Brand/seller not verified on the page.
 - item: ''
+  image: https://m.media-amazon.com/images/I/71MQx0v6D-L._AC_SL500_.jpg
   category: merch
   product: Naked and Afraid Unisex Silhouettes T-Shirt, Heather Grey
   brand: Discovery Channel Store
@@ -2401,6 +2540,7 @@
     asin: B00IIUEY92
   notes: Size-specific ASIN (XXL).
 - item: ''
+  image: https://m.media-amazon.com/images/I/61DzSkzYJsL._AC_SL500_.jpg
   category: merch
   product: Naked and Afraid Unisex T-Shirt, Charcoal
   brand: Discovery Channel Store
@@ -2414,6 +2554,7 @@
     url: https://www.amazon.com/dp/B00IIUF54U
     asin: B00IIUF54U
 - item: ''
+  image: https://m.media-amazon.com/images/I/61SWaDsUMGL._AC_SL500_.jpg
   category: merch
   product: Naked and Afraid Women's T-Shirt, Navy
   brand: Discovery Channel Store
@@ -2426,6 +2567,7 @@
     url: https://www.amazon.com/dp/B00IIUF6WG
     asin: B00IIUF6WG
 - item: ''
+  image: https://c.bonfireassets.com/thumb/store/15f79f8d-a8c0-4dfa-bd3c-e503661190bd/4b901205/
   category: merch
   product: Discovery ABA official merchandise store (Bonfire)
   brand: Discovery (via Bonfire)
