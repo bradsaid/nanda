@@ -139,6 +139,17 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the shelf sits above the Items Brought and Items Given lists" do
+    with_products do
+      get survivor_path(survivors(:one))
+      body = response.body
+      shelf = body.index("Shop the Gear Test Brought")
+      assert shelf, "shelf missing"
+      assert_operator shelf, :<, body.index("Items Brought")
+      assert_operator shelf, :<, body.index("Items Given")
+    end
+  end
+
   test "a survivor who only was given gear gets no shelf" do
     with_products do
       get survivor_path(survivors(:two))

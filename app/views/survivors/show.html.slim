@@ -265,6 +265,10 @@
                       - ok = (a.result == "success")
                       span.badge class=(ok ? "bg-success" : "bg-danger") = a.result.titleize
 
+    / ===== Shop the gear they brought (above the Items Brought / Given lists) =====
+    - if @shop_shelf
+      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear #{@survivor.full_name.split.first} Brought"
+
     / ===== Items Sections =====
     .row.g-4.mb-4
       .col-md-6
@@ -296,10 +300,6 @@
               .text-center.py-5.text-muted
                 .fs-1.mb-2 ➡️
                 .fw-medium None given
-
-    / ===== Shop the gear they brought =====
-    - if @shop_shelf
-      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear #{@survivor.full_name.split.first} Brought"
 
     / ===== Appearances Table =====
     .card.shadow-sm
