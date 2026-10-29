@@ -93,6 +93,24 @@ class ShopPromotionTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the home page features only confirmed products" do
+    with_products do
+      get root_path
+      assert_select ".shop-shelf li.shop-product", 1                      # Named Pot only
+      assert_no_match(/Generic Pot|Third Pot|Plain Knife/, response.body)  # similar / likely are left off
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@knife), 0
+    end
+  end
+
+  test "the home page shows no shelf when nothing is confirmed" do
+    ShopCatalog.stub(:products, PRODUCTS.reject { |p| p[:match] == "confirmed" }) do
+      get root_path
+      assert_response :success
+      assert_select ".shop-shelf", 0
+      assert_select "a", text: /Browse the whole Shop/, count: 0
+    end
+  end
+
   test "the home page falls back to the most-brought gear when the latest episode has none" do
     episodes(:one).update_columns(air_date: Date.new(2020, 1, 1))
     episodes(:two).update_columns(air_date: Date.new(2021, 1, 1))   # latest: no items at all

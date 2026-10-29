@@ -6,6 +6,9 @@ class HomeController < ApplicationController
   # queries, two of them joins over every episode) on every home-page view.
   AGGREGATES_TTL = 10.minutes
 
+  # The home page only features products with credible evidence; "Similar" stand-ins live deeper in the site.
+  HOME_MATCHES = %w[confirmed].freeze
+
   def index
     @counts, @top_countries, @challenges_by_country =
       Rails.cache.fetch("home/aggregates/v1", expires_in: AGGREGATES_TTL) { home_aggregates }
@@ -69,7 +72,7 @@ class HomeController < ApplicationController
   # it; otherwise the gear survivors bring most, so the home page always has a shelf.
   def build_home_shop_shelf
     if @latest_episode
-      build_gear_shelf(label: "Seen in the latest episode", episodes: [@latest_episode], max_groups: 3, limit: 2) do |scope|
+      build_gear_shelf(label: "Seen in the latest episode", episodes: [@latest_episode], max_groups: 3, limit: 2, matches: HOME_MATCHES) do |scope|
         scope.where(episodes: { id: @latest_episode.id })
       end
       @shop_heading = "Gear From the Latest Episode"
@@ -82,7 +85,7 @@ class HomeController < ApplicationController
     by_id = Item.where(id: ids).index_by(&:id)
     items = ids.filter_map { |id| by_id[id] }
     @shop_shelf = ShopShelf.build(holders: items.index_with { [] }, rank: items.each_with_index.to_h { |item, i| [item, items.size - i] },
-                                  max_groups: 3, limit: 2)
+                                  max_groups: 3, limit: 2, matches: HOME_MATCHES)
     @shop_links = ShopLinks.build(@shop_shelf.products)
     @shop_heading = "Gear Survivors Bring Most"
   end
