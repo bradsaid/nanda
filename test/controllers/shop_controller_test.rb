@@ -204,6 +204,12 @@ class ShopCatalogDataTest < ActiveSupport::TestCase
     end
   end
 
+  test "every product has a unique anchor, so table rows can link to its card" do
+    anchors = ShopCatalog.products.map { |p| ShopCatalog.anchor(p) }
+    assert_equal anchors.uniq.size, anchors.size, "duplicate anchors: #{anchors.tally.select { |_, c| c > 1 }.keys}"
+    anchors.each { |a| assert_match(/\Ap-[a-z0-9-]+\z/, a) }
+  end
+
   test "visitor-facing text does not name the research source site" do
     ShopCatalog.products.each do |p|
       text = [p[:used_by], p[:product], p[:brand]].join(" ")

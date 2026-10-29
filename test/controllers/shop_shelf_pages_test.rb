@@ -204,6 +204,56 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # --- table rows link to the survivor's own product card --------------------
+
+  def named_pot_path = shop_path(anchor: ShopCatalog.anchor(PRODUCTS.first))
+
+  test "the Shop page gives every product card an id to link to" do
+    with_products do
+      get shop_path
+      assert_select "li.shop-product##{ShopCatalog.anchor(PRODUCTS.first)}", /Named Pot/
+    end
+  end
+
+  test "on an episode's participants table, an item links to that survivor's card on the Shop page" do
+    with_products do
+      get episode_path(episodes(:one))
+      assert_select "td[data-label=Items] a[href=?]", named_pot_path
+    end
+  end
+
+  test "an item with no product documented for that survivor stays plain text in the table" do
+    ShopCatalog.stub(:products, PRODUCTS.reject { |p| p[:survivors] }) do
+      get episode_path(episodes(:one))
+      assert_response :success
+      assert_select "td[data-label=Items]", /pot/
+      assert_select "td[data-label=Items] a", 0
+    end
+  end
+
+  test "on a survivor's appearances table, an item links to their card, others keep the item page" do
+    AppearanceItem.create!(appearance: appearances(:one), item: @knife, source: "brought")
+    with_products do
+      get survivor_path(survivors(:one))
+      assert_select "td[data-label=Brought] a[href=?]", named_pot_path
+      assert_select "td[data-label=Brought] a[href=?]", item_path(@knife)   # no product names this survivor
+    end
+  end
+
+  test "specific_for prefers the product that also names the episode" do
+    prods = [
+      { item: "pot", product: "Plain", brand: "B", match: "confirmed", survivors: ["Test Survivor A"] },
+      { item: "pot", product: "Local", brand: "B", match: "similar", survivors: ["Test Survivor A"],
+        episodes: [{ series: "TestSeriesA", season: 1, title: "Test Episode A" }] }
+    ].map(&:with_indifferent_access)
+    ShopCatalog.stub(:products, prods) do
+      assert_equal "Plain", ShopCatalog.specific_for("pot", "test survivor a")[:product]
+      assert_equal "Local", ShopCatalog.specific_for("pot", "Test Survivor A", episode: episodes(:one))[:product]
+      assert_nil ShopCatalog.specific_for("pot", "Someone Else")
+      assert_nil ShopCatalog.specific_for("knife", "Test Survivor A")
+    end
+  end
+
   # --- location page (episodes?location_id=) ---------------------------------
 
   test "a location page shows shop cards for gear used at that location only" do

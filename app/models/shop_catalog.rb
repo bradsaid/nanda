@@ -26,6 +26,28 @@ class ShopCatalog
             .sort_by { |p| [rank.fetch(p[:match], 99), p[:product].to_s.downcase] }
   end
 
+  # Stable id for a product's card on the Shop page, so other pages can link straight to it.
+  def self.anchor(product)
+    "p-" + [product[:item], product[:brand], product[:product]].join(" ").parameterize
+  end
+
+  # [series name, season number, lowercase title] for an Episode, or nil.
+  def self.episode_key(episode)
+    return unless episode&.season
+    [episode.season.series&.name.to_s, episode.season.number.to_i, episode.title.to_s.downcase]
+  end
+
+  # The catalog product documented for this survivor and item (the card to link a table
+  # row to), or nil. Prefers a product that also names this episode, then the strongest match.
+  def self.specific_for(item_name, survivor_name, episode: nil)
+    wanted = survivor_name.to_s.downcase
+    return if wanted.blank?
+    mine = for_item(item_name).select { |p| Array(p[:survivors]).any? { |n| n.to_s.downcase == wanted } }
+    return mine.first if mine.size < 2 || episode.nil?
+    key = episode_key(episode)
+    mine.find { |p| Array(p[:episodes]).any? { |e| [e[:series].to_s, e[:season].to_i, e[:title].to_s.downcase] == key } } || mine.first
+  end
+
   # "knifecenter.com (listed as discontinued)" -> button "knifecenter.com", caption "listed as discontinued".
   def self.store_name(link)
     name = link[:store].to_s.sub(/\s*\(.*\)\s*\z/m, "").strip

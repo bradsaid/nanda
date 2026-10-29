@@ -172,17 +172,9 @@
               - days_cell = a.days_lasted
               / Items per appearance
               - brought_items = a.appearance_items.select { |ai| ai.source == "brought" }
-              - brought_names = brought_items.map do |ai|
-                - q = ai.quantity.to_i
-                - name = ai.display_name
-                - name ? (q > 1 ? "#{item_icon(ai.item)} #{name}×#{q}" : "#{item_icon(ai.item)} #{name}") : nil
-              - brought = brought_names.compact.join(", ")
+              - brought = safe_join(brought_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode) }, ", ")
               - given_items = a.appearance_items.select { |ai| ai.source == "given" }
-              - given_names = given_items.map do |ai|
-                - q = ai.quantity.to_i
-                - name = ai.display_name
-                - name ? (q > 1 ? "#{item_icon(ai.item)} #{name}×#{q}" : "#{item_icon(ai.item)} #{name}") : nil
-              - given = given_names.compact.join(", ")
+              - given = safe_join(given_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode) }, ", ")
               tr
                 td data-label="Name"
                   .d-flex.align-items-center.gap-2
@@ -204,12 +196,16 @@
                 td data-label="Weight Loss" = a.weight_loss.present? ? "#{a.weight_loss.to_i} lbs" : "—"
                 td data-label="Items"
                   - if brought.present?
-                    span = "brought: #{brought}"
+                    span
+                      = "brought: "
+                      = brought
                   - else
                     span.text-muted —
                   - if given.present? && !consolidate_given
                     br
-                    span = "given: #{given}"
+                    span
+                      = "given: "
+                      = given
     - else
       .card-body
         p.text-muted.mb-0 No participants recorded.

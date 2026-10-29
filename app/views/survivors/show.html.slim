@@ -323,8 +323,8 @@
             - @appearances.each do |a|
               - ep = a.episode
               - ser = ep.season&.series
-              - brought_links = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| link_to("#{item_icon(ai.item)} #{ai.item.name}", item_path(ai.item), class: "text-reset text-decoration-underline") }
-              - given_links   = a.appearance_items.select { |ai| ai.source == "given"   }.map { |ai| link_to("#{item_icon(ai.item)} #{ai.item.name}", item_path(ai.item), class: "text-reset text-decoration-underline") }
+              - brought_links = a.appearance_items.select { |ai| ai.source == "brought" }.map { |ai| row_path = shop_card_path_for(ai.item, @survivor, episode: ep); link_to("#{item_icon(ai.item)} #{ai.item.name}", row_path || item_path(ai.item), class: "text-reset text-decoration-underline", title: (row_path ? "See this gear on the Shop page" : nil)) }
+              - given_links   = a.appearance_items.select { |ai| ai.source == "given"   }.map { |ai| row_path = shop_card_path_for(ai.item, @survivor, episode: ep); link_to("#{item_icon(ai.item)} #{ai.item.name}", row_path || item_path(ai.item), class: "text-reset text-decoration-underline", title: (row_path ? "See this gear on the Shop page" : nil)) }
               - brought = safe_join(brought_links, ", ")
               - given   = safe_join(given_links, ", ")
               tr

@@ -126,6 +126,24 @@ module ApplicationHelper
   # subject of the bio. Full names always link; first names only link when
   # unambiguous franchise-wide. Last names are skipped to avoid collisions
   # with common words.
+  # Where a table row's item should send you: the survivor's own product card on the
+  # Shop page when the catalog documents one, otherwise nil.
+  def shop_card_path_for(item, survivor, episode: nil)
+    product = ShopCatalog.specific_for(item&.name, survivor&.full_name, episode: episode)
+    shop_path(anchor: ShopCatalog.anchor(product)) if product
+  end
+
+  # "🔥 bow drill kit×2" for one AppearanceItem row; linked to the survivor's product
+  # card on the Shop page when there is one. nil when the item has no name.
+  def appearance_item_label(appearance_item, survivor:, episode: nil)
+    name = appearance_item.display_name
+    return unless name
+    q = appearance_item.quantity.to_i
+    text = q > 1 ? "#{item_icon(appearance_item.item)} #{name}×#{q}" : "#{item_icon(appearance_item.item)} #{name}"
+    path = shop_card_path_for(appearance_item.item, survivor, episode: episode)
+    path ? link_to(text, path, title: "See this gear on the Shop page") : text
+  end
+
   # An outbound retail link. Amazon addresses get our Associates tag; every one is
   # marked sponsored. Use this for any "Buy on ..." link outside the Shop.
   def affiliate_link_to(label, url, **options)

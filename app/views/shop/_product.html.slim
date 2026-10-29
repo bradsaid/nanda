@@ -2,7 +2,7 @@
 - badge_class, badge_label = ShopCatalog::BADGES.fetch(product[:match], ["bg-light text-dark", product[:match].to_s.titleize])
 / Books, DVDs and merch were never "used on the show"; confirmed there means official or cast-made.
 - badge_label = "Official / cast-made" if ShopCatalog::NON_GEAR.include?(product[:category]) && product[:match] == "confirmed"
-li.list-group-item.shop-product
+li.list-group-item.shop-product id=ShopCatalog.anchor(product)
   .shop-product-row
     .shop-product-image
       - if product[:image].present?
