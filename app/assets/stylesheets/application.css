@@ -1144,13 +1144,21 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
   align-items: center;
   justify-content: center;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.25;
+  /* Long store names wrap onto a second line instead of being cut off. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.shop-buy-note {
+  margin-top: .15rem;
+  font-size: .75rem;
+  line-height: 1.25;
+  color: #6c757d;
+  text-align: center;
 }
 @media (max-width: 767px) {
   .shop-product-row { grid-template-columns: 88px minmax(0, 1fr); }
   .shop-product-image { width: 88px; height: 88px; }
   .shop-product-actions { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
-  .shop-product-actions .btn { flex: 1 1 140px; width: auto; }
+  .shop-product-actions .shop-buy { flex: 1 1 140px; }
 }

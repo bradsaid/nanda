@@ -54,9 +54,13 @@ li.list-group-item.shop-product
     .shop-product-actions
       - Array(product[:buy]).sort_by.with_index { |l, i| [ShopCatalog.amazon?(l) ? 0 : 1, i] }.each do |link|
         - amazon = ShopCatalog.amazon?(link)
-        - label = amazon ? "View on Amazon" : "Buy at #{link[:store]}"
-        = link_to label,
-          ShopCatalog.buy_url(link),
-          title: label,
-          class: "btn btn-sm #{amazon ? 'btn-warning' : 'btn-outline-secondary'}",
-          target: "_blank", rel: "sponsored noopener noreferrer nofollow"
+        - label = amazon ? "View on Amazon" : "Buy at #{ShopCatalog.store_name(link)}"
+        - note  = amazon ? nil : ShopCatalog.store_note(link)
+        .shop-buy
+          = link_to label,
+            ShopCatalog.buy_url(link),
+            title: label,
+            class: "btn btn-sm #{amazon ? 'btn-warning' : 'btn-outline-secondary'}",
+            target: "_blank", rel: "sponsored noopener noreferrer nofollow"
+          - if note
+            .shop-buy-note = note

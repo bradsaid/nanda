@@ -35,7 +35,8 @@ class Forum::MentionsControllerTest < ActionDispatch::IntegrationTest
 
   test "episodes are searchable by season-and-number shorthand" do
     found = results_for(type: "episode", q: "s#{@episode.season.number}e#{@episode.number_in_season}")
-    assert_equal episode_path(@episode), found.first["path"]
+    # Fixtures hold more than one S1E1 (one per series), and ties come back in no set order.
+    assert_includes found.map { |r| r["path"] }, episode_path(@episode)
     assert_match(/\AS\d+E\d+ /, found.first["label"])
   end
 

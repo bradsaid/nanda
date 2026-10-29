@@ -155,6 +155,25 @@ class Admin::ShopControllerTest < ActionDispatch::IntegrationTest
     assert_empty links.episodes_for(PRODUCTS[1])
   end
 
+  test "store names drop their parenthetical, which becomes a caption under the button" do
+    long = { store: "jblspearguns.com (Shaka Hybrid Carbon, a different model)", url: "https://jblspearguns.com/x" }
+    assert_equal "jblspearguns.com", ShopCatalog.store_name(long)
+    assert_equal "Shaka Hybrid Carbon, a different model", ShopCatalog.store_note(long)
+    etsy = { store: "etsy (ArcticPines listing, 'From Naked and Afraid')", url: "https://etsy.com/x" }
+    assert_equal "Etsy", ShopCatalog.store_name(etsy)
+    plain = { store: "rei.com", url: "https://rei.com" }
+    assert_equal "rei.com", ShopCatalog.store_name(plain)
+    assert_nil ShopCatalog.store_note(plain)
+
+    sign_in(users(:admin))
+    products = [PRODUCTS[1].merge(buy: [long])]
+    with_products(products) do
+      get admin_shop_path
+      assert_select "a.btn", text: "Buy at jblspearguns.com"
+      assert_select ".shop-buy-note", text: "Shaka Hybrid Carbon, a different model"
+    end
+  end
+
   test "the associate tag is appended to amazon links only when configured" do
     link = PRODUCTS[0][:buy][0]
     assert_equal "https://www.amazon.com/dp/B0B74MT6VM", ShopCatalog.buy_url(link, tag: nil)

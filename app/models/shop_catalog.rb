@@ -26,6 +26,14 @@ class ShopCatalog
             .sort_by { |p| [rank.fetch(p[:match], 99), p[:product].to_s.downcase] }
   end
 
+  # "knifecenter.com (listed as discontinued)" -> button "knifecenter.com", caption "listed as discontinued".
+  def self.store_name(link)
+    name = link[:store].to_s.sub(/\s*\(.*\)\s*\z/m, "").strip
+    name.include?(".") ? name : name.upcase_first
+  end
+
+  def self.store_note(link) = link[:store].to_s[/\((.*)\)\s*\z/m, 1].to_s.strip.presence
+
   def self.amazon?(link)
     link[:store].to_s == "amazon" || link[:url].to_s.match?(AMAZON)
   end
