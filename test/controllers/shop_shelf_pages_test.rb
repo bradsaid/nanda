@@ -117,6 +117,28 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "a survivor's shelf shows only products documented for that survivor, never another survivor's gear" do
+    products = PRODUCTS + [
+      { item: "pot", category: "pot", product: "Someone Elses Pot", match: "confirmed", evidence_url: "https://e.com/o",
+        survivors: ["Other Person"], buy: [{ store: "x.com", url: "https://x.com/o" }] }.with_indifferent_access
+    ]
+    ShopCatalog.stub(:products, products) do
+      get survivor_path(survivors(:one))
+      assert_select ".shop-shelf li.shop-product", 1
+      assert_select ".shop-shelf li.shop-product", text: /Named Pot/
+      assert_no_match(/Someone Elses Pot|Generic Pot|Episode Pot/, response.body)
+    end
+  end
+
+  test "a survivor with no product documented for them gets no shelf" do
+    products = PRODUCTS.reject { |p| p[:survivors]&.include?("Test Survivor A") }
+    ShopCatalog.stub(:products, products) do
+      get survivor_path(survivors(:one))
+      assert_response :success
+      assert_select ".shop-shelf", 0
+    end
+  end
+
   test "a survivor who only was given gear gets no shelf" do
     with_products do
       get survivor_path(survivors(:two))

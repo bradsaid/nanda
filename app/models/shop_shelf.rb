@@ -13,14 +13,16 @@ class ShopShelf
   # episode_label: badge text for a product that names one of those episodes
   # rank:          { Item => number } to list the busiest items first (default: A to Z)
   # max_groups:    show at most this many items (default: all)
+  # only_named:    true = keep only products that name one of the holders (a survivor's
+  #                own page must not show gear documented for other survivors)
   def self.build(holders:, episode: nil, episodes: nil, episode_label: "Seen in this episode",
-                 rank: nil, max_groups: nil, limit: 4)
-    new(holders, Array(episodes || episode).compact, episode_label, rank, max_groups, limit)
+                 rank: nil, max_groups: nil, limit: 4, only_named: false)
+    new(holders, Array(episodes || episode).compact, episode_label, rank, max_groups, limit, only_named)
   end
 
   attr_reader :groups
 
-  def initialize(holders, episodes, episode_label, rank, max_groups, limit)
+  def initialize(holders, episodes, episode_label, rank, max_groups, limit, only_named = false)
     @episode_keys  = episodes.filter_map { |e| episode_key(e) }.to_set
     @episode_label = episode_label
     ordered = holders.sort_by do |item, _|
@@ -28,6 +30,7 @@ class ShopShelf
     end
     @groups = ordered.filter_map do |item, names|
       products = ShopCatalog.for_item(item.name)
+      products = products.select { |p| names_holder?(p, names) } if only_named
       next if products.empty?
       entries = products.each_with_index.map { |p, i| [entry(p, names), i] }
                         .sort_by { |e, i| [e.label ? 0 : 1, i] }
@@ -48,6 +51,11 @@ class ShopShelf
 
   def entry(product, names)
     Entry.new(product: product, label: label_for(product, names))
+  end
+
+  def names_holder?(product, names)
+    wanted = names.map { |n| n.to_s.downcase }
+    Array(product[:survivors]).any? { |n| wanted.include?(n.to_s.downcase) }
   end
 
   def label_for(product, names)

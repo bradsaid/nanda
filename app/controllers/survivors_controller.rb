@@ -102,7 +102,8 @@ class SurvivorsController < ApplicationController
 
     # Shop cards for what this survivor brought themselves (not what production gave them).
     brought_items = Item.where(id: @brought_counts.keys.map(&:first))
-    @shop_shelf = ShopShelf.build(holders: brought_items.index_with { [@survivor.full_name] })
+    # Only products documented for this survivor; gear tied to other survivors stays off their page.
+    @shop_shelf = ShopShelf.build(holders: brought_items.index_with { [@survivor.full_name] }, only_named: true)
     @shop_links = ShopLinks.build(@shop_shelf.products)
 
     # Precomputed for the view: use @appearances in-memory instead of firing
