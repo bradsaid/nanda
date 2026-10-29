@@ -231,6 +231,13 @@ class ShopCatalogDataTest < ActiveSupport::TestCase
     end
   end
 
+  test "availability, when set, is a known value" do
+    ShopCatalog.products.each do |p|
+      next if p[:availability].blank?
+      assert_includes ShopCatalog::AVAILABILITY_LABELS.keys, p[:availability], "#{p[:product]}: bad availability #{p[:availability].inspect}"
+    end
+  end
+
   test "every product has a unique anchor, so table rows can link to its card" do
     anchors = ShopCatalog.products.map { |p| ShopCatalog.anchor(p) }
     assert_equal anchors.uniq.size, anchors.size, "duplicate anchors: #{anchors.tally.select { |_, c| c > 1 }.keys}"

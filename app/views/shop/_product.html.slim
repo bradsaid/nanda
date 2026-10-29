@@ -13,6 +13,8 @@ li.list-group-item.shop-product id=ShopCatalog.anchor(product)
       .fw-semibold
         = product[:product]
         span.badge.ms-2 class=badge_class = badge_label
+        - if (stock_label = ShopCatalog.availability_label(product))
+          span.badge.bg-danger-subtle.text-danger-emphasis.border.ms-1.shop-availability = stock_label
         - if local_assigns[:specific_label].present?
           span.badge.bg-info.text-dark.ms-1.shop-specific = specific_label
       - if product[:brand].present?

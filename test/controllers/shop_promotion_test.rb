@@ -119,6 +119,48 @@ class ShopPromotionTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the home page hides products that are out of stock or discontinued" do
+    gone = ->(name, status) {
+      { item: "pot", category: "pot", product: name, brand: "B", match: "confirmed", availability: status,
+        evidence_url: "https://e.com/#{name.parameterize}",
+        buy: [{ store: "amazon.com", url: "https://www.amazon.com/dp/B0#{name.length}" }] }.with_indifferent_access
+    }
+    products = PRODUCTS + [gone.("Sold Out Pot", "out_of_stock"), gone.("Retired Pot", "discontinued")]
+    ShopCatalog.stub(:products, products) do
+      get root_path
+      assert_select ".shop-shelf li.shop-product", text: /Named Pot/
+      assert_no_match(/Sold Out Pot|Retired Pot/, response.body)
+    end
+    # Only unavailable products: nothing to feature.
+    ShopCatalog.stub(:products, [gone.("Sold Out Pot", "out_of_stock")]) do
+      get root_path
+      assert_select ".shop-shelf", 0
+    end
+  end
+
+  test "elsewhere on the site an unavailable product still shows, with a badge" do
+    sold_out = { item: "pot", category: "pot", product: "Sold Out Pot", brand: "B", match: "confirmed", availability: "out_of_stock",
+                 evidence_url: "https://e.com/so", buy: [{ store: "amazon.com", url: "https://www.amazon.com/dp/B0SOLD" }] }.with_indifferent_access
+    retired = sold_out.merge(product: "Retired Pot", availability: "discontinued", evidence_url: "https://e.com/rt")
+    ShopCatalog.stub(:products, PRODUCTS + [sold_out, retired]) do
+      get shop_path
+      assert_select "li.shop-product", text: /Sold Out Pot/
+      assert_select "li.shop-product .shop-availability", text: "Out of stock"
+      assert_select "li.shop-product .shop-availability", text: "Discontinued"
+      assert_select "li.shop-product", text: /Named Pot/
+      assert_select "li.shop-product:has(.shop-availability)", 2
+    end
+  end
+
+  test "available? and availability_label read the availability field" do
+    assert ShopCatalog.available?({})
+    assert ShopCatalog.available?({ availability: "" })
+    assert_not ShopCatalog.available?({ availability: "out_of_stock" })
+    assert_equal "Out of stock", ShopCatalog.availability_label({ availability: "out_of_stock" })
+    assert_equal "Discontinued", ShopCatalog.availability_label({ availability: "discontinued" })
+    assert_nil ShopCatalog.availability_label({})
+  end
+
   test "the home page shows no shelf when nothing is confirmed" do
     ShopCatalog.stub(:products, PRODUCTS.reject { |p| p[:match] == "confirmed" }) do
       get root_path

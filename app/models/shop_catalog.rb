@@ -122,6 +122,13 @@ class ShopCatalog
     Array(product[:buy]).find { |l| amazon?(l) }
   end
 
+  # Products can carry `availability: out_of_stock | discontinued` (set by
+  # `rake shop:availability` or by hand). No value means it can be bought.
+  AVAILABILITY_LABELS = { "out_of_stock" => "Out of stock", "discontinued" => "Discontinued" }.freeze
+
+  def self.available?(product) = product[:availability].blank?
+  def self.availability_label(product) = AVAILABILITY_LABELS[product[:availability].to_s]
+
   # The buy buttons to show for a product: just its Amazon listing when it has one,
   # otherwise every other store it is sold at.
   def self.buy_links(product)
