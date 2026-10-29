@@ -122,6 +122,14 @@ class ShopCatalog
     Array(product[:buy]).find { |l| amazon?(l) }
   end
 
+  # The buy buttons to show for a product: just its Amazon listing when it has one,
+  # otherwise every other store it is sold at.
+  def self.buy_links(product)
+    links = Array(product[:buy])
+    amazon = links.select { |l| amazon?(l) }
+    amazon.any? ? amazon.first(1) : links
+  end
+
   # Any amazon.com address (www or bare, http or https).
   AMAZON_ANY = %r{\Ahttps?://(www\.)?amazon\.com(/|\?|\z)}i
 

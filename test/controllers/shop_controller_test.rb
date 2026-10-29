@@ -167,6 +167,33 @@ class ShopControllerTest < ActionDispatch::IntegrationTest
     assert_empty links.episodes_for(PRODUCTS[1])
   end
 
+  test "a product with an Amazon listing shows only the Amazon button" do
+    both = PRODUCTS[0].merge(buy: [
+      { store: "cancooker.com", url: "https://www.cancooker.com/" },
+      { store: "amazon.com", url: "https://www.amazon.com/dp/B00B22G0PO" }
+    ])
+    with_products([both]) do
+      get shop_path
+      assert_select ".shop-buy", 1
+      assert_select "a.btn-warning", text: "View on Amazon"
+      assert_select "a.btn", text: /Buy at/, count: 0
+      assert_no_match(/cancooker\.com/, css_select(".shop-product-actions").to_s)
+    end
+  end
+
+  test "a product with no Amazon listing keeps every store button, in order" do
+    two = PRODUCTS[0].merge(buy: [
+      { store: "cancooker.com", url: "https://www.cancooker.com/" },
+      { store: "rei.com", url: "https://www.rei.com/x" }
+    ])
+    with_products([two]) do
+      get shop_path
+      assert_select ".shop-buy", 2
+      assert_select "a.btn", text: "Buy at cancooker.com"
+      assert_select "a.btn", text: "Buy at rei.com"
+    end
+  end
+
   test "store names drop their parenthetical, which becomes a caption under the button" do
     long = { store: "jblspearguns.com (Shaka Hybrid Carbon, a different model)", url: "https://jblspearguns.com/x" }
     assert_equal "jblspearguns.com", ShopCatalog.store_name(long)
