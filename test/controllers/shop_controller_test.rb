@@ -2,6 +2,13 @@ require "test_helper"
 require "minitest/mock"
 
 class ShopControllerTest < ActionDispatch::IntegrationTest
+  test "the primary navigation links to the Shop on every page" do
+    [root_path, shop_path, items_path].each do |path|
+      get path
+      assert_select "nav[aria-label=Primary] a.nav-link[href^=?]", "/shop", text: "Shop"
+    end
+  end
+
   PRODUCTS = [
     { item: "pot", category: "pot", product: "CanCooker Jr.", brand: "CanCooker", match: "likely",
       image: "https://m.media-amazon.com/images/I/abc._AC_SL500_.jpg",
