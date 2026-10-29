@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   match "/assets/json_ld/inject",      to: ->(_env) { [204, {}, []] }, via: :all
   match "/.well-known/traffic-advice", to: ->(_env) { [204, {}, []] }, via: :all
 
+  # Built from the database on each (cached) request; see SitemapUrls. There must be no
+  # public/sitemap*.xml, which the static file server would serve ahead of this.
+  get "/sitemap.xml",  to: "sitemaps#show", defaults: { format: "xml" }
+  get "/sitemap1.xml", to: redirect("/sitemap.xml", status: 301) # the old generated child file
+
   # Counted redirect for affiliate buy buttons. The destination always comes from
   # ShopCatalog (looked up by anchor), never from the request.
   get "/go/:slug", to: "affiliate_redirects#show", as: :go, constraints: { slug: /[a-z0-9-]+/ }

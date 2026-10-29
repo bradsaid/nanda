@@ -63,7 +63,7 @@ class ShopControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "the shop is in the sitemap" do
-    assert_match(/add shop_path/, File.read(Rails.root.join("config/sitemap.rb")))
+    assert_includes SitemapUrls.entries.map(&:path), shop_path
   end
 
   # --- page ---------------------------------------------------------------

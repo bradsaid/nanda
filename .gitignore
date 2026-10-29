@@ -46,3 +46,6 @@ sep27.dump
 /.claude
 /db/development.sqlite3
 /db/development.sqlite3-*
+
+# The sitemap is served dynamically (SitemapsController); never commit a generated copy
+/public/sitemap*.xml

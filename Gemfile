@@ -55,7 +55,6 @@ gem "image_processing", "~> 1.2" # optional, for variants
 
 gem 'friendly_id', '~> 5.5.0'
 gem 'babosa'
-gem "sitemap_generator"
 
 # Audit trail / change versioning for admin updates
 gem "paper_trail"

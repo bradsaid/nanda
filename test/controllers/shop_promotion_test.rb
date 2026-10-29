@@ -316,8 +316,8 @@ class ShopPromotionTest < ActionDispatch::IntegrationTest
   end
 
   test "guides are in the sitemap" do
-    sitemap = File.read(Rails.root.join("config/sitemap.rb"))
-    assert_match(/shop_guides_path/, sitemap)
-    assert_match(/shop_guide_path/, sitemap)
+    paths = SitemapUrls.entries.map(&:path)
+    assert_includes paths, shop_guides_path
+    ShopCatalog.guides.each { |g| assert_includes paths, shop_guide_path(g.slug) }
   end
 end

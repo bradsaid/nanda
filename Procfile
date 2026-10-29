@@ -1,4 +1,4 @@
-release: bundle exec rails db:migrate && bundle exec rake sitemap:refresh:no_ping
+release: bundle exec rails db:migrate
 web: bin/rails server -p ${PORT:-5000} -e $RAILS_ENV
 # Solid Queue on its own dyno rather than forked inside Puma. In-Puma cost the
 # web dyno four extra Ruby processes and put it ~63MB over a 512MB quota,
