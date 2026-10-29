@@ -273,12 +273,12 @@ module JsonLdHelper
     ]
 
     books = [
-      { name: "The Superwoman's Survival Guide", url: "https://a.co/d/dJEVpqL" },
-      { name: "Survive: The All-In-One Guide to Staying Alive in Extreme Conditions", url: "https://a.co/d/aCuVK7B" },
-      { name: "When the Grid Fails: Easy Action Steps When Facing Hurricanes, ...", url: "https://a.co/d/cWj7nxr" },
-      { name: "Surviving the First 36 Hours", url: "https://a.co/d/bTTnKoz" },
-      { name: "Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival", url: "https://a.co/d/bTTnKoz" },
-      { name: "Adventure Awaits: The Beginner's Guide to the Great Outdoors", url: "https://a.co/d/iNGF8CS" },
+      { name: "The Superwoman's Survival Guide", url: "https://www.amazon.com/dp/1628736623" },
+      { name: "Survive: The All-In-One Guide to Staying Alive in Extreme Conditions", url: "https://www.amazon.com/dp/1646432185" },
+      { name: "When the Grid Fails: Easy Action Steps When Facing Hurricanes, ...", url: "https://www.amazon.com/dp/1646432533" },
+      { name: "Surviving the First 36 Hours", url: "https://www.amazon.com/dp/1646434277" },
+      { name: "Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival", url: "https://www.amazon.com/dp/1646432428" },
+      { name: "Adventure Awaits: The Beginner's Guide to the Great Outdoors", url: "https://www.amazon.com/dp/1400347165" },
       { name: "Girl's Own Survival Guide - Signed Copy", url: "https://kyfurneaux.com/product/girls-own-survival-guide-signed/" }
     ]
 
@@ -717,12 +717,12 @@ module JsonLdHelper
                "https://podcasts.apple.com/us/podcast/jaked-and-afraid/id1673801964"] }
     ]
     books = [
-      { name: "The Superwoman's Survival Guide", url: "https://a.co/d/dJEVpqL" },
-      { name: "Survive: The All-In-One Guide to Staying Alive in Extreme Conditions", url: "https://a.co/d/aCuVK7B" },
-      { name: "When the Grid Fails: Easy Action Steps When Facing Hurricanes", url: "https://a.co/d/cWj7nxr" },
-      { name: "Surviving the First 36 Hours", url: "https://a.co/d/bTTnKoz" },
-      { name: "Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival", url: "https://a.co/d/bTTnKoz" },
-      { name: "Adventure Awaits: The Beginner's Guide to the Great Outdoors", url: "https://a.co/d/iNGF8CS" },
+      { name: "The Superwoman's Survival Guide", url: "https://www.amazon.com/dp/1628736623" },
+      { name: "Survive: The All-In-One Guide to Staying Alive in Extreme Conditions", url: "https://www.amazon.com/dp/1646432185" },
+      { name: "When the Grid Fails: Easy Action Steps When Facing Hurricanes", url: "https://www.amazon.com/dp/1646432533" },
+      { name: "Surviving the First 36 Hours", url: "https://www.amazon.com/dp/1646434277" },
+      { name: "Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival", url: "https://www.amazon.com/dp/1646432428" },
+      { name: "Adventure Awaits: The Beginner's Guide to the Great Outdoors", url: "https://www.amazon.com/dp/1400347165" },
       { name: "Girl's Own Survival Guide - Signed Copy", url: "https://kyfurneaux.com/product/girls-own-survival-guide-signed/" }
     ]
     author = { "@type" => "Person", "name" => "Ky Furneaux" }

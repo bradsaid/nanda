@@ -126,6 +126,19 @@ module ApplicationHelper
   # subject of the bio. Full names always link; first names only link when
   # unambiguous franchise-wide. Last names are skipped to avoid collisions
   # with common words.
+  # An outbound retail link. Amazon addresses get our Associates tag; every one is
+  # marked sponsored. Use this for any "Buy on ..." link outside the Shop.
+  def affiliate_link_to(label, url, **options)
+    options = { class: "btn btn-outline-primary btn-sm", target: "_blank",
+                rel: "sponsored noopener noreferrer nofollow" }.merge(options)
+    link_to label, ShopCatalog.tagged_url(url), **options
+  end
+
+  # Tags the Amazon links inside already-sanitized bio HTML.
+  def affiliate_bio_links(sanitized_html)
+    ShopCatalog.tag_html_links(sanitized_html.to_s).html_safe
+  end
+
   def linkify_bio(sanitized_html, exclude_survivor: nil)
     return sanitized_html if sanitized_html.blank?
 

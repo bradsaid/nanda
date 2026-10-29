@@ -157,7 +157,7 @@
         - if @survivor.bio.present?
           .card.bg-white.bg-opacity-10.border-0.mt-3
             .card-body
-              p.lead.mb-0.survivor-bio = linkify_bio(sanitize(@survivor.bio, tags: %w[a strong em br], attributes: %w[href target rel title]), exclude_survivor: @survivor)
+              p.lead.mb-0.survivor-bio = linkify_bio(affiliate_bio_links(sanitize(@survivor.bio, tags: %w[a strong em br], attributes: %w[href target rel title])), exclude_survivor: @survivor)
               details.mt-3
                 summary.small.text-muted.fst-italic style="cursor: pointer;"
                   | Are you #{@survivor.full_name}? Submit your own bio or photo.

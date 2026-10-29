@@ -258,6 +258,7 @@
         = link_to "Watch on YouTube", "https://www.youtube.com/channel/UCgcWJJeJu3JCCUEfac47jzg", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
 
 / Books Section
+= render "shop/disclosure"
 .pb-2.mb-3.border-bottom.site-header.site-header-faded
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
     h1.h3.mb-0.logo Books by Ky Furneaux
@@ -280,27 +281,27 @@
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span The Superwoman's Survival Guide
-              = link_to "Buy on Amazon", "https://a.co/d/dJEVpqL", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/dp/1628736623"
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Survive: The All-In-One Guide to Staying Alive in Extreme Conditions
-              = link_to "Buy on Amazon", "https://a.co/d/aCuVK7B", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/dp/1646432185"
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span When the Grid Fails: Easy Action Steps When Facing Hurricanes, ...
-              = link_to "Buy on Amazon", "https://a.co/d/cWj7nxr", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/dp/1646432533"
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Surviving the First 36 Hours
-              = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/dp/1646434277"
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Fire: The Complete Guide for Home, Hearth, Camping and Wilderness Survival
-              = link_to "Buy on Amazon", "https://a.co/d/bTTnKoz", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/dp/1646432428"
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Adventure Awaits: The Beginner's Guide to the Great Outdoors
-              = link_to "Buy on Amazon", "https://a.co/d/iNGF8CS", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/dp/1400347165"
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Girl's Own Survival Guide - Signed Copy
@@ -330,7 +331,7 @@
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Growing Up: Institutionalized to Globetrotting
-              = link_to "Buy on Amazon", "https://www.amazon.com/Growing-Institutionalized-globetrotting-Shane-Lewis/dp/061563544X", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/Growing-Institutionalized-globetrotting-Shane-Lewis/dp/061563544X"
 
 / Wild Twins section
 - amber = Survivor.find_by(full_name: "Amber Shine")
@@ -362,7 +363,7 @@
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span The Wild Twins: Tales of Strength and Survival
-              = link_to "Buy on Amazon", "https://www.amazon.com/Wild-Twins-Tales-Strength-Survival/dp/1775541762", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/Wild-Twins-Tales-Strength-Survival/dp/1775541762"
 
 / Forrest Galante section
 - forrest = Survivor.find_by(full_name: "Forrest Galante")
@@ -388,7 +389,7 @@
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Still Alive: A Wild Life of Rediscovery
-              = link_to "Buy on Amazon", "https://www.amazon.com/Still-Alive-Wild-Life-Rediscovery/dp/0306924250", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/Still-Alive-Wild-Life-Rediscovery/dp/0306924250"
 
 / Laura Zerra section
 - laura = Survivor.find_by(full_name: "Laura Zerra")
@@ -414,7 +415,7 @@
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span A Modern Guide to Knifemaking
-              = link_to "Buy on Amazon", "https://www.amazon.com/Modern-Guide-Knifemaking-Step-step/dp/1631595059", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/Modern-Guide-Knifemaking-Step-step/dp/1631595059"
 
 / Quince Mountain section
 - quince = Survivor.find_by(full_name: "Quince Mountain")
@@ -440,7 +441,7 @@
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Dogs on the Trail: A Year in the Life
-              = link_to "Buy on Amazon", "https://www.amazon.com/Dogs-Trail-Year-Blair-Braverman/dp/0063066262", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/Dogs-Trail-Year-Blair-Braverman/dp/0063066262"
 
 / Alison Teal section
 - alison = Survivor.find_by(full_name: "Alison Teal")
@@ -466,4 +467,4 @@
           li.list-group-item.px-0
             .d-flex.justify-content-between.align-items-center.gap-2.flex-wrap
               span Alison's Adventures: Your Passport to the World
-              = link_to "Buy on Amazon", "https://www.amazon.com/Alisons-Adventures-Your-Passport-World/dp/160991337X/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+              = affiliate_link_to "Buy on Amazon", "https://www.amazon.com/Alisons-Adventures-Your-Passport-World/dp/160991337X/"
