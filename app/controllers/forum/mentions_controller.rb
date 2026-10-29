@@ -40,7 +40,7 @@ module Forum
     end
 
     def episodes(query)
-      scope = Episode.includes(:season).joins(:season)
+      scope = Episode.joins(season: :series).includes(season: :series)
 
       # "s12e03" should find that episode directly, as well as by title.
       if (m = query.match(/\As(\d+)\s*e(\d+)\z/i))
@@ -51,7 +51,9 @@ module Forum
         scope = scope.where("#{squash_sql('episodes.title')} LIKE ?", "%#{needle}%")
       end
 
-      scope.order("seasons.number, episodes.number_in_season").limit(LIMIT).map do |e|
+      # "s1e1" matches one episode per series; break those ties by series name (so the main
+      # "Naked and Afraid" comes before "... XL") and then id, so the order never varies.
+      scope.order("seasons.number, episodes.number_in_season, series.name, episodes.id").limit(LIMIT).map do |e|
         { label: "S#{e.season.number}E#{e.number_in_season} #{e.title}",
           sub: e.season.series&.name.to_s.presence || "Episode",
           path: episode_path(e) }

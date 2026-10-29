@@ -35,9 +35,19 @@ class Forum::MentionsControllerTest < ActionDispatch::IntegrationTest
 
   test "episodes are searchable by season-and-number shorthand" do
     found = results_for(type: "episode", q: "s#{@episode.season.number}e#{@episode.number_in_season}")
-    # Fixtures hold more than one S1E1 (one per series), and ties come back in no set order.
-    assert_includes found.map { |r| r["path"] }, episode_path(@episode)
+    assert_equal episode_path(@episode), found.first["path"]
     assert_match(/\AS\d+E\d+ /, found.first["label"])
+  end
+
+  test "episodes tied on season and number are ordered by series name, then id" do
+    other = Series.create!(name: "AAA First Series")
+    season = other.seasons.create!(number: @episode.season.number)
+    early = season.episodes.create!(number_in_season: @episode.number_in_season, title: "Tie Breaker",
+                                    location: @episode.location)
+    found = results_for(type: "episode", q: "s#{@episode.season.number}e#{@episode.number_in_season}")
+    paths = found.map { |r| r["path"] }
+    assert_equal episode_path(early), paths.first, "series name sorts before the fixture series"
+    assert_equal paths, results_for(type: "episode", q: "s#{@episode.season.number}e#{@episode.number_in_season}").map { |r| r["path"] }
   end
 
   test "an empty query returns nothing rather than the whole table" do
