@@ -306,7 +306,7 @@
                   - parts = []
                   - if fs.episode_trap
                     - tname = fs.episode_trap.trap_type.to_s
-                    - parts << (tname =~ /trap\z/i ? tname : "#{tname} Trap")
+                    - parts << (tname =~ /(trap|basket|net)\z/i ? tname : "#{tname} Trap")
                   - parts << fs.tools_used if fs.tools_used.present?
                   = parts.any? ? parts.join(" with ") : "—"
 
