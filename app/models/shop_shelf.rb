@@ -45,6 +45,12 @@ class ShopShelf
   attr_reader :hidden_groups
 
   def empty? = groups.empty?
+
+  # Is this product's card on the page this shelf renders?
+  def include?(product)
+    @anchors ||= products.map { |p| ShopCatalog.anchor(p) }.to_set
+    @anchors.include?(ShopCatalog.anchor(product))
+  end
   def products = groups.flat_map { |g| g.entries.map(&:product) }
 
   private

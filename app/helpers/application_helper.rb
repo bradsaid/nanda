@@ -126,22 +126,28 @@ module ApplicationHelper
   # subject of the bio. Full names always link; first names only link when
   # unambiguous franchise-wide. Last names are skipped to avoid collisions
   # with common words.
-  # Where a table row's item should send you: the survivor's own product card on the
-  # Shop page when the catalog documents one, otherwise nil.
-  def shop_card_path_for(item, survivor, episode: nil)
+  # Where a table row's item should send you: the survivor's own product card, when the
+  # catalog documents one. If that card is already on this page (in the page's shop
+  # shelf) the link jumps to it here; otherwise it goes to the card on the Shop page.
+  # nil when there is no such product.
+  def shop_card_path_for(item, survivor, episode: nil, shelf: nil)
     product = ShopCatalog.specific_for(item&.name, survivor&.full_name, episode: episode)
-    shop_path(anchor: ShopCatalog.anchor(product)) if product
+    return unless product
+    anchor = ShopCatalog.anchor(product)
+    shelf && shelf.include?(product) ? "##{anchor}" : shop_path(anchor: anchor)
   end
 
-  # "🔥 bow drill kit×2" for one AppearanceItem row; linked to the survivor's product
-  # card on the Shop page when there is one. nil when the item has no name.
-  def appearance_item_label(appearance_item, survivor:, episode: nil)
+  def shop_card_link_title(path) = path.start_with?("#") ? "Jump to this gear on this page" : "See this gear on the Shop page"
+
+  # "🔥 bow drill kit×2" for one AppearanceItem row, linked to the survivor's product card
+  # (see shop_card_path_for) when there is one. nil when the item has no name.
+  def appearance_item_label(appearance_item, survivor:, episode: nil, shelf: nil)
     name = appearance_item.display_name
     return unless name
     q = appearance_item.quantity.to_i
     text = q > 1 ? "#{item_icon(appearance_item.item)} #{name}×#{q}" : "#{item_icon(appearance_item.item)} #{name}"
-    path = shop_card_path_for(appearance_item.item, survivor, episode: episode)
-    path ? link_to(text, path, title: "See this gear on the Shop page") : text
+    path = shop_card_path_for(appearance_item.item, survivor, episode: episode, shelf: shelf)
+    path ? link_to(text, path, title: shop_card_link_title(path)) : text
   end
 
   # An outbound retail link. Amazon addresses get our Associates tag; every one is

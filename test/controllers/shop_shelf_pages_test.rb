@@ -206,7 +206,8 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
 
   # --- table rows link to the survivor's own product card --------------------
 
-  def named_pot_path = shop_path(anchor: ShopCatalog.anchor(PRODUCTS.first))
+  def named_pot_anchor = ShopCatalog.anchor(PRODUCTS.first)
+  def named_pot_path   = shop_path(anchor: named_pot_anchor)
 
   test "the Shop page gives every product card an id to link to" do
     with_products do
@@ -215,10 +216,21 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "on an episode's participants table, an item links to that survivor's card on the Shop page" do
+  test "on an episode's participants table, an item whose card is on the page jumps to it" do
     with_products do
       get episode_path(episodes(:one))
-      assert_select "td[data-label=Items] a[href=?]", named_pot_path
+      assert_select "td[data-label=Items] a[href=?]", "##{named_pot_anchor}"
+      assert_select "li.shop-product##{named_pot_anchor}"   # the target exists on this page
+      assert_select "td[data-label=Items] a[href=?]", named_pot_path, 0
+    end
+  end
+
+  test "when the card is not on the page (capped off the shelf), the row links to the Shop page" do
+    ShopCatalog.stub(:products, PRODUCTS) do
+      ShopShelf.stub(:build, ShopShelf.build(holders: {})) do   # an empty shelf: nothing is on the page
+        get episode_path(episodes(:one))
+        assert_select "td[data-label=Items] a[href=?]", named_pot_path
+      end
     end
   end
 
@@ -231,12 +243,26 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "on a survivor's appearances table, an item links to their card, others keep the item page" do
+  test "on a survivor's appearances table, items jump to the card on the page, else go to the Shop page, else the item page" do
     AppearanceItem.create!(appearance: appearances(:one), item: @knife, source: "brought")
-    with_products do
+    given_knife = { item: "knife", category: "blade", product: "Her Knife", match: "confirmed", evidence_url: "https://e.com/hk",
+                    survivors: ["Test Survivor A"], buy: [{ store: "x.com", url: "https://x.com/hk" }] }.with_indifferent_access
+    ShopCatalog.stub(:products, PRODUCTS + [given_knife]) do
       get survivor_path(survivors(:one))
-      assert_select "td[data-label=Brought] a[href=?]", named_pot_path
-      assert_select "td[data-label=Brought] a[href=?]", item_path(@knife)   # no product names this survivor
+      assert_select "td[data-label=Brought] a[href=?]", "##{named_pot_anchor}"                       # pot: on this page's shelf
+      assert_select "td[data-label=Brought] a[href=?]", "##{ShopCatalog.anchor(given_knife)}"        # knife brought: also on the shelf
+      assert_select "td[data-label=Given] a[href=?]", item_path(@knife), 0
+    end
+    # A given item is not on the survivor shelf (brought only), so its row goes to the Shop page.
+    AppearanceItem.where(item: @knife, source: "brought").delete_all
+    ShopCatalog.stub(:products, PRODUCTS + [given_knife]) do
+      get survivor_path(survivors(:one))
+      assert_select "td[data-label=Given] a[href=?]", shop_path(anchor: ShopCatalog.anchor(given_knife))
+    end
+    # No product names the survivor: the plain item page link.
+    ShopCatalog.stub(:products, PRODUCTS.reject { |p| p[:survivors] }) do
+      get survivor_path(survivors(:one))
+      assert_select "td[data-label=Brought] a[href=?]", item_path(@pot)
     end
   end
 

@@ -172,9 +172,9 @@
               - days_cell = a.days_lasted
               / Items per appearance
               - brought_items = a.appearance_items.select { |ai| ai.source == "brought" }
-              - brought = safe_join(brought_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode) }, ", ")
+              - brought = safe_join(brought_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode, shelf: @shop_shelf) }, ", ")
               - given_items = a.appearance_items.select { |ai| ai.source == "given" }
-              - given = safe_join(given_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode) }, ", ")
+              - given = safe_join(given_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode, shelf: @shop_shelf) }, ", ")
               tr
                 td data-label="Name"
                   .d-flex.align-items-center.gap-2
