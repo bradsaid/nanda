@@ -28,7 +28,7 @@ class ItemsShopLinksTest < ActionDispatch::IntegrationTest
       names = css_select("#item-shop li.shop-product .fw-semibold").map { |n| n.text.strip }
       assert_match(/Confirmed Pot/, names.first)
       assert_match(/Likely Pot/, names.last)
-      assert_select "#item-shop a[href=?]", "https://www.amazon.com/dp/B00B22G0PO", text: "View on Amazon"
+      assert_select "#item-shop a[href=?]", go_path(ShopCatalog.anchor(PRODUCTS[0]), from: "item"), text: "View on Amazon"
       assert_no_match(/A Knife/, response.body)
     end
   end

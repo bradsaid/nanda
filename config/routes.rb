@@ -9,6 +9,10 @@ Rails.application.routes.draw do
   match "/assets/json_ld/inject",      to: ->(_env) { [204, {}, []] }, via: :all
   match "/.well-known/traffic-advice", to: ->(_env) { [204, {}, []] }, via: :all
 
+  # Counted redirect for affiliate buy buttons. The destination always comes from
+  # ShopCatalog (looked up by anchor), never from the request.
+  get "/go/:slug", to: "affiliate_redirects#show", as: :go, constraints: { slug: /[a-z0-9-]+/ }
+
   resource  :session,    only: %i[new create destroy]
   resources :passwords,  only: %i[new create edit update], param: :token
 
@@ -61,6 +65,7 @@ Rails.application.routes.draw do
     resource  :password, only: %i[edit update]
     resources :survivors
     get "synopsis_queue", to: "synopsis_queue#index"
+    resources :affiliate_clicks, only: [:index]
     get "shop", to: redirect("/shop", status: 301) # moved to the public shop
     resources :seasons do
       member do

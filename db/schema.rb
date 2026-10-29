@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_11_210000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_29_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -42,6 +42,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_11_210000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "affiliate_clicks", force: :cascade do |t|
+    t.string "product_anchor", null: false
+    t.string "product_name"
+    t.string "item"
+    t.string "store"
+    t.string "destination_host"
+    t.string "placement"
+    t.string "referring_path"
+    t.boolean "is_mobile", default: false, null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["created_at"], name: "index_affiliate_clicks_on_created_at"
+    t.index ["product_anchor"], name: "index_affiliate_clicks_on_product_anchor"
   end
 
   create_table "appearance_items", force: :cascade do |t|

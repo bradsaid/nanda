@@ -56,13 +56,14 @@ li.list-group-item.shop-product id=ShopCatalog.anchor(product)
           = link_to "#{item_icon(item)} #{item.name}", item_path(item)
     .shop-product-actions
       / Amazon is the only button when the product has an Amazon listing.
-      - ShopCatalog.buy_links(product).each do |link|
+      / Buttons go through /go/:anchor, which counts the click and redirects to the tagged URL.
+      - ShopCatalog.buy_links(product).each_with_index do |link, i|
         - amazon = ShopCatalog.amazon?(link)
         - label = amazon ? "View on Amazon" : "Buy at #{ShopCatalog.store_name(link)}"
         - note  = amazon ? nil : ShopCatalog.store_note(link)
         .shop-buy
           = link_to label,
-            ShopCatalog.buy_url(link),
+            tracked_buy_path(product, i, local_assigns[:placement]),
             title: label,
             class: "btn btn-sm #{amazon ? 'btn-warning' : 'btn-outline-secondary'}",
             target: "_blank", rel: "sponsored noopener noreferrer nofollow"

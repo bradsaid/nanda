@@ -4,5 +4,6 @@ Disallow: /admin/
 Disallow: /session
 Disallow: /passwords
 Disallow: /page_view_ping
+Disallow: /go/
 
 Sitemap: https://www.nakedandafraidfan.com/sitemap.xml

@@ -110,7 +110,7 @@ class ShopPromotionTest < ActionDispatch::IntegrationTest
       assert_select ".shop-shelf li.shop-product", 1
       assert_select ".shop-shelf li.shop-product", text: /Named Pot/
       assert_no_match(/Confirmed Elsewhere Pot/, response.body)
-      assert_select ".shop-shelf a[href*='amazon.com']"
+      assert_select ".shop-shelf a.btn-warning[href=?]", go_path(ShopCatalog.anchor(PRODUCTS[0]), from: "home")
     end
     # Confirmed but not on Amazon: nothing to feature.
     ShopCatalog.stub(:products, [elsewhere]) do

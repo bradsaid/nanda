@@ -72,8 +72,8 @@ class ShopControllerTest < ActionDispatch::IntegrationTest
     with_products do
       get shop_path
       assert_response :success
-      assert_select "a.btn-warning[href=?]", "https://www.amazon.com/dp/B0B74MT6VM", text: "View on Amazon"
-      assert_select "a[href='https://www.rei.com/x']", text: /rei\.com/
+      assert_select "a.btn-warning[href=?]", go_path(ShopCatalog.anchor(PRODUCTS[0]), from: "shop"), text: "View on Amazon"
+      assert_select "a[href=?]", go_path(ShopCatalog.anchor(PRODUCTS[1]), from: "shop"), text: /rei\.com/
       assert_select "a[href='https://example.com/e2']", text: "Source 2"
     end
   end

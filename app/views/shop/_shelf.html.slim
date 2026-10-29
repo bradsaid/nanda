@@ -1,5 +1,5 @@
 / Shop cards for an episode, survivor, or country page.
-/ locals: shelf (ShopShelf), links (ShopLinks), heading; optional item_params (e.g. { country: "Panama" }), dom_id (anchor for jump links)
+/ locals: shelf (ShopShelf), links (ShopLinks), heading; optional placement (defaults from the controller), item_params (e.g. { country: "Panama" }), dom_id (anchor for jump links)
 - item_params = local_assigns[:item_params] || {}
 - unless shelf.empty?
   section.card.shadow-sm.mb-4.shop-shelf id=local_assigns[:dom_id]
@@ -16,7 +16,7 @@
             = link_to "see all", item_path(group.item, item_params)
       ul.list-group.list-group-flush.mb-3
         - group.entries.each do |entry|
-          = render "shop/product", product: entry.product, item: group.item, link_item: false, links: links, specific_label: entry.label
+          = render "shop/product", product: entry.product, item: group.item, link_item: false, links: links, specific_label: entry.label, placement: local_assigns[:placement]
     - if shelf.hidden_groups.positive?
       .card-footer.small.text-muted
         = "#{pluralize(shelf.hidden_groups, 'more item')} with products used here. "

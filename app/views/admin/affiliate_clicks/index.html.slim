@@ -1,0 +1,78 @@
+- content_for :title, "Affiliate Clicks"
+- content_for :robots, "noindex, nofollow"
+
+.container.my-4
+  = render "shared/flash"
+
+  .mb-3
+    h1.h3.mb-0 Affiliate Clicks
+    p.text-muted.small.mb-0 Clicks on buy buttons (via /go/). Anonymous: bots are not counted and no IP or visitor id is stored.
+
+  .row.g-3.mb-3
+    - @totals.each do |label, count|
+      .col-6.col-md-3
+        .card.shadow-sm.text-center
+          .card-body.py-3
+            .h4.mb-0 = number_with_delimiter(count)
+            .small.text-muted = label
+
+  .row.g-3.mb-3
+    .col-lg-8
+      .card.shadow-sm
+        .card-header Top products
+        .table-responsive
+          table.table.table-sm.table-hover.mb-0.align-middle
+            thead.table-light
+              tr
+                th(scope="col") Product
+                th.text-end(scope="col") Clicks
+            tbody
+              - if @top_products.empty?
+                tr
+                  td.text-muted(colspan="2") No clicks yet.
+              - @top_products.each do |(anchor, name), count|
+                tr
+                  td = link_to (name.presence || anchor), shop_path(anchor: anchor)
+                  td.text-end = number_with_delimiter(count)
+    .col-lg-4
+      .card.shadow-sm
+        .card-header Clicks by placement
+        .table-responsive
+          table.table.table-sm.mb-0.align-middle
+            thead.table-light
+              tr
+                th(scope="col") Placement
+                th.text-end(scope="col") Clicks
+            tbody
+              - if @placements.empty?
+                tr
+                  td.text-muted(colspan="2") No clicks yet.
+              - @placements.each do |placement, count|
+                tr
+                  td = placement.presence || "(none)"
+                  td.text-end = number_with_delimiter(count)
+
+  .card.shadow-sm
+    .card-header Latest 50 clicks
+    .table-responsive
+      table.table.table-sm.table-hover.mb-0.align-middle
+        thead.table-light
+          tr
+            th(scope="col") When
+            th(scope="col") Product
+            th(scope="col") Store
+            th(scope="col") Placement
+            th(scope="col") From page
+            th(scope="col") Device
+        tbody
+          - if @recent.empty?
+            tr
+              td.text-muted(colspan="6") No clicks yet.
+          - @recent.each do |click|
+            tr
+              td.text-nowrap = l(click.created_at.in_time_zone, format: :short)
+              td = click.product_name.presence || click.product_anchor
+              td = click.store
+              td = click.placement
+              td = click.referring_path
+              td = click.is_mobile ? "Mobile" : "Desktop"
