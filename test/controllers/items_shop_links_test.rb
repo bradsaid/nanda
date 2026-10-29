@@ -33,6 +33,20 @@ class ItemsShopLinksTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the shop card sits above the Given and Brought lists and the country table" do
+    with_products do
+      get item_path(@pot)
+      body = response.body
+      shop = body.index('id="item-shop"')
+      assert shop, "shop card missing"
+      ["Given — Episodes", "Brought — Episodes", "By Country"].each do |heading|
+        at = body.index(heading)
+        assert at, "#{heading} missing"
+        assert_operator shop, :<, at, "shop card should come before #{heading}"
+      end
+    end
+  end
+
   test "a signed-out visitor sees the shop card with the disclosure" do
     with_products do
       get item_path(@pot)

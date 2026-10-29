@@ -84,6 +84,18 @@
           .display-6.fw-bold = brought_episode_ids.size
           /.small.text-muted.mt-1 = "Adjusted (continuous=1): #{brought_keys.size}"
 
+  / ---------- Where to buy (above the Given / Brought lists) ----------
+  - if @shop_products.present?
+    .card.shadow-sm.mb-4#item-shop
+      .card-header
+        h2.h5.mb-0
+          | Shop this item
+          small.ms-2 = "(#{@shop_products.size})"
+        = render "shop/disclosure", compact: true
+      ul.list-group.list-group-flush.my-2
+        - @shop_products.each do |p|
+          = render "shop/product", product: p, item: @item, link_item: false, links: @shop_links
+
   / ===== Given — by episode (unique within episode) =====
   - given_by_ep = (@given_ai || []).group_by { |ai| ai.appearance.episode }
   .card.shadow-sm.mb-4
@@ -174,15 +186,3 @@
               tr
                 td data-label="Country" = r.country.presence || "Unknown"
                 td.text-end data-label="Total" = r.total.to_i
-
-  / ---------- Where to buy ----------
-  - if @shop_products.present?
-    .card.shadow-sm.mt-4#item-shop
-      .card-header
-        h2.h5.mb-0
-          | Shop this item
-          small.ms-2 = "(#{@shop_products.size})"
-        = render "shop/disclosure", compact: true
-      ul.list-group.list-group-flush.my-2
-        - @shop_products.each do |p|
-          = render "shop/product", product: p, item: @item, link_item: false, links: @shop_links
