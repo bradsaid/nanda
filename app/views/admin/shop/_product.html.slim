@@ -13,6 +13,8 @@ li.list-group-item.shop-product
       .fw-semibold
         = product[:product]
         span.badge.ms-2 class=badge_class = badge_label
+        - if local_assigns[:specific_label].present?
+          span.badge.bg-info.text-dark.ms-1.shop-specific = specific_label
       - if product[:brand].present?
         .small.text-muted = product[:brand]
       - if product[:used_by].present?

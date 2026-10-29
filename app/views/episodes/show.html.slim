@@ -214,6 +214,11 @@
       .card-body
         p.text-muted.mb-0 No participants recorded.
 
+  / ===== Shop the gear (admin preview) =====
+  - if @shop_shelf
+    .mt-4
+      = render "admin/shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear From This Episode"
+
   / ===== Traps =====
   - if @episode.episode_traps.any?
     .card.shadow-sm.mt-4
