@@ -63,6 +63,9 @@
       .card-body.p-0
         #locations-map.map-frame.map-frame-sm data-locations-url=(locations_path(format: :json, location_id: @location.id)) data-no-links="true"
 
+  - if @shop_shelf && !@shop_shelf.empty?
+    = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear Used at This Location"
+
   .card.shadow-sm
     .card-header Episodes
     .table-responsive

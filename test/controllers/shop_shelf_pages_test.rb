@@ -204,6 +204,34 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # --- location page (episodes?location_id=) ---------------------------------
+
+  test "a location page shows shop cards for gear used at that location only" do
+    with_products do
+      get episodes_path(location_id: episodes(:one).location_id)   # pot brought, knife given
+      assert_response :success
+      assert_select ".shop-shelf h2", text: "Shop the Gear Used at This Location"
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@pot)
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@knife)
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@salt), 0   # found, not used
+      assert_select ".shop-shelf li.shop-product", text: /Given Knife/
+      assert_select ".shop-shelf .shop-disclosure", /Amazon Associate/
+      assert_select ".shop-specific", text: "Seen at this location"
+
+      get episodes_path(location_id: episodes(:two).location_id)   # pot given, no knife
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@pot)
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@knife), 0
+    end
+  end
+
+  test "a location with no catalogued gear gets no shelf" do
+    ShopCatalog.stub(:products, [].freeze) do
+      get episodes_path(location_id: episodes(:one).location_id)
+      assert_response :success
+      assert_select ".shop-shelf", 0
+    end
+  end
+
   # --- ShopShelf ------------------------------------------------------------
 
   test "ShopShelf can rank items by use and cap how many it shows" do

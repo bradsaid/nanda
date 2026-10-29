@@ -28,6 +28,7 @@ class EpisodesController < ApplicationController
                          .includes(:location, season: :series, appearances: [{ survivor: { avatar_attachment: :blob } }, { appearance_items: :item }])
                          .order(Arel.sql("air_date IS NULL, air_date DESC, number_in_season ASC"))
       @seasons = []; @episodes_by_season = {}; @episode_counts = {}
+      build_gear_shelf(label: "Seen at this location") { |scope| scope.where(episodes: { location_id: @location.id }) }
 
     elsif params[:season_id].present? || (params[:series_id].present? && params[:season].present?)
       @season =
@@ -196,15 +197,25 @@ class EpisodesController < ApplicationController
         .order(Arel.sql("air_date IS NULL, air_date DESC"))
 
     # Shop cards for gear brought or given in this country, busiest items first.
-    # Distinct (item, survivor) pairs, so a survivor carried across the episodes of a
-    # continuous-story season counts once.
-    pairs = AppearanceItem.where(source: %w[brought given])
+    build_gear_shelf(label: "Seen in #{@country}") do |scope|
+      scope.where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
+    end
+  end
+
+  private
+
+  # Shop cards for the gear brought or given in a set of episodes (a country or one
+  # location), busiest items first. The block narrows an AppearanceItem scope that is
+  # already joined to appearance, survivor and the episode's location.
+  # Distinct (item, survivor) pairs, so a survivor carried across the episodes of a
+  # continuous-story season counts once.
+  def build_gear_shelf(label:)
+    scope = AppearanceItem.where(source: %w[brought given])
                           .joins(appearance: [:survivor, { episode: :location }])
-                          .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
-                          .distinct.pluck(:item_id, "survivors.full_name")
+    pairs   = yield(scope).distinct.pluck(:item_id, "survivors.full_name")
     items   = Item.where(id: pairs.map(&:first).uniq).index_by(&:id)
     holders = pairs.group_by(&:first).to_h { |id, rows| [items[id], rows.map(&:last).uniq] }
-    @shop_shelf = ShopShelf.build(holders: holders, episodes: @episodes.to_a, episode_label: "Seen in #{@country}",
+    @shop_shelf = ShopShelf.build(holders: holders, episodes: @episodes.to_a, episode_label: label,
                                   rank: holders.transform_values(&:size), max_groups: 8, limit: 3)
     @shop_links = ShopLinks.build(@shop_shelf.products)
   end
