@@ -110,6 +110,8 @@ Rails.application.routes.draw do
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]
   get "shop", to: "shop#index"
+  get "shop/guides", to: "shop_guides#index", as: :shop_guides
+  get "shop/guides/:slug", to: "shop_guides#show", as: :shop_guide
 
   post "page_view_ping", to: "page_view_pings#create"
 

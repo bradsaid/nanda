@@ -81,6 +81,11 @@
                   .small.text-muted Challenges
                   .display-6.fw-bold = collapsed
 
+  / ===== Featured gear =====
+  - if @shop_shelf && !@shop_shelf.empty?
+    = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: @shop_heading
+    p.small.text-end.mb-4.mt-n3 = link_to "Browse the whole Shop →", shop_path
+
   / ===== Episodes (left) + Countries / Items (right) =====
   .row.g-4.mb-4
     .col-lg-6

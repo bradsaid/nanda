@@ -16,7 +16,7 @@ class ShopController < ApplicationController
       (@category.blank? || p[:category] == @category) &&
         (@match.blank? || p[:match] == @match) &&
         (!@amazon || ShopCatalog.amazon_link(p)) &&
-        (@q.blank? || [p[:product], p[:brand], p[:item], p[:used_by]].compact.join(" ").downcase.include?(@q.downcase))
+        (@q.blank? || [p[:product], p[:brand], p[:item], p[:used_by], *Array(p[:survivors])].compact.join(" ").downcase.include?(@q.downcase))
     end
 
     # Group by category (gear first, books/merch last), strongest evidence first inside each.

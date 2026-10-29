@@ -33,6 +33,7 @@ module Forum
                       .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
       @new_post = Forum::Post.new
       @opening_post_id = @topic.posts.active.chronological.pick(:id)
+      build_mentioned_gear_shelf
       # Crawlers and link-preview bots are not readers; counting them inflated
       # the figure and made every one of their fetches a database write.
       @topic.increment!(:views_count) if count_view?
@@ -95,6 +96,15 @@ module Forum
     end
 
     private
+
+    # Shop cards for gear the thread talks about (items the catalog has products for).
+    def build_mentioned_gear_shelf
+      names = ShopCatalog.mentioned_in([@topic.title, *@posts.map(&:body)].join(" "))
+      items = Item.where("LOWER(name) IN (?)", names).to_a.sort_by { |i| names.index(i.name.downcase) }
+      rank  = items.each_with_index.to_h { |item, i| [item, items.size - i] }
+      @shop_shelf = ShopShelf.build(holders: items.index_with { [] }, rank: rank, max_groups: 3, limit: 2)
+      @shop_links = ShopLinks.build(@shop_shelf.products)
+    end
 
     # No category is chosen by the author any more; new topics land in the
     # default one so the existing schema still has a parent row to point at.

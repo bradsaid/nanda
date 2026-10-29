@@ -49,6 +49,10 @@
           = submit_tag "Apply", class: "btn btn-dark mb-1"
           = link_to "Reset", items_path, class: "btn btn-light mb-1"
 
+  / ===== Shop cards: the matching items when searching, else the most-brought gear =====
+  - if @shop_shelf && !@shop_shelf.empty?
+    = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: (@q.present? ? "Shop \"#{@q}\"" : "Gear You Can Buy")
+
   / ===== Top Lists (Adjusted totals) — hidden when searching =====
   / Brought and given are source-specific by definition, so a source filter
   / drops the card that contradicts it; the remaining card spans full width.
@@ -75,7 +79,9 @@
                   - else
                     - rows.each do |r|
                       tr
-                        td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
+                        td
+                          = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
+                          = shop_badge(r.name, id: r.id)
                         td.text-end = r.read_attribute(:total).to_i
 
 
@@ -103,7 +109,9 @@
             - else
               - @rarest.each do |r|
                 tr
-                  td = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
+                  td
+                    = link_to "#{item_icon(r)} #{r.name}", item_path(r.id)
+                    = shop_badge(r.name, id: r.id)
                   td.text-end = r.read_attribute(:total).to_i
                   - if show_brought
                     td.text-end = r.read_attribute(:brought_total).to_i
@@ -157,7 +165,9 @@
                 - season = ep.season
                 - survivors = records.map { |r| r.appearance.survivor }.uniq(&:id)
                 tr
-                  td = link_to "#{item_icon(first.item)} #{first.item.name}", item_path(first.item)
+                  td
+                    = link_to "#{item_icon(first.item)} #{first.item.name}", item_path(first.item)
+                    = shop_badge(first.item.name, id: first.item.id)
                   td = link_to season_label(season), season_path(season)
                   td = link_to ep.title, episode_path(ep)
                   td = ep.location&.country

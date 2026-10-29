@@ -66,6 +66,10 @@
 
 = paginate @posts
 
+- if @shop_shelf && !@shop_shelf.empty?
+  .mt-4
+    = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Gear Mentioned in This Thread"
+
 - if logged_in? && current_user.email_verified? && !@topic.locked?
   hr.my-4
   h2.h5.mb-3 Reply

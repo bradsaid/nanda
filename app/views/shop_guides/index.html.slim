@@ -1,0 +1,23 @@
+- content_for :title, "Naked and Afraid Gear Guides"
+- content_for :meta_description, "Guides to the knives, fire starters, fishing gear, pots and more used on Naked and Afraid, with the products you can buy and where each was spotted on the show."
+- content_for :canonical_url, shop_guides_url
+
+.container.my-4
+  nav.small.mb-2
+    = link_to "Shop", shop_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    span Guides
+  h1.h3.mb-2 Naked and Afraid Gear Guides
+  p.text-muted.small.mb-3(style="max-width: 760px;")
+    | One page per kind of gear: what survivalists brought, and the products you can buy that match it or come closest.
+
+  = render "shop/disclosure"
+
+  .row.g-3
+    - @guides.each do |g|
+      .col-md-6
+        = link_to shop_guide_path(g.slug), class: "card h-100 shadow-sm text-decoration-none" do
+          .card-body
+            h2.h5.mb-1 = g.title
+            p.small.text-muted.mb-2 = g.description
+            span.badge.bg-secondary = "#{@counts[g.category]} products"

@@ -35,6 +35,7 @@
   - if @survivors.empty?
     .text-muted.py-5.text-center No survivors found.
   - else
+    - shop_counts = ShopCatalog.survivor_counts
     #survivors-results.row.g-3
       - @survivors.each do |s|
         - name = s.full_name.to_s
@@ -69,3 +70,5 @@
                   small.text-muted.mt-1 = "#{collapsed} #{'challenge'.pluralize(collapsed)}"
               - else
                 small.text-muted.mt-1 = "#{collapsed} #{'challenge'.pluralize(collapsed)}"
+              - if (gear_n = shop_counts[name.downcase].to_i).positive?
+                small.mt-1.badge.bg-warning-subtle.text-dark.border title="#{gear_n} #{'product'.pluralize(gear_n)} tied to #{name}" = "🛒 #{gear_n}"

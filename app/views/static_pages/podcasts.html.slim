@@ -44,6 +44,7 @@
     .d-flex.flex-wrap.gap-2
         = link_to "Listen now - Spotify", "https://open.spotify.com/show/2q2ZfSDQiL6u26dV4o2fNN", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/a-naked-and-afraid-podcast-oh-heck-naa/id1637024575", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(malu, class: "btn btn-outline-warning btn-sm")
 
 / Jaked and Afraid
 - jake = Survivor.find_by(full_name: "Jake Nodar")
@@ -69,6 +70,7 @@
     .d-flex.flex-wrap.gap-2
         = link_to "Listen now - Spotify", "https://open.spotify.com/show/1jl5pP0rmBlo5Ra2G3sDmQ", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/jaked-and-afraid/id1673801964", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(jake, class: "btn btn-outline-warning btn-sm")
 
 / The Survival Debrief Podcast with Steven Kelly
 - steven = Survivor.find_by(full_name: "Steven Kelly")
@@ -95,6 +97,7 @@
         = link_to "Listen now - Spotify", "https://open.spotify.com/show/0tEywXoYZsNr3De4cdLQ1U", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/the-survival-debrief-podcast-with-steven-kelly/id1844233698", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Watch on YouTube", "https://www.youtube.com/playlist?list=PL-rLu7--JuCa7SACj9JFUJzIIr2tjzkWY", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(steven, class: "btn btn-outline-warning btn-sm")
 
 / Against the Odds with Cassie DePecol
 - cassie = Survivor.find_by(full_name: "Cassie DePecol")
@@ -120,6 +123,7 @@
     .d-flex.flex-wrap.gap-2
         = link_to "Listen now - Wondery", "https://wondery.com/shows/against-the-odds/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/against-the-odds/id1553335461", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(cassie, class: "btn btn-outline-warning btn-sm")
 
 / Fringe with Benefits with Stacey Osorio
 - stacey = Survivor.find_by(full_name: "Stacey Osorio")
@@ -144,6 +148,7 @@
   .px-3.pb-3
     .d-flex.flex-wrap.gap-2
         = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/fringe-with-benefits/id1525158139", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(stacey, class: "btn btn-outline-warning btn-sm")
 
 / Blood and Breakthrough with Tawny Lynn
 - tawny = Survivor.find_by(full_name: "Tawny Lynn")
@@ -170,6 +175,7 @@
         = link_to "Listen now - Spotify", "https://open.spotify.com/show/75y83ZGICJrJWfwEQQRAGj", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Listen now - Apple Podcasts", "https://podcasts.apple.com/us/podcast/blood-and-breakthrough/id1800337727", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
         = link_to "Watch on YouTube", "https://www.youtube.com/@BloodandBreakthrough", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(tawny, class: "btn btn-outline-warning btn-sm")
 
 / Little Ritual with Jena Ocean
 - jena = Survivor.find_by(full_name: "Jena Ocean")
@@ -194,6 +200,7 @@
   .px-3.pb-3
     .d-flex.flex-wrap.gap-2
         = link_to "Listen now - Spotify", "https://open.spotify.com/show/1xO7RaVb1miNxQMRbdretX", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(jena, class: "btn btn-outline-warning btn-sm")
 
 / ===== Shows Section =====
 - laura_show = Survivor.find_by(full_name: "Laura Zerra")
@@ -224,6 +231,7 @@
   .px-3.pb-3
     .d-flex.flex-wrap.gap-2
         = link_to "Watch on CarbonTV", "https://www.carbontv.com/shows/decivilized/", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(laura_show, class: "btn btn-outline-warning btn-sm")
 
 / Ky and Laura Survival on YouTube
 - ky_show = Survivor.find_by(full_name: "Ky Furneaux")
@@ -256,6 +264,7 @@
   .px-3.pb-3
     .d-flex.flex-wrap.gap-2
         = link_to "Watch on YouTube", "https://www.youtube.com/channel/UCgcWJJeJu3JCCUEfac47jzg", class: "btn btn-outline-primary btn-sm", target: "_blank", rel: "noopener noreferrer"
+        = survivor_gear_link(ky_show, class: "btn btn-outline-warning btn-sm")
 
 / Books Section
 = render "shop/disclosure"
@@ -266,6 +275,7 @@
     | Discover survival guides and adventure books written by Naked & Afraid survivor&nbsp;
     = link_to "Ky Furneaux", survivor_path(ky), class: "text-primary"
     | .
+    = survivor_gear_link(ky, class: "ms-2 small text-decoration-none")
 
 .card.shadow-sm.mb-3
   .card-header
@@ -316,6 +326,7 @@
     | Memoir by Naked & Afraid survivalist&nbsp;
     = link_to "Shane Lewis", survivor_path(shane), class: "text-primary"
     | .
+    = survivor_gear_link(shane, class: "ms-2 small text-decoration-none")
 
 .card.shadow-sm.mb-3
   .card-header
@@ -345,6 +356,8 @@
     |  and&nbsp;
     = link_to "Serena Shine", survivor_path(serena), class: "text-primary"
     | .
+    = survivor_gear_link(amber, class: "ms-2 small text-decoration-none")
+    = survivor_gear_link(serena, class: "ms-2 small text-decoration-none")
 
 .card.shadow-sm.mb-3
   .card-header
@@ -374,6 +387,7 @@
     | Memoir by Naked & Afraid alum, wildlife biologist and Animal Planet host&nbsp;
     = link_to "Forrest Galante", survivor_path(forrest), class: "text-primary"
     | .
+    = survivor_gear_link(forrest, class: "ms-2 small text-decoration-none")
 
 .card.shadow-sm.mb-3
   .card-header
@@ -400,6 +414,7 @@
     | Knifemaking guide by Naked & Afraid survivalist and bladesmith&nbsp;
     = link_to "Laura Zerra", survivor_path(laura), class: "text-primary"
     | .
+    = survivor_gear_link(laura, class: "ms-2 small text-decoration-none")
 
 .card.shadow-sm.mb-3
   .card-header
@@ -452,6 +467,8 @@
     | Adventure travel guide by Naked & Afraid survivalist, filmmaker and surfer&nbsp;
     = link_to "Alison Teal", survivor_path(alison), class: "text-primary"
     | .
+    = survivor_gear_link(alison, class: "ms-2 small text-decoration-none")
+    = survivor_gear_link(quince, class: "ms-2 small text-decoration-none")
 
 .card.shadow-sm.mb-3
   .card-header

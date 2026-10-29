@@ -57,6 +57,11 @@
                               alt: @survivor.full_name,
                               class: "avatar-lg rounded-circle shadow img-thumbnail"
 
+            - if @shop_shelf && !@shop_shelf.empty?
+              - gear_n = @shop_shelf.products.size
+              .mt-3
+                = link_to "🛒 Shop #{gear_n} #{'product'.pluralize(gear_n)} #{@survivor.full_name.split.first} used", "#survivor-shop", class: "btn btn-warning btn-sm"
+
 
 
 
@@ -267,7 +272,7 @@
 
     / ===== Shop the gear they brought (above the Items Brought / Given lists) =====
     - if @shop_shelf
-      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear #{@survivor.full_name.split.first} Brought"
+      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear #{@survivor.full_name.split.first} Brought", dom_id: "survivor-shop"
 
     / ===== Items Sections =====
     .row.g-4.mb-4

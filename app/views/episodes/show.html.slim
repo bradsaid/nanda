@@ -56,8 +56,12 @@
                 |  • E#{ep_num}
             - else
               = subtitle
-      - if season
-        = link_to "View Season #{season.number}", season_path(season), class: "btn btn-outline-secondary btn-sm"
+      .d-flex.flex-wrap.gap-2
+        - if @shop_shelf && !@shop_shelf.empty?
+          - gear_n = @shop_shelf.products.size
+          = link_to "🛒 #{gear_n} #{'product'.pluralize(gear_n)} from this episode", "#episode-shop", class: "btn btn-warning btn-sm"
+        - if season
+          = link_to "View Season #{season.number}", season_path(season), class: "btn btn-outline-secondary btn-sm"
 
   / ===== Episode meta =====
   .row.g-3.mb-4
@@ -213,7 +217,7 @@
   / ===== Shop the gear =====
   - if @shop_shelf && !@shop_shelf.empty?
     .mt-4
-      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear From This Episode"
+      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear From This Episode", dom_id: "episode-shop"
 
   / ===== Traps =====
   - if @episode.episode_traps.any?

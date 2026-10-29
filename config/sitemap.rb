@@ -32,6 +32,8 @@ SitemapGenerator::Sitemap.create do
   add episodes_path,             changefreq: "daily",  priority: 0.8
   add items_path,                changefreq: "weekly", priority: 0.7
   add shop_path,                 changefreq: "weekly", priority: 0.5
+  add shop_guides_path,          changefreq: "weekly", priority: 0.5
+  ShopCatalog.guides.each { |g| add shop_guide_path(g.slug), changefreq: "weekly", priority: 0.5 }
   add seasons_path,              changefreq: "weekly", priority: 0.7
   add series_index_path,         changefreq: "weekly", priority: 0.7
 

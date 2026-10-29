@@ -15,6 +15,13 @@
 
   = render "shop/disclosure"
 
+  - if (guides = ShopCatalog.guides).any?
+    p.small.mb-3
+      strong.me-1 Guides:
+      - guides.each_with_index do |g, i|
+        = " · " if i.positive?
+        = link_to g.heading, shop_guide_path(g.slug), class: "text-decoration-none"
+
   = form_with url: shop_path, method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center.gap-2
       span.me-2(aria-hidden="true") 🔎

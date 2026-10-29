@@ -92,6 +92,8 @@
           | Shop this item
           small.ms-2 = "(#{@shop_products.size})"
         = render "shop/disclosure", compact: true
+        - if (guide = ShopCatalog.guide_for(@shop_products.first))
+          .small.mt-1 = link_to "See the full #{guide.heading} guide →", shop_guide_path(guide.slug)
       ul.list-group.list-group-flush.my-2
         - @shop_products.each do |p|
           = render "shop/product", product: p, item: @item, link_item: false, links: @shop_links

@@ -37,6 +37,10 @@
           = link_to item_path(item), class: "badge bg-light text-dark border text-decoration-none" do
             = "#{item_icon(item)} #{item.name}"
 
+  / ===== Shop cards for this type's gear =====
+  - if @shop_shelf && !@shop_shelf.empty?
+    = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop #{@item_type.to_s.titleize} Gear", item_params: (@country ? { country: @country } : {})
+
   / Country filter
   = form_with url: type_items_path(@item_type), method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center

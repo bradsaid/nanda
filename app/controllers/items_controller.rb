@@ -1,4 +1,6 @@
 class ItemsController < ApplicationController
+  include GearShelf
+
   # Cache TTL for expensive aggregations on the index page. Data only changes
   # when someone edits an episode's items in admin, so 15 min is safe.
   INDEX_CACHE_TTL = 15.minutes
@@ -154,6 +156,19 @@ class ItemsController < ApplicationController
         .order("episodes.air_date DESC NULLS LAST, survivors.full_name")
     end
 
+    # Shop cards: for a search, the matching items' products; otherwise the most-brought
+    # items that have products, so the index doubles as a "what can I buy" page.
+    if @q.present?
+      candidates = Item.where("name ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(@q)}%").limit(30).to_a
+      rank = nil
+    else
+      ids = @top_brought.first(25).map(&:id)
+      by_id = Item.where(id: ids).index_by(&:id)
+      candidates = ids.filter_map { |id| by_id[id] }
+      rank = candidates.each_with_index.to_h { |item, i| [item, candidates.size - i] }
+    end
+    @shop_shelf = ShopShelf.build(holders: candidates.index_with { [] }, rank: rank, max_groups: @q.present? ? 6 : 4, limit: @q.present? ? 3 : 2)
+    @shop_links = ShopLinks.build(@shop_shelf.products)
   end
 
   def show
@@ -218,6 +233,12 @@ class ItemsController < ApplicationController
 
     @items_in_type = Item.where(item_type: @item_type).order(:name)
     @items_in_type_count = @items_in_type.size
+
+    # Shop cards for this type's gear (within the chosen country, if any), busiest first.
+    build_gear_shelf(label: "Seen in #{@country || 'the show'}", max_groups: 8, limit: 3) do |scope|
+      scope = scope.where(items: { item_type: @item_type })
+      @country ? scope.where(locations: { country: @country }) : scope
+    end
   end
 
   private

@@ -1,8 +1,8 @@
 / Shop cards for an episode, survivor, or country page.
-/ locals: shelf (ShopShelf), links (ShopLinks), heading; optional item_params (e.g. { country: "Panama" })
+/ locals: shelf (ShopShelf), links (ShopLinks), heading; optional item_params (e.g. { country: "Panama" }), dom_id (anchor for jump links)
 - item_params = local_assigns[:item_params] || {}
 - unless shelf.empty?
-  section.card.shadow-sm.mb-4.shop-shelf
+  section.card.shadow-sm.mb-4.shop-shelf id=local_assigns[:dom_id]
     .card-header
       h2.h5.mb-0 = heading
       = render "shop/disclosure", compact: true

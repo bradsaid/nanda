@@ -150,6 +150,29 @@ module ApplicationHelper
     path ? link_to(text, path, title: shop_card_link_title(path)) : text
   end
 
+  # "🛒 4" next to an item's name when the catalog has products for it; links to the
+  # item page's shop card. nil otherwise.
+  def shop_badge(item_name, id: nil)
+    @shop_item_counts ||= ShopCatalog.item_counts
+    n = @shop_item_counts[item_name.to_s.downcase].to_i
+    return if n.zero?
+    id ||= Item.where("LOWER(name) = ?", item_name.to_s.downcase).pick(:id)
+    return unless id
+    link_to "🛒 #{n}", item_path(id, anchor: "item-shop"), class: "badge bg-warning-subtle text-dark border text-decoration-none ms-2",
+            title: "#{n} #{'product'.pluralize(n)} you can buy"
+  end
+
+  # "🛒 Gear used by Ky (5)", linking to that survivor's products on the Shop page.
+  # nil when the catalog has nothing for them (or the survivor record is missing).
+  def survivor_gear_link(survivor, **options)
+    return unless survivor
+    @shop_survivor_counts ||= ShopCatalog.survivor_counts
+    n = @shop_survivor_counts[survivor.full_name.to_s.downcase].to_i
+    return if n.zero?
+    link_to "🛒 Gear used by #{survivor.full_name.split.first} (#{n})", shop_path(q: survivor.full_name),
+            title: "#{n} #{'product'.pluralize(n)} tied to #{survivor.full_name}", **options
+  end
+
   # An outbound retail link. Amazon addresses get our Associates tag; every one is
   # marked sponsored. Use this for any "Buy on ..." link outside the Shop.
   def affiliate_link_to(label, url, **options)

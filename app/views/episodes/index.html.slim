@@ -156,6 +156,9 @@
       .card-body
         = survivor_chips(season_cast, size: 40)
 
+  - if @shop_shelf && !@shop_shelf.empty?
+    = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear From This Season"
+
   .card.shadow-sm
     .table-responsive
       table.table.table-striped.table-hover.mb-0

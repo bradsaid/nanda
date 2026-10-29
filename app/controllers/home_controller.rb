@@ -1,4 +1,6 @@
 class HomeController < ApplicationController
+  include GearShelf
+
   # The headline numbers and per-country tallies are plain hashes of integers
   # that only move when someone edits an episode, yet were recomputed (nine
   # queries, two of them joins over every episode) on every home-page view.
@@ -27,6 +29,8 @@ class HomeController < ApplicationController
         .group("items.id", "items.name")
         .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
         .order("total DESC").limit(5)
+
+    build_home_shop_shelf
 
     @recent_episodes =
       Episode.includes(:location, season: :series)
@@ -60,6 +64,28 @@ class HomeController < ApplicationController
   end
 
   private
+
+  # Featured gear: what was used in the latest episode when the catalog has products for
+  # it; otherwise the gear survivors bring most, so the home page always has a shelf.
+  def build_home_shop_shelf
+    if @latest_episode
+      build_gear_shelf(label: "Seen in the latest episode", episodes: [@latest_episode], max_groups: 3, limit: 2) do |scope|
+        scope.where(episodes: { id: @latest_episode.id })
+      end
+      @shop_heading = "Gear From the Latest Episode"
+    end
+    return if @shop_shelf && !@shop_shelf.empty?
+
+    ids = Rails.cache.fetch("home/top-brought-item-ids/v1", expires_in: AGGREGATES_TTL) do
+      AppearanceItem.where(source: "brought").group(:item_id).order(Arel.sql("SUM(quantity) DESC")).limit(25).pluck(:item_id)
+    end
+    by_id = Item.where(id: ids).index_by(&:id)
+    items = ids.filter_map { |id| by_id[id] }
+    @shop_shelf = ShopShelf.build(holders: items.index_with { [] }, rank: items.each_with_index.to_h { |item, i| [item, items.size - i] },
+                                  max_groups: 3, limit: 2)
+    @shop_links = ShopLinks.build(@shop_shelf.products)
+    @shop_heading = "Gear Survivors Bring Most"
+  end
 
   def home_aggregates
     counts = {

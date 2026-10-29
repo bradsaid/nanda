@@ -1,0 +1,43 @@
+- content_for :title, @guide.title
+- content_for :meta_description, @guide.description
+- content_for :canonical_url, shop_guide_url(@guide.slug)
+- content_for :og_title, @guide.title
+- content_for :og_description, @guide.description
+
+= render_jsonld({ "@context" => "https://schema.org", "@type" => "ItemList", "name" => @guide.title, "url" => shop_guide_url(@guide.slug),
+  "numberOfItems" => @products.size,
+  "itemListElement" => @products.each_with_index.map { |p, i| { "@type" => "ListItem", "position" => i + 1, "name" => [p[:brand], p[:product]].compact_blank.join(" ") } } })
+
+.container.my-4
+  nav.small.mb-2
+    = link_to "Shop", shop_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    = link_to "Guides", shop_guides_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    span = @guide.heading
+  h1.h3.mb-2 = @guide.title
+  p.text-muted.small.mb-3(style="max-width: 760px;")
+    = @guide.intro
+    |  "Confirmed" means a credible source says it was used on the show; "Similar" is the nearest buyable equivalent.
+
+  = render "shop/disclosure"
+
+  - @groups.each do |item_name, products|
+    - item = @items_by_name[item_name.downcase]
+    .card.shadow-sm.mb-4
+      .card-header
+        - if item
+          = link_to "#{item_icon(item)} #{item.name}".strip, item_path(item), class: "text-decoration-none"
+        - else
+          = item_name.titleize
+        small.ms-2 = "(#{products.size})"
+      ul.list-group.list-group-flush
+        - products.each do |p|
+          = render "shop/product", product: p, item: item, link_item: false, links: @links
+
+  - if @other_guides.any?
+    .card.shadow-sm.mb-4
+      .card-header More gear guides
+      .list-group.list-group-flush
+        - @other_guides.each do |g|
+          = link_to g.title, shop_guide_path(g.slug), class: "list-group-item list-group-item-action"
