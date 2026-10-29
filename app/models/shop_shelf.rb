@@ -1,22 +1,32 @@
-# The shop cards for one episode or survivor page: for each item that appears there,
-# the catalog products for that item. Products that name this survivor (or this episode)
-# come first, then the strongest matches, and each item is capped so a popular item
-# like "knife" doesn't swamp the page.
+# The shop cards for one episode, survivor, or country page: for each item that appears
+# there, the catalog products for that item. Products that name this survivor (or one of
+# these episodes) come first, then the strongest matches, and each item is capped so a
+# popular item like "knife" doesn't swamp the page.
 class ShopShelf
   Entry = Struct.new(:product, :label, keyword_init: true)
   Group = Struct.new(:item, :entries, :total, keyword_init: true) do
     def hidden = total - entries.size
   end
 
-  # holders: { Item => [full names of the survivors who had it here] }
-  # episode: the Episode being shown, if any (products can name specific episodes)
-  def self.build(holders:, episode: nil, limit: 4) = new(holders, episode, limit)
+  # holders:       { Item => [full names of the survivors who had it here] }
+  # episode(s):    the Episode(s) being shown; products can name specific episodes
+  # episode_label: badge text for a product that names one of those episodes
+  # rank:          { Item => number } to list the busiest items first (default: A to Z)
+  # max_groups:    show at most this many items (default: all)
+  def self.build(holders:, episode: nil, episodes: nil, episode_label: "Seen in this episode",
+                 rank: nil, max_groups: nil, limit: 4)
+    new(holders, Array(episodes || episode).compact, episode_label, rank, max_groups, limit)
+  end
 
   attr_reader :groups
 
-  def initialize(holders, episode, limit)
-    @episode_key = episode_key(episode)
-    @groups = holders.sort_by { |item, _| item.name.to_s.downcase }.filter_map do |item, names|
+  def initialize(holders, episodes, episode_label, rank, max_groups, limit)
+    @episode_keys  = episodes.filter_map { |e| episode_key(e) }.to_set
+    @episode_label = episode_label
+    ordered = holders.sort_by do |item, _|
+      [rank ? -rank.fetch(item, 0) : 0, item.name.to_s.downcase]
+    end
+    @groups = ordered.filter_map do |item, names|
       products = ShopCatalog.for_item(item.name)
       next if products.empty?
       entries = products.each_with_index.map { |p, i| [entry(p, names), i] }
@@ -24,7 +34,12 @@ class ShopShelf
                         .first(limit).map(&:first)
       Group.new(item: item, entries: entries, total: products.size)
     end
+    @hidden_groups = max_groups ? [@groups.size - max_groups, 0].max : 0
+    @groups = @groups.first(max_groups) if max_groups
   end
+
+  # Items that have products but were left off by max_groups.
+  attr_reader :hidden_groups
 
   def empty? = groups.empty?
   def products = groups.flat_map { |g| g.entries.map(&:product) }
@@ -36,7 +51,9 @@ class ShopShelf
   end
 
   def label_for(product, names)
-    return "Seen in this episode" if @episode_key && Array(product[:episodes]).any? { |e| key_of(e) == @episode_key }
+    if @episode_keys.any? && Array(product[:episodes]).any? { |e| @episode_keys.include?(key_of(e)) }
+      return @episode_label
+    end
     wanted = names.map { |n| n.to_s.downcase }
     match  = Array(product[:survivors]).find { |n| wanted.include?(n.to_s.downcase) }
     match && "Used by #{match}"

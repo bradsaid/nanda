@@ -125,7 +125,74 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # --- country page ---------------------------------------------------------
+
+  test "a country page shows shop cards for gear used in that country only" do
+    with_products do
+      get by_country_episodes_path("Costa Rica")   # episode one: pot brought, knife given
+      assert_response :success
+      assert_select ".shop-shelf h2", text: "Shop the Gear Used in Costa Rica"
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@pot, country: "Costa Rica")
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@knife, country: "Costa Rica")
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@salt, country: "Costa Rica"), 0   # found, not used
+      assert_select ".shop-shelf li.shop-product", text: /Given Knife/
+
+      get by_country_episodes_path("South Africa") # episode two: pot given, no knife
+      assert_select ".shop-shelf h2", text: "Shop the Gear Used in South Africa"
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@pot, country: "South Africa")
+      assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@knife, country: "South Africa"), 0
+      assert_no_match(/Given Knife/, response.body)
+    end
+  end
+
+  test "country matching ignores case, and products naming a local episode or survivor are labelled" do
+    with_products do
+      get by_country_episodes_path("costa rica")
+      assert_select ".shop-shelf h2", text: "Shop the Gear Used in costa rica"
+      assert_select ".shop-specific", text: "Seen in costa rica"
+      assert_select ".shop-specific", text: "Used by Test Survivor A"
+    end
+  end
+
+  test "a country's capped items link to the item page filtered to that country" do
+    with_products do
+      get by_country_episodes_path("Costa Rica")
+      pots = css_select(".shop-shelf li.shop-product").select { |li| li.text.include?("Pot") }
+      assert_equal 3, pots.size   # the country shelf shows 3 per item
+      assert_select ".shop-shelf a[href=?]", item_path(@pot, country: "Costa Rica"), text: "see all"
+    end
+  end
+
+  test "a country with no catalogued gear gets no shelf" do
+    with_products do
+      get by_country_episodes_path("Peru")
+      assert_response :success
+      assert_select ".shop-shelf", 0
+    end
+  end
+
   # --- ShopShelf ------------------------------------------------------------
+
+  test "ShopShelf can rank items by use and cap how many it shows" do
+    holders = { @pot => ["A"], @knife => %w[A B C], @salt => %w[A B] }
+    with_products do
+      shelf = ShopShelf.build(holders: holders, rank: holders.transform_values(&:size), max_groups: 2)
+      assert_equal %w[knife salt], shelf.groups.map { |g| g.item.name }
+      assert_equal 1, shelf.hidden_groups
+      plain = ShopShelf.build(holders: holders)
+      assert_equal %w[knife pot salt], plain.groups.map { |g| g.item.name }
+      assert_equal 0, plain.hidden_groups
+    end
+  end
+
+  test "ShopShelf labels products that name any of several episodes" do
+    with_products do
+      shelf = ShopShelf.build(holders: { @pot => [] }, episodes: [episodes(:one), episodes(:two)], episode_label: "Seen in Costa Rica")
+      assert_equal "Seen in Costa Rica", shelf.groups.first.entries.first.label
+    end
+  end
+
+  # --- ShopShelf (single episode) --------------------------------------------
 
   test "ShopShelf ranks specific products first and ignores items with no products" do
     with_products do

@@ -45,6 +45,10 @@
     .card-body.p-0
       #locations-map.map-frame.map-frame-sm data-locations-url=(locations_path(format: :json, country: @country))
 
+/ ===== Shop the gear used here =====
+- if @shop_shelf && !@shop_shelf.empty?
+  = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear Used in #{@country}", item_params: { country: @country }
+
 / Build a flat list of "blocks" — each block is either a continuous-story
 / season (≥2 eps filmed here, shown as one card with shared cast) or a
 / single episode (shown as its own card). Sort the blocks newest-first by

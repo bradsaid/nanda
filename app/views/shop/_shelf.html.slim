@@ -1,4 +1,6 @@
-/ Shop cards for an episode or survivor page. locals: shelf (ShopShelf), links (ShopLinks), heading
+/ Shop cards for an episode, survivor, or country page.
+/ locals: shelf (ShopShelf), links (ShopLinks), heading; optional item_params (e.g. { country: "Panama" })
+- item_params = local_assigns[:item_params] || {}
 - unless shelf.empty?
   section.card.shadow-sm.mb-4.shop-shelf
     .card-header
@@ -7,11 +9,15 @@
     - shelf.groups.each do |group|
       .px-3.pt-3.d-flex.flex-wrap.align-items-baseline.justify-content-between
         .fw-semibold.shop-shelf-item
-          = link_to "#{item_icon(group.item)} #{group.item.name}", item_path(group.item), class: "text-decoration-none"
+          = link_to "#{item_icon(group.item)} #{group.item.name}", item_path(group.item, item_params), class: "text-decoration-none"
         - if group.hidden.positive?
           small.text-muted
             = "Showing #{group.entries.size} of #{group.total} · "
-            = link_to "see all", item_path(group.item)
+            = link_to "see all", item_path(group.item, item_params)
       ul.list-group.list-group-flush.mb-3
         - group.entries.each do |entry|
           = render "shop/product", product: entry.product, item: group.item, link_item: false, links: links, specific_label: entry.label
+    - if shelf.hidden_groups.positive?
+      .card-footer.small.text-muted
+        = "#{pluralize(shelf.hidden_groups, 'more item')} with products used here. "
+        = link_to "Browse all items", items_path

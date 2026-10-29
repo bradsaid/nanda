@@ -194,5 +194,18 @@ class EpisodesController < ApplicationController
         .joins(:location)
         .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
         .order(Arel.sql("air_date IS NULL, air_date DESC"))
+
+    # Shop cards for gear brought or given in this country, busiest items first.
+    # Distinct (item, survivor) pairs, so a survivor carried across the episodes of a
+    # continuous-story season counts once.
+    pairs = AppearanceItem.where(source: %w[brought given])
+                          .joins(appearance: [:survivor, { episode: :location }])
+                          .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
+                          .distinct.pluck(:item_id, "survivors.full_name")
+    items   = Item.where(id: pairs.map(&:first).uniq).index_by(&:id)
+    holders = pairs.group_by(&:first).to_h { |id, rows| [items[id], rows.map(&:last).uniq] }
+    @shop_shelf = ShopShelf.build(holders: holders, episodes: @episodes.to_a, episode_label: "Seen in #{@country}",
+                                  rank: holders.transform_values(&:size), max_groups: 8, limit: 3)
+    @shop_links = ShopLinks.build(@shop_shelf.products)
   end
 end
