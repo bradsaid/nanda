@@ -1,16 +1,21 @@
-- content_for :title, "Admin — Shop"
-- content_for :robots, "noindex, nofollow"
+- content_for :title, "Shop Naked and Afraid Gear"
+- content_for :meta_description, "Gear used on Naked and Afraid, or the closest thing you can buy: machetes, knives, fire starters, pots, fishing and hunting tools, plus official books and merch, with where each product was spotted on the show."
+- content_for :canonical_url, shop_url
+- if @filtered
+  - content_for :robots, "noindex, follow"
 
 - match_badge = ShopCatalog::BADGES
 
 .container.my-4
   = render "shared/flash"
 
-  h1.h3.mb-2 Shop
-  p.text-muted.small.mb-4(style="max-width: 760px;")
-    | Real products used on the show, or the closest thing you can buy, with where each connection was found. Data lives in config/shop_products.yml (Amazon links checked live on the date in its header). Admin only for now.
+  h1.h3.mb-2 Shop Naked and Afraid Gear
+  p.text-muted.small.mb-3(style="max-width: 760px;")
+    | Real products used on the show, or the closest thing you can buy, with where each connection was found. "Confirmed" means a credible source such as the maker, the cast member or the producers says it was used; "Similar" is the nearest buyable equivalent.
 
-  = form_with url: admin_shop_path, method: :get, local: true, class: "card shadow-sm mb-4" do
+  = render "shop/disclosure"
+
+  = form_with url: shop_path, method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center.gap-2
       span.me-2(aria-hidden="true") 🔎
       span Filter
@@ -30,7 +35,7 @@
             = check_box_tag :amazon, "1", @amazon, class: "form-check-input"
             = label_tag :amazon, "On Amazon", class: "form-check-label"
           = submit_tag "Apply", class: "btn btn-dark mb-1"
-          = link_to "Reset", admin_shop_path, class: "btn btn-light mb-1"
+          = link_to "Reset", shop_path, class: "btn btn-light mb-1"
 
   p#shop-count.text-muted.mb-4
     = "#{@products.size} of #{@total} products"
@@ -46,4 +51,4 @@
         small.ms-2 = "(#{products.size})"
       ul.list-group.list-group-flush
         - products.each do |p|
-          = render "admin/shop/product", product: p, item: @items_by_name[p[:item].to_s.downcase], link_item: true, links: @links
+          = render "shop/product", product: p, item: @items_by_name[p[:item].to_s.downcase], link_item: true, links: @links

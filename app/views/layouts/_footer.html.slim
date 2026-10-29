@@ -17,6 +17,7 @@ footer.footer.container.mt-5.py-4.border-top
         li = link_to "Locations", locations_path, class: "text-decoration-none text-muted"
         li = link_to "Podcasts & Books", podcasts_path, class: "text-decoration-none text-muted"
         li = link_to "Where to Watch", seasons_path, class: "text-decoration-none text-muted"
+        li = link_to "Shop", shop_path, class: "text-decoration-none text-muted"
 
     / Connect & Legal combined section
     .col-md-5.mb-3
@@ -47,6 +48,8 @@ footer.footer.container.mt-5.py-4.border-top
           | © #{Time.now.year} Naked & Afraid Fan Wiki. All rights reserved.
 
       .col-12.col-md-6.text-center.text-md-end
+        p.mb-1.footer-affiliate-disclosure
+          | As an Amazon Associate I earn from qualifying purchases.
         p.mb-0
           /strong Advertisements
           /|  are provided by Google AdSense. We do not endorse clicked products.

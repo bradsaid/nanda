@@ -1,9 +1,9 @@
 / Shop cards for an episode or survivor page. locals: shelf (ShopShelf), links (ShopLinks), heading
 - unless shelf.empty?
-  .card.shadow-sm.mb-4.shop-shelf
-    .card-header.d-flex.align-items-center.justify-content-between
+  section.card.shadow-sm.mb-4.shop-shelf
+    .card-header
       h2.h5.mb-0 = heading
-      small Admin preview
+      = render "shop/disclosure", compact: true
     - shelf.groups.each do |group|
       .px-3.pt-3.d-flex.flex-wrap.align-items-baseline.justify-content-between
         .fw-semibold.shop-shelf-item
@@ -14,4 +14,4 @@
             = link_to "see all", item_path(group.item)
       ul.list-group.list-group-flush.mb-3
         - group.entries.each do |entry|
-          = render "admin/shop/product", product: entry.product, item: group.item, link_item: false, links: links, specific_label: entry.label
+          = render "shop/product", product: entry.product, item: group.item, link_item: false, links: links, specific_label: entry.label

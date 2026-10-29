@@ -47,8 +47,7 @@ li.list-group-item.shop-product
           - Array(product[:more_sources]).each_with_index do |url, i|
             |  
             = link_to "Source #{i + 2}", url, target: "_blank", rel: "noopener noreferrer nofollow"
-      - if product[:notes].present?
-        .small.fst-italic.mt-1 = product[:notes]
+      / product[:notes] holds maintainer notes (verification remarks); it is deliberately never shown.
       - if link_item && item
         .small.mt-1
           | On the show: 

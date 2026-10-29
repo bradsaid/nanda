@@ -151,18 +151,15 @@ class EpisodesController < ApplicationController
       @active_appearances = @episode.appearances
     end
 
-    # Shop cards for the gear in this episode (brought or given): full admins only
-    # while the catalog is being vetted.
-    if current_user&.admin?
-      holders = Hash.new { |h, k| h[k] = [] }
-      @active_appearances.each do |a|
-        a.appearance_items.each do |ai|
-          holders[ai.item] << a.survivor.full_name if %w[brought given].include?(ai.source)
-        end
+    # Shop cards for the gear in this episode (brought or given).
+    holders = Hash.new { |h, k| h[k] = [] }
+    @active_appearances.each do |a|
+      a.appearance_items.each do |ai|
+        holders[ai.item] << a.survivor.full_name if %w[brought given].include?(ai.source)
       end
-      @shop_shelf = ShopShelf.build(holders: holders.transform_values(&:uniq), episode: @episode)
-      @shop_links = ShopLinks.build(@shop_shelf.products)
     end
+    @shop_shelf = ShopShelf.build(holders: holders.transform_values(&:uniq), episode: @episode)
+    @shop_links = ShopLinks.build(@shop_shelf.products)
 
     # Related episodes: prefer other episodes in the same season, then fall
     # back to episodes from the same country. Powers the on-page "Related

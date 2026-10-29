@@ -183,8 +183,7 @@ class ItemsController < ApplicationController
     @brought_keys = challenge_keys(@brought_ai)
     @brought_challenges = @brought_keys.size
     @given_challenges   = @given_keys.size
-    # Shop links are admin-only until the catalog has been vetted.
-    @shop_products = current_user&.admin? ? ShopCatalog.for_item(@item.name) : []
+    @shop_products = ShopCatalog.for_item(@item.name)
     @shop_links    = ShopLinks.build(@shop_products) if @shop_products.any?
 
     # ---------- By country (adjusted totals) ----------

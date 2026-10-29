@@ -61,7 +61,7 @@ Rails.application.routes.draw do
     resource  :password, only: %i[edit update]
     resources :survivors
     get "synopsis_queue", to: "synopsis_queue#index"
-    get "shop", to: "shop#index"
+    get "shop", to: redirect("/shop", status: 301) # moved to the public shop
     resources :seasons do
       member do
         get :latest_episode_participants
@@ -109,6 +109,7 @@ Rails.application.routes.draw do
   resources :locations, only: [:index]
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]
+  get "shop", to: "shop#index"
 
   post "page_view_ping", to: "page_view_pings#create"
 

@@ -46,18 +46,6 @@
       strong = pluralize(given_n, "challenge")
     | .
 
-  / ---------- Shop preview: full admins only while the catalog is being vetted ----------
-  - if @shop_products.present?
-    .card.shadow-sm.mb-4#item-shop
-      .card-header.d-flex.align-items-center.justify-content-between
-        span
-          | 🛒 Shop this item
-          small.ms-2 = "(#{@shop_products.size})"
-        small Admin preview
-      ul.list-group.list-group-flush
-        - @shop_products.each do |p|
-          = render "admin/shop/product", product: p, item: @item, link_item: false, links: @shop_links
-
   / Country filter
   = form_with url: item_path(@item), method: :get, local: true, class: "card shadow-sm mb-4" do
     .card-header.d-flex.align-items-center
@@ -186,3 +174,15 @@
               tr
                 td data-label="Country" = r.country.presence || "Unknown"
                 td.text-end data-label="Total" = r.total.to_i
+
+  / ---------- Where to buy ----------
+  - if @shop_products.present?
+    .card.shadow-sm.mt-4#item-shop
+      .card-header
+        h2.h5.mb-0
+          | Shop this item
+          small.ms-2 = "(#{@shop_products.size})"
+        = render "shop/disclosure", compact: true
+      ul.list-group.list-group-flush.my-2
+        - @shop_products.each do |p|
+          = render "shop/product", product: p, item: @item, link_item: false, links: @shop_links

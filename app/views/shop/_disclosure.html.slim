@@ -1,0 +1,8 @@
+/ Required next to affiliate links. locals: compact (small one-line version for page sections)
+- if local_assigns[:compact]
+  p.small.text-muted.mb-0.shop-disclosure
+    | As an Amazon Associate I earn from qualifying purchases.
+- else
+  .alert.alert-light.border.small.mb-4.shop-disclosure(role="note")
+    strong As an Amazon Associate I earn from qualifying purchases.
+    |  Links to Amazon on this site are affiliate links: if you buy through one, we may earn a commission at no extra cost to you. Links to other stores are provided for convenience. Product photos and listings belong to their stores, and prices and availability change, so check the store page before you buy.

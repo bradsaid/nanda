@@ -2,7 +2,7 @@ require "test_helper"
 require "minitest/mock"
 
 # Shop cards on episode pages (gear brought or given there) and survivor pages (gear
-# the survivor brought). Full admins only.
+# the survivor brought), public, with the affiliate disclosure.
 class ShopShelfPagesTest < ActionDispatch::IntegrationTest
   def product(name, item:, match: "similar", **extra)
     { item: item, category: "pot", product: name, brand: "B", match: match, evidence_url: "https://e.com/#{name.parameterize}",
@@ -42,8 +42,7 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
 
   # --- episode page ---------------------------------------------------------
 
-  test "an admin sees shop cards for the items brought or given in the episode" do
-    sign_in(users(:admin))
+  test "visitors see shop cards for the items brought or given in the episode" do
     with_products do
       get episode_path(episodes(:one))
       assert_response :success
@@ -55,7 +54,6 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
   end
 
   test "found items are not shopped, and neither are items from other episodes" do
-    sign_in(users(:admin))
     with_products do
       get episode_path(episodes(:one))
       assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@salt), 0
@@ -69,7 +67,6 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
   end
 
   test "products that name this episode or a survivor with the item come first, labelled" do
-    sign_in(users(:admin))
     with_products do
       get episode_path(episodes(:one))
       names = css_select(".shop-shelf li.shop-product .fw-semibold").map { |n| n.text.strip }.select { |n| n.include?("Pot") }
@@ -81,7 +78,6 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
   end
 
   test "each item is capped, with a link to see them all" do
-    sign_in(users(:admin))
     with_products do
       get episode_path(episodes(:one))
       pots = css_select(".shop-shelf li.shop-product").select { |li| li.text.include?("Pot") }
@@ -91,27 +87,15 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "signed-out visitors, regular users and episode editors never see the shelf" do
+  test "the episode shelf carries the affiliate disclosure" do
     with_products do
       get episode_path(episodes(:one))
-      assert_select ".shop-shelf", 0
-      assert_no_match(/Named Pot/, response.body)
-    end
-    sign_in(users(:one))
-    with_products do
-      get episode_path(episodes(:one))
-      assert_select ".shop-shelf", 0
-    end
-    editor = users(:admin)
-    editor.update_columns(role: User.roles[:episode_editor])
-    with_products do
-      get episode_path(episodes(:one))
-      assert_select ".shop-shelf", 0
+      assert_select ".shop-shelf .shop-disclosure", /Amazon Associate/
+      assert_select ".shop-shelf", text: /Admin preview/, count: 0
     end
   end
 
   test "an episode whose items have no products gets no shelf" do
-    sign_in(users(:admin))
     ShopCatalog.stub(:products, [].freeze) do
       get episode_path(episodes(:one))
       assert_response :success
@@ -122,7 +106,6 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
   # --- survivor page --------------------------------------------------------
 
   test "a survivor's shelf shows only what they brought, not what production gave" do
-    sign_in(users(:admin))
     with_products do
       get survivor_path(survivors(:one))
       assert_response :success
@@ -135,17 +118,8 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
   end
 
   test "a survivor who only was given gear gets no shelf" do
-    sign_in(users(:admin))
     with_products do
       get survivor_path(survivors(:two))
-      assert_response :success
-      assert_select ".shop-shelf", 0
-    end
-  end
-
-  test "regular visitors never see the survivor shelf" do
-    with_products do
-      get survivor_path(survivors(:one))
       assert_response :success
       assert_select ".shop-shelf", 0
     end

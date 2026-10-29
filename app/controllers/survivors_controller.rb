@@ -100,13 +100,10 @@ class SurvivorsController < ApplicationController
     @brought_counts = @survivor.appearance_items.where(source: :brought).joins(:item).group("items.id", "items.name").count
     @given_counts   = @survivor.appearance_items.where(source: :given).joins(:item).group("items.id", "items.name").count
 
-    # Shop cards for what this survivor brought themselves (not what production gave
-    # them): full admins only while the catalog is being vetted.
-    if current_user&.admin?
-      brought_items = Item.where(id: @brought_counts.keys.map(&:first))
-      @shop_shelf = ShopShelf.build(holders: brought_items.index_with { [@survivor.full_name] })
-      @shop_links = ShopLinks.build(@shop_shelf.products)
-    end
+    # Shop cards for what this survivor brought themselves (not what production gave them).
+    brought_items = Item.where(id: @brought_counts.keys.map(&:first))
+    @shop_shelf = ShopShelf.build(holders: brought_items.index_with { [@survivor.full_name] })
+    @shop_links = ShopLinks.build(@shop_shelf.products)
 
     # Precomputed for the view: use @appearances in-memory instead of firing
     # 2-3 more small aggregate queries when the same data is already loaded.

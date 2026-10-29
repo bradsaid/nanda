@@ -1,7 +1,7 @@
 require "test_helper"
 require "minitest/mock"
 
-# The item page shows the item's shop products to full admins only.
+# The item page shows the item's shop products to everyone, with the affiliate disclosure.
 class ItemsShopLinksTest < ActionDispatch::IntegrationTest
   PRODUCTS = [
     { item: "pot", category: "pot", product: "Likely Pot", brand: "A", match: "likely", evidence_url: "https://e.com/1",
@@ -20,8 +20,7 @@ class ItemsShopLinksTest < ActionDispatch::IntegrationTest
 
   def with_products(&block) = ShopCatalog.stub(:products, PRODUCTS, &block)
 
-  test "an admin sees only this item's products, strongest evidence first" do
-    sign_in(users(:admin))
+  test "an item shows only its own products, strongest evidence first" do
     with_products do
       get item_path(@pot)
       assert_response :success
@@ -34,35 +33,24 @@ class ItemsShopLinksTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a signed-out visitor never sees the shop card" do
+  test "a signed-out visitor sees the shop card with the disclosure" do
     with_products do
       get item_path(@pot)
       assert_response :success
-      assert_select "#item-shop", 0
-      assert_no_match(/Likely Pot/, response.body)
+      assert_select "#item-shop li.shop-product", 2
+      assert_select "#item-shop .shop-disclosure", /Amazon Associate/
     end
   end
 
-  test "a regular user never sees the shop card" do
+  test "a regular user sees it too" do
     sign_in(users(:one))
     with_products do
       get item_path(@pot)
-      assert_select "#item-shop", 0
+      assert_select "#item-shop li.shop-product", 2
     end
   end
 
-  test "an episode editor, who is not a full admin, never sees the shop card" do
-    editor = users(:admin)
-    editor.update_columns(role: User.roles[:episode_editor])
-    sign_in(editor)
-    with_products do
-      get item_path(@pot)
-      assert_select "#item-shop", 0
-    end
-  end
-
-  test "an item with no products shows no shop card, even to an admin" do
-    sign_in(users(:admin))
+  test "an item with no products shows no shop card" do
     lonely = Item.create!(name: "salt")
     with_products do
       get item_path(lonely)

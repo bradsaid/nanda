@@ -297,9 +297,9 @@
                 .fs-1.mb-2 ➡️
                 .fw-medium None given
 
-    / ===== Shop the gear they brought (admin preview) =====
+    / ===== Shop the gear they brought =====
     - if @shop_shelf
-      = render "admin/shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear #{@survivor.full_name.split.first} Brought"
+      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear #{@survivor.full_name.split.first} Brought"
 
     / ===== Appearances Table =====
     .card.shadow-sm
