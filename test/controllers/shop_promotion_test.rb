@@ -6,7 +6,7 @@ require "minitest/mock"
 class ShopPromotionTest < ActionDispatch::IntegrationTest
   PRODUCTS = [
     { item: "pot", category: "pot", product: "Named Pot", brand: "B", match: "confirmed", evidence_url: "https://e.com/n",
-      survivors: ["Test Survivor A"], buy: [{ store: "x.com", url: "https://x.com/n" }] },
+      survivors: ["Test Survivor A"], buy: [{ store: "amazon.com", url: "https://www.amazon.com/dp/B000000001" }] },
     { item: "pot", category: "pot", product: "Generic Pot", brand: "B", match: "similar", evidence_url: "https://e.com/g",
       buy: [{ store: "x.com", url: "https://x.com/g" }] },
     { item: "pot", category: "pot", product: "Third Pot", brand: "B", match: "similar", evidence_url: "https://e.com/t",
@@ -99,6 +99,23 @@ class ShopPromotionTest < ActionDispatch::IntegrationTest
       assert_select ".shop-shelf li.shop-product", 1                      # Named Pot only
       assert_no_match(/Generic Pot|Third Pot|Plain Knife/, response.body)  # similar / likely are left off
       assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@knife), 0
+    end
+  end
+
+  test "the home page features only products that are on Amazon" do
+    elsewhere = { item: "pot", category: "pot", product: "Confirmed Elsewhere Pot", brand: "B", match: "confirmed",
+                  evidence_url: "https://e.com/ce", buy: [{ store: "x.com", url: "https://x.com/ce" }] }.with_indifferent_access
+    ShopCatalog.stub(:products, PRODUCTS + [elsewhere]) do
+      get root_path
+      assert_select ".shop-shelf li.shop-product", 1
+      assert_select ".shop-shelf li.shop-product", text: /Named Pot/
+      assert_no_match(/Confirmed Elsewhere Pot/, response.body)
+      assert_select ".shop-shelf a[href*='amazon.com']"
+    end
+    # Confirmed but not on Amazon: nothing to feature.
+    ShopCatalog.stub(:products, [elsewhere]) do
+      get root_path
+      assert_select ".shop-shelf", 0
     end
   end
 
