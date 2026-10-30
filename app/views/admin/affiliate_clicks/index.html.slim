@@ -6,7 +6,7 @@
 
   .mb-3
     h1.h3.mb-0 Affiliate Clicks
-    p.text-muted.small.mb-0 Clicks on buy buttons (via /go/). Anonymous: bots are not counted and no IP or visitor id is stored.
+    p.text-muted.small.mb-0 Clicks on buy buttons (via /go/). Anonymous: known bots are not stored and no IP or visitor id is kept. Clicks that look automated are stored but left out of everything below.
 
   .row.g-3.mb-3
     - @totals.each do |label, count|
@@ -15,6 +15,13 @@
           .card-body.py-3
             .h4.mb-0 = number_with_delimiter(count)
             .small.text-muted = label
+
+  p.text-muted.small.mb-3
+    | Filtered (suspected bots): 
+    strong = number_with_delimiter(@filtered_total)
+    |  all time, 
+    strong = number_with_delimiter(@filtered_recent)
+    |  in the last 24 hours. Not included in any figure on this page.
 
   .row.g-3.mb-3
     .col-lg-8

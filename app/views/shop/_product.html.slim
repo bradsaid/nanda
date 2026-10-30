@@ -66,6 +66,6 @@ li.list-group-item.shop-product id=ShopCatalog.anchor(product)
             tracked_buy_path(product, i, local_assigns[:placement]),
             title: label,
             class: "btn btn-sm #{amazon ? 'btn-warning' : 'btn-outline-secondary'}",
-            target: "_blank", rel: "sponsored noopener noreferrer nofollow"
+            target: "_blank", rel: "sponsored noopener nofollow", referrerpolicy: "same-origin"
           - if note
             .shop-buy-note = note

@@ -29,9 +29,20 @@ class AffiliateRedirectsTest < ActionDispatch::IntegrationTest
     ENV["AMAZON_ASSOCIATE_TAG"] = was
   end
 
+  SAME_SITE_REFERER = "http://www.example.com/shop".freeze  # the integration-test host
+
   def click(path, ua: BROWSER_UA, headers: {})
     get path, headers: { "HTTP_USER_AGENT" => ua }.merge(headers)
   end
+
+  # A click as a real browser sends it from one of our own pages.
+  def page_click(path, **opts)
+    click path, **opts, headers: { "HTTP_REFERER" => SAME_SITE_REFERER }.merge(opts.fetch(:headers, {}))
+  end
+
+  def last_click = AffiliateClick.order(:id).last
+
+  def with_memory_cache(&block) = Rails.stub(:cache, ActiveSupport::Cache::MemoryStore.new, &block)
 
   def sign_in(user)
     post session_path, params: { email_address: user.email_address, password: "password" }
@@ -118,16 +129,158 @@ class AffiliateRedirectsTest < ActionDispatch::IntegrationTest
     assert_nil c.referring_path
   end
 
-  test "bots and blank user agents are redirected but not counted" do
+  test "known crawlers and command-line tools are redirected but not stored at all" do
     with_products do
       assert_no_difference "AffiliateClick.count" do
-        [ "Googlebot/2.1 (+http://www.google.com/bot.html)", "AhrefsBot/7.0", "curl/8.4.0", "" ].each do |ua|
-          click go_path(POT), ua: ua
+        [ "Googlebot/2.1 (+http://www.google.com/bot.html)", "AhrefsBot/7.0", "curl/8.4.0",
+          "Mozilla/5.0 HeadlessChrome/120.0", "python-requests/2.31" ].each do |ua|
+          page_click go_path(POT), ua: ua
           assert_response :found, "expected a redirect for #{ua.inspect}"
           assert_match %r{amazon\.com/dp/B000000001}, response.location
         end
       end
     end
+  end
+
+  # --- suspected_bot flag -----------------------------------------------------
+
+  test "a same-site referer with a normal browser is counted and records the page path" do
+    with_products do
+      assert_difference "AffiliateClick.count", 1 do
+        click go_path(POT, from: "shop"), headers: { "HTTP_REFERER" => "https://www.nakedandafraidfan.com/shop/guides/pot?utm=x#top" }
+      end
+      assert_response :found
+    end
+    assert_equal false, last_click.suspected_bot
+    assert_equal "/shop/guides/pot", last_click.referring_path
+  end
+
+  test "every site host counts as same-site: bare domain, www, the request host, and localhost" do
+    with_products do
+      %w[https://nakedandafraidfan.com/a https://www.nakedandafraidfan.com/a http://www.example.com/a].each do |ref|
+        click go_path(POT), headers: { "HTTP_REFERER" => ref }
+        assert_equal false, last_click.suspected_bot, ref
+        assert_equal "/a", last_click.referring_path, ref
+      end
+      host! "localhost"
+      click go_path(POT), headers: { "HTTP_REFERER" => "http://localhost:3000/shop" }
+      assert_equal false, last_click.suspected_bot
+      assert_equal "/shop", last_click.referring_path
+    end
+  end
+
+  test "no Referer is stored but flagged, and still redirects" do
+    with_products do
+      assert_difference "AffiliateClick.count", 1 do
+        click go_path(POT, from: "shop")
+      end
+      assert_response :found
+      assert_match %r{amazon\.com/dp/B000000001}, response.location
+    end
+    assert_equal true, last_click.suspected_bot
+    assert_nil last_click.referring_path
+  end
+
+  test "a foreign Referer is flagged and never stored" do
+    with_products do
+      click go_path(POT), headers: { "HTTP_REFERER" => "https://elsewhere.example/page?q=1" }
+      assert_response :found
+    end
+    assert_equal true, last_click.suspected_bot
+    assert_nil last_click.referring_path
+  end
+
+  test "a look-alike host or a malformed Referer is flagged" do
+    with_products do
+      [ "https://nakedandafraidfan.com.evil.example/a", "https://evilnakedandafraidfan.com/a", "not a url ::", "/shop" ].each do |ref|
+        click go_path(POT), headers: { "HTTP_REFERER" => ref }
+        assert_response :found
+        assert_equal true, last_click.suspected_bot, ref
+        assert_nil last_click.referring_path, ref
+      end
+    end
+  end
+
+  test "automation and HTTP-library user agents are flagged even with a same-site Referer" do
+    uas = %w[axios/1.6.0 node-fetch/1.0 Scrapy/2.11 aiohttp/3.9 python-httpx/0.27 okhttp/4.12.0 Java/17.0.2
+             libwww-perl/6.67 Selenium/4.0 Playwright/1.40 Puppeteer/21 PhantomJS/2.1 Go-http-client/2.0]
+    # The ones BOT_PATTERN already knows are not stored at all; the rest must be stored and flagged.
+    stored = uas.reject { |ua| TrackPageViews::BOT_PATTERN.match?(ua) }
+    assert_operator stored.size, :>=, 8
+    with_products do
+      stored.each do |ua|
+        assert_difference "AffiliateClick.count", 1, ua do
+          page_click go_path(POT), ua: ua
+        end
+        assert_response :found
+        assert_equal true, last_click.suspected_bot, ua
+      end
+    end
+  end
+
+  test "a blank user agent is stored but flagged, and still redirects" do
+    with_products do
+      assert_difference "AffiliateClick.count", 1 do
+        page_click go_path(POT), ua: ""
+      end
+      assert_response :found
+      assert_match %r{amazon\.com/dp/B000000001}, response.location
+    end
+    assert_equal true, last_click.suspected_bot
+  end
+
+  test "an iPhone with a same-site Referer is counted" do
+    with_products { page_click go_path(KNIFE, store: 1), ua: IPHONE_UA }
+    assert_equal false, last_click.suspected_bot
+    assert_equal true, last_click.is_mobile
+  end
+
+  test "rate guard: more than 5 clicks a minute from one IP get flagged, but all redirect" do
+    with_products do
+      with_memory_cache do
+        results = 7.times.map do
+          page_click go_path(POT), headers: { "REMOTE_ADDR" => "203.0.113.9" }
+          assert_response :found
+          assert_match %r{amazon\.com/dp/B000000001}, response.location
+          last_click.suspected_bot
+        end
+        assert_equal [ false ] * 5 + [ true ] * 2, results
+
+        # A different visitor is unaffected.
+        page_click go_path(POT), headers: { "REMOTE_ADDR" => "203.0.113.10" }
+        assert_equal false, last_click.suspected_bot
+      end
+    end
+  end
+
+  test "rate guard keys never contain the IP and nothing about it is stored" do
+    store = ActiveSupport::Cache::MemoryStore.new
+    with_products do
+      Rails.stub(:cache, store) { page_click go_path(POT), headers: { "REMOTE_ADDR" => "203.0.113.55" } }
+    end
+    keys = store.instance_variable_get(:@data).keys
+    assert_equal 1, keys.size
+    assert_match(/\Aaffiliate-click-rate:\d+:[0-9a-f]{64}\z/, keys.first)
+    assert_no_match(/203\.0\.113\.55/, keys.first)
+    assert_no_match(/203\.0\.113\.55/, AffiliateClick.order(:id).last.attributes.values.join(" "))
+  end
+
+  test "a cache failure in the rate guard does not flag or break the click" do
+    broken = Object.new
+    def broken.increment(*) = raise("cache down")
+    with_products do
+      Rails.stub(:cache, broken) { page_click go_path(POT) }
+      assert_response :found
+    end
+    assert_equal false, last_click.suspected_bot
+  end
+
+  test "AffiliateClick.suspected_bot? takes a request" do
+    good = ActionDispatch::Request.new(Rack::MockRequest.env_for("http://www.example.com/go/x",
+             "HTTP_USER_AGENT" => BROWSER_UA, "HTTP_REFERER" => SAME_SITE_REFERER))
+    bad  = ActionDispatch::Request.new(Rack::MockRequest.env_for("http://www.example.com/go/x", "HTTP_USER_AGENT" => BROWSER_UA))
+    assert_not AffiliateClick.suspected_bot?(good)
+    assert AffiliateClick.suspected_bot?(bad)
   end
 
   test "no IP address or user agent is stored" do
@@ -167,11 +320,13 @@ class AffiliateRedirectsTest < ActionDispatch::IntegrationTest
   test "shop page buttons point at the tracked redirect and keep their rel and target" do
     with_products do
       get shop_path
-      assert_select "li.shop-product a.btn-warning[href=?][target=_blank][rel~=sponsored][rel~=noopener][rel~=noreferrer][rel~=nofollow]",
+      assert_select "li.shop-product a.btn-warning[href=?][target=_blank][rel~=sponsored][rel~=noopener][rel~=nofollow][referrerpolicy=same-origin]",
                     go_path(POT, from: "shop"), text: "View on Amazon"
       assert_select "li.shop-product a.btn[href=?]", go_path(KNIFE, from: "shop"), text: "Buy at rei.com"
       assert_select "li.shop-product a.btn[href=?]", go_path(KNIFE, from: "shop", store: 1), text: "Buy at x.com"
       assert_no_match(/amazon\.com\/dp\/B000000001/, css_select(".shop-product-actions").to_s)
+      # noreferrer would make the browser drop the Referer on the /go/ request.
+      assert_select "li.shop-product a[href^='/go/'][rel~=noreferrer]", false
     end
   end
 
@@ -225,5 +380,24 @@ class AffiliateRedirectsTest < ActionDispatch::IntegrationTest
     assert_select "td", text: "home"
     assert_select "td", text: "/shop"
     assert_select "nav[aria-label=Admin] a[href=?]", admin_affiliate_clicks_path
+  end
+
+  test "the admin page leaves suspected bots out of every figure and shows how many were filtered" do
+    AffiliateClick.create!(product_anchor: POT, product_name: "Named Pot", store: "amazon", placement: "home", referring_path: "/")
+    3.times do
+      AffiliateClick.create!(product_anchor: KNIFE, product_name: "Bot Knife", store: "botstore.example",
+                             placement: "botplace", suspected_bot: true)
+    end
+    AffiliateClick.create!(product_anchor: KNIFE, product_name: "Bot Knife", suspected_bot: true, created_at: 10.days.ago)
+
+    sign_in users(:admin)
+    get admin_affiliate_clicks_path
+    assert_response :success
+    assert_equal %w[1 1 1 1], css_select(".card .h4").map { |n| n.text.strip }
+    assert_select "td", text: "Named Pot"
+    assert_select "td", text: "Bot Knife", count: 0
+    assert_select "td", text: "botplace", count: 0
+    assert_select "td", text: "botstore.example", count: 0
+    assert_select "p", text: /Filtered \(suspected bots\): 4 all time, 3 in the last 24 hours/
   end
 end

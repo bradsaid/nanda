@@ -29,8 +29,14 @@ class AffiliateRedirectsController < ApplicationController
 
   private
 
+  # Known crawlers are redirected but not stored. Anything else is stored; clicks
+  # that don't look like a person on one of our pages are flagged suspected_bot so
+  # the admin report leaves them out. The redirect itself never depends on this.
   def record_click(product, link, url)
-    return if bot?
+    return if known_bot?
+
+    screen = AffiliateClickScreen.new(request)
+    reasons = screen.reasons
 
     AffiliateClick.create!(
       product_anchor:   ShopCatalog.anchor(product),
@@ -39,23 +45,16 @@ class AffiliateRedirectsController < ApplicationController
       store:            (ShopCatalog.amazon?(link) ? "amazon" : ShopCatalog.store_name(link)).to_s.truncate(100),
       destination_host: URI.parse(url).host.to_s.truncate(100),
       placement:        params[:from].to_s[PLACEMENT_FORMAT],
-      referring_path:   referring_path,
-      is_mobile:        UserAgent.parse(request.user_agent.to_s).mobile? ? true : false
+      referring_path:   screen.referring_path,
+      is_mobile:        UserAgent.parse(request.user_agent.to_s).mobile? ? true : false,
+      suspected_bot:    reasons.any?
     )
+    Rails.logger.info("AffiliateClick flagged suspected_bot: #{reasons.join(',')}") if reasons.any?
   rescue StandardError => e
     Rails.logger.warn("AffiliateClick tracking failed: #{e.message}")
   end
 
-  def bot?
-    request.user_agent.blank? || TrackPageViews::BOT_PATTERN.match?(request.user_agent)
-  end
-
-  # Path only (no host, no query string) of our own page the click came from.
-  def referring_path
-    uri = URI.parse(request.referer.to_s)
-    return unless uri.host.to_s.sub(/\Awww\./, "") == request.host.to_s.sub(/\Awww\./, "")
-    uri.path.to_s.truncate(200).presence
-  rescue URI::InvalidURIError
-    nil
+  def known_bot?
+    request.user_agent.present? && TrackPageViews::BOT_PATTERN.match?(request.user_agent)
   end
 end

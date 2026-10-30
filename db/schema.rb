@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_29_140000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_30_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -54,8 +54,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_29_140000) do
     t.string "referring_path"
     t.boolean "is_mobile", default: false, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.boolean "suspected_bot", default: false, null: false
     t.index ["created_at"], name: "index_affiliate_clicks_on_created_at"
     t.index ["product_anchor"], name: "index_affiliate_clicks_on_product_anchor"
+    t.index ["suspected_bot", "created_at"], name: "index_affiliate_clicks_on_suspected_bot_and_created_at"
   end
 
   create_table "appearance_items", force: :cascade do |t|
