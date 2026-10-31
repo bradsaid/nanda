@@ -1149,6 +1149,18 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
   white-space: normal;
   overflow-wrap: anywhere;
 }
+/* Narrow phones leave the text column ~100px wide. Bootstrap's .badge is white-space: nowrap, so
+   "Confirmed on the show" and friends stuck out of the card; let them wrap, and break any long
+   unbroken string (product names, brands, URLs) instead of overflowing. */
+.shop-product-info {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.shop-product-info .badge {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
 .shop-buy-note {
   margin-top: .15rem;
   font-size: .75rem;
@@ -1171,6 +1183,20 @@ ul.list-group > li.list-group-item.shop-product {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
 }
 ul.list-group > li.list-group-item.shop-product:last-child { margin-bottom: .75rem; }
+
+/* Phones: the page already pads the content (main px-5 + container + card), so give the text
+   column back some room: smaller photo and tighter card chrome; on the very narrowest phones
+   the text goes under the photo instead of beside it. */
+@media (max-width: 575px) {
+  .shop-product-row { grid-template-columns: 64px minmax(0, 1fr); gap: .75rem; }
+  .shop-product-image { width: 64px; height: 64px; }
+  .shop-product-image .shop-product-placeholder { font-size: 1.75rem; }
+  ul.list-group > li.list-group-item.shop-product { margin-left: .5rem; margin-right: .5rem; padding-left: .75rem; padding-right: .75rem; }
+}
+@media (max-width: 359px) {
+  .shop-product-row { grid-template-columns: minmax(0, 1fr); }
+  .shop-product-actions { grid-column: auto; }
+}
 
 /* A product card reached from a link on another page (e.g. a survivor's gear in a table). */
 .shop-product { scroll-margin-top: 1rem; }
