@@ -4,22 +4,14 @@ class EpisodesController < ApplicationController
 
   def index
     @country = params[:country].to_s.strip
+    # /episodes?country=X has no layout of its own in index.html.slim (with
+    # @location/@season nil it fell through to the season-overview layout with
+    # empty @seasons: an empty "Jump to a season" select and no episodes at
+    # all). The real country page is #by_country, so send old/hand-typed
+    # ?country= URLs there permanently.
     if @country.present?
-      @episodes =
-        Episode
-          .includes(:location, season: :series)
-          .joins(:location)
-          .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
-          .order(Arel.sql("air_date IS NULL, air_date DESC"))
-
-      # keep view happy
-      @location = nil
-      @season   = nil
-      @seasons  = []
-      @episodes_by_season = {}
-      @episode_counts     = {}
-
-      render :index and return
+      redirect_to by_country_episodes_path(country: @country), status: :moved_permanently
+      return
     end
 
     if params[:location_id].present?
