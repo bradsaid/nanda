@@ -37,7 +37,7 @@
         .col-md-3
           = label_tag :match, "How sure are we", class: "form-label"
           = select_tag :match, options_for_select([["Any", ""]] + match_badge.map { |k, (_, label)| [label, k] }, @match), class: "form-select"
-        .col-12.col-md-auto.d-flex.align-items-end.gap-3
+        .col-12.col-md-auto.d-flex.flex-wrap.align-items-end.gap-3
           .form-check.mb-2
             = check_box_tag :amazon, "1", @amazon, class: "form-check-input"
             = label_tag :amazon, "On Amazon", class: "form-check-label"

@@ -1201,3 +1201,88 @@ ul.list-group > li.list-group-item.shop-product:last-child { margin-bottom: .75r
 /* A product card reached from a link on another page (e.g. a survivor's gear in a table). */
 .shop-product { scroll-margin-top: 1rem; }
 .shop-product:target { background: #fff8e1; outline: 2px solid #f0ad4e; outline-offset: -2px; }
+
+/* ===== Mobile pass (phones) =====
+   Everything below is inside a max-width media query, so desktop is untouched. Findings and
+   screenshots: tmp/mobile_audit/REPORT.md. */
+
+/* Wrap very long unbroken strings (URLs, e-mail addresses, long usernames) instead of pushing the
+   page sideways. break-word (not anywhere) so table/flex min-content sizes stay as they were. */
+@media (max-width: 767.98px) {
+  #content p, #content li, #content h1, #content h2, #content h3, #content h4, #content h5,
+  #content h6, #content dd, #content blockquote, #content a { overflow-wrap: break-word; }
+
+  /* Stacked-table cells: one long unbroken token (a URL in a title) widened the whole table. */
+  .table-stack tbody td { overflow-wrap: anywhere; }
+  /* The forum topic title is the card heading: no "TOPIC" label eating 110px beside it. */
+  .table-stack tbody td[data-label="Topic"]::before { display: none; }
+}
+
+@media (max-width: 575.98px) {
+  /* The wiki wrapped every page in main.px-5 (48px) plus a nested .container (12px): at 320px that
+     left only ~200px for content. Keep a small gutter on phones. */
+  /* 12px, not less: a .row placed straight in #content has -12px side margins. */
+  main.container.px-5 { padding-left: .75rem !important; padding-right: .75rem !important; }
+  /* Not the footer: its nested .row needs the default 12px container padding to cancel its -12px margin. */
+  main.container > .container:not(.footer) { --bs-gutter-x: .75rem; }
+
+  /* Primary nav: 10-12 links wrap to 5-7 rows. Tight columns, no row gap, and 44px-high targets. */
+  .site-nav { gap: 0 1rem; }
+  .site-nav .nav-link { padding: .65rem .15rem; }
+  .site-nav .nav-link::after { bottom: 6px; }
+
+  /* Header "All locations" button is absolutely positioned top-right on desktop; on phones it sat
+     on top of the page title. Put it in the flow, right-aligned. */
+  .site-header.position-relative > a.position-absolute {
+    position: static !important;
+    display: block;
+    width: fit-content;
+    margin: 0 0 .5rem auto !important;
+  }
+  .site-header .logo { overflow-wrap: anywhere; }
+  .survivor-name { font-size: 1.75rem; overflow-wrap: anywhere; }
+
+  /* Survivor-count pills (Locations: lists every country) are pill-shaped; a multi-line pill turned
+     into a big oval and ran past the card. */
+  .stat-pill { display: flex; align-items: flex-start; max-width: 100%; border-radius: 1rem; }
+  .stat-pill > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+
+  /* Social buttons and header badges are nowrap by default and stuck out of their card. */
+  .social-btn { max-width: 100%; white-space: normal; text-align: left; overflow-wrap: anywhere; }
+  .card-header .flex-wrap > .badge, td .badge {
+    white-space: normal;
+    max-width: 100%;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  /* Survivor cards: two columns of ~130px. Shrink the stacked name so long names fit. */
+  .survivor-name-stack { font-size: 1.05rem; min-height: 2.3em; overflow-wrap: anywhere; }
+
+  /* iOS Safari zooms the page when an input under 16px gets focus. */
+  .form-control, .form-control-sm, .form-select, .form-select-sm, textarea { font-size: 16px; }
+
+  /* Tap targets: Bootstrap's .btn-sm is 31px high; the forum promo close icon was 22px. */
+  .btn-sm { --bs-btn-padding-y: .5rem; }
+  .forum-promo-close { min-width: 44px; min-height: 44px; font-size: 1.6rem; margin: -.5rem -.5rem 0 0; }
+
+  /* Footer link lists: 21px-high links stacked with no gap. */
+  .footer ul li a { display: inline-block; padding: .4rem 0; }
+
+  /* Forum thread titles and breadcrumbs may contain one very long word. */
+  .site-header nav.small { overflow-wrap: anywhere; }
+}
+
+/* Links inside the dark-green card headers (e.g. "See the full ... guide" on an item page) inherited the
+   dark-green link colour and were unreadable on every screen size. */
+.card-header a:not(.btn) { color: #bbf7d0; text-decoration: underline; }
+.card-header a:not(.btn):hover { color: #fff; border-color: transparent; }
+
+/* Forum post bodies are user-written HTML: long links, code blocks, tables and quotes must scroll or
+   wrap inside the post instead of widening the whole page. */
+/* A single very long unbroken word in a page title (e.g. a forum thread) must wrap, at any width. */
+.site-header .logo { min-width: 0; overflow-wrap: anywhere; }
+.forum-post-body { overflow-wrap: anywhere; min-width: 0; }
+.forum-post-body pre { max-width: 100%; overflow-x: auto; }
+.forum-post-body table { display: block; max-width: 100%; overflow-x: auto; }
+.forum-post-body img { max-width: 100%; height: auto; }
