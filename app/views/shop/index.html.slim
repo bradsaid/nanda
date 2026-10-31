@@ -51,11 +51,19 @@
   - if @grouped.empty?
     .alert.alert-light.border No products match those filters.
 
+  / Phones only: the catalog is ~150 cards long, so jump links to each category (plain anchors).
+  - if @grouped.size > 1
+    nav.shop-jump.d-md-none.mb-3 aria-label="Jump to a category"
+      - @grouped.each do |category, products|
+        a href="##{category.to_s.parameterize}-products" = "#{category.to_s.titleize} (#{products.size})"
+
   - @grouped.each do |category, products|
-    .card.shadow-sm.mb-4
+    .card.shadow-sm.mb-4 id="#{category.to_s.parameterize}-products"
       .card-header
         = category.to_s.titleize
         small.ms-2 = "(#{products.size})"
       ul.list-group.list-group-flush
         - products.each do |p|
           = render "shop/product", product: p, item: @items_by_name[p[:item].to_s.downcase], link_item: true, links: @links
+
+  = render "shared/back_to_top"

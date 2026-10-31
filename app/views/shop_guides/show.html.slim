@@ -41,3 +41,5 @@
       .list-group.list-group-flush
         - @other_guides.each do |g|
           = link_to g.title, shop_guide_path(g.slug), class: "list-group-item list-group-item-action"
+
+  = render "shared/back_to_top"

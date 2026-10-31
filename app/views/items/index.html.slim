@@ -57,12 +57,21 @@
   / Brought and given are source-specific by definition, so a source filter
   / drops the card that contradicts it; the remaining card spans full width.
   - unless @q.present?
+    / Phones only: jump links to each section (plain anchors; the page is ~40 screens long on a phone).
+    nav.items-jump.d-md-none.mb-3 aria-label="Jump to a section"
+      - unless @source == "given"
+        a href="#top-brought" Top brought
+      - unless @source == "brought"
+        a href="#top-given" Top given
+      a href="#rarest-items" Rarest
+      a href="#items-by-type" By type
+      a href="#items-by-country" By location
     - top_col = @source.present? ? "col-12" : "col-lg-6"
     .row.g-4
       - [["brought", "Top Brought Items", @top_brought], ["given", "Top Given Items", @top_given]].each do |src, heading, rows|
         - next if @source.present? && @source != src
         div class=top_col
-          .card.shadow-sm.h-100
+          .card.shadow-sm.h-100 id="top-#{src}"
             .card-header.d-flex.justify-content-between.align-items-center
               span.fw-medium = heading
               span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total).to_i }} overall"
@@ -90,7 +99,7 @@
   - unless @q.present?
     - show_brought = @source.blank? || @source == "brought"
     - show_given   = @source.blank? || @source == "given"
-    .card.shadow-sm.mt-4
+    .card.shadow-sm.mt-4#rarest-items
       .card-header.fw-medium Rarest Items
       .table-responsive
         table.table.table-sm.table-hover.mb-0
@@ -119,7 +128,7 @@
                     td.text-end = r.read_attribute(:given_total).to_i
 
     / ===== Items by Type =====
-    .card.shadow-sm.mt-4
+    .card.shadow-sm.mt-4#items-by-type
       .card-header.fw-medium Items by Type
       .table-responsive
         table.table.table-sm.table-hover.mb-0
@@ -184,38 +193,17 @@
 
   / ===== Items per Country (unique per episode) =====
   - unless @q.present?
-    .row.g-4.mt-1
+    / Each country card is a <details>: on phones they start closed (one header row per country
+    / instead of a table each); from 768px up the CSS shows them open. The rows stay in the HTML
+    / either way, and a country filter renders its card open.
+    .row.g-4.mt-1.items-country-grid#items-by-country
       - (@items_by_country || {}).each do |country, rows|
         .col-lg-6
           .card.shadow-sm.h-100
-            .card-header.d-flex.justify-content-between.align-items-center
-              span.fw-medium = (country.presence || "Unknown")
-              span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total).to_i }} total"
-            .table-responsive
-              table.table.table-sm.table-hover.mb-0
-                thead.table-light
-                  tr
-                    th Item
-                    th.text-end Episodes
-                tbody
-                  - if rows.blank?
-                    tr
-                      td.text-muted.py-4(colspan="2") No data
-                  - else
-                    - rows.each do |r|
-                      tr
-                        td = link_to r.item_name, item_path(r.item_id)
-                        td.text-end = r.read_attribute(:total).to_i
-
-    / ===== Items per Country (adjusted — continuous=1) =====
-    - if @items_by_country_adj.present?
-      .row.g-4.mt-1
-        - @items_by_country_adj.each do |country, rows|
-          .col-lg-6
-            .card.shadow-sm.h-100
-              .card-header.d-flex.justify-content-between.align-items-center
-                span.fw-medium = "#{country.presence || 'Unknown'} "
-                span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total_adj).to_i }} total"
+            details.m-collapse-card open=@country.present?
+              summary.card-header.d-flex.justify-content-between.align-items-center
+                span.fw-medium = (country.presence || "Unknown")
+                span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total).to_i }} total"
               .table-responsive
                 table.table.table-sm.table-hover.mb-0
                   thead.table-light
@@ -230,4 +218,32 @@
                       - rows.each do |r|
                         tr
                           td = link_to r.item_name, item_path(r.item_id)
-                          td.text-end = r.read_attribute(:total_adj).to_i
+                          td.text-end = r.read_attribute(:total).to_i
+
+    / ===== Items per Country (adjusted — continuous=1) =====
+    - if @items_by_country_adj.present?
+      .row.g-4.mt-1.items-country-grid
+        - @items_by_country_adj.each do |country, rows|
+          .col-lg-6
+            .card.shadow-sm.h-100
+              details.m-collapse-card open=@country.present?
+                summary.card-header.d-flex.justify-content-between.align-items-center
+                  span.fw-medium = "#{country.presence || 'Unknown'} "
+                  span.small.text-muted = "#{rows.sum { |r| r.read_attribute(:total_adj).to_i }} total"
+                .table-responsive
+                  table.table.table-sm.table-hover.mb-0
+                    thead.table-light
+                      tr
+                        th Item
+                        th.text-end Episodes
+                    tbody
+                      - if rows.blank?
+                        tr
+                          td.text-muted.py-4(colspan="2") No data
+                      - else
+                        - rows.each do |r|
+                          tr
+                            td = link_to r.item_name, item_path(r.item_id)
+                            td.text-end = r.read_attribute(:total_adj).to_i
+
+  = render "shared/back_to_top"

@@ -19,41 +19,49 @@ li.list-group-item.shop-product id=ShopCatalog.anchor(product)
           span.badge.bg-info.text-dark.ms-1.shop-specific = specific_label
       - if product[:brand].present?
         .small.text-muted = product[:brand]
-      - if product[:used_by].present?
-        .small.mt-1
-          | Used by: 
-          = product[:used_by]
-      - if (links = local_assigns[:links])
-        - linked_survivors = links.survivors_for(product)
-        - linked_episodes  = links.episodes_for(product)
-        - if linked_survivors.any?
-          .small.mt-1.shop-survivors
-            | Survivors: 
-            - linked_survivors.each_with_index do |s, i|
-              = ", " if i.positive?
-              = link_to s.full_name, survivor_path(s)
-        - if linked_episodes.any?
-          .small.mt-1.shop-episodes
-            | Episodes: 
-            - linked_episodes.each_with_index do |e, i|
-              = ", " if i.positive?
-              - series = e.season.series.name
-              - label = series == "Naked and Afraid" ? "S#{e.season.number}" : "#{series.sub('Naked and Afraid', '').strip} S#{e.season.number}"
-              = link_to "#{e.title} (#{label})", episode_path(e)
-      - if product[:evidence].present?
-        .small.text-muted.mt-1
-          = product[:evidence]
-          - if product[:evidence_url].present?
-            |  
-            = link_to "Source", product[:evidence_url], target: "_blank", rel: "noopener noreferrer nofollow"
-          - Array(product[:more_sources]).each_with_index do |url, i|
-            |  
-            = link_to "Source #{i + 2}", url, target: "_blank", rel: "noopener noreferrer nofollow"
-      / product[:notes] holds maintainer notes (verification remarks); it is deliberately never shown.
-      - if link_item && item
-        .small.mt-1
-          | On the show: 
-          = link_to "#{item_icon(item)} #{item.name}", item_path(item)
+      / Everything below the name stays in the page for every visitor and crawler. On phones the
+      / <details> starts closed so a long catalog scrolls; from 768px up (and when the card is the
+      / #anchor target) the CSS shows it open and hides the toggle.
+      - more = capture do
+        - if product[:used_by].present?
+          .small.mt-1
+            | Used by: 
+            = product[:used_by]
+        - if (links = local_assigns[:links])
+          - linked_survivors = links.survivors_for(product)
+          - linked_episodes  = links.episodes_for(product)
+          - if linked_survivors.any?
+            .small.mt-1.shop-survivors
+              | Survivors: 
+              - linked_survivors.each_with_index do |s, i|
+                = ", " if i.positive?
+                = link_to s.full_name, survivor_path(s)
+          - if linked_episodes.any?
+            .small.mt-1.shop-episodes
+              | Episodes: 
+              - linked_episodes.each_with_index do |e, i|
+                = ", " if i.positive?
+                - series = e.season.series.name
+                - label = series == "Naked and Afraid" ? "S#{e.season.number}" : "#{series.sub('Naked and Afraid', '').strip} S#{e.season.number}"
+                = link_to "#{e.title} (#{label})", episode_path(e)
+        - if product[:evidence].present?
+          .small.text-muted.mt-1
+            = product[:evidence]
+            - if product[:evidence_url].present?
+              |  
+              = link_to "Source", product[:evidence_url], target: "_blank", rel: "noopener noreferrer nofollow"
+            - Array(product[:more_sources]).each_with_index do |url, i|
+              |  
+              = link_to "Source #{i + 2}", url, target: "_blank", rel: "noopener noreferrer nofollow"
+        / product[:notes] holds maintainer notes (verification remarks); it is deliberately never shown.
+        - if link_item && item
+          .small.mt-1
+            | On the show: 
+            = link_to "#{item_icon(item)} #{item.name}", item_path(item)
+      - if more.to_s.strip.present?
+        details.shop-more
+          summary.shop-more-toggle Details &amp; sources
+          .shop-more-body = more
     .shop-product-actions
       / Amazon is the only button when the product has an Amazon listing.
       / Buttons go through /go/:anchor, which counts the click and redirects to the tagged URL.

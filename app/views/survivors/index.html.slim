@@ -36,6 +36,17 @@
     .text-muted.py-5.text-center No survivors found.
   - else
     - shop_counts = ShopCatalog.survivor_counts
+    / A-Z sorted by name: the first survivor of each initial gets an anchor, and phones get a
+    / row of letter links (the full list is ~190 screens long on a phone).
+    - az_letters = {}
+    - if @sort == "name"
+      - @survivors.each do |s|
+        - letter = s.full_name.to_s.strip[0].to_s.upcase
+        - letter = "#" unless letter.match?(/[A-Z]/)
+        - az_letters[letter] ||= s.id
+      nav.survivor-az.d-md-none.mb-3 aria-label="Jump to a letter"
+        - az_letters.each_key do |letter|
+          a href="#az-#{letter == '#' ? 'other' : letter}" = letter
     #survivors-results.row.g-3
       - @survivors.each do |s|
         - name = s.full_name.to_s
@@ -43,7 +54,8 @@
         - total = s.episodes_total_count.to_i
         - collapsed = s.episodes_collapsed_count.to_i
         - views = (@view_counts && @view_counts[s.id]).to_i
-        .col-6.col-md-4.col-lg-2
+        - letter = az_letters.key(s.id)
+        .col-6.col-sm-4.col-md-4.col-lg-2 id=(letter ? "az-#{letter == '#' ? 'other' : letter}" : nil)
           = link_to survivor_path(s), class: "card h-100 text-center border-0 text-decoration-none" do
             .card-body.py-3.d-flex.flex-column.align-items-center
               = image_tag avatar_src(s, name: name),
@@ -72,3 +84,4 @@
                 small.text-muted.mt-1 = "#{collapsed} #{'challenge'.pluralize(collapsed)}"
               - if (gear_n = shop_counts[name.downcase].to_i).positive?
                 small.mt-1.badge.bg-warning-subtle.text-dark.border title="#{gear_n} #{'product'.pluralize(gear_n)} tied to #{name}" = "🛒 #{gear_n}"
+    = render "shared/back_to_top"
