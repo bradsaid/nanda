@@ -33,6 +33,30 @@ class ForumGuidelinesTest < ActionDispatch::IntegrationTest
     assert_select "time[datetime=?]", "2026-11-01", text: "November 1, 2026"
   end
 
+  test "states the no-profanity rule in the short version, the respect section and moderation" do
+    get forum_guidelines_path
+    assert_select "#tldr li", count: 5
+    assert_select "#tldr li", /Be respectful and keep it clean\.\s+No harassment and no profanity/
+    assert_select "#respect", /No profanity or slurs, including censored or disguised versions like f\*\*\*/
+    assert_select "#respect", /posts, topic titles, usernames and bios/
+    assert_select "#respect", /Quoting the show isn't an exemption/
+    assert_select "#respect", /mark it with asterisks or paraphrase it/
+    assert_select "#moderation", /post with profanity may be edited or removed/
+    assert_select "#moderation", /no automatic word filter/
+  end
+
+  test "the form reminders mention keeping it clean" do
+    enable_forum!
+    sign_in_as(users(:one))
+    get new_forum_topic_path
+    assert_select ".guidelines-callout-compact", /No profanity/
+    topic, = make_topic
+    get forum_topic_path(topic)
+    assert_select ".guidelines-callout-compact", /No profanity/
+    get forum_path
+    assert_select ".guidelines-callout", /no profanity/
+  end
+
   test "describes the real report flow and the real limits" do
     get forum_guidelines_path
     assert_select "#reporting", /Report/

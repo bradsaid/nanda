@@ -26,4 +26,14 @@ class TermsOfServiceTest < ActionDispatch::IntegrationTest
     numbers = css_select("h2").map { |h| h.text[/\A\d+/].to_i }
     assert_equal (1..numbers.size).to_a, numbers
   end
+
+  test "nested lists render as real nested lists, not raw Slim text" do
+    get terms_of_service_path
+    assert_select "ul > li > ul > li", text: "Malware, viruses, or malicious code"
+    assert_select "ul > li > ul > li", text: "Overload servers or perform denial-of-service attacks"
+    assert_select "ul > li > ul > li", text: "Service interruptions or downtime"
+    assert_select "li", text: /You must not use Naked and Afraid Fan Database to store or transmit:/
+    refute_match(/^\s*ul\s*$/, response.body)
+    refute_match(/^\s*li [A-Z]/, response.body)
+  end
 end
