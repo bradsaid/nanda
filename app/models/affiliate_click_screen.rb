@@ -43,6 +43,9 @@ class AffiliateClickScreen
     list << :automation_user_agent if user_agent.present? && AUTOMATION_PATTERN.match?(user_agent)
     list << :no_referer if @request.referer.blank?
     list << :foreign_referer if @request.referer.present? && !same_site_referer?
+    list << :origin_only_referer if origin_only_referer?
+    list << :sec_fetch_mismatch if sec_fetch_mismatch?
+    list << :missing_browser_headers if missing_browser_headers?
     list << :rate_limited if rate_limited?
     list
   end
@@ -64,6 +67,39 @@ class AffiliateClickScreen
     allowed_hosts.include?(strip_www(uri.host))
   rescue URI::InvalidURIError
     false
+  end
+
+  # A same-site Referer with no path at all ("https://host", "https://host?x=1").
+  #
+  # The buy buttons carry referrerpolicy="same-origin", so a browser clicking one
+  # sends the FULL URL of the page it is on, and that always has a path, even the
+  # home page ("https://host/" -> "/"). A bare origin with nothing after the host
+  # is what scripts send when they fake a Referer. Note the literal "/" is a real
+  # path and is NOT flagged here. A script sending "https://host/" is
+  # indistinguishable from the home page by this rule alone (the Sec-Fetch and
+  # header checks below are the only other defence against it).
+  def origin_only_referer?
+    same_site_referer? && referring_path.blank?
+  end
+
+  # Browsers that implement Fetch Metadata (Chrome/Edge 76+, Firefox 90+, Safari
+  # 16.4+) label every request. A click from one of our own pages is "same-origin"
+  # ("same-site" is also tolerated in case a page is served from a sibling host).
+  # "none" (typed URL, bookmark) or "cross-site" can't be a click on our button.
+  # Only judged when the header is present: older browsers simply don't send it.
+  def sec_fetch_mismatch?
+    site = @request.get_header("HTTP_SEC_FETCH_SITE").to_s.strip.downcase
+    site.present? && !%w[same-origin same-site].include?(site)
+  end
+
+  # No Sec-Fetch-Site AND no Accept-Language. Every browser sends Accept-Language,
+  # and every current one sends Sec-Fetch-Site, so having neither is a script
+  # that only copied User-Agent/Referer. Accept-Language missing on its own is
+  # NOT flagged (privacy tools can strip it); it only counts alongside the
+  # missing Sec-Fetch-Site.
+  def missing_browser_headers?
+    @request.get_header("HTTP_SEC_FETCH_SITE").to_s.strip.blank? &&
+      @request.get_header("HTTP_ACCEPT_LANGUAGE").to_s.strip.blank?
   end
 
   private

@@ -31,8 +31,13 @@ class AffiliateRedirectsTest < ActionDispatch::IntegrationTest
 
   SAME_SITE_REFERER = "http://www.example.com/shop".freeze  # the integration-test host
 
-  def click(path, ua: BROWSER_UA, headers: {})
-    get path, headers: { "HTTP_USER_AGENT" => ua }.merge(headers)
+  # What every modern browser sends on a click from one of our own pages.
+  BROWSER_HEADERS = { "HTTP_SEC_FETCH_SITE" => "same-origin", "HTTP_ACCEPT_LANGUAGE" => "en-US,en;q=0.9" }.freeze
+
+  def click(path, ua: BROWSER_UA, headers: {}, browser_headers: true)
+    base = { "HTTP_USER_AGENT" => ua }
+    base.merge!(BROWSER_HEADERS) if browser_headers
+    get path, headers: base.merge(headers)
   end
 
   # A click as a real browser sends it from one of our own pages.
@@ -235,6 +240,94 @@ class AffiliateRedirectsTest < ActionDispatch::IntegrationTest
     assert_equal true, last_click.is_mobile
   end
 
+  # --- Referer shape and browser headers -------------------------------------
+
+  def screen_reasons(path = "/go/x", headers = {})
+    env = Rack::MockRequest.env_for("http://www.example.com#{path}", { "HTTP_USER_AGENT" => BROWSER_UA }.merge(headers))
+    AffiliateClickScreen.new(ActionDispatch::Request.new(env)).reasons
+  end
+
+  test "an origin-only same-site Referer is flagged, stores no path, and still redirects" do
+    with_products do
+      [ "https://www.nakedandafraidfan.com", "https://nakedandafraidfan.com", "http://www.example.com", "https://www.nakedandafraidfan.com?x=1" ].each do |ref|
+        assert_difference "AffiliateClick.count", 1, ref do
+          click go_path(POT, from: "shop"), headers: { "HTTP_REFERER" => ref }
+        end
+        assert_response :found, ref
+        assert_match %r{amazon\.com/dp/B000000001}, response.location
+        assert_equal true, last_click.suspected_bot, ref
+        assert_nil last_click.referring_path, ref
+        assert_equal [ :origin_only_referer ], screen_reasons("/go/x", BROWSER_HEADERS.merge("HTTP_REFERER" => ref)), ref
+      end
+    end
+  end
+
+  test "a same-site Referer with a full page path is counted" do
+    with_products do
+      %w[/shop /survivors/12 /shop/guides/pot].each do |path|
+        click go_path(POT, from: "shop"), headers: { "HTTP_REFERER" => "https://www.nakedandafraidfan.com#{path}" }
+        assert_response :found
+        assert_equal false, last_click.suspected_bot, path
+        assert_equal path, last_click.referring_path
+      end
+    end
+  end
+
+  test "the home page's literal / path is a real path and is counted" do
+    with_products do
+      click go_path(POT, from: "home"), headers: { "HTTP_REFERER" => "https://www.nakedandafraidfan.com/" }
+      assert_response :found
+      assert_equal false, last_click.suspected_bot
+      assert_equal "/", last_click.referring_path
+      assert_equal "home", last_click.placement
+    end
+  end
+
+  test "Sec-Fetch-Site other than same-origin is flagged but still redirects" do
+    with_products do
+      %w[cross-site none].each do |site|
+        assert_difference "AffiliateClick.count", 1, site do
+          page_click go_path(POT), headers: { "HTTP_SEC_FETCH_SITE" => site }
+        end
+        assert_response :found
+        assert_equal true, last_click.suspected_bot, site
+        assert_equal "/shop", last_click.referring_path, "path is still recorded for #{site}"
+      end
+    end
+    assert_includes screen_reasons("/go/x", BROWSER_HEADERS.merge("HTTP_REFERER" => SAME_SITE_REFERER, "HTTP_SEC_FETCH_SITE" => "cross-site")),
+                    :sec_fetch_mismatch
+  end
+
+  test "Sec-Fetch-Site same-origin (or same-site) is counted" do
+    with_products do
+      %w[same-origin same-site Same-Origin].each do |site|
+        page_click go_path(POT), headers: { "HTTP_SEC_FETCH_SITE" => site }
+        assert_equal false, last_click.suspected_bot, site
+      end
+    end
+  end
+
+  test "an older browser with Accept-Language but no Sec-Fetch headers is counted" do
+    with_products do
+      page_click go_path(POT), browser_headers: false, headers: { "HTTP_ACCEPT_LANGUAGE" => "en-US,en;q=0.9" }
+      assert_equal false, last_click.suspected_bot
+    end
+  end
+
+  test "a missing Accept-Language alone is not enough, but missing both browser headers is flagged" do
+    with_products do
+      page_click go_path(POT), browser_headers: false, headers: { "HTTP_SEC_FETCH_SITE" => "same-origin" }
+      assert_equal false, last_click.suspected_bot, "Sec-Fetch-Site present, no Accept-Language"
+
+      assert_difference "AffiliateClick.count", 1 do
+        page_click go_path(POT), browser_headers: false
+      end
+      assert_response :found
+      assert_equal true, last_click.suspected_bot
+      assert_equal [ :missing_browser_headers ], screen_reasons("/go/x", "HTTP_REFERER" => SAME_SITE_REFERER)
+    end
+  end
+
   test "rate guard: more than 5 clicks a minute from one IP get flagged, but all redirect" do
     with_products do
       with_memory_cache do
@@ -277,7 +370,7 @@ class AffiliateRedirectsTest < ActionDispatch::IntegrationTest
 
   test "AffiliateClick.suspected_bot? takes a request" do
     good = ActionDispatch::Request.new(Rack::MockRequest.env_for("http://www.example.com/go/x",
-             "HTTP_USER_AGENT" => BROWSER_UA, "HTTP_REFERER" => SAME_SITE_REFERER))
+             BROWSER_HEADERS.merge("HTTP_USER_AGENT" => BROWSER_UA, "HTTP_REFERER" => SAME_SITE_REFERER)))
     bad  = ActionDispatch::Request.new(Rack::MockRequest.env_for("http://www.example.com/go/x", "HTTP_USER_AGENT" => BROWSER_UA))
     assert_not AffiliateClick.suspected_bot?(good)
     assert AffiliateClick.suspected_bot?(bad)
