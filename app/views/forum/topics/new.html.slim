@@ -7,6 +7,8 @@
     span New topic
   h1.h3.mb-0.logo New topic
 
+= render "shared/guidelines_callout", compact: true
+
 - if @topic.errors.any?
   .alert.alert-danger
     ul.mb-0.small
@@ -30,3 +32,4 @@
   .d-flex.gap-2
     = f.submit "Post topic", class: "btn btn-primary"
     = link_to "Cancel", forum_path, class: "btn btn-outline-secondary"
+  = render "shared/guidelines_agreement"

@@ -54,6 +54,8 @@ class ApplicationController < ActionController::Base
     return false unless forum_enabled?
     return false if controller_path.start_with?("forum", "admin")
     return false if controller_path.in?(%w[sessions registrations passwords email_verifications email_changes])
+    # The guidelines page is itself about the forum and links straight to it.
+    return false if controller_path == "static_pages" && action_name == "guidelines"
     cookies[:forum_promo_dismissed].blank?
   end
 

@@ -1,0 +1,20 @@
+/ A reminder of the house rules with a link to the full Community Guidelines.
+/ Locals: compact (default false). The full version heads the forum index; the
+/ compact one-liner sits above the new-topic and reply forms.
+- compact = local_assigns.fetch(:compact, false)
+
+- if compact
+  .guidelines-callout.guidelines-callout-compact.small.mb-3 role="note"
+    strong Keep it friendly.
+    |  Be respectful, label spoilers, no private info or spam.
+    = " "
+    = link_to "Community Guidelines", forum_guidelines_path, class: "fw-semibold"
+- else
+  .guidelines-callout.mb-3 role="note" aria-label="Community guidelines"
+    .fw-semibold.mb-1 Before you post
+    ul.small.mb-2.ps-3
+      li Be respectful. Critique the show, not the people.
+      li No private info about anyone, and no spam or piracy.
+      li Put [SPOILER] in the title for new episodes, and keep the spoiler out of it.
+      li See a problem? Use the Report link on the post.
+    = link_to "Read the Community Guidelines", forum_guidelines_path, class: "small fw-semibold"

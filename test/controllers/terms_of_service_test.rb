@@ -4,7 +4,7 @@ class TermsOfServiceTest < ActionDispatch::IntegrationTest
   test "the terms render with the current revision date" do
     get terms_of_service_path
     assert_response :success
-    assert_select "p", /Last updated: October 29, 2026/
+    assert_select "p", /Last updated: November 1, 2026/
   end
 
   test "the terms cover the shop: affiliate statement, no sales, best-effort data, no endorsement, safety" do

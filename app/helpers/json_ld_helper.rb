@@ -875,4 +875,17 @@ module JsonLdHelper
       "url" => canonical_request_url
     }
   end
+
+  # The Community Guidelines page: a WebPage carrying the same revision date
+  # the page shows (StaticPagesController::GUIDELINES_UPDATED_ON).
+  def guidelines_jsonld(name:, description:, updated_on:)
+    {
+      "@context" => "https://schema.org", "@type" => "WebPage",
+      "name" => name.to_s, "description" => description.to_s,
+      "url" => canonical_request_url,
+      "dateModified" => updated_on.iso8601,
+      "inLanguage" => "en",
+      "isPartOf" => { "@type" => "WebSite", "name" => SITE_NAME, "url" => request.base_url }
+    }
+  end
 end

@@ -44,6 +44,12 @@ Rails.application.routes.draw do
   # exist in the schema (topics need one) but are not a browsing surface, so the
   # old category URLs redirect rather than 404 for anyone holding a link.
   get  "/forum", to: "forum/topics#index", as: :forum
+  # The Community Guidelines are an ordinary public page, deliberately NOT under
+  # Forum::BaseController: they must stay readable (and crawlable) logged out and
+  # whether or not FORUM_ENABLED is set, so the signup page can always link to them.
+  # Declared before the /forum scope so no forum route can capture the path.
+  get "/forum/guidelines", to: "static_pages#guidelines", as: :forum_guidelines
+  get "/guidelines",       to: redirect("/forum/guidelines", status: 301)
   scope "/forum", module: :forum, as: :forum do
     get "/mentions",         to: "mentions#index", as: :mentions
     get "/categories",       to: redirect("/forum")

@@ -1382,3 +1382,15 @@ ul.list-group > li.list-group-item.shop-product:last-child { margin-bottom: .75r
   .shop-product:target .shop-more::details-content { content-visibility: visible; }
   .shop-product:target .shop-more-toggle { display: none; }
 }
+
+/* ----- Community Guidelines page and the reminders that link to it ----- */
+.guidelines-body section + section { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--bs-border-color, #dee2e6); }
+.guidelines-body ul, .guidelines-body ol { padding-left: 1.25rem; margin-bottom: .5rem; }
+.guidelines-body li + li { margin-top: .35rem; }
+.guidelines-tldr { padding-left: 1.25rem; }
+.guidelines-tldr li + li { margin-top: .4rem; }
+.guidelines-code { display: inline-block; max-width: 100%; white-space: normal; overflow-wrap: anywhere; word-break: break-word; margin-top: .25rem; }
+.guidelines-callout { background: #f1f8f3; border: 1px solid #b7d9c3; border-left-width: 4px; border-radius: .375rem; padding: .75rem 1rem; overflow-wrap: anywhere; }
+.guidelines-callout-compact { padding: .5rem .75rem; }
+.guidelines-callout a { color: #0e3f24; }
+.guidelines-body h2 { font-weight: 700; color: #0e3f24; }

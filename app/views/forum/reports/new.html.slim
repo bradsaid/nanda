@@ -5,6 +5,11 @@
     .card.shadow-sm
       .card-body
         h1.h4.mb-3 Report a post
+        p.small.text-muted
+          | Use this for posts that break the
+          = " "
+          = link_to "Community Guidelines", forum_guidelines_path
+          | . A moderator will review it. Disagreeing with someone isn't a reason to report.
 
         - if @report.errors.any?
           .alert.alert-danger

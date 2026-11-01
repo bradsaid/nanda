@@ -1,0 +1,8 @@
+/ "By posting you agree" line shown under submit buttons. Informational only:
+/ nothing is validated or required.
+- verb = local_assigns.fetch(:verb, "posting")
+p.small.text-muted.mt-2.mb-0.guidelines-agreement
+  | By #{verb} you agree to follow the
+  = " "
+  = link_to "Community Guidelines", forum_guidelines_path
+  | .

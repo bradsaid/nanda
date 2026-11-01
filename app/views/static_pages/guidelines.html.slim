@@ -1,0 +1,161 @@
+/ ===== SEO: Community Guidelines =====
+- page_title = "Community Guidelines – Naked & Afraid Fan Forum"
+- page_desc  = "House rules for the Naked & Afraid fan forum: be respectful, protect privacy, label spoilers, no spam, and how to report a post."
+
+- content_for :title, page_title
+- content_for :meta_description, page_desc
+- content_for :keywords, "Naked and Afraid forum, community guidelines, forum rules, fan forum"
+- content_for :canonical_url, canonical_request_url
+- content_for :og_title, page_title
+- content_for :og_description, page_desc
+/ ===== end SEO =====
+
+= render_jsonld(guidelines_jsonld(name: page_title, description: page_desc, updated_on: @updated_on))
+
+/ ===== Page =====
+.container.my-4
+  = render "shared/flash"
+  .pb-2.mb-3.border-bottom.site-header
+    .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+      h1.h3.mb-0.logo Community Guidelines
+      - if forum_enabled? || forum_preview_access?
+        = link_to "Back to the forum", forum_path, class: "btn btn-sm btn-outline-secondary"
+    p.subtitle.mb-0.text-muted House rules for the Naked &amp; Afraid fan forum. Short, friendly, and the same for everyone.
+    .small.text-muted.mt-2
+      | Last updated:
+      time< datetime=@updated_on.iso8601 = @updated_on.strftime("%B %-d, %Y")
+
+  - unless forum_enabled?
+    .alert.alert-info.small role="status"
+      | The forum isn't open to the public yet. These are the rules it will run on.
+
+  / ----- TL;DR -----
+  .card.border-success.shadow-sm.mb-4#tldr
+    .card-header.bg-success.text-white
+      h2.h5.mb-0 The short version
+    .card-body
+      ol.mb-0.guidelines-tldr
+        li
+          strong Be respectful.
+          |  Critique the show and the choices, never the people.
+        li
+          strong Keep private things private.
+          |  No addresses, phone numbers, family details or private photos of anyone.
+        li
+          strong Label spoilers.
+          |  Put [SPOILER] in the title for new episodes, and keep the spoiler itself out of the title.
+        li
+          strong No spam, ads or piracy.
+          |  Only post what you have the right to share.
+        li
+          strong Report, don't retaliate.
+          |  Use the Report link and let a moderator decide.
+
+  / ----- Rules -----
+  .card.shadow-sm.mb-4
+    .card-body.guidelines-body
+      section#respect
+        h2.h5 Be respectful
+        ul
+          li No harassment, hate speech, personal attacks or pile-ons.
+          li Critique the show, the edit and the decisions made on screen, not the people making them.
+          li Survivalists, cast and crew are public figures only in relation to the show. Their private lives are off limits.
+
+      section#privacy
+        h2.h5 Privacy and safety
+        ul
+          li No doxxing. Don't post addresses, phone numbers, private social accounts or family details of survivalists, cast, crew or other members.
+          li Don't speculate about anyone's health, medical or legal situation beyond what was said on the show or by the person themselves.
+          li Don't share private photos without the owner's permission.
+
+      section#spoilers
+        h2.h5 Spoilers
+        ul
+          li For unaired or brand-new episodes, start the topic title with [SPOILER] and keep the details out of the title. Forgot? You can edit your own topic's title at any time.
+          li
+            | Hide details inside the post with a fold. The forum accepts simple HTML, so this works:
+            br
+            code.guidelines-code = "<details><summary>Spoiler</summary>Your text here</details>"
+          li Inside a topic marked [SPOILER], talk freely. Everywhere else, use the fold.
+
+      section#on-topic
+        h2.h5 Stay on topic
+        ul
+          li Check the topic list before you post, and don't start a duplicate of an existing thread.
+          li There are no categories, so give your topic a clear title.
+          li Don't bump old threads with empty replies.
+
+      section#accuracy
+        h2.h5 Facts, rumors and sources
+        ul
+          li Say whether something is confirmed, reported or your own guess. Don't present guesses as fact.
+          li Link your sources. Polite corrections are always welcome.
+          li
+            | The database is fan-maintained from watching the episodes. Spotted a mistake?
+            = " "
+            = link_to "Use the contact form", contact_path
+            | .
+          li This is an independent fan site, not affiliated with, endorsed by, or sponsored by Discovery Communications or the producers of Naked and Afraid. Nobody here speaks for the show or the network.
+
+      section#spam
+        h2.h5 No spam or self-promotion
+        ul
+          li No ads, referral or affiliate links, link-dropping, scams or repeated posts.
+          li
+            | Transparency: the site's Shop uses Amazon affiliate links. As an Amazon Associate I earn from qualifying purchases (details in the
+            = " "
+            = link_to "Privacy Policy", privacy_policy_path(anchor: "affiliate-links")
+            | ). Shop cards under a thread are added automatically when it mentions gear from the database. Members can't add them.
+
+      section#media
+        h2.h5 Copyright and media
+        ul
+          li Only post images you have the right to share. Each post takes up to #{Forum::Post::MAX_IMAGES_PER_POST} images, #{Forum::Post::MAX_IMAGE_BYTES / 1.megabyte} MB each (JPEG, PNG, GIF or WebP).
+          li Link to articles rather than pasting them in full. A line or two of quotation is fine.
+          li No piracy links, streams or downloads.
+
+      section#safety
+        h2.h5 Survival talk
+        ul
+          li Survival discussion here is for entertainment and information. It is not a substitute for professional training.
+          li Don't encourage dangerous or illegal behavior.
+
+      section#accounts
+        h2.h5 Your account
+        ul
+          li One account per person. No impersonating other members, staff, or anyone connected to the show.
+          li You need a verified email address to post or report. Use the link we email you (it lasts 48 hours, and you can request a new one). Your username is public. Your email never is.
+          li These rules also cover usernames, bios and avatars.
+          li No ban evasion. Banned accounts can't sign in, and a new account made to get around a ban will be removed.
+
+      section#reporting
+        h2.h5 How to report a post
+        ol
+          li Sign in with a verified account. Every post by someone else has a <strong>Report</strong> link beside its permalink. (You can't report your own post.)
+          li Choose a reason: Spam, Abuse, Off topic or Other. Add a short note if it helps (up to 500 characters), then submit.
+          li
+            | The site owner is emailed, and moderators review reports in a queue. They can dismiss a report, remove the post, lock the topic or ban the author. You get a confirmation when you submit, but we don't send a follow-up on each report.
+        p.mb-0
+          | Reports cover posts. To flag a topic, report its first post. For a username, avatar or profile, or if you can't sign in, email
+          = " "
+          = mail_to contact_email_address
+          | .
+
+      section#moderation
+        h2.h5 Moderation and appeals
+        ul
+          li Moderators can edit, pin, lock or remove topics and posts, and ban accounts. We may give a heads-up first, but serious or repeated problems can mean an immediate ban. That's at the moderators' discretion.
+          li You can edit your own post for #{Forum::PostsController::EDIT_WINDOW.in_minutes.to_i} minutes after posting (edits are marked). You can delete your own topic at any time, which also removes the replies in it. For anything else, email us.
+          li
+            | Questions or appeals? Email
+            = " "
+            = mail_to contact_email_address
+            |  or use the
+            = " "
+            = link_to "contact form", contact_path
+            | . Include your username and what happened.
+          li
+            | The site's
+            = " "
+            = link_to "Terms of Service", terms_of_service_path
+            |  apply as well.

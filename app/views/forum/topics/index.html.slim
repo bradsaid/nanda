@@ -14,8 +14,11 @@
       - if logged_in? && current_user.email_verified? && !forum_read_only?
         = link_to "New topic", new_forum_topic_path, class: "btn btn-primary"
 
+= render "shared/guidelines_callout"
+
 .d-flex.align-items-center.gap-2.mb-3.flex-wrap
   = link_to "Members", forum_profiles_path, class: "btn btn-sm btn-outline-secondary"
+  = link_to "Guidelines", forum_guidelines_path, class: "btn btn-sm btn-outline-secondary"
   span.vr.mx-1
   span.small.text-muted.me-1 Sort:
   - [["recent", "Recent"], ["popular", "Popular"], ["active", "Active"]].each do |key, label|

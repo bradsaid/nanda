@@ -73,6 +73,7 @@
 - if logged_in? && current_user.email_verified? && !@topic.locked?
   hr.my-4
   h2.h5.mb-3 Reply
+  = render "shared/guidelines_callout", compact: true
   = form_with model: [@topic, @new_post], url: forum_topic_posts_path(@topic), as: :post, multipart: true, local: true do |f|
     .mb-2
       = f.text_area :body, rows: 5, class: "form-control", placeholder: "Write your reply. Markdown supported. Type @ for a survivalist, # for an episode.", required: true, data: { mentions: true }
@@ -80,6 +81,7 @@
       = f.label :images, "Attach images (up to #{Forum::Post::MAX_IMAGES_PER_POST}, 5 MB each)", class: "form-label small"
       = f.file_field :images, multiple: true, accept: "image/*", class: "form-control form-control-sm"
     = f.submit "Post reply", class: "btn btn-primary"
+    = render "shared/guidelines_agreement"
 - elsif @topic.locked?
   .alert.alert-warning.mt-3 This topic is locked.
 - elsif logged_in?

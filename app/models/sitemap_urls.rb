@@ -4,8 +4,9 @@ require "builder"
 # (SitemapsController serves it at /sitemap.xml). This replaces the sitemap_generator gem,
 # whose output lived in public/ and went stale the moment it was committed.
 #
-# Only public, indexable pages belong here. Never add /go/ redirects, /admin, the forum,
-# auth pages or filtered/noindex views.
+# Only public, indexable pages belong here. Never add /go/ redirects, /admin, the forum
+# itself (the Community Guidelines page is the one exception), auth pages or
+# filtered/noindex views.
 class SitemapUrls
   # Absolute URLs always use this host, never the host the request arrived on.
   HOST = "https://www.nakedandafraidfan.com".freeze
@@ -72,6 +73,8 @@ class SitemapUrls
     add home_path,      changefreq: "daily",   priority: 0.9
     add about_path,     changefreq: "monthly", priority: 0.5
     add podcasts_path,  changefreq: "weekly",  priority: 0.6
+    # The one forum URL that is public and crawlable whether or not the forum is open.
+    add forum_guidelines_path, changefreq: "monthly", priority: 0.3
     add survivors_path, changefreq: "daily",   priority: 0.8
     add episodes_path,  changefreq: "daily",   priority: 0.8
     add items_path,     changefreq: "weekly",  priority: 0.7

@@ -4,6 +4,15 @@ class StaticPagesController < ApplicationController
     # No logic needed for a static page, but you could add instance variables here if it becomes dynamic later
   end
 
+  # Bump this whenever the wording of the guidelines changes; it is shown on the
+  # page and in its structured data.
+  GUIDELINES_UPDATED_ON = Date.new(2026, 11, 1)
+
+  # Public whether or not the forum is open; see the route comment.
+  def guidelines
+    @updated_on = GUIDELINES_UPDATED_ON
+  end
+
   def about
     # Optional: populate @updates from DB later. For now, leave nil and the view provides fallbacks.
   end

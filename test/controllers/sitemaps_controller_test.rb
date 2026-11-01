@@ -37,11 +37,19 @@ class SitemapsControllerTest < ActionDispatch::IntegrationTest
     assert_includes locs, "#{HOST}#{item_path(items(:one))}"
   end
 
+  test "lists the public Community Guidelines page, with the forum off or on" do
+    get "/sitemap.xml"
+    assert_includes locs, "#{HOST}/forum/guidelines"
+    assert_equal 1, locs.count("#{HOST}/forum/guidelines")
+    assert locs.none? { |l| l.end_with?("/guidelines") && !l.end_with?("/forum/guidelines") }, "/guidelines only redirects"
+  end
+
   test "excludes affiliate redirects, admin, forum and auth pages" do
     get "/sitemap.xml"
     assert locs.none? { |l| l.include?("/go/") }, "affiliate redirects must not be listed"
     assert locs.none? { |l| l.include?("/admin") }
-    assert locs.none? { |l| l.include?("/forum") }
+    # The Community Guidelines page is the one public forum URL, so it is the only /forum entry.
+    assert_equal ["#{HOST}/forum/guidelines"], locs.select { |l| l.include?("/forum") }
     assert locs.none? { |l| l =~ %r{/(session|passwords|signup|contact|page_view_ping)} }
   end
 
