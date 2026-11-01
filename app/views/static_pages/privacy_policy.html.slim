@@ -12,7 +12,7 @@ html lang="en"
       header
         h1 Privacy Policy
         p
-          em Last updated: October 29, 2026
+          em Last updated: November 1, 2026
 
       section
         h2 1. Introduction
@@ -39,6 +39,11 @@ html lang="en"
         p Most visitors do not give us any information at all. The exceptions are:
         ul
           li When you use the contact form, we receive your name, email address, and message so that we can reply.
+          li
+            | If you create an account on the Fan Forum, we store the account details and the content you post, as described in
+            = " "
+            a href="#forum-accounts" Section 3
+            | .
           li If you are a contributor with an editor or admin account, we store your email address, a hashed password, and the changes you make to records (so we can audit edits).
 
         h3 2.2 Information collected automatically
@@ -48,18 +53,119 @@ html lang="en"
             |  IP address, browser type, device type, referrer URL, and access times. Used for security, abuse prevention, and performance monitoring. Retained for up to 90 days.
           li
             strong Site analytics:
-            |  We use Google Analytics and a small in-house page-view counter to understand which pages are popular and how visitors navigate the site. Analytics data is aggregated and not used to identify individuals.
+            |  We use Google Analytics (loaded through Google Tag Manager) to understand which pages are popular and how visitors navigate the site. Google's analytics reports are aggregated and are not used by us to identify individuals.
+          li
+            strong In-house page-view counter:
+            |  Each time a page is viewed (requests from known search-engine and other crawlers, and pages in our admin area, are skipped), we save a record with the page address, the date and time, the site you came from (left blank when you came from another page on this site), your IP address, your browser and operating system, whether the device looks like mobile or desktop, a random visitor ID and a random session ID, and how long the page stayed open. Shortly afterwards we ask a third-party IP-lookup service to estimate your country and city from your IP address, and we save that estimate on the record. These records are used for our own traffic reports. They are not linked to a forum account, and the same address and browser reloading the same page within 30 seconds counts once.
           li
             strong Cookies and similar technologies:
             |  see the dedicated section below.
 
+      section#forum-accounts
+        h2 3. Forum Accounts and Community Content
+        p
+          | The site has a public Fan Forum. Anyone can read it. You need an account to post, reply, subscribe to topics, or report a post. This section explains what we collect and do when you create an account or take part. The forum is also covered by our
+          = " "
+          a href="/forum/guidelines" Community Guidelines
+          | .
+        p
+          strong Posts are public.
+          |  Your topics, replies, images, username, profile picture, and bio can be seen by anyone who visits the forum, including people without an account, and search engines may index them. Please do not post anything you want to keep private.
+
+        h3 3.1 Account information
+        ul
+          li
+            strong Sign-up details:
+            |  your email address, a username (3 to 20 letters, numbers, or underscores; it is public), and a password. We never store your password itself, only a one-way hash (a bcrypt digest) that cannot be read back.
+          li
+            strong Optional profile:
+            |  a short bio (up to 500 characters) and a profile picture (an image up to 5 MB). You can change your username, bio, and picture from your profile page. We do not collect any other profile fields.
+          li
+            strong Account record:
+            |  the date you joined, your role (member, editor, or admin), whether and when you verified your email, a new email address if you have asked to change it, and, if a moderator bans the account, the ban date and the reason given.
+          li
+            strong Email verification:
+            |  after you sign up we email you a link that is valid for 48 hours. You must open it before you can post or report, and you can ask for a new one. When someone registers, we also email ourselves a notice that includes their username and email address.
+          li
+            strong Changing your email address:
+            |  you must enter your current password. The change only takes effect after you open a link sent to the new address (valid for 24 hours), and we send a notice to the old address.
+          li
+            strong Password resets:
+            |  if you ask for one, we email a reset link to the address on the account. Changing your password signs you out everywhere else.
+          li
+            strong Staying signed in:
+            |  when you sign in, we save a sign-in record with a random token, your IP address, your browser's user-agent text, and an expiry 30 days later. The token is kept in a cookie in your browser (see Section 4). The record is deleted when you sign out, when your password changes, or if the account is banned. A record that simply expires is not deleted automatically and stays until the account itself is deleted.
+
+        h3 3.2 What you post
+        ul
+          li
+            strong Topics and replies:
+            |  the text you write (topic titles up to 150 characters, posts up to 20,000), the time, and which account wrote it. Posts may use simple formatting and HTML.
+          li
+            strong Images:
+            |  up to 4 images per post, 5 MB each (JPEG, PNG, GIF, or WebP). Uploaded images, like profile pictures, are stored with our cloud storage provider (Amazon S3). We do not strip metadata from the files you upload, so remove anything you do not want shared (for example location data in a photo) before you upload it.
+          li
+            strong Edits:
+            |  you can edit your own post for 15 minutes after posting, and edit your own topic's title at any time. Edited posts are marked as edited. We keep the earlier text of an edited post in an internal edit history that only site administrators can see.
+          li
+            strong Subscriptions and email notifications:
+            |  starting a topic or replying to one subscribes you to it, and you can subscribe or unsubscribe on any topic page. When someone else replies to a topic you follow, we email you the text of the reply and the replier's username. A new reply email is the only forum notification we send.
+
+        h3 3.3 What others can see
+        ul
+          li
+            strong Member list and profile pages:
+            |  the member list and each profile page show your username, profile picture, bio, the date you joined, your post and topic counts, and your recent posts. They do not show your email address.
+          li
+            strong Staff:
+            |  the site owner and our admin and editor accounts can see member details, including email addresses, in our admin area.
+
+        h3 3.4 Reports and moderation
+        ul
+          li
+            strong Reports:
+            |  if you report a post, we save the reason you choose (spam, abuse, off topic, or other), an optional note (up to 500 characters), the post, the time, and your account as the reporter, along with how a moderator handled it. We email the site owner a message containing the reporter's username, the reason, your note, and a link to the post.
+          li
+            strong Moderation:
+            |  moderators can edit or remove posts and topics, lock topics, and ban accounts. A banned account cannot sign in, its sign-in records are ended, and its profile page and member-list entry are hidden. We keep the account record, including the email address, so the ban can be enforced. Posts written before a ban are not removed automatically, and may stay visible unless a moderator removes them.
+
+        h3 3.5 Deleting your content and account
+        ul
+          li
+            strong Your own content:
+            |  you can delete your own topic at any time, which also removes the replies in it, and delete your own post for 15 minutes after posting. Removed content disappears from the public site, but the text stays in our database until it is permanently deleted.
+          li
+            strong Deleting your account:
+            |  to ask us to delete your account or permanently delete something you posted, email us at
+            = " "
+            a href="mailto:#{contact_email_address}" = contact_email_address
+            |  or use the
+            = " "
+            a href="/contact" contact form
+            | . Deletion is done by us by hand, not automatically. When we delete an account we also delete its topics and posts (including replies other members left on its topics), its subscriptions, the reports it filed, its sign-in records, and its profile picture and uploaded images. The internal edit history of posts is not removed automatically.
+
+        h3 3.6 Forum pages and tracking
+        p Advertising is not shown on forum, sign-up, or sign-in pages. Google Analytics and the in-house page-view counter described in Section 2.2 still run on them. Each topic also keeps a count of how many times it has been viewed; this is a number, not a list of who viewed it.
+
       section
-        h2 3. Cookies and Tracking Technologies
+        h2 4. Cookies and Tracking Technologies
         p Cookies are small text files stored by your browser. We and our service providers use them for the following purposes:
         ul
           li
             strong Essential cookies (always on):
-            |  required for the site to function — for example, a session cookie that keeps an admin signed in, or a CSRF token that protects forms from forgery. These cannot be disabled because the site would not work without them.
+            |  required for the site to function — for example, the session cookie that keeps you signed in, a sign-in cookie (
+            code forum_session_id
+            | ) that keeps a member or admin signed in for up to 30 days, or a CSRF token that protects forms from forgery. These cannot be disabled because the site would not work without them.
+          li
+            strong Our own usage and preference cookies:
+            |  set by us, not by a third party. A random visitor ID (
+            code _vid
+            | , kept for one year) and a short-lived page-view number (
+            code _pv_id
+            | ) support the in-house page-view counter described in Section 2.2. A cookie named
+            = " "
+            code forum_promo_dismissed
+            |  (one year) remembers that you closed the forum announcement banner. These are not controlled by the consent banner below; you can block or delete them in your browser settings.
           li
             strong Analytics cookies (optional):
             |  Google Analytics (g.gtm cookies, _ga, _gid, _gat) collect aggregated usage statistics so we can improve the site. You can decline these.
@@ -96,14 +202,14 @@ html lang="en"
           | (EU). All major browsers also let you block or delete cookies in their settings.
 
       section
-        h2 4. Advertising
+        h2 5. Advertising
         p
           | This site displays advertising from
           |
           strong Google AdSense
           | . Google and its partners use cookies and similar technologies (as described above) to serve ads based on your visits to this site and other sites on the internet. If you have not consented to personalized advertising, ads will still be served but will be contextual rather than personalized.
       section#affiliate-links
-        h3 4.1 Affiliate links and the Shop
+        h3 5.1 Affiliate links and the Shop
         p
           strong As an Amazon Associate I earn from qualifying purchases.
         p
@@ -113,7 +219,7 @@ html lang="en"
           |  and "Shop this item" sections on item, episode, and survivor pages that link to products on Amazon.com and, in some cases, to other retailers and makers. We participate in the
           |
           strong Amazon Services LLC Associates Program
-          | , an affiliate advertising program designed to provide a means for sites to earn fees by linking to Amazon.com and affiliated sites. Links to Amazon on this site carry our Associates tracking ID. Buy buttons pass through a short redirect on this site so we can count clicks per product and page; the count is anonymous (no IP address, device identifier, or account is stored with it). If you click one and then buy, we may earn a commission at no extra cost to you. Links to other retailers are provided for convenience and are not affiliate links.
+          | , an affiliate advertising program designed to provide a means for sites to earn fees by linking to Amazon.com and affiliated sites. Links to Amazon on this site carry our Associates tracking ID. Buy buttons pass through a short redirect on this site so we can count clicks per product and page. Each click is saved with the product, the store, where on the site the button was (its placement), the path of the page on this site you clicked from, whether the device looked like a mobile device, and whether the click looked automated (a suspected-bot flag). No IP address, browser user-agent text, session, or account is stored with it, so the count is anonymous. To spot automated clicks, a short-lived, salted one-way hash of your IP address is used as a temporary rate-limit key for about two minutes. It cannot be turned back into your IP address and is not saved with the click. If you click one and then buy, we may earn a commission at no extra cost to you. Links to other retailers are provided for convenience and are not affiliate links.
         p
           | Affiliate relationships do not change what we say about a product. Each product is labeled by how confident we are that it appeared on the show ("Confirmed", "Likely", or "Similar"), and we list products even when no affiliate link is available.
         p
@@ -125,54 +231,65 @@ html lang="en"
           | Product photos in the Shop are loaded directly from the servers of the retailer that sells the product (mostly Amazon's image servers). When a page with product photos loads, your browser requests those images from those servers, which means the retailer can see your IP address and browser details, as with any embedded image. Prices are never shown on this site because they change; check the store page before you buy. Product names, images, and trademarks belong to their respective owners.
 
       section
-        h2 5. How We Use Information
+        h2 6. How We Use Information
         p We use the limited information we collect to:
         ul
-          li Operate and maintain the site, including authenticating contributors and recording audit trails of edits.
+          li Operate and maintain the site, including authenticating members and contributors and recording audit trails of edits.
+          li Run the Fan Forum: verify accounts, show your posts and profile, send reply notifications, review reports, and enforce the Community Guidelines.
           li Respond to messages sent through the contact form.
-          li Understand which pages and features are useful (aggregated analytics).
-          li Serve advertising as described in Section 4.
+          li Understand which pages and features are useful (analytics and our own traffic reports).
+          li Serve advertising as described in Section 5.
           li Detect, prevent, and respond to abuse, fraud, or security incidents.
           li Comply with applicable laws.
 
       section
-        h2 6. Who We Share Information With
+        h2 7. Who We Share Information With
         p We do not sell personal information. We share limited data only with the following categories of service providers, who act on our behalf and are bound to confidentiality:
         ul
           li
             strong Hosting:
-            |  Heroku (Salesforce) — application hosting, request logs.
+            |  Heroku (Salesforce) — application hosting, the database that holds accounts and forum content, and request logs.
           li
             strong File storage:
-            |  Amazon Web Services S3 — images uploaded for the site.
+            |  Amazon Web Services S3 — images uploaded for the site, including forum post images and profile pictures.
           li
             strong Email delivery:
-            |  Gmail SMTP — sending password resets and contact-form replies.
+            |  Gmail SMTP — sending account emails (verification, email-change, and password-reset links) and forum reply notifications, and delivering contact-form messages and forum reports to us.
           li
             strong Analytics:
-            |  Google Analytics — aggregated traffic statistics.
+            |  Google Analytics and Google Tag Manager — traffic statistics.
+          li
+            strong IP lookup:
+            |  a third-party IP-geolocation service — receives the IP address of a page view so that it can estimate the country and city saved on the page-view record (see Section 2.2).
           li
             strong Advertising:
             |  Google AdSense and its certified partners — ad serving, measurement, and (with consent) personalization.
           li
             strong Affiliate program:
-            |  Amazon Services LLC (Amazon Associates) — when you click an Amazon link, Amazon receives the click and our tracking ID, and loads the product photos shown in the Shop (see Section 4.1).
+            |  Amazon Services LLC (Amazon Associates) — when you click an Amazon link, Amazon receives the click and our tracking ID, and loads the product photos shown in the Shop (see Section 5.1).
           li
             strong Consent management:
             |  Google Funding Choices — recording your cookie preferences.
 
+        p Forum posts are public by design (see Section 3), so what you post there is visible to everyone, not only to the providers above. People who subscribe to a topic also receive the text of replies by email.
+
         p We may also disclose information if required by law, legal process, or to protect the rights, property, or safety of users or the public. In the unlikely event of a business transfer (merger, acquisition, or asset sale), data may transfer to the new operator under this same policy.
 
       section
-        h2 7. Data Retention
+        h2 8. Data Retention
         ul
           li Server logs: up to 90 days, then deleted.
-          li Page-view records (aggregated, non-identifying): indefinitely.
+          li Page-view records (including the IP address, browser details, and visitor and session IDs described in Section 2.2): kept until we delete them. We do not currently delete them automatically on a schedule.
           li Contributor accounts and edit history: retained while the account is active; deleted within 30 days of an account closure request.
+          li Forum accounts: kept while the account exists, and a banned account is kept so the ban can be enforced. To have an account deleted, email us (see Section 3.5); we do not delete accounts automatically.
+          li Forum topics and posts: kept while the account exists. Content you remove is hidden from the public site but stays in our database until it is permanently deleted, and the internal edit history of posts is not deleted automatically.
+          li Forum sign-in records: deleted when you sign out, change your password, or are banned; otherwise they stay until the account is deleted.
+          li Forum reports: kept for our moderation records, and deleted if the reporter's account or the reported post is permanently deleted.
+          li Affiliate click records (no IP address or account): kept indefinitely.
           li Contact form submissions: retained for up to 12 months for reference, then deleted unless an ongoing conversation requires longer retention.
 
       section
-        h2 8. Your Rights and Choices
+        h2 9. Your Rights and Choices
         p Depending on where you live, you have some or all of the following rights:
         ul
           li
@@ -200,33 +317,35 @@ html lang="en"
         p
           | California residents have additional rights under the CCPA / CPRA, including the right to know what categories of personal information we collect, the right to delete it, and the right to opt out of "sale" or "sharing" of personal information for cross-context behavioral advertising. We do not sell personal information for money, but the use of advertising cookies may qualify as "sharing" under California law; you can opt out at any time through the consent banner.
         p
+          | Forum members can change their username, bio, profile picture, and email address themselves from their profile page, and can delete their own topics (see Section 3.5). For anything else, including access to your data or deletion of your account, email us.
+        p
           | To exercise any of these rights, email
           |
           a href="mailto:#{contact_email_address}" = contact_email_address
           | . We will respond within 30 days.
 
       section
-        h2 9. Children
-        p This site is not directed at children under 13, and we do not knowingly collect information from children under 13. If you believe a child has provided us with information, contact us and we will delete it.
+        h2 10. Children
+        p This site is not directed at children under 13, and we do not knowingly collect information from children under 13. The forum and forum accounts are not intended for anyone under 13. If you believe a child has provided us with information, contact us and we will delete it.
 
       section
-        h2 10. International Transfers
+        h2 11. International Transfers
         p The site is hosted in the United States. If you access it from outside the US, your information will be transferred to and processed in the US, which may have different data-protection laws than your country. Where required, we rely on Standard Contractual Clauses or equivalent safeguards offered by our service providers.
 
       section
-        h2 11. Security
+        h2 12. Security
         p We use reasonable technical and organizational measures to protect the information we hold, including HTTPS everywhere, hashed passwords (bcrypt), and least-privilege access to administrative tools. No system is perfectly secure, and we cannot guarantee absolute security.
 
       section
-        h2 12. Third-Party Links
-        p The site links to external pages such as Amazon and other retailers' product listings in the Shop, survivors' personal sites, podcasts, and books. We are not responsible for the privacy practices of those third parties. Please review their policies separately.
+        h2 13. Third-Party Links
+        p The site links to external pages such as Amazon and other retailers' product listings in the Shop, survivors' personal sites, podcasts, and books, and forum members may post links to other sites. We are not responsible for the privacy practices of those third parties. Please review their policies separately.
 
       section
-        h2 13. Changes to This Policy
+        h2 14. Changes to This Policy
         p We may update this policy from time to time. Significant changes will be reflected in the "Last updated" date at the top of the page and, where appropriate, announced through the consent banner. Continued use of the site after a change indicates acceptance of the updated policy.
 
       section
-        h2 14. Contact
+        h2 15. Contact
         p
           | For privacy questions or to exercise any of the rights described above, email
           |
