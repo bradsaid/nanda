@@ -6,9 +6,6 @@
       .card-body.p-4
         h1.h4.mb-3.logo Create your account
 
-        - if flash[:alert]
-          .alert.alert-danger.py-2.mb-3 = flash[:alert]
-
         - if @user.errors.any?
           .alert.alert-danger.py-2.mb-3
             ul.mb-0.small

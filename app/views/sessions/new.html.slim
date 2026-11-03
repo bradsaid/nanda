@@ -6,11 +6,6 @@
       .card-body.p-4
         h1.h4.mb-3.logo Sign in
 
-        - if flash[:alert]
-          .alert.alert-danger.py-2.mb-3 = flash[:alert]
-        - if flash[:notice]
-          .alert.alert-success.py-2.mb-3 = flash[:notice]
-
         = form_with url: session_url, local: true do |f|
           - if @return_to.present?
             = hidden_field_tag :return_to, @return_to
