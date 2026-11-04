@@ -137,9 +137,9 @@
         = simple_format(@episode.notes)
 
   / ===== Participants =====
-  / Items given to the whole team (given_scope "team") are hoisted into a single
-  / "Team given" banner above the table, once, and skipped in the per-row given
-  / column. Given items nobody has classified yet follow the old rule: identical
+  / Items given to the team (given_scope "team") are hoisted into a single banner
+  / above the table, once, and skipped in the per-row given column. With several
+  / teams (arrangement "3+3+3+3") the banner says each team got one. Given items nobody has classified yet follow the old rule: identical
   / given sets on every row mean a team item. "Each person" items stay per row.
   - banner      = AppearanceItem.team_given_banner(@active_appearances)
   - team_groups = banner[:groups]
@@ -152,7 +152,7 @@
     - if @active_appearances.present?
       - if team_groups.any?
         .px-3.py-2.bg-light.border-bottom.small
-          strong.me-1 Team given:
+          strong.me-1 = @episode.multi_team? ? "Given to each team (#{@episode.team_count}):" : "Team given:"
           - team_groups.each_with_index do |g, i|
             - if i > 0
               | ,&nbsp;

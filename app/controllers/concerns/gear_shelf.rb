@@ -15,23 +15,27 @@ module GearShelf
   private
 
   # Distinct (item, survivor) pairs, so a survivor carried across the episodes of a
-  # continuous-story season counts once. Busiest items first, where "busy" counts each
-  # team-given item ONCE per episode (one pot handed to a team of two is one pot, not
-  # two holders; once per continuous season there) and everything else once per survivor.
+  # continuous-story season counts once. Busiest items first, where "busy" counts a
+  # team-given item once per TEAM (one pot handed to each of two teams is two pots, not
+  # four holders; capped at the survivors who carry it; once per continuous season there)
+  # and everything else once per survivor.
   def build_gear_shelf(label:, episodes: [], max_groups: 8, limit: 3, matches: nil, amazon_only: false, available_only: false)
     scope = AppearanceItem.where(source: %w[brought given])
                           .joins(:item, appearance: [:survivor, { episode: :location }])
     rows = yield(scope).distinct.pluck(:item_id, "survivors.full_name", "appearance_items.given_scope",
-                                       "appearances.episode_id", Arel.sql(CONTINUOUS_SEASON_ID_SQL))
+                                       "appearances.episode_id", Arel.sql(CONTINUOUS_SEASON_ID_SQL),
+                                       Arel.sql(Episode.team_count_sql("episodes")))
 
     items   = Item.where(id: rows.map(&:first).uniq).index_by(&:id)
     by_item = rows.group_by(&:first)
     holders = by_item.to_h { |id, rs| [items[id], rs.map { |r| r[1] }.uniq] }
     rank    = by_item.to_h do |id, rs|
-      units = rs.map do |_id, name, given_scope, episode_id, season_id|
-        given_scope == "team" ? [:team, season_id ? "season-#{season_id}" : "episode-#{episode_id}"] : [:person, name]
-      end
-      [items[id], units.uniq.size]
+      people = rs.reject { |r| r[2] == "team" }.map { |r| r[1] }.uniq.size
+      # one group per episode (per season when continuous); worth its teams, capped at its survivors
+      teams = rs.select { |r| r[2] == "team" }
+                .group_by { |_id, _name, _scope, episode_id, season_id, _teams| season_id ? "season-#{season_id}" : "episode-#{episode_id}" }
+                .sum { |_key, grp| [grp.map { |r| r[5].to_i }.max, grp.map { |r| r[1] }.uniq.size].min }
+      [items[id], people + teams]
     end
 
     @shop_shelf = ShopShelf.build(holders: holders, episodes: episodes, episode_label: label,

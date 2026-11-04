@@ -3,7 +3,8 @@
 - roles = Appearance.roles.keys.map { |r| [r.humanize.titleize, r] }
 - results = Appearance.results.keys.map { |r| [r.humanize.titleize, r] }
 - sources = AppearanceItem.sources.keys.map { |s| [s.humanize.titleize, s] }
-- given_scopes = [["Team (one shared item)", "team"], ["Each person", "individual"]]
+- given_scopes = [["Team (one per team)", "team"], ["Each person", "individual"]]
+- team_note = episode.team_count_known? && episode.multi_team? ? "#{episode.team_count} teams" : ""
 - items_list = Item.order(:name).pluck(:name, :id)
 - survivors_list = Survivor.order(:full_name).pluck(:full_name, :id)
 - food_categories = FoodSource.categories.keys.map { |c| [c.humanize.titleize, c] }
@@ -59,9 +60,9 @@
                 strong Given:
                 |  the item production handed over. Choose who it went to: 
                 strong Team
-                |  (the default: ONE item for the whole team) or 
+                |  (the default: ONE item for each team) or 
                 strong Each person
-                |  (everyone got their own). Either way, put the item on every survivor it was available to (the Quick Add Given Item box below does that in one step); a Team item is still counted once per episode.
+                |  (everyone got their own). Put the item on every survivor it was available to (the Quick Add Given Item box below does that in one step). The site counts a Team item once per team, and the number of teams comes from the Participant arrangement above: 3+3+3+3 = 4 teams (4 pots), 3+2 = 2 teams, Standard = 1 team. Set the arrangement first.
               li
                 strong Specifically:
                 |  use this subtype field when the on-screen item is a generic category (e.g. item = "hide", specifically = "elk").
@@ -185,6 +186,7 @@
                       = aif.select :source, sources, { include_blank: "Source..." }, { class: "form-select form-select-sm item-source", style: "width:120px" }
                       - unclassified = aif.object.persisted? && aif.object.source_given? && aif.object.given_scope.nil?
                       = aif.select :given_scope, given_scopes, { include_blank: (unclassified ? "Not set yet (counted per person)" : false), selected: (unclassified ? nil : (aif.object.given_scope.presence || AppearanceItem::DEFAULT_GIVEN_SCOPE)) }, { class: "form-select form-select-sm item-given-scope", style: "width:#{unclassified ? 240 : 170}px; #{'display:none' unless aif.object.source_given?}", disabled: !aif.object.source_given?, title: "Given to the whole team (counted once) or to each person", "aria-label": "Given to" }
+                      span.small.text-muted.team-count-note.item-given-scope-note style=("display:none" unless aif.object.source_given?) = team_note
                       = aif.number_field :quantity, class: "form-control form-control-sm", min: 1, style: "width:60px", placeholder: "Qty"
                       = aif.hidden_field :_destroy, value: "0"
                       button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
@@ -243,6 +245,7 @@
         select.form-select.form-select-sm.item-given-scope name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][given_scope]" style="width:170px; display:none" disabled="disabled" title="Given to the whole team (counted once) or to each person" aria-label="Given to"
           - given_scopes.each do |label, val|
             option value=val selected=(val == AppearanceItem::DEFAULT_GIVEN_SCOPE) = label
+        span.small.text-muted.team-count-note.item-given-scope-note style="display:none" = team_note
         input.form-control.form-control-sm type="number" name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][quantity]" min="1" value="1" style="width:60px" placeholder="Qty"
         input type="hidden" name="episode[appearances_attributes][APP_IDX][appearance_items_attributes][ITEM_IDX][_destroy]" value="0"
         button.btn.btn-sm.btn-outline-danger.remove-item-btn type="button" &times;
@@ -268,17 +271,18 @@
             .d-flex.flex-column
               .form-check.mb-0
                 input.form-check-input#bulk-given-scope-team type="radio" name="bulk_given_scope" value="team" checked="checked"
-                label.form-check-label.small for="bulk-given-scope-team" Team (one shared item)
+                label.form-check-label.small for="bulk-given-scope-team" Team (one per team)
               .form-check.mb-0
                 input.form-check-input#bulk-given-scope-individual type="radio" name="bulk_given_scope" value="individual"
                 label.form-check-label.small for="bulk-given-scope-individual" Each person (one apiece)
+              small.text-muted.team-count-note#bulk-given-team-count = team_note
           .col-md-3
             label.form-label.mb-1.small Survivors it was available to
             #bulk-given-recipients.d-flex.flex-wrap.gap-2.align-items-center
               span.text-muted.small No participants yet
           .col-md-1
             button.btn.btn-sm.btn-success.w-100 type="button" id="bulk-given-add" Add
-        small.text-muted.d-block.mt-1 Creates a "given" item entry on each selected survivor, marked Team or Each person. A Team item is stored on every survivor (so each survivor's page shows it) but counted once. Edit or remove individually below if needed.
+        small.text-muted.d-block.mt-1 Creates a "given" item entry on each selected survivor, marked Team or Each person. A Team item is stored on every survivor you select (so each survivor's page shows it) but counted once per team. The number of teams comes from the Participant arrangement (3+3+3+3 = 4 teams). Edit or remove individually below if needed.
 
   - if episode.persisted?
     / ===== Section 2: Shelters =====

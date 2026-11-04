@@ -150,22 +150,39 @@ module ApplicationHelper
     path ? link_to(text, path, title: shop_card_link_title(path)) : text
   end
 
-  # " (shared with team)" after a given item on a survivor's own page: that row is still
-  # theirs, but it is one item for the whole team, not one each. nil for every other row.
-  def given_team_note(appearance_item)
-    return unless appearance_item.given_to_team?
-    tag.span(" (shared with team)", class: "small opacity-75", title: "One item given to the whole team")
+  # What a team-given item means on a page: "shared with team" in a one-team episode,
+  # "one per team (4 teams)" when the arrangement (3+3+3+3) says several teams each got one.
+  def team_given_wording(episode)
+    n = episode&.team_count.to_i
+    n > 1 ? "one per team (#{n} teams)" : "shared with team"
   end
 
-  # Subtle tag for the given rows of one episode: "team" when one item was shared by the
-  # team, "each person" when everyone got their own. nil when nothing is classified (brought
-  # rows, or given rows the backfill has not reached). Pass any enumerable of AppearanceItem.
+  # Subtle note after a given item on a survivor's own page: that row is still theirs, but
+  # it is the team's item (one per team in a multi-team episode), not one each. nil for
+  # every other row.
+  def given_team_note(appearance_item)
+    return unless appearance_item.given_to_team?
+    episode = appearance_item.appearance&.episode
+    tag.span(" (#{team_given_wording(episode)})", class: "small opacity-75",
+             title: episode&.multi_team? ? "One item given to each of the episode's #{episode.team_count} teams" : "One item given to the whole team")
+  end
+
+  # Subtle tag for the given rows of one episode: "shared with team" / "one per team (4
+  # teams)" for team items, "one each" when everyone got their own. nil when nothing is
+  # classified (brought rows, or given rows the backfill has not reached). Pass any
+  # enumerable of AppearanceItem from one episode.
   def given_scope_badge(appearance_items)
-    scopes = Array(appearance_items).map(&:given_scope).compact.uniq
+    items  = Array(appearance_items)
+    scopes = items.map(&:given_scope).compact.uniq
     return if scopes.empty?
-    labels = scopes.sort.map { |sc| sc == "team" ? "shared with team" : "one each" }
-    tag.span(labels.join(" / "), class: "badge bg-secondary-subtle text-secondary-emphasis fw-normal ms-1",
-             title: scopes == ["team"] ? "One item given to the whole team, counted once" : "Counted per person")
+    episode = items.first&.appearance&.episode
+    labels  = scopes.sort.map { |sc| sc == "team" ? team_given_wording(episode) : "one each" }
+    title   = if scopes == ["team"]
+      episode&.multi_team? ? "One item given to each of the #{episode.team_count} teams, counted once per team" : "One item given to the whole team, counted once"
+    else
+      "Counted per person"
+    end
+    tag.span(labels.join(" / "), class: "badge bg-secondary-subtle text-secondary-emphasis fw-normal ms-1", title: title)
   end
 
   # "🛒 4" next to an item's name when the catalog has products for it; links to the

@@ -3,22 +3,23 @@
 # One row links one survivor's appearance in an episode to one item.
 #
 # GIVEN ITEMS AND COUNTING
-# The show usually gives ONE item to the whole team, but we store a row per
-# survivor so each survivor's page still shows what they had access to. That
-# makes the raw rows a poor thing to count. `given_scope` says which case a given
-# row is:
+# The show gives ONE item to each TEAM, but we store a row per survivor so each
+# survivor's page still shows what they had access to. That makes the raw rows a poor
+# thing to count. `given_scope` says which case a given row is:
 #
-#   "team"        one item for the whole team: all survivors' rows describe the
-#                 same physical item and it must count ONCE per episode
+#   "team"        one item per team: the survivors' rows describe the same physical
+#                 item(s), so it counts once PER TEAM in the episode, not once per row
+#                 and not once per episode ("2+2" = 2 teams = 2 pots; see
+#                 Episode#team_count, which reads the participant_arrangement)
 #   "individual"  one item per person: every row is a real, separate item
 #   nil           not a given item (brought/found/...), or a given row from before
 #                 the column existed that nobody has classified yet; counts per
 #                 row, as it always did. New given rows default to "team".
 #
-# Anything that counts or ranks appearance_items by how often they appeared
-# should go through `counted` (or `item_totals` / `given_count`) so there is one
-# definition of "how many". Per-survivor displays (a survivor's own page) should
-# NOT use it: they list every row.
+# Anything that counts or ranks appearance_items by how often they appeared should go
+# through `counted` (plus COUNTED_UNITS_SQL for the number), or `item_totals` /
+# `given_count`, so there is one definition of "how many". Per-survivor displays (a
+# survivor's own page) should NOT use it: they list every row.
 class AppearanceItem < ApplicationRecord
   has_paper_trail
   belongs_to :appearance
@@ -46,47 +47,64 @@ class AppearanceItem < ApplicationRecord
   validates :given_scope, inclusion: { in: GIVEN_SCOPES }, allow_nil: true
   validate  :given_scope_only_on_given_items
 
-  # For every team-given (episode, item, subtype), the ONE row that stands for it:
-  # the row with the highest quantity (ties: lowest id). Team rows for the same
-  # episode/item/subtype are copies of one physical item, so quantity is "how many
-  # the team got", not a per-person figure to add up.
-  TEAM_GIVEN_REPRESENTATIVES_SQL = <<~SQL.squish.freeze
+  # THE TEAM RULE. For every team-given (episode, item, subtype) group this picks the one
+  # row that stands for it and says how many items the group is worth:
+  #
+  #   units = LEAST(team_count, rows in the group) * highest quantity in the group
+  #
+  # team_count is Episode#team_count (3+3+3+3 = 4 teams, so 4 pots). The cap at the number
+  # of rows means a group can never be worth more than its per-row total: if the
+  # arrangement says 4 teams but only 2 survivors carry the row, it counts 2, not 4.
+  # The highest quantity is the quantity each team got (rows of one group are copies of
+  # the same item, so quantities are not added up across survivors).
+  # The representative is the row with the highest quantity (ties: lowest id).
+  TEAM_GIVEN_UNITS_SQL = <<~SQL.squish.freeze
     SELECT DISTINCT ON (tg_app.episode_id, tg_ai.item_id, COALESCE(tg_ai.subtype, ''))
-           tg_ai.id
+           tg_ai.id,
+           LEAST(#{Episode.team_count_sql('tg_ep')},
+                 COUNT(*) OVER tg_group) * MAX(tg_ai.quantity) OVER tg_group AS units
       FROM appearance_items tg_ai
       JOIN appearances tg_app ON tg_app.id = tg_ai.appearance_id
+      JOIN episodes tg_ep ON tg_ep.id = tg_app.episode_id
      WHERE tg_ai.source = 'given' AND tg_ai.given_scope = 'team'
+    WINDOW tg_group AS (PARTITION BY tg_app.episode_id, tg_ai.item_id, COALESCE(tg_ai.subtype, ''))
      ORDER BY tg_app.episode_id, tg_ai.item_id, COALESCE(tg_ai.subtype, ''),
               tg_ai.quantity DESC, tg_ai.id
   SQL
 
-  # THE counting rule. Narrows any appearance_items relation to the rows that
-  # should be counted: every brought/found/... row, every individual (or
-  # unclassified) given row, and ONE row per team-given (episode, item, subtype).
-  # Chain it before COUNT / SUM(quantity); filters on episode, item, country, etc.
-  # compose normally because the representative is chosen per episode and item.
+  # What one counted row is worth: its group's units for a team-given representative,
+  # its own quantity otherwise. Only valid on a relation that went through `counted`
+  # (which supplies the tg_units join): SUM(COUNTED_UNITS_SQL) is "how many".
+  COUNTED_UNITS_SQL = "COALESCE(tg_units.units, appearance_items.quantity)".freeze
+
+  # THE counting rule. Narrows any appearance_items relation to the rows that should be
+  # counted: every brought/found/... row, every individual (or unclassified) given row,
+  # and the ONE representative row of each team-given (episode, item, subtype) group.
+  # Chain it before COUNT / SUM(COUNTED_UNITS_SQL); filters on episode, item, country,
+  # etc. compose normally because the group is decided per episode and item.
   #
-  # Do not combine it with a filter on one survivor: a survivor's own rows are
-  # all "theirs", and the representative might be a teammate's row.
+  # Do not combine it with a filter on one survivor: a survivor's own rows are all
+  # "theirs", and the representative might be a teammate's row.
   scope :counted, lambda {
-    where(<<~SQL.squish)
-      appearance_items.source <> 'given'
-      OR appearance_items.given_scope IS DISTINCT FROM 'team'
-      OR appearance_items.id IN (#{TEAM_GIVEN_REPRESENTATIVES_SQL})
-    SQL
+    joins("LEFT JOIN (#{TEAM_GIVEN_UNITS_SQL}) tg_units ON tg_units.id = appearance_items.id")
+      .where(<<~SQL.squish)
+        appearance_items.source <> 'given'
+        OR appearance_items.given_scope IS DISTINCT FROM 'team'
+        OR tg_units.id IS NOT NULL
+      SQL
   }
 
-  # How many of this source were there? (Sum of quantities, team items once.)
+  # How many items? (Per-team rule applied; individual and brought per row.)
   def self.counted_quantity
-    counted.sum(:quantity)
+    counted.sum(Arel.sql(COUNTED_UNITS_SQL)).to_i
   end
 
-  # Given items, team-given counted once per episode. Works on any relation:
+  # Given items counted by the rule. Works on any relation:
   #   AppearanceItem.given_count
   #   AppearanceItem.where(item_id: 7).given_count
   #   episode.appearance_items.given_count
   def self.given_count
-    given.counted.sum(:quantity)
+    given.counted_quantity
   end
 
   # Relation of items ranked by how often they appeared from one source, for the
@@ -94,7 +112,7 @@ class AppearanceItem < ApplicationRecord
   def self.item_totals(source)
     where(source: source).counted.joins(:item)
       .group("items.id", "items.name")
-      .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
+      .select("items.id, items.name, SUM(#{COUNTED_UNITS_SQL}) AS total")
       .order("total DESC, items.name ASC")
   end
 

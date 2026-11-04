@@ -20,18 +20,27 @@ namespace :appearance_items do
     puts "Unclassified given items: #{t[:rows]} rows = #{t[:groups]} (episode, item, subtype) groups across #{t[:episodes]} episodes"
     puts "  -> team:       #{t[:team_groups]} groups"
     puts "  -> individual: #{t[:individual_groups]} groups"
-    puts "Given items counted by SUM(quantity): #{t[:units_before]} before, #{t[:units_after]} after (team items once per episode)"
+    puts "Given items counted:"
+    puts "  #{t[:units_before]}  raw rows (one per survivor, what a plain SUM sees today)"
+    puts "  #{t[:units_once_per_episode]}  team items once per episode (the earlier rule)"
+    puts "  #{t[:units_after]}  team items once per TEAM (the rule in force: 3+3+3+3 = 4 teams = 4 pots)"
+
+    puts
+    puts "Per item (raw rows / once per episode / once per team):"
+    backfill.totals_by_item.sort_by { |_, v| -v[:per_team] }.first(15).each do |item_id, v|
+      puts format("  %-24s %6d %6d %6d", Item.find_by(id: item_id)&.name.to_s.first(24), v[:rows], v[:once_per_episode], v[:per_team])
+    end
 
     puts
     puts "By episode type (participant_arrangement):"
-    puts format("  %-18s %6s %11s %7s %6s", "type", "team", "individual", "review", "rows")
+    puts format("  %-18s %6s %6s %11s %7s %6s %8s", "type", "teams", "team", "individual", "review", "rows", "counted")
     backfill.summary_by_type.each do |type, c|
-      puts format("  %-18s %6d %11d %7d %6d", type, c[:team], c[:individual], c[:review], c[:rows])
+      puts format("  %-18s %6d %6d %11d %7d %6d %8d", type, c[:teams], c[:team], c[:individual], c[:review], c[:rows], c[:counted])
     end
 
     review = backfill.review_groups
     puts
-    puts "#{review.size} groups need a human look (left as 'individual', i.e. counted per row as today):"
+    puts "#{review.size} groups need a human look (individual ones count per row, as today):"
     if show_review
       review.sort_by { |g| [g.episode_id, g.item_id] }.each do |g|
         item = Item.find_by(id: g.item_id)&.name
@@ -40,6 +49,13 @@ namespace :appearance_items do
       end
     else
       puts "  (hidden by REVIEW=0)"
+    end
+
+    unparseable = backfill.unparseable_arrangement_episodes
+    puts
+    puts "#{unparseable.size} episodes with 2+ survivors whose arrangement does not say how many teams (counted as 1 team; fix the arrangement if there were more):"
+    unparseable.each do |ep|
+      puts format("  - %-48s [%s]", backfill.episode_label(ep.id).first(48), ep.participant_arrangement.presence || "(none)")
     end
 
     if write

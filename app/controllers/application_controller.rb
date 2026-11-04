@@ -101,12 +101,14 @@ class ApplicationController < ActionController::Base
     "(COALESCE(seasons.continuous_story, false) OR COALESCE(series.continuous_story, false))"
   end
 
-  # ITEM totals: per-episode presence for continuous; sum quantities for normal
+  # ITEM totals: per-episode presence for continuous; sum quantities for normal.
+  # Quantities come from AppearanceItem::COUNTED_UNITS_SQL (team-given items once per
+  # team), so the relation MUST have gone through AppearanceItem.counted.
   def adjusted_total_expr
     <<~SQL.squish
       COUNT(DISTINCT episodes.id) FILTER (WHERE #{continuous_flag_sql})
       +
-      COALESCE(SUM(appearance_items.quantity) FILTER (WHERE NOT #{continuous_flag_sql}), 0)
+      COALESCE(SUM(#{AppearanceItem::COUNTED_UNITS_SQL}) FILTER (WHERE NOT #{continuous_flag_sql}), 0)
     SQL
   end
 

@@ -172,3 +172,111 @@ class GivenScopeGearShelfTest < ActiveSupport::TestCase
     assert_equal %w[zzgearpot zzgearknife], order
   end
 end
+
+# A team-given item in a multi-team episode ("3+3+3+3" = 4 teams) is one item PER TEAM.
+class GivenScopeMultiTeamPagesTest < ActionDispatch::IntegrationTest
+  setup do
+    @pot  = Item.create!(name: "zzteamspot")
+    @axe  = Item.create!(name: "zzteamsaxe")
+    @ep, @apps = build_episode_with_survivors(12, title: "Four Teams Ep", arrangement: "3+3+3+3")
+    give(@pot, @apps, scope: "team")
+    give(@axe, @apps, scope: "individual")
+    @solo_ep, @solo_apps = build_episode_with_survivors(2, title: "One Team Ep", arrangement: "Standard")
+    give(@pot, @solo_apps, scope: "team")
+  end
+
+  def top_total(path, name, selector)
+    get path
+    row = css_select("#{selector} tbody tr").find { |tr| tr.text.include?(name) }
+    row.css("td").last.text.strip.to_i
+  end
+
+  test "items index Top Given counts 4 for the four-team episode plus 1 for the one-team episode" do
+    assert_equal 5, top_total(items_path, "zzteamspot", "#top-given")
+    assert_equal 12, top_total(items_path, "zzteamsaxe", "#top-given")
+  end
+
+  test "home Top Items Given uses the per-team count" do
+    get root_path
+    rows = css_select("h2").find { |h| h.text.include?("Top Items — Given") }.parent.css("tbody tr")
+    assert_equal 5, rows.find { |tr| tr.text.include?("zzteamspot") }.css("td").last.text.strip.to_i
+  end
+
+  test "item page by-country total is per team" do
+    get item_path(@pot)
+    cell = css_select("td[data-label=Total]").find { |td| td.parent.text.include?(@ep.location.country) }
+    assert_equal 5, cell.text.strip.to_i
+  end
+
+  test "item page tags a multi-team episode 'one per team (4 teams)' and a single-team one 'shared with team'" do
+    get item_path(@pot)
+    multi  = css_select("table tbody tr").find { |tr| tr.text.include?("Four Teams Ep") }
+    single = css_select("table tbody tr").find { |tr| tr.text.include?("One Team Ep") }
+    assert_match(/one per team \(4 teams\)/, multi.text)
+    assert_no_match(/shared with team/, multi.text)
+    assert_match(/shared with team/, single.text)
+    assert_no_match(/one per team/, single.text)
+  end
+
+  test "item type page uses the same wording" do
+    get type_items_path(@pot.item_type)
+    multi = css_select("table tbody tr").find { |tr| tr.text.include?("Four Teams Ep") }
+    assert_match(/one per team \(4 teams\)/, multi.text)
+  end
+
+  test "a survivor's page still lists the item, noted as one per team" do
+    get survivor_path(@apps.first.survivor)
+    assert_response :success
+    assert_select "span.badge", text: /zzteamspot \(one per team \(4 teams\)\)/
+    get survivor_path(@solo_apps.first.survivor)
+    assert_select "span.badge", text: /zzteamspot \(shared with team\)/
+  end
+
+  test "the episode banner says each team got one, and names the item once" do
+    get episode_path(@ep)
+    assert_response :success
+    assert_select ".bg-light.border-bottom", text: /Given to each team \(4\):.*zzteamspot/m
+    assert_equal 1, response.body.scan("zzteamspot").size
+    assert_equal 12, css_select("td[data-label=Items]").count { |td| td.text.include?("zzteamsaxe") }
+  end
+
+  test "a one-team episode keeps the 'Team given:' banner" do
+    get episode_path(@solo_ep)
+    assert_select ".bg-light.border-bottom", text: /Team given:.*zzteamspot/m
+    assert_no_match(/Given to each team/, response.body)
+  end
+end
+
+class GivenScopeMultiTeamGearShelfTest < ActiveSupport::TestCase
+  class Shelf
+    include GearShelf
+    attr_reader :shop_shelf
+    public :build_gear_shelf
+  end
+
+  def product(item)
+    { item: item, category: "other", product: "#{item} product", match: "likely", evidence_url: "https://e.com/#{item.parameterize}",
+      buy: [{ store: "x.com", url: "https://x.com/#{item.parameterize}" }] }.with_indifferent_access
+  end
+
+  def shelf_order(&scope)
+    ShopCatalog.stub(:products, [product("zzteamgearpot"), product("zzteamgearknife")]) do
+      s = Shelf.new
+      s.build_gear_shelf(label: "x", max_groups: 8, limit: 3, &scope)
+      s.shop_shelf.groups.map { |g| g.item.name }
+    end
+  end
+
+  test "a team item ranks once per team, capped at the survivors who carry it" do
+    pot   = Item.create!(name: "zzteamgearpot")
+    knife = Item.create!(name: "zzteamgearknife")
+    ep, apps = build_episode_with_survivors(12, arrangement: "3+3+3+3")
+    give(pot, apps, scope: "team")                                                      # 4 teams = 4
+    apps.first(3).each { |a| AppearanceItem.create!(appearance: a, item: knife, source: "brought") } # 3 knives
+    assert_equal %w[zzteamgearpot zzteamgearknife], shelf_order { |scope| scope.where(episodes: { id: ep.id }) }
+
+    # five brought knives now outrank the four team pots
+    apps.last(2).each { |a| AppearanceItem.create!(appearance: a, item: knife, source: "brought") }
+    assert_equal %w[zzteamgearknife zzteamgearpot], shelf_order { |scope| scope.where(episodes: { id: ep.id }) }
+  end
+end

@@ -113,7 +113,7 @@ class Admin::EpisodeGivenScopeTest < ActionDispatch::IntegrationTest
     assert_select "template#item-template select.item-given-scope option[value=individual]", text: "Each person"
     assert_select "input#bulk-given-scope-team[checked]"
     assert_select "input#bulk-given-scope-individual"
-    assert_select "#bulk-given-card", text: /Team \(one shared item\)/
+    assert_select "#bulk-given-card", text: /Team \(one per team\)/
   end
 
   test "the scope select is hidden and disabled for non-given rows" do
@@ -122,5 +122,38 @@ class Admin::EpisodeGivenScopeTest < ActionDispatch::IntegrationTest
     select = css_select(".item-entry select.item-given-scope").first
     assert select["disabled"], "not submitted for a brought item"
     assert_match(/display:\s*none/, select["style"])
+  end
+end
+
+class Admin::EpisodeTeamCountFormTest < ActionDispatch::IntegrationTest
+  setup do
+    post session_path, params: { email_address: users(:admin).email_address, password: "password" }
+  end
+
+  test "the form explains that the number of teams comes from the Participant arrangement" do
+    ep, = build_episode_with_survivors(2, arrangement: "Standard")
+    get edit_admin_episode_path(ep)
+    assert_response :success
+    assert_select "#bulk-given-card", text: /counted once per team/
+    assert_select "#bulk-given-card", text: /comes from the Participant arrangement \(3\+3\+3\+3 = 4 teams\)/
+    assert_select "details", text: /Participant arrangement above: 3\+3\+3\+3 = 4 teams/
+    assert_select "template#item-template select.item-given-scope option[value=team]", text: "Team (one per team)"
+    assert_select "input#bulk-given-scope-team ~ label", text: "Team (one per team)"
+  end
+
+  test "a multi-team arrangement shows the derived team count next to the control" do
+    ep, apps = build_episode_with_survivors(12, arrangement: "3+3+3+3")
+    give(Item.create!(name: "zzformpot"), apps.first(1), scope: "team")
+    get edit_admin_episode_path(ep)
+    assert_select "#bulk-given-team-count", text: "4 teams"
+    assert_select ".item-given-scope-note", text: "4 teams", minimum: 1
+  end
+
+  test "no count is shown for a one-team or unparseable arrangement" do
+    %w[Standard Group].each do |arrangement|
+      ep, = build_episode_with_survivors(2, arrangement: arrangement)
+      get edit_admin_episode_path(ep)
+      assert_select "#bulk-given-team-count", text: ""
+    end
   end
 end

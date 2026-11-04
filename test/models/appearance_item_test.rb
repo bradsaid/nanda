@@ -212,4 +212,117 @@ class AppearanceItemTest < ActiveSupport::TestCase
     AppearanceItem.where(item: @pot, appearance_id: apps.first.id).update_all(given_scope: "individual")
     assert_equal 0, load_ep.call[:groups].size, "a deliberate classification is never swallowed by the heuristic"
   end
+
+  # ----- the per-team rule: a team-given item counts once PER TEAM -----
+
+  # survivors on an episode with the given arrangement, the team item on all of them
+  def team_given_count(survivors, arrangement, quantity: 1, item: Item.create!(name: "tg #{SecureRandom.hex(4)}"))
+    ep, apps = build_episode_with_survivors(survivors, arrangement: arrangement)
+    give(item, apps, scope: "team", quantity: quantity)
+    AppearanceItem.where(item: item).given_count
+  end
+
+  test "one team (Standard, a bare number, no arrangement) counts one" do
+    assert_equal 1, team_given_count(2, "Standard")
+    assert_equal 1, team_given_count(3, "3")
+    assert_equal 1, team_given_count(4, nil)
+  end
+
+  test "two teams (3+2) count two" do
+    assert_equal 2, team_given_count(5, "3+2")
+  end
+
+  test "four teams (3+3+3+3) count four, one pot per team" do
+    assert_equal 4, team_given_count(12, "3+3+3+3")
+  end
+
+  test "seven teams (2+2+2+2+2+2+2) count seven" do
+    assert_equal 7, team_given_count(14, "2+2+2+2+2+2+2")
+  end
+
+  test "five teams (3+3+3+3+1) count five" do
+    assert_equal 5, team_given_count(13, "3+3+3+3+1")
+  end
+
+  test "quantity is per team: two of the item for each of two teams is four" do
+    assert_equal 4, team_given_count(5, "3+2", quantity: 2)
+  end
+
+  test "the highest quantity in the group is what each team got" do
+    ep, apps = build_episode_with_survivors(5, arrangement: "3+2")
+    give(@pot, apps.first(4), quantity: 1)
+    give(@pot, apps.last(1), quantity: 3) # a different quantity on one row
+    assert_equal 2 * 3, AppearanceItem.where(item: @pot).given_count
+  end
+
+  test "the count never exceeds the rows: four teams but only two survivors carry it counts two" do
+    assert_equal 2, team_given_count(2, "3+3+3+3")
+  end
+
+  test "an item on only part of a multi-team cast is capped at the survivors who have it" do
+    ep, apps = build_episode_with_survivors(12, arrangement: "3+3+3+3")
+    give(@pot, apps.first(3), scope: "team")
+    assert_equal 3, AppearanceItem.where(item: @pot).given_count
+  end
+
+  test "the cap compares with the per-row total, so it is never more than counting every row" do
+    [["Standard", 2], ["3+2", 5], ["3+3+3+3", 12], ["3+3+3+3", 2]].each do |arrangement, survivors|
+      item = Item.create!(name: "cap check #{arrangement} #{survivors}")
+      ep, apps = build_episode_with_survivors(survivors, arrangement: arrangement)
+      give(item, apps, scope: "team")
+      assert_operator AppearanceItem.where(item: item).given_count, :<=, survivors
+    end
+  end
+
+  test "individual given rows ignore the team count and still count per row" do
+    ep, apps = build_episode_with_survivors(5, arrangement: "3+2")
+    give(@pot, apps, scope: "individual")
+    assert_equal 5, AppearanceItem.where(item: @pot).given_count
+  end
+
+  test "unclassified given rows in a multi-team episode still count per row" do
+    ep, apps = build_episode_with_survivors(5, arrangement: "3+2")
+    give(@pot, apps).each { |ai| ai.update_columns(given_scope: nil) }
+    assert_equal 5, AppearanceItem.where(item: @pot).given_count
+  end
+
+  test "brought items in a multi-team episode are per survivor" do
+    ep, apps = build_episode_with_survivors(12, arrangement: "3+3+3+3")
+    apps.each { |a| AppearanceItem.create!(appearance: a, item: @pot, source: "brought") }
+    assert_equal 12, AppearanceItem.where(item: @pot).brought.counted_quantity
+  end
+
+  test "subtypes are counted per team separately" do
+    ep, apps = build_episode_with_survivors(5, arrangement: "3+2")
+    give(@hide, apps, subtype: "elk")
+    give(@hide, apps, subtype: "buck")
+    assert_equal 4, AppearanceItem.where(item: @hide).given_count
+  end
+
+  test "each episode is counted by its own arrangement" do
+    ep1, apps1 = build_episode_with_survivors(5, arrangement: "3+2")
+    ep2, apps2 = build_episode_with_survivors(2, arrangement: "Standard")
+    give(@pot, apps1)
+    give(@pot, apps2)
+    assert_equal 2 + 1, AppearanceItem.where(item: @pot).given_count
+  end
+
+  test "item_totals and the by-country adjusted total apply the per-team rule" do
+    peru = Location.create!(country: "Peru", site: "Team Site")
+    ep, apps = build_episode_with_survivors(12, arrangement: "3+3+3+3", location: peru)
+    give(@pot, apps, scope: "team")
+    row = AppearanceItem.item_totals("given").where(items: { id: @pot.id }).first
+    assert_equal 4, row.total.to_i
+
+    in_peru = AppearanceItem.item_totals("given").joins(appearance: { episode: :location }).where(locations: { country: "Peru" }, items: { id: @pot.id }).first
+    assert_equal 4, in_peru.total.to_i
+  end
+
+  test "the banner groups team items under the episode and keeps their recipients" do
+    ep, apps = build_episode_with_survivors(5, arrangement: "3+2")
+    give(@pot, apps, scope: "team")
+    banner = AppearanceItem.team_given_banner(Appearance.where(episode: ep).includes(:survivor, :appearance_items))
+    assert_equal 1, banner[:groups].size
+    assert_equal 5, banner[:groups].first.recipients.size
+  end
 end

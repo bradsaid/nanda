@@ -61,6 +61,26 @@ function updateBulkGivenRecipients() {
 
 // The "Given to" (Team / Each person) select only applies to given items: show and
 // enable it for a given row, hide and disable it (so it is not submitted) otherwise.
+// Teams in a participant arrangement, same rule as Episode.team_count_for: the parts of
+// "3+3+3+3" that are positive whole numbers; one team when there are none ("Standard").
+// Returns the note shown next to the Team control, or "" when there is only one team.
+function teamCountNote() {
+  var field = document.getElementById("episode_participant_arrangement");
+  if (!field) return "";
+  var teams = field.value.split("+").filter(function(part) {
+    part = part.trim();
+    return /^[0-9]+$/.test(part) && !/^0+$/.test(part);
+  }).length;
+  return teams > 1 ? teams + " teams" : "";
+}
+
+function refreshTeamCountNotes() {
+  var note = teamCountNote();
+  document.querySelectorAll(".team-count-note").forEach(function(el) {
+    el.textContent = note;
+  });
+}
+
 function syncGivenScope(entry) {
   var src   = entry.querySelector("select.item-source");
   var scope = entry.querySelector("select.item-given-scope");
@@ -68,6 +88,8 @@ function syncGivenScope(entry) {
   var isGiven = src.value === "given";
   scope.style.display = isGiven ? "" : "none";
   scope.disabled = !isGiven;
+  var note = entry.querySelector(".item-given-scope-note");
+  if (note) { note.style.display = isGiven ? "" : "none"; note.textContent = teamCountNote(); }
 }
 
 function populateBuilderCheckboxes(container, survivors, namePrefix, idPrefix, fieldName) {
@@ -169,6 +191,7 @@ function initEpisodeForm() {
       setIfEmpty("episode_scheduled_days",          data.scheduled_days);
       setIfEmpty("episode_participant_arrangement", data.participant_arrangement);
       setIfEmpty("episode_type_modifiers",          data.type_modifiers);
+      refreshTeamCountNotes();
     } catch (e) {
       console.warn("[season change]", e);
       hideCopyControls();
@@ -283,6 +306,7 @@ function initEpisodeForm() {
 
   // ===== Quick Add Given Item — fan one item out to multiple survivors =====
   updateBulkGivenRecipients();
+  refreshTeamCountNotes();
 
   document.getElementById("bulk-given-add")?.addEventListener("click", function() {
     var itemSelect = document.getElementById("bulk-given-item");
@@ -349,6 +373,8 @@ function initEpisodeForm() {
       var checked = e.target.checked;
       document.querySelectorAll(".bulk-given-recipient").forEach(function(cb) { cb.checked = checked; });
     }
+    // The number of teams follows the Participant arrangement
+    if (e.target.id === "episode_participant_arrangement") refreshTeamCountNotes();
     // Show the Team / Each person choice only for "given" items
     if (e.target.classList && e.target.classList.contains("item-source")) {
       var itemEntry = e.target.closest(".item-entry");
