@@ -185,7 +185,7 @@ module Admin
           :id, :survivor_id, :role, :starting_psr, :ending_psr,
           :days_lasted, :result, :weight_loss, :partner_replacement, :_destroy,
           appearance_items_attributes: [
-            :id, :item_id, :subtype, :source, :quantity, :_destroy
+            :id, :item_id, :subtype, :source, :given_scope, :quantity, :_destroy
           ]
         ],
         food_sources_attributes: [

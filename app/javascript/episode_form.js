@@ -59,6 +59,17 @@ function updateBulkGivenRecipients() {
   container.innerHTML = html;
 }
 
+// The "Given to" (Team / Each person) select only applies to given items: show and
+// enable it for a given row, hide and disable it (so it is not submitted) otherwise.
+function syncGivenScope(entry) {
+  var src   = entry.querySelector("select.item-source");
+  var scope = entry.querySelector("select.item-given-scope");
+  if (!src || !scope) return;
+  var isGiven = src.value === "given";
+  scope.style.display = isGiven ? "" : "none";
+  scope.disabled = !isGiven;
+}
+
 function populateBuilderCheckboxes(container, survivors, namePrefix, idPrefix, fieldName) {
   fieldName = fieldName || 'builder_ids';
   var html = '';
@@ -282,6 +293,8 @@ function initEpisodeForm() {
     }
     var qty = parseInt(qtyInput.value, 10) || 1;
     var itemId = itemSelect.value;
+    var scopeRadio = document.querySelector("input[name='bulk_given_scope']:checked");
+    var givenScope = scopeRadio ? scopeRadio.value : "team";
     var checked = document.querySelectorAll(".bulk-given-recipient:checked");
     if (checked.length === 0) {
       alert("Pick at least one survivor.");
@@ -320,6 +333,9 @@ function initEpisodeForm() {
       if (itemFld) itemFld.value = itemId;
       if (srcFld)  srcFld.value  = "given";
       if (qtyFld)  qtyFld.value  = qty;
+      var scopeFld = entry.querySelector("select.item-given-scope");
+      if (scopeFld) scopeFld.value = givenScope;
+      syncGivenScope(entry);
     });
     if (skipped > 0) {
       console.log("[bulk-given-add] skipped " + skipped + " survivor(s) that already had this item");
@@ -332,6 +348,11 @@ function initEpisodeForm() {
     if (e.target.id === "bulk-given-all") {
       var checked = e.target.checked;
       document.querySelectorAll(".bulk-given-recipient").forEach(function(cb) { cb.checked = checked; });
+    }
+    // Show the Team / Each person choice only for "given" items
+    if (e.target.classList && e.target.classList.contains("item-source")) {
+      var itemEntry = e.target.closest(".item-entry");
+      if (itemEntry) syncGivenScope(itemEntry);
     }
     // Refresh recipient list when a participant's survivor changes
     if (e.target.matches("select[name*='[survivor_id]']")) {

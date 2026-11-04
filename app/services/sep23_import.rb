@@ -264,7 +264,7 @@ class Sep23Import
         episode.appearances.find_each do |app|
           given_names.each do |gname|
             item = Item.find_or_create_by!(name: norm(gname))
-            AppearanceItem.find_or_create_by!(appearance: app, item:, source: "given")
+            AppearanceItem.find_or_create_by!(appearance: app, item:, source: "given") { |ai| ai.given_scope = "team" } # one item for the whole team, on every appearance
           end
         end
       end
@@ -382,7 +382,7 @@ class Sep23Import
         h[:given].each do |gname|
           next if gname.blank?
           item = Item.find_or_create_by!(name: norm(gname))
-          AppearanceItem.find_or_create_by!(appearance: app, item:, source: "given")
+          AppearanceItem.find_or_create_by!(appearance: app, item:, source: "given") { |ai| ai.given_scope = "team" } # one item for the whole team, on every appearance
         end
       end
     end

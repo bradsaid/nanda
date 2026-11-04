@@ -64,7 +64,7 @@ class NewSeasonHelper
       survivor
     end
 
-    def add_appearance(survivor:, episode:, role: "duo", brought_item: nil, given_items: [],
+    def add_appearance(survivor:, episode:, role: "duo", brought_item: nil, given_items: [], given_scope: "team",
                        starting_psr: nil, ending_psr: nil, days_lasted: nil, result: nil, notes: nil)
       appearance = Appearance.find_or_create_by!(survivor: survivor, episode: episode) do |a|
         a.role = role
@@ -83,7 +83,7 @@ class NewSeasonHelper
 
       Array(given_items).each do |name|
         item = Item.find_or_create_by!(name: name.strip.downcase)
-        AppearanceItem.find_or_create_by!(appearance: appearance, item: item, source: "given")
+        AppearanceItem.find_or_create_by!(appearance: appearance, item: item, source: "given") { |ai| ai.given_scope = given_scope }
         puts "  Given: #{item.name} (#{item.item_type})"
       end
 

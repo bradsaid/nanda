@@ -78,6 +78,7 @@ namespace :naf do
           if persist
             old_appr.appearance_items.find_each do |ai|
               dest = target_appr.appearance_items.find_or_initialize_by(item_id: ai.item_id, source: ai.source)
+              dest.given_scope ||= ai.given_scope if ai.source == "given"
               dest.quantity = (dest.quantity || 0) + (ai.quantity || 0)
               dest.notes = [dest.notes, ai.notes].compact.reject(&:blank?).uniq.join(" | ").presence
               dest.save!
