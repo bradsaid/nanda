@@ -8,4 +8,5 @@ two:
   appearance: two
   item: two
   source: given
+  given_scope: team
   quantity: 1

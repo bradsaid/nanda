@@ -104,7 +104,9 @@
                 td = link_to(ep.title, episode_path(ep))
                 td = ep.air_date || "—"
                 td = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
-                td = recips.join(", ")
+                td
+                  = recips.join(", ")
+                  = given_scope_badge(ais)
                 td
                   - if items.any?
                     = safe_join(items.map { |it| link_to("#{item_icon(it)} #{it.name}", item_path(it)) }, ", ")

@@ -150,6 +150,24 @@ module ApplicationHelper
     path ? link_to(text, path, title: shop_card_link_title(path)) : text
   end
 
+  # " (shared with team)" after a given item on a survivor's own page: that row is still
+  # theirs, but it is one item for the whole team, not one each. nil for every other row.
+  def given_team_note(appearance_item)
+    return unless appearance_item.given_to_team?
+    tag.span(" (shared with team)", class: "small opacity-75", title: "One item given to the whole team")
+  end
+
+  # Subtle tag for the given rows of one episode: "team" when one item was shared by the
+  # team, "each person" when everyone got their own. nil when nothing is classified (brought
+  # rows, or given rows the backfill has not reached). Pass any enumerable of AppearanceItem.
+  def given_scope_badge(appearance_items)
+    scopes = Array(appearance_items).map(&:given_scope).compact.uniq
+    return if scopes.empty?
+    labels = scopes.sort.map { |sc| sc == "team" ? "shared with team" : "one each" }
+    tag.span(labels.join(" / "), class: "badge bg-secondary-subtle text-secondary-emphasis fw-normal ms-1",
+             title: scopes == ["team"] ? "One item given to the whole team, counted once" : "Counted per person")
+  end
+
   # "🛒 4" next to an item's name when the catalog has products for it; links to the
   # item page's shop card. nil otherwise.
   def shop_badge(item_name, id: nil)

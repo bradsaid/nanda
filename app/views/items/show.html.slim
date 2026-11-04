@@ -131,7 +131,9 @@
                     | —
                 td data-label="Air Date" = ep.air_date || "—"
                 td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact.join(" / ").presence || "—"
-                td data-label="Recipients" = recipients.join(", ")
+                td data-label="Recipients"
+                  = recipients.join(", ")
+                  = given_scope_badge(ais)
 
   / ===== Brought — by episode (unique within episode) =====
   - brought_by_ep = (@brought_ai || []).group_by { |ai| ai.appearance.episode }

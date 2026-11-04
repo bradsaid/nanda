@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_11_01_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_04_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -69,9 +69,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_01_150000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "subtype"
+    t.string "given_scope"
     t.index "appearance_id, item_id, COALESCE(subtype, ''::character varying), source", name: "index_appearance_items_unique_with_subtype", unique: true
     t.index ["appearance_id"], name: "index_appearance_items_on_appearance_id"
     t.index ["item_id"], name: "index_appearance_items_on_item_id"
+    t.check_constraint "given_scope IS NULL OR (given_scope::text = ANY (ARRAY['team'::character varying, 'individual'::character varying]::text[]))", name: "appearance_items_given_scope_values"
+    t.check_constraint "given_scope IS NULL OR source::text = 'given'::text", name: "appearance_items_given_scope_only_given"
   end
 
   create_table "appearances", force: :cascade do |t|

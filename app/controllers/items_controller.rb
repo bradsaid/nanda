@@ -39,8 +39,10 @@ class ItemsController < ApplicationController
     ai = ai.where(appearance_items: { source: @source }) if @source.present?
 
     # ===== Top lists =====
-    top_brought_scope = AppearanceItem.where(source: "brought").joins(:item)
-    top_given_scope   = AppearanceItem.where(source: "given").joins(:item)
+    # AppearanceItem.item_totals sums quantities with team-given items counted
+    # once per episode (see AppearanceItem.counted); brought rows are unchanged.
+    top_brought_scope = AppearanceItem.item_totals("brought")
+    top_given_scope   = AppearanceItem.item_totals("given")
     if @country.present?
       top_brought_scope = top_brought_scope.joins(appearance: { episode: :location })
                                            .where(locations: { country: @country })
@@ -49,19 +51,11 @@ class ItemsController < ApplicationController
     end
 
     @top_brought = Rails.cache.fetch("#{cache_key_base}/top_brought", expires_in: INDEX_CACHE_TTL) do
-      top_brought_scope
-        .group("items.id", "items.name")
-        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-        .order("total DESC")
-        .to_a
+      top_brought_scope.to_a
     end
 
     @top_given = Rails.cache.fetch("#{cache_key_base}/top_given", expires_in: INDEX_CACHE_TTL) do
-      top_given_scope
-        .group("items.id", "items.name")
-        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-        .order("total DESC")
-        .to_a
+      top_given_scope.to_a
     end
 
     # ===== Given in episodes (unique & adjusted) =====
@@ -202,7 +196,9 @@ class ItemsController < ApplicationController
     @shop_links    = ShopLinks.build(@shop_products) if @shop_products.any?
 
     # ---------- By country (adjusted totals) ----------
+    # .counted: one team-given item is one item, however many survivors' rows record it.
     @by_country = @item.appearance_items
+                      .counted
                       .joins(appearance: { episode: [:location, { season: :series }] })
                       .select("locations.country AS country, #{adjusted_total_sql}")
                       .group("locations.country")

@@ -20,19 +20,9 @@ class HomeController < ApplicationController
         .order(Arel.sql("air_date IS NULL, air_date DESC"))
         .first
 
-    @top_items_brought =
-      AppearanceItem.where(source: "brought")
-        .joins(:item)
-        .group("items.id", "items.name")
-        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-        .order("total DESC").limit(5)
-
-    @top_items_given =
-      AppearanceItem.where(source: "given")
-        .joins(:item)
-        .group("items.id", "items.name")
-        .select("items.id, items.name, SUM(appearance_items.quantity) AS total")
-        .order("total DESC").limit(5)
+    # Team-given items count once per episode (AppearanceItem.counted), not once per survivor.
+    @top_items_brought = AppearanceItem.item_totals("brought").limit(5)
+    @top_items_given   = AppearanceItem.item_totals("given").limit(5)
 
     build_home_shop_shelf
 

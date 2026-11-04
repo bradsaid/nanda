@@ -137,26 +137,29 @@
         = simple_format(@episode.notes)
 
   / ===== Participants =====
-  / If every appearance has the exact same set of "given" items (same item +
-  / subtype + qty), hoist them into a single "Team given" banner above the
-  / table and skip the per-row given column. Continuous-story episodes where
-  / survivors received different items fall back to per-row rendering.
-  - given_signatures = @active_appearances.map { |a| a.appearance_items.select { |ai| ai.source == "given" }.map { |ai| [ai.item_id, ai.subtype.to_s.strip, ai.quantity.to_i] }.sort }
-  - consolidate_given = given_signatures.uniq.size == 1 && given_signatures.first.any?
-  - team_given_display = nil
-  - if consolidate_given
-    - first_given = @active_appearances.first.appearance_items.select { |ai| ai.source == "given" }
-    - team_given_display = first_given.map { |ai| q = ai.quantity.to_i; n = ai.display_name; n ? (q > 1 ? "#{item_icon(ai.item)} #{n}×#{q}" : "#{item_icon(ai.item)} #{n}") : nil }.compact.join(", ")
+  / Items given to the whole team (given_scope "team") are hoisted into a single
+  / "Team given" banner above the table, once, and skipped in the per-row given
+  / column. Given items nobody has classified yet follow the old rule: identical
+  / given sets on every row mean a team item. "Each person" items stay per row.
+  - banner      = AppearanceItem.team_given_banner(@active_appearances)
+  - team_groups = banner[:groups]
+  - hoisted_ids = banner[:hoisted_ids]
 
   .card.shadow-sm
     .card-header.d-flex.align-items-center
       span.me-3.fs-3(aria-hidden="true") 👥
       h2.h5.mb-0 Participants
     - if @active_appearances.present?
-      - if consolidate_given && team_given_display.present?
+      - if team_groups.any?
         .px-3.py-2.bg-light.border-bottom.small
           strong.me-1 Team given:
-          = team_given_display
+          - team_groups.each_with_index do |g, i|
+            - if i > 0
+              | ,&nbsp;
+            - gname = g.appearance_item.display_name
+            = "#{item_icon(g.appearance_item.item)} #{gname}#{g.quantity > 1 ? "×#{g.quantity}" : ""}"
+            - unless g.everyone
+              span.text-muted.ms-1 = "(#{g.recipients.to_sentence})"
       .table-responsive.table-stack-host
         table.table.table-stack.table-striped.table-hover.mb-0
           thead.table-light
@@ -177,7 +180,7 @@
               / Items per appearance
               - brought_items = a.appearance_items.select { |ai| ai.source == "brought" }
               - brought = safe_join(brought_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode, shelf: @shop_shelf) }, ", ")
-              - given_items = a.appearance_items.select { |ai| ai.source == "given" }
+              - given_items = a.appearance_items.select { |ai| ai.source == "given" && !hoisted_ids.include?(ai.id) }
               - given = safe_join(given_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode, shelf: @shop_shelf) }, ", ")
               tr
                 td data-label="Name"
@@ -205,7 +208,7 @@
                       = brought
                   - else
                     span.text-muted —
-                  - if given.present? && !consolidate_given
+                  - if given.present?
                     br
                     span
                       = "given: "
