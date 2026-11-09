@@ -3,11 +3,9 @@
 // based on a range slider so dragging is instant. Also overlays a linear-
 // regression trend line on the Views series.
 
-// Chart.js is loaded via a plain <script> tag on the admin dashboard so
-// it exposes window.Chart globally. We read from window instead of using
-// an ES-module import — the importmap+CDN dance was breaking because
-// Chart.js's ESM bundle has absolute-path imports that browsers resolve
-// against the page origin (404'd against our domain).
+// Chart.js (vendor/javascript/chart.umd.js) is loaded via a plain <script>
+// tag on the admin dashboard so it exposes window.Chart globally. We read
+// from window instead of using an ES-module import.
 
 let chartInstance = null;
 let fullPayload = null;
@@ -114,20 +112,42 @@ function refresh(days) {
   if (label) label.textContent = `Last ${days} ${days === 1 ? "day" : "days"}`;
 }
 
-function init() {
+let waitTimer = null;
+
+function showError(canvas, message) {
+  const holder = canvas.parentElement;
+  if (holder && !holder.querySelector(".admin-views-chart-error")) {
+    const p = document.createElement("p");
+    p.className = "admin-views-chart-error text-danger small mb-0";
+    p.textContent = message;
+    holder.appendChild(p);
+  }
+}
+
+function init(attempt = 0) {
   const canvas = document.getElementById("admin-views-chart");
   const dataEl = document.getElementById("admin-views-chart-data");
   if (!canvas || !dataEl) return;
+
+  clearTimeout(waitTimer);
+
+  // On Turbo visits (e.g. right after signing in) the Chart.js <script> is
+  // inserted asynchronously, so turbo:load can fire before window.Chart
+  // exists. Poll briefly instead of giving up.
+  if (typeof window.Chart !== "function") {
+    if (attempt < 50) {
+      waitTimer = setTimeout(() => init(attempt + 1), 100);
+    } else {
+      console.error("[admin_views_chart] Chart.js global not present after 5s");
+      showError(canvas, "Chart library failed to load. Try reloading the page.");
+    }
+    return;
+  }
 
   // Re-init on Turbo navigation: destroy any previous chart bound to this canvas.
   if (chartInstance) {
     try { chartInstance.destroy(); } catch (_) { /* noop */ }
     chartInstance = null;
-  }
-
-  if (typeof window.Chart !== "function") {
-    console.error("[admin_views_chart] Chart.js global not present — UMD script may not have loaded yet");
-    return;
   }
 
   try { fullPayload = JSON.parse(dataEl.textContent); } catch (e) {
@@ -157,6 +177,6 @@ function init() {
 if (document.readyState !== "loading") {
   init();
 } else {
-  document.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", () => init());
 }
-document.addEventListener("turbo:load", init);
+document.addEventListener("turbo:load", () => init());
