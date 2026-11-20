@@ -93,4 +93,21 @@ class PrivacyPolicyTest < ActionDispatch::IntegrationTest
     assert_match(/CMI Marketing, Inc\., d\/b\/a Raptive/, response.body)
     assert_select "a[href='https://raptive.com/creator-advertising-privacy-statement/']", text: "here"
   end
+
+  test "explains Google Analytics use and links to Google's privacy policy as the bare URL" do
+    get privacy_policy_path
+    assert_select "a[href='https://policies.google.com/privacy']", text: "https://policies.google.com/privacy"
+    assert_match(/We use Google Analytics/, response.body)
+  end
+
+  test "gives contact information" do
+    get privacy_policy_path
+    assert_select "a[href^='mailto:']"
+    assert_select "a[href='/contact']"
+  end
+
+  test "the homepage footer links to the privacy policy with 'Privacy' in the link text" do
+    get root_path
+    assert_select "footer a[href='#{privacy_policy_path}']", text: /Privacy/
+  end
 end
