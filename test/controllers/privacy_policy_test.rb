@@ -24,7 +24,7 @@ class PrivacyPolicyTest < ActionDispatch::IntegrationTest
 
   test "the last-updated date reflects this revision" do
     get privacy_policy_path
-    assert_select "em", /Last updated: November 1, 2026/
+    assert_select "em", /Last updated: November 20, 2026/
   end
 
   test "the policy has a forum accounts and community content section" do
@@ -86,5 +86,11 @@ class PrivacyPolicyTest < ActionDispatch::IntegrationTest
     get privacy_policy_path
     assert_no_match(/\bul\s+li\b/, css_select("body").text)
     assert_select "li ul", false, "the policy should not nest lists inside list items"
+  end
+
+  test "discloses Raptive as an advertising service provider with a link to its statement" do
+    get privacy_policy_path
+    assert_match(/CMI Marketing, Inc\., d\/b\/a Raptive/, response.body)
+    assert_select "a[href='https://raptive.com/creator-advertising-privacy-statement/']", text: "here"
   end
 end
