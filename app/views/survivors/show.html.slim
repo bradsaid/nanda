@@ -270,6 +270,25 @@
                       - ok = (a.result == "success")
                       span.badge class=(ok ? "bg-success" : "bg-danger") = a.result.titleize
 
+    / ===== Where to watch this survivor's seasons =====
+    - watch_rows = @appearances.filter_map { |a| a.episode&.season }.uniq.filter_map { |s| svc = services_for(s.series&.name, s.number); [s, svc] if svc.any? }
+    - if watch_rows.any?
+      - first_name = @survivor.full_name.split.first
+      section.card.shadow-sm.mb-4 aria-labelledby="survivor-watch-heading"
+        .card-header.d-flex.align-items-center
+          span.me-3.fs-3(aria-hidden="true") 📺
+          h2#survivor-watch-heading.h5.mb-0 = "Where to Watch #{first_name}'s #{'Season'.pluralize(watch_rows.size)}"
+        ul.list-group.list-group-flush
+          - watch_rows.first(6).each do |(season, svc)|
+            = render "survivors/watch_row", season: season, services: svc
+        - if watch_rows.size > 6
+          details.survivor-watch-more
+            summary.px-3.py-2.small.text-primary style="cursor: pointer;" = "Show #{watch_rows.size - 6} more #{'season'.pluralize(watch_rows.size - 6)}"
+            ul.list-group.list-group-flush
+              - watch_rows.drop(6).each do |(season, svc)|
+                = render "survivors/watch_row", season: season, services: svc
+        .card-footer.small.text-muted Links open each service's site. Availability changes, so check that the season is still included with your plan.
+
     / ===== Shop the gear they brought (above the Items Brought / Given lists) =====
     - if @shop_shelf
       = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear #{@survivor.full_name.split.first} Brought", dom_id: "survivor-shop"
@@ -373,6 +392,35 @@
                       = image_tag avatar_src(co, name: co.full_name, variant: :chip), alt: co.full_name, width: 64, height: 64, loading: "lazy", class: "rounded-circle border mb-2", style: "object-fit: cover;"
                     = link_to co.full_name, survivor_path(co), class: "fw-semibold text-dark text-decoration-none small"
                     .text-muted.small.mt-1 = "#{shared} shared episode#{'s' if shared != 1}"
+
+    / ===== More to explore: same seasons, same countries =====
+    - if @explore_seasons.present? || @explore_countries.present?
+      section.card.shadow-sm.mt-4 aria-labelledby="explore-heading"
+        .card-header
+          h2#explore-heading.h6.mb-0 = "More Survivalists to Explore"
+        .card-body
+          - @explore_seasons.each do |row|
+            - season = row[:season]
+            - more = row[:total] - row[:survivors].size
+            .mb-3
+              h3.h6.mb-2
+                | Also on
+                |
+                = link_to "#{season.series&.name} Season #{season.number}", season_path(season), class: "text-decoration-none"
+              .d-flex.flex-wrap.gap-2
+                - row[:survivors].each do |s|
+                  = link_to s.full_name, survivor_path(s), class: "badge rounded-pill text-bg-light border text-decoration-none fw-normal fs-6"
+                - if more > 0
+                  = link_to "+#{more} more", season_path(season), class: "badge rounded-pill text-bg-secondary text-decoration-none fw-normal fs-6"
+          - @explore_countries.each do |row|
+            .mb-3
+              h3.h6.mb-2
+                | Also filmed in
+                |
+                = link_to row[:country], by_country_episodes_path(country: row[:country]), class: "text-decoration-none"
+              .d-flex.flex-wrap.gap-2
+                - row[:survivors].each do |s|
+                  = link_to s.full_name, survivor_path(s), class: "badge rounded-pill text-bg-light border text-decoration-none fw-normal fs-6"
 
     / ===== FAQ (visible content backing the FAQPage schema) =====
     - faq_qas = survivor_faq_qas(@survivor)

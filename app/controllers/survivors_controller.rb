@@ -129,9 +129,64 @@ class SurvivorsController < ApplicationController
                                  .values_at(*co_counts.keys)
                                  .compact
     @related_survivor_shared_counts = co_counts
+
+    build_explore_links(exclude_ids: co_counts.keys)
   end
 
   private
+
+  # More internal links for the survivor page: other survivalists from the
+  # seasons this person was on, and from the countries they filmed in. Only ids
+  # are cached (an hour is plenty for a link list); records are loaded fresh.
+  EXPLORE_SEASONS     = 3
+  EXPLORE_COUNTRIES   = 2
+  EXPLORE_PER_SEASON  = 12
+  EXPLORE_PER_COUNTRY = 10
+
+  def build_explore_links(exclude_ids:)
+    plan = Rails.cache.fetch("survivors/#{@survivor.id}/explore_links/v1", expires_in: 1.hour) do
+      skip = [@survivor.id, *exclude_ids]
+      shown = skip.dup
+
+      season_ids = @appearances.map { |a| a.episode&.season_id }.compact.uniq.last(EXPLORE_SEASONS).reverse
+      seasons = season_ids.filter_map do |sid|
+        scope = Appearance.joins(:episode).where(episodes: { season_id: sid }).where.not(survivor_id: skip)
+        total = scope.distinct.count(:survivor_id)
+        next if total.zero?
+        ids = Survivor.where(id: scope.select(:survivor_id)).where.not(id: shown)
+                      .order(:full_name).limit(EXPLORE_PER_SEASON).pluck(:id)
+        shown.concat(ids)
+        { season_id: sid, ids: ids, total: total } if ids.any?
+      end
+
+      countries = @country_counts.sort_by { |name, n| [-n, name] }.first(EXPLORE_COUNTRIES).filter_map do |name, _|
+        ranked = Appearance.joins(episode: :location)
+                           .where("TRIM(LOWER(locations.country)) = ?", name.to_s.strip.downcase)
+                           .where.not(survivor_id: shown)
+                           .group(:survivor_id)
+                           .order(Arel.sql("COUNT(*) DESC"), :survivor_id)
+                           .limit(EXPLORE_PER_COUNTRY).count.keys
+        shown.concat(ranked)
+        { country: name, ids: ranked } if ranked.any?
+      end
+
+      { seasons: seasons, countries: countries }
+    end
+
+    all_ids = (plan[:seasons] + plan[:countries]).flat_map { |h| h[:ids] }
+    people  = Survivor.where(id: all_ids).select(:id, :full_name, :slug).index_by(&:id)
+    seasons = Season.where(id: plan[:seasons].map { |h| h[:season_id] }).includes(:series).index_by(&:id)
+
+    @explore_seasons = plan[:seasons].filter_map do |h|
+      season = seasons[h[:season_id]]
+      list   = people.values_at(*h[:ids]).compact
+      { season: season, survivors: list, total: h[:total] } if season && list.any?
+    end
+    @explore_countries = plan[:countries].filter_map do |h|
+      list = people.values_at(*h[:ids]).compact
+      { country: h[:country], survivors: list } if list.any?
+    end
+  end
 
   def set_survivor
     @survivor = Survivor.friendly.find(params[:id])  # This handles both slugs and IDs as fallback
