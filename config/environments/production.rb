@@ -24,10 +24,13 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
+  # NOTE: do NOT set `config.assume_ssl = true` here. It makes Rails treat every
+  # request as already-HTTPS (it forces X-Forwarded-Proto: https), which turns
+  # force_ssl's http->https redirect into a no-op. Heroku's router terminates
+  # TLS and sets X-Forwarded-Proto itself, so Rails already sees the real scheme.
 
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # Force all access to the app over SSL (301 for GET/HEAD, 307 otherwise), send
+  # Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
