@@ -1114,6 +1114,13 @@ table.table thead.table-light { background: linear-gradient(to right, #06291a, #
   gap: 1rem;
   align-items: start;
 }
+/* The full catalog (~150 cards) stays in the page, but off-screen cards skip layout and paint
+   until scrolled near; #anchor jumps and find-in-page still reach them. 150px is only the
+   placeholder height until a card has been rendered once ("auto" remembers the real one). */
+.shop-catalog > .shop-product {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 150px;
+}
 .shop-product-image {
   width: 112px;
   height: 112px;
