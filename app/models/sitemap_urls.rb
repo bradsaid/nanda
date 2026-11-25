@@ -70,7 +70,6 @@ class SitemapUrls
 
   def static_pages
     add root_path,      changefreq: "daily",   priority: 1.0
-    add home_path,      changefreq: "daily",   priority: 0.9
     add about_path,     changefreq: "monthly", priority: 0.5
     add podcasts_path,  changefreq: "weekly",  priority: 0.6
     # The one forum URL that is public and crawlable whether or not the forum is open.

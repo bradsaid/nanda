@@ -132,7 +132,8 @@ Rails.application.routes.draw do
   post "page_view_ping", to: "page_view_pings#create"
 
   get 'podcasts', to: 'static_pages#podcasts'
-  get "home", to: "home#index"
+  # The homepage lives at "/" only; /home was a duplicate of it.
+  get "home", to: redirect { |_params, req| req.query_string.present? ? "/?#{req.query_string}" : "/" }, status: 301
   root "home#index"
 
  
