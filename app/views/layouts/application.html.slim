@@ -1,12 +1,15 @@
 doctype html
-html
-  head 
+html lang="en"
+  head
+    / Must be first in <head> (within the first 1024 bytes, before any text).
+    meta charset="utf-8"
+
     / === Core SEO ===
     - site_name = "Naked & Afraid Fan Wiki"
     title = content_for?(:title) ? yield(:title) : "#{site_name}"
     meta name="description" content=(content_for?(:meta_description) ? yield(:meta_description) : "Fan wiki with survivors, episodes, items, and filming locations for Naked & Afraid.")
-    / (Google ignores keywords; harmless to keep)
-    meta name="keywords" content=(content_for?(:keywords) ? yield(:keywords) : "Naked and Afraid, wiki, survivors, episodes, items, PSR, locations")
+    / No <meta name="keywords">: search engines ignore it. Pages may still call
+    / content_for :keywords; nothing renders it.
 
     / Canonical + robots
     link rel="canonical" href=(content_for?(:canonical_url) ? yield(:canonical_url) : canonical_request_url)
@@ -86,7 +89,6 @@ html
     = yield :head
 
     / Icons
-    = favicon_link_tag "/favicon.png", type: "image/png"
     link rel="icon" href="/favicon.png" type="image/png"
     link rel="icon" href="/icon.svg" type="image/svg+xml"
     link rel="apple-touch-icon" href="/favicon.png"
