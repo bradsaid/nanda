@@ -1,4 +1,6 @@
-- content_for :title, "#{@series.name} — Naked and Afraid Fan Wiki"
+/ The series name already says "Naked and Afraid", so the title is the name plus what the page holds,
+/ with no site-name suffix repeating it (site_title adds one only where it fits and is not redundant).
+- content_for :title, site_title("#{@series.name} — Seasons, Episodes & Cast")
 - content_for :meta_description, ((series_synopsis(@series) || "").presence || "#{@series.name}: #{@seasons.size} season(s), #{@episode_count} episode(s), #{@survivor_count} survivalists.").first(160)
 - content_for :canonical_url, canonical_request_url
 
