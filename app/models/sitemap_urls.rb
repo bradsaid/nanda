@@ -17,7 +17,8 @@ class SitemapUrls
   HOST = "https://www.nakedandafraidfan.com".freeze
 
   # Bump to invalidate every cached sitemap after changing the URL set below.
-  VERSION = 2
+  # (3: episode, item, country, food source, shelter and item-type pages moved to slug URLs.)
+  VERSION = 3
 
   # <lastmod> for pages whose content is a template, not data. There is no way to read a
   # template's last git commit at runtime on Heroku, so each is the date of its last
@@ -158,28 +159,33 @@ class SitemapUrls
   # Filter / facet pages. Lists carry the newest change in the data behind them; each
   # facet page the newest change among its own rows.
   def facets
+    # Names and their slug URLs come from NameSlugs, so a page is listed under exactly the
+    # URL it serves (the old spaced / numeric spellings only redirect and are never listed).
+    # Lastmod lookups are keyed the way NameSlugs keys a name (stripped, lower-cased for
+    # countries and food sources).
     country_episodes = Episode.joins(:location).group("locations.country").maximum("episodes.updated_at")
     country_places   = Location.group(:country).maximum(:updated_at)
-    Location.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country).each do |country|
-      add by_country_episodes_path(country: country), changefreq: "weekly", priority: 0.6,
-          lastmod: latest(country_episodes[country], country_places[country])
+    country_stamp = ->(hash, name) { hash.select { |k, _| k.to_s.strip.downcase == name.to_s.strip.downcase }.values }
+    NameSlugs.all(:country).each do |country, slug|
+      add by_country_episodes_path(country: slug), changefreq: "weekly", priority: 0.6,
+          lastmod: latest(country_stamp.(country_episodes, country), country_stamp.(country_places, country))
     end
 
     type_stamps = Item.group(:item_type).maximum(:updated_at)
-    Item.where.not(item_type: [nil, ""]).distinct.order(:item_type).pluck(:item_type).each do |type|
-      add type_items_path(item_type: type), changefreq: "weekly", priority: 0.6, lastmod: latest(type_stamps[type])
+    NameSlugs.all(:item_type).each do |type, slug|
+      add type_items_path(item_type: slug), changefreq: "weekly", priority: 0.6, lastmod: latest(type_stamps[type])
     end
 
     add food_sources_path, changefreq: "weekly", priority: 0.6, lastmod: latest(stamp(FoodSource))
     food_stamps = FoodSource.group(:name).maximum(:updated_at)
-    FoodSource.distinct.order(:name).pluck(:name).compact.reject { |n| n.strip.empty? }.each do |name|
-      add food_source_path(name: name), changefreq: "monthly", priority: 0.5, lastmod: latest(food_stamps[name])
+    NameSlugs.all(:food_source).each do |name, slug|
+      add food_source_path(name: slug), changefreq: "monthly", priority: 0.5, lastmod: latest(food_stamps[name])
     end
 
     add shelters_path, changefreq: "weekly", priority: 0.6, lastmod: latest(stamp(EpisodeShelter))
     shelter_stamps = EpisodeShelter.group(:shelter_type).maximum(:updated_at)
-    EpisodeShelter.distinct.order(:shelter_type).pluck(:shelter_type).compact.reject { |t| t.strip.empty? }.each do |type|
-      add shelter_path(shelter_type: type), changefreq: "monthly", priority: 0.5, lastmod: latest(shelter_stamps[type])
+    NameSlugs.all(:shelter).each do |type, slug|
+      add shelter_path(shelter_type: slug), changefreq: "monthly", priority: 0.5, lastmod: latest(shelter_stamps[type])
     end
 
     add locations_path, changefreq: "weekly", priority: 0.6, lastmod: latest(stamp(Location), stamp(Episode))

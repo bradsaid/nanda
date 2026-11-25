@@ -12,7 +12,7 @@ def linkify_ep(ep)
   series = ep.season&.series&.name
   season = ep.season&.number
   label = "#{series} S#{season}E#{ep.number_in_season} \"#{title}\""
-  %Q(<a href="/episodes/#{ep.id}">#{label}</a>)
+  %Q(<a href="/episodes/#{ep.to_param}">#{label}</a>)
 end
 
 def linkify_season(season)
@@ -23,7 +23,7 @@ end
 
 def linkify_country(country)
   return country if country.blank?
-  %Q(<a href="/episodes/by_country/#{country.gsub(' ', '%20')}">#{country}</a>)
+  %Q(<a href="/episodes/by_country/#{NameSlugs.slug(:country, country)}">#{country}</a>)
 end
 
 def format_psr(v)

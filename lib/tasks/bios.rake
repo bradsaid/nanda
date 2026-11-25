@@ -22,7 +22,7 @@ namespace :bios do
       else
         e.title
       end
-      %(<a href="/episodes/#{e.id}">#{label}</a>)
+      %(<a href="/episodes/#{e.to_param}">#{label}</a>)
     }
 
     series_link = ->(name) {

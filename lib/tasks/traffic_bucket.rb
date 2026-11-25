@@ -6,7 +6,7 @@ def bucket(path)
   when %r{\A/items/[^/]+} then "item page"
   when %r{\A/items\z}, %r{\A/items\?} then "items index"
   when %r{\A/episodes/by_country} then "country page"
-  when %r{\A/episodes/\d} then "episode page"
+  when %r{\A/episodes/[^/]+\z} then "episode page"
   when %r{\A/episodes\z}, %r{\A/episodes\?} then "episodes index"
   when %r{\A/seasons} then "seasons"
   when %r{\A/locations} then "locations"

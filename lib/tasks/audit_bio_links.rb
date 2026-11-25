@@ -17,16 +17,16 @@ Survivor.all.each do |s|
     next if href.empty?
 
     if href.start_with?("/episodes/")
-      # /episodes/N, /episodes/by_country/X, /episodes
-      if href =~ %r{\A/episodes/(\d+)\z}
-        eid = $1.to_i
-        unless Episode.exists?(eid)
-          internal_broken << { survivor: s.full_name, id: s.id, href: href, reason: "episode id #{eid} missing" }
-        end
-      elsif href.start_with?("/episodes/by_country/")
-        country = href.sub("/episodes/by_country/", "")
-        unless Episode.joins(:location).where("locations.country = ?", country).exists?
+      # /episodes/<slug or N>, /episodes/by_country/<slug or old Name>, /episodes
+      if href.start_with?("/episodes/by_country/")
+        country = CGI.unescape(href.sub("/episodes/by_country/", ""))
+        unless NameSlugs.resolve(:country, country)
           internal_broken << { survivor: s.full_name, id: s.id, href: href, reason: "no episodes for country '#{country}'" }
+        end
+      elsif href =~ %r{\A/episodes/([^/?#]+)\z}
+        ref = $1
+        unless (Episode.friendly.find(ref) rescue nil)
+          internal_broken << { survivor: s.full_name, id: s.id, href: href, reason: "episode '#{ref}' missing" }
         end
       end
     elsif href.start_with?("/survivors/")
