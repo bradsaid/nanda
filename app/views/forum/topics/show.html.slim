@@ -82,6 +82,8 @@
       = f.file_field :images, multiple: true, accept: "image/*", class: "form-control form-control-sm"
     = f.submit "Post reply", class: "btn btn-primary"
     = render "shared/guidelines_agreement"
+  / @survivalist / #episode typeahead; only forum composers load it.
+  = javascript_import_module_tag "forum_mentions"
 - elsif @topic.locked?
   .alert.alert-warning.mt-3 This topic is locked.
 - elsif logged_in?

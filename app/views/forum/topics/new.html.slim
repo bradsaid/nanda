@@ -33,3 +33,6 @@
     = f.submit "Post topic", class: "btn btn-primary"
     = link_to "Cancel", forum_path, class: "btn btn-outline-secondary"
   = render "shared/guidelines_agreement"
+
+/ @survivalist / #episode typeahead; only forum composers load it.
+= javascript_import_module_tag "forum_mentions"

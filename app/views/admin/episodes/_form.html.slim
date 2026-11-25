@@ -596,3 +596,6 @@
   .col-12
     = f.submit class: "btn btn-primary"
     = link_to "Cancel", admin_episodes_path, class: "btn btn-outline-secondary ms-2"
+
+/ Only the admin episode form needs this script (it is not in the global bundle).
+= javascript_import_module_tag "episode_form"

@@ -111,6 +111,8 @@ html
     - if controller_path == "locations" || content_for?(:needs_map)
       = stylesheet_link_tag "leaflet", "data-turbo-track": "reload"
       = stylesheet_link_tag "locations", "data-turbo-track": "reload"
+      / Leaflet (~147 KB) is only imported on pages with a map, not everywhere.
+      = javascript_import_module_tag "locations_map"
     = stylesheet_link_tag "map", "data-turbo-track": "reload"
 
   body

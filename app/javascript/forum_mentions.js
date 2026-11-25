@@ -173,4 +173,7 @@ function attachMentions() {
 
 document.addEventListener("turbo:load", attachMentions);
 document.addEventListener("DOMContentLoaded", attachMentions);
+// Loaded per page (forum composers only), possibly after turbo:load has fired.
+// attachMentions skips textareas it already handled.
+if (document.readyState !== "loading") attachMentions();
 export {};

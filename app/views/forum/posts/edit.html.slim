@@ -10,3 +10,6 @@
   .d-flex.gap-2
     = f.submit "Save", class: "btn btn-primary"
     = link_to "Cancel", forum_topic_path(@post.forum_topic), class: "btn btn-outline-secondary"
+
+/ @survivalist / #episode typeahead; only forum composers load it.
+= javascript_import_module_tag "forum_mentions"

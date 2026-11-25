@@ -10,9 +10,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl:     pick("leaflet-shadow"),
 });
 
-document.addEventListener("turbo:load", () => {
+// This module is only loaded on pages that have a map, and a Turbo visit can
+// finish rendering before it has downloaded. So initialise as soon as it runs
+// (if the element is already there) and again on each turbo:load; the WeakSet
+// stops the same element being initialised twice in one visit.
+const initialised = new WeakSet();
+
+function initLocationsMap() {
   const el = document.getElementById("locations-map");
-  if (!el) return console.warn("[map] #locations-map not found");
+  if (!el) return;
+  if (initialised.has(el)) return;
+  initialised.add(el);
 
   const url = el.dataset.locationsUrl;
   if (!url) return console.warn("[map] missing data-locations-url");
@@ -63,4 +71,7 @@ document.addEventListener("turbo:load", () => {
       console.error("[map] fetch error", e);
       map.setView([20, 0], 2);
     });
-});
+}
+
+document.addEventListener("turbo:load", initLocationsMap);
+if (document.readyState !== "loading") initLocationsMap();

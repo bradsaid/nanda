@@ -566,3 +566,6 @@ function initEpisodeForm() {
 
 document.addEventListener("turbo:load", initEpisodeForm);
 document.addEventListener("DOMContentLoaded", initEpisodeForm);
+// Loaded per page (admin episode form only), possibly after turbo:load has fired.
+// initEpisodeForm is idempotent, so also run it now if the DOM is ready.
+if (document.readyState !== "loading") initEpisodeForm();
