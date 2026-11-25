@@ -1,4 +1,13 @@
-- content_for :title, "#{@topic.title} — Forum"
+/ ===== SEO =====
+- list_page = canonical_page_number
+- content_for :title, paginated_title("#{@topic.title} — Forum", list_page)
+/ The thread's own opening post makes the description unique per thread; no first post, no excerpt.
+- thread_desc = meta_excerpt(@opening_post_text).presence || "Discussion on the Naked & Afraid fan forum."
+- content_for :meta_description, paginated_description(thread_desc, list_page)
+/ DiscussionForumPosting for public threads, page one only (the opening post is not on the later pages).
+- if forum_enabled? && list_page == 1 && (opening_post = @posts.find { |post| post.id == @opening_post_id })
+  = render_jsonld(forum_topic_jsonld(topic: @topic, opening_post: opening_post, replies: @posts.reject { |post| post.id == @opening_post_id }, reply_count: [ @posts.total_count - 1, 0 ].max))
+/ ===== end SEO =====
 
 .pb-2.mb-3.border-bottom.site-header
   nav.small.mb-1
@@ -51,7 +60,7 @@
               - if p.user_id != current_user.id
                 = link_to "Report", new_forum_post_report_path(p), class: "small text-decoration-none text-danger"
         .mt-2.forum-post-body
-          == p.body_html
+          = forum_post_html(p)
         - if p.images.attached?
           .mt-2.d-flex.flex-wrap.gap-2.forum-post-images
             - p.images.each do |img|

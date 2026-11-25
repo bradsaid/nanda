@@ -1,5 +1,5 @@
-- content_for :title, "Forum — Naked & Afraid Fan Wiki"
-- content_for :meta_description, "Fan discussion for Naked and Afraid: episode reactions, survivor threads, item talk, and more."
+- content_for :title, paginated_title("Forum — Naked & Afraid Fan Wiki", @page_number)
+- content_for :meta_description, paginated_description("Fan discussion for Naked and Afraid: episode reactions, survivor threads, item talk, and more.", @page_number)
 
 .pb-2.mb-4.border-bottom.site-header
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3

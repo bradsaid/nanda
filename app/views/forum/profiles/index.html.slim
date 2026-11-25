@@ -1,4 +1,6 @@
-- content_for :title, "Members — Forum"
+- members_page = canonical_page_number
+- content_for :title, paginated_title("Members — Forum", members_page)
+- content_for :meta_description, paginated_description("Directory of the #{@member_total} #{'member'.pluralize(@member_total)} of the Naked & Afraid fan forum: usernames, join dates and activity.", members_page)
 
 .pb-2.mb-4.border-bottom.site-header
   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3

@@ -37,7 +37,10 @@ module Forum
                       .chronological
                       .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
       @new_post = Forum::Post.new
-      @opening_post_id = @topic.posts.active.chronological.pick(:id)
+      # The opening post's text feeds the meta description and structured data, and is
+      # needed on later pages too, where the post itself is not in @posts.
+      @opening_post_id, opening_html, opening_body = @topic.posts.active.chronological.pick(:id, :body_html, :body)
+      @opening_post_text = opening_html.presence || opening_body
       build_mentioned_gear_shelf
       # Crawlers and link-preview bots are not readers; counting them inflated
       # the figure and made every one of their fetches a database write.

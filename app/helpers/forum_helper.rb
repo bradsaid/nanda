@@ -44,6 +44,13 @@ module ForumHelper
     end
   end
 
+  # A post may carry an <h1> (Markdown "# Heading"); the page's own title is the one h1, so a
+  # post's headings start at h2. Works on the already-sanitised body_html, where a literal
+  # "<h1" typed as text is escaped and cannot match.
+  def forum_post_html(post)
+    post.body_html.to_s.gsub(%r{<(/?)h1\b}i, '<\1h2').html_safe
+  end
+
   def forum_subscribed?(topic)
     return false unless logged_in?
     current_user.forum_subscriptions.where(forum_topic_id: topic.id).exists?

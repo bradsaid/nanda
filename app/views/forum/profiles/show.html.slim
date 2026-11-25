@@ -1,4 +1,8 @@
 - content_for :title, "#{@user.username} — Forum profile"
+/ Public data only: username, join date, post and topic counts, and the bio the member chose to show.
+- profile_intro = "#{@user.username} joined the Naked & Afraid fan forum in #{@member_since.strftime('%B %Y')} and has written #{pluralize(@posts_count, 'post')} and started #{pluralize(@topics_count, 'topic')}."
+- profile_bio   = meta_excerpt(@user.bio.to_s)
+- content_for :meta_description, truncate_at_word([ profile_intro, profile_bio ].compact_blank.join(" "), SeoHelper::DESCRIPTION_LIMIT)
 
 .pb-2.mb-4.border-bottom.site-header
   nav.small.mb-1
@@ -64,6 +68,6 @@ h2.h5.mb-3 Recent posts
             span in
             = link_to p.forum_topic.title, forum_topic_path(p.forum_topic, anchor: "post-#{p.id}"), class: "text-decoration-none"
           .mt-1.small.forum-post-body(style="max-height: 4.5rem; overflow: hidden;")
-            == p.body_html
+            = forum_post_html(p)
 - else
   p.text-muted No posts yet.
