@@ -106,37 +106,38 @@ class EpisodesPaginationTest < ActionDispatch::IntegrationTest
       Episode.create!(season: s, number_in_season: 1, title: "Country ep #{i}", air_date: Date.new(2010, 1, 1) + i, location: place)
     end
 
-    get by_country_episodes_path(country: "Pagerland")
+    get "/episodes/by_country/pagerland"
     assert_response :success
     assert_select ".card .card-header a[href^='/episodes/']", per
-    assert_select "a.page-link[rel=next][href=?]", "/episodes/by_country/Pagerland?page=2"
-    assert_equal "http://www.example.com/episodes/by_country/Pagerland", canonical
+    assert_select "a.page-link[rel=next][href=?]", "/episodes/by_country/pagerland?page=2"
+    assert_equal "http://www.example.com/episodes/by_country/pagerland", canonical
     first_page = css_select(".card-header a[href^='/episodes/']").map { |a| a["href"] }
 
-    get by_country_episodes_path(country: "Pagerland", page: 3)
+    get "/episodes/by_country/pagerland", params: { page: 3 }
     assert_response :success
     assert_select ".card .card-header a[href^='/episodes/']", 1
-    assert_equal "http://www.example.com/episodes/by_country/Pagerland?page=3", canonical
+    assert_equal "http://www.example.com/episodes/by_country/pagerland?page=3", canonical
     assert_empty(first_page & css_select(".card-header a[href^='/episodes/']").map { |a| a["href"] })
 
-    get by_country_episodes_path(country: "Pagerland", page: 4)
+    get "/episodes/by_country/pagerland", params: { page: 4 }
     assert_response :not_found
   end
 
   test "a small country has no pagination nav and still lists everything" do
     quiet = Location.create!(country: "Quietland", site: "Quiet Site")
     Episode.create!(season: @seasons.first, number_in_season: 9, title: "Quiet ep", air_date: Date.new(2011, 1, 1), location: quiet)
-    get by_country_episodes_path(country: "Quietland")
+    get "/episodes/by_country/quietland"
     assert_response :success
     assert_select ".card .card-header a[href^='/episodes/']", 1
     assert_select "ul.pagination", false
   end
 
   test "a country with no episodes is a 200 on page 1 and 404 beyond" do
-    get by_country_episodes_path(country: "Atlantis")
+    Location.create!(country: "Atlantis", site: "Sunken", latitude: 1.0, longitude: 1.0)
+    get "/episodes/by_country/atlantis"
     assert_response :success
     assert_match(/No episodes found/, response.body)
-    get by_country_episodes_path(country: "Atlantis", page: 2)
+    get "/episodes/by_country/atlantis", params: { page: 2 }
     assert_response :not_found
   end
 end

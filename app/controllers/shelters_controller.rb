@@ -1,4 +1,6 @@
 class SheltersController < ApplicationController
+  include SlugRedirects
+
   def index
     @shelter_counts = EpisodeShelter
       .group(:shelter_type)
@@ -7,7 +9,9 @@ class SheltersController < ApplicationController
   end
 
   def show
-    @shelter_type = params[:shelter_type].to_s.strip
+    # /shelters/lean-to; the old /shelters/Lean-to (the type spelled out) 301s to the slug.
+    match = resolve_name_slug!(:shelter, params[:shelter_type]) { |slug| shelter_path(shelter_type: slug) } or return
+    @shelter_type = match.key
     @shelters = EpisodeShelter
       .where(shelter_type: @shelter_type)
       .includes(episode: [:location, { season: :series }])

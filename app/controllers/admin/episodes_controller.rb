@@ -6,15 +6,7 @@ module Admin
     def index
       # Traffic per episode over the last 30 days, keyed by episode id.
       # Cached so the /admin/episodes page doesn't rescan PageView on every hit.
-      path_counts = Rails.cache.fetch("admin/episodes/traffic_counts/v1", expires_in: 5.minutes) do
-        PageView.where(created_at: 30.days.ago..)
-                .where("path ~ ?", '^/episodes/[0-9]+$')
-                .group(:path).count
-      end
-      @traffic_by_episode_id = path_counts.each_with_object({}) do |(path, count), h|
-        id = path.split("/").last.to_i
-        h[id] = count if id.positive?
-      end
+      @traffic_by_episode_id = episode_traffic_by_id
 
       scope = Episode.includes(season: :series, location: {}, episode_traps: {})
                      .joins(season: :series)
@@ -109,7 +101,7 @@ module Admin
         episode_shelters: [],
         medical_calls: [],
         bushcraft_items: []
-      ).find(params[:id])
+      ).friendly.find(params[:id]) # admin URLs carry the slug; a numeric id still works
     end
 
     # Drop any new appearance_items rows that would collide with an existing

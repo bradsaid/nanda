@@ -182,7 +182,7 @@ class LocationsMapTest < ActionDispatch::IntegrationTest
     loc = Location.create!(country: "Peru", site: "Embed Country", latitude: -9.1, longitude: -75.0)
     add_episodes(Season.create!(series: Series.create!(name: "Embed Country S"), number: 1, year: 2020), loc, 1)
 
-    get by_country_episodes_path("Peru")
+    get "/episodes/by_country/peru"
     assert_response :success
     map = css_select("#locations-map").first
     assert map, "map container should be present"

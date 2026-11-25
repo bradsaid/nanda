@@ -16,7 +16,7 @@ class EpisodesFilteredViewsTest < ActionDispatch::IntegrationTest
   end
 
   def episode_hrefs
-    css_select("a[href^='/episodes/']").map { |a| a["href"] }.grep(%r{\A/episodes/\d+\z}).uniq
+    css_select("a[href^='/episodes/']").map { |a| a["href"] }.grep(%r{\A/episodes/[^/]+\z}).uniq
   end
 
   test "overview lists every season in the jump dropdown" do
@@ -31,7 +31,7 @@ class EpisodesFilteredViewsTest < ActionDispatch::IntegrationTest
   test "country filter redirects permanently to the country page, which lists its episodes" do
     get episodes_path(country: "Peru")
     assert_response :moved_permanently
-    assert_redirected_to by_country_episodes_path(country: "Peru")
+    assert_redirected_to "/episodes/by_country/peru"
 
     follow_redirect!
     assert_response :success
@@ -44,7 +44,7 @@ class EpisodesFilteredViewsTest < ActionDispatch::IntegrationTest
     Location.create!(country: "Costa Rica", site: "Filter Coast", latitude: 9.7, longitude: -83.7)
     get episodes_path(country: " costa rica ")
     assert_response :moved_permanently
-    assert_redirected_to by_country_episodes_path(country: "costa rica")
+    assert_redirected_to "/episodes/by_country/costa-rica"
     follow_redirect!
     assert_response :success
   end

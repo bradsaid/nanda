@@ -49,10 +49,10 @@ li.list-group-item.shop-product id=ShopCatalog.anchor(product)
             = product[:evidence]
             - if product[:evidence_url].present?
               |  
-              = link_to "Source", product[:evidence_url], target: "_blank", rel: "noopener noreferrer nofollow"
+              = link_to "Source", slug_site_url(product[:evidence_url]), target: "_blank", rel: "noopener noreferrer nofollow"
             - Array(product[:more_sources]).each_with_index do |url, i|
               |  
-              = link_to "Source #{i + 2}", url, target: "_blank", rel: "noopener noreferrer nofollow"
+              = link_to "Source #{i + 2}", slug_site_url(url), target: "_blank", rel: "noopener noreferrer nofollow"
         / product[:notes] holds maintainer notes (verification remarks); it is deliberately never shown.
         - if link_item && item
           .small.mt-1

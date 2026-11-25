@@ -1,4 +1,6 @@
 class FoodSourcesController < ApplicationController
+  include SlugRedirects
+
   def index
     @category = params[:category].to_s.strip.presence
 
@@ -14,7 +16,9 @@ class FoodSourcesController < ApplicationController
   end
 
   def show
-    @name = params[:name].to_s.strip.downcase
+    # /food_sources/angel-fish; the old /food_sources/angel%20fish (any case) 301s to it.
+    match = resolve_name_slug!(:food_source, params[:name]) { |slug| food_source_path(name: slug) } or return
+    @name = match.key
     @food_sources = FoodSource
       .where(name: @name)
       .includes(episode: [:location, { season: :series }])

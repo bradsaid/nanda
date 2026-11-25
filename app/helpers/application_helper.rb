@@ -312,7 +312,9 @@ module ApplicationHelper
       end
     end
 
-    result = sanitized_html.to_s.dup
+    # Bios were written with /episodes/<id> and /episodes/by_country/<Name> links; point them
+    # at the slug URLs so readers and crawlers skip the redirect.
+    result = slug_internal_links(sanitized_html.to_s)
     aliases.sort_by { |alias_name, _| -alias_name.length }.each do |alias_name, s|
       # First-name-only aliases (single word) should not match when directly
       # followed by another capitalized word — that pattern indicates a

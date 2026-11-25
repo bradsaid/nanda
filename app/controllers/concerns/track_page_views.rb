@@ -23,6 +23,7 @@ module TrackPageViews
 
   def record_page_view
     return unless request.get?
+    return if @skip_page_view # a slug-URL redirect (SlugRedirects): the canonical URL is the view
     return if request.path.start_with?("/admin")
     return if request.path.match?(/\.(js|css|png|jpg|svg|ico|woff2?|map)\z/)
     return if request.user_agent.blank? || BOT_PATTERN.match?(request.user_agent)

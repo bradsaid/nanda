@@ -123,7 +123,7 @@ class SurvivorsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#explore-heading"
     assert_select "section[aria-labelledby=explore-heading] a[href='#{survivor_path(mate)}']", text: "Season Mate"
     assert_select "section[aria-labelledby=explore-heading] a[href='#{survivor_path(country_mate)}']", text: "Country Mate"
-    assert_select "section[aria-labelledby=explore-heading] a[href='#{by_country_episodes_path(country: "Colombia")}']"
+    assert_select "section[aria-labelledby=explore-heading] a[href='/episodes/by_country/colombia']"
     assert_select "section[aria-labelledby=explore-heading] a[href='#{survivor_path(me)}']", false
   end
 

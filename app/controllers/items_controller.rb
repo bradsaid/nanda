@@ -1,5 +1,6 @@
 class ItemsController < ApplicationController
   include GearShelf
+  include SlugRedirects
 
   # Cache TTL for expensive aggregations on the index page. Data only changes
   # when someone edits an episode's items in admin, so 15 min is safe.
@@ -166,7 +167,9 @@ class ItemsController < ApplicationController
   end
 
   def show
-    @item    = Item.find(params[:id])
+    # By slug, by an old slug (history) or by numeric id; the last two 301 to the slug URL.
+    @item = find_by_slug_or_id(Item, params[:id])
+    return if redirect_to_current_slug(@item)
     @country = params[:country].presence
 
     # Base scope with all joins needed (series join required for adjusted logic)
@@ -206,7 +209,9 @@ class ItemsController < ApplicationController
   end
 
   def type
-    @item_type = params[:item_type].to_s
+    # /items/types/fire-starting-tool; the old /items/types/fire%20starting%20tool 301s to it.
+    match = resolve_name_slug!(:item_type, params[:item_type]) { |slug| type_items_path(item_type: slug) } or return
+    @item_type = match.name
     @country   = params[:country].presence
 
     # ✅ Correct join syntax (array under :appearance)

@@ -110,12 +110,14 @@ Rails.application.routes.draw do
   end
   resources :episodes, only: [:index, :show] do
     collection do
-      get "by_country/:country", to: "episodes#by_country", as: :by_country
+      # The segment is a hyphenated slug (south-africa); the constraint lets the OLD
+      # spelling through too ("St. Lucia" has a dot), which then 301s to the slug.
+      get "by_country/:country", to: "episodes#by_country", as: :by_country, constraints: { country: /[^\/]+/ }
     end
   end
   resources :items, only: [:index, :show] do
     collection do
-      get "types/:item_type", to: "items#type", as: :type
+      get "types/:item_type", to: "items#type", as: :type, constraints: { item_type: /[^\/]+/ }
     end
   end
   # The constraint lets a name contain a dot; otherwise Rails reads everything

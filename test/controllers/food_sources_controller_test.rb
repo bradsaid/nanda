@@ -35,7 +35,9 @@ class FoodSourcesControllerTest < ActionDispatch::IntegrationTest
   # "st. john's wort" resolved to a truncated name and showed nothing.
   test "a name containing a dot is looked up whole" do
     FoodSource.create!(episode: @episode, name: "st. john's wort", category: "plant")
-    get food_source_path("st. john's wort")
+    get food_source_path("st. john's wort") # the old spelling: redirects to the slug URL
+    assert_redirected_to "/food_sources/st-john-s-wort"
+    follow_redirect!
     assert_response :success
     assert_match(/john/i, response.body)
   end

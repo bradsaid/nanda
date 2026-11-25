@@ -61,7 +61,10 @@ module Admin
       # Every episode of a season usually exists already (bulk-imported), so
       # excluding only the current one made "latest" resolve to the finale and
       # copied the finale's roster into episode 2.
-      current = season.episodes.find_by(id: params[:exclude_episode_id]) if params[:exclude_episode_id].present?
+      # The edit form passes the episode's URL segment, which is its slug (or its id).
+      if (excluded = params[:exclude_episode_id].to_s.presence)
+        current = excluded.match?(/\A\d+\z/) ? season.episodes.find_by(id: excluded) : season.episodes.find_by(slug: excluded)
+      end
       if current
         episodes_scope = episodes_scope.where.not(id: current.id)
                                        .where("number_in_season < ?", current.number_in_season)

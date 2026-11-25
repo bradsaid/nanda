@@ -61,9 +61,10 @@ class CanonicalParamsTest < ActionDispatch::IntegrationTest
   test "the country page canonicalises to its own clean path" do
     country = locations(:one).country
     skip "fixture location has no country" if country.blank?
-    get by_country_episodes_path(country: country), params: { sort: "x", foo: "bar" }
+    path = by_country_episodes_path(country: NameSlugs.slug(:country, country))
+    get path, params: { sort: "x", foo: "bar" }
     assert_response :success
-    assert_equal "http://www.example.com#{by_country_episodes_path(country: country)}", canonical
+    assert_equal "http://www.example.com#{path}", canonical
   end
 
   test "params that select different content are kept, in a stable order" do

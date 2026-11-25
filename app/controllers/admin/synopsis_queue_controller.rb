@@ -10,15 +10,7 @@ module Admin
       # Traffic per episode over the last 30 days, keyed by episode id.
       # Shared cache with Admin::EpisodesController so we don't rescan
       # PageView twice per admin session.
-      path_counts = Rails.cache.fetch("admin/episodes/traffic_counts/v1", expires_in: 5.minutes) do
-        PageView.where(created_at: 30.days.ago..)
-                .where("path ~ ?", '^/episodes/[0-9]+$')
-                .group(:path).count
-      end
-      @traffic_by_episode_id = path_counts.each_with_object({}) do |(path, count), h|
-        id = path.split("/").last.to_i
-        h[id] = count if id.positive?
-      end
+      @traffic_by_episode_id = episode_traffic_by_id
 
       scope = Episode.includes(season: :series, location: {})
       scope = scope.where(synopsis: [nil, ""])       if @only == "missing"

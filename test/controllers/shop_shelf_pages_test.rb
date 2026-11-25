@@ -162,7 +162,7 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
 
   test "a country page shows shop cards for gear used in that country only" do
     with_products do
-      get by_country_episodes_path("Costa Rica")   # episode one: pot brought, knife given
+      get "/episodes/by_country/costa-rica"   # episode one: pot brought, knife given
       assert_response :success
       assert_select ".shop-shelf h2", text: "Shop the Gear Used in Costa Rica"
       assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@pot, country: "Costa Rica")
@@ -170,7 +170,7 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
       assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@salt, country: "Costa Rica"), 0   # found, not used
       assert_select ".shop-shelf li.shop-product", text: /Given Knife/
 
-      get by_country_episodes_path("South Africa") # episode two: pot given, no knife
+      get "/episodes/by_country/south-africa" # episode two: pot given, no knife
       assert_select ".shop-shelf h2", text: "Shop the Gear Used in South Africa"
       assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@pot, country: "South Africa")
       assert_select ".shop-shelf .shop-shelf-item a[href=?]", item_path(@knife, country: "South Africa"), 0
@@ -180,16 +180,18 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
 
   test "country matching ignores case, and products naming a local episode or survivor are labelled" do
     with_products do
-      get by_country_episodes_path("costa rica")
-      assert_select ".shop-shelf h2", text: "Shop the Gear Used in costa rica"
-      assert_select ".shop-specific", text: "Seen in costa rica"
+      get "/episodes/by_country/COSTA%20RICA"   # an old, differently cased URL: 301 to the slug
+      assert_redirected_to "/episodes/by_country/costa-rica"
+      follow_redirect!
+      assert_select ".shop-shelf h2", text: "Shop the Gear Used in Costa Rica"
+      assert_select ".shop-specific", text: "Seen in Costa Rica"
       assert_select ".shop-specific", text: "Used by Test Survivor A"
     end
   end
 
   test "a country's capped items link to the item page filtered to that country" do
     with_products do
-      get by_country_episodes_path("Costa Rica")
+      get "/episodes/by_country/costa-rica"
       pots = css_select(".shop-shelf li.shop-product").select { |li| li.text.include?("Pot") }
       assert_equal 3, pots.size   # the country shelf shows 3 per item
       assert_select ".shop-shelf a[href=?]", item_path(@pot, country: "Costa Rica"), text: "see all"
@@ -198,7 +200,8 @@ class ShopShelfPagesTest < ActionDispatch::IntegrationTest
 
   test "a country with no catalogued gear gets no shelf" do
     with_products do
-      get by_country_episodes_path("Peru")
+      Location.create!(country: "Peru", site: "Gearless", latitude: -9.1, longitude: -75.0)
+      get "/episodes/by_country/peru"
       assert_response :success
       assert_select ".shop-shelf", 0
     end

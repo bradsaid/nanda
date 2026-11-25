@@ -149,7 +149,7 @@ function initEpisodeForm() {
   // pass &exclude_episode_id= so "previous" doesn't return the episode we're
   // currently looking at.
   function currentEpisodeIdFromUrl() {
-    var m = window.location.pathname.match(/\/admin\/episodes\/(\d+)\/edit/);
+    var m = window.location.pathname.match(/\/admin\/episodes\/([^\/]+)\/edit/);
     return m ? m[1] : null;
   }
   function buildLatestPrevUrl() {

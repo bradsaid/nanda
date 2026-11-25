@@ -63,7 +63,7 @@ class JavascriptLoadingTest < ActionDispatch::IntegrationTest
   test "an episodes-by-country page imports the map module" do
     location = locations(:one)
     location.update!(latitude: 10.5, longitude: -85.4) # the map only renders for geocoded countries
-    get by_country_episodes_path(country: location.country)
+    get by_country_episodes_path(country: NameSlugs.slug(:country, location.country))
     assert_includes module_imports(Nokogiri::HTML(response.body)), "locations_map"
   end
 

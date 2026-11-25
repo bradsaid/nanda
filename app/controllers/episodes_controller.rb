@@ -2,6 +2,7 @@
 class EpisodesController < ApplicationController
   include GearShelf
   include Paginatable
+  include SlugRedirects
 
   # The season overview is ~8 KB of markup per season (cast chips, three episode rows), so
   # eight seasons a page keeps /episodes near 100 KB instead of ~340 KB. The country
@@ -16,8 +17,10 @@ class EpisodesController < ApplicationController
     # empty @seasons: an empty "Jump to a season" select and no episodes at
     # all). The real country page is #by_country, so send old/hand-typed
     # ?country= URLs there permanently.
+    # (An unknown country is the by_country 404, one redirect later.)
     if @country.present?
-      redirect_to by_country_episodes_path(country: @country), status: :moved_permanently
+      @skip_page_view = true
+      redirect_to by_country_episodes_path(country: NameSlugs.slug(:country, @country)), status: :moved_permanently
       return
     end
 
@@ -137,12 +140,15 @@ class EpisodesController < ApplicationController
   end
 
   def show
-    @episode = Episode
-      .includes(:location, :episode_shelters, :medical_calls, :bushcraft_items, season: :series,
-                episode_traps: :food_sources,
-                appearances: [{ survivor: { avatar_attachment: :blob } }, { appearance_items: :item }],
-                food_sources: :episode_trap)
-      .find(params[:id])
+    # By slug, by an old slug (history) or by numeric id; the last two 301 to the slug URL.
+    @episode = find_by_slug_or_id(
+      Episode.includes(:location, :episode_shelters, :medical_calls, :bushcraft_items, season: :series,
+                       episode_traps: :food_sources,
+                       appearances: [{ survivor: { avatar_attachment: :blob } }, { appearance_items: :item }],
+                       food_sources: :episode_trap),
+      params[:id]
+    )
+    return if redirect_to_current_slug(@episode)
 
     # On continuous-story seasons (XL, Global Showdown, Alone, etc.) the
     # "Copy participants from previous episode" admin button carries every
@@ -206,13 +212,17 @@ class EpisodesController < ApplicationController
   end
 
   def by_country
-    @country = params[:country].to_s.strip
+    # /episodes/by_country/south-africa. The old /episodes/by_country/South%20Africa (any
+    # case, %20 or +) 301s to the slug; a name that matches no country is a 404.
+    match = resolve_name_slug!(:country, params[:country]) { |slug| by_country_episodes_path(country: slug) } or return
+    @country = match.name
+    @country_slug = match.slug
     page = requested_page or return
     @episodes =
       Episode
         .includes(:location, season: :series, appearances: { survivor: { avatar_attachment: :blob } })
         .joins(:location)
-        .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
+        .where("TRIM(LOWER(locations.country)) = ?", match.key)
         .order(Arel.sql("air_date IS NULL, air_date DESC"))
 
     # Cards, newest first: a continuous-story season with 2+ episodes here is ONE card with
@@ -225,7 +235,7 @@ class EpisodesController < ApplicationController
     # Shop cards for gear brought or given in this country, busiest items first.
     # (Built for the whole country; only page 1 shows it.)
     build_gear_shelf(label: "Seen in #{@country}", episodes: @episodes.to_a) do |scope|
-      scope.where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
+      scope.where("TRIM(LOWER(locations.country)) = ?", match.key)
     end
   end
 
