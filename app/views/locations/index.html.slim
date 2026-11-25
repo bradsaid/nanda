@@ -1,4 +1,5 @@
 - content_for :title, "Locations"
+- content_for :robots, "noindex, follow" if @q.present? # internal search results stay out of the index
 
 / Server-rendered JSON-LD (CollectionPage listing Places)
 = render_jsonld(locations_index_jsonld(@countries_by_eps_adj.to_h))

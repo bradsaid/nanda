@@ -1,18 +1,46 @@
 module ApplicationHelper
-  # One place for the address shown on the contact page and used as the
-  # recipient by ContactMailer and ForumMailer.
-  # Query parameters that select genuinely different content (a filtered list,
-  # a country's page), as opposed to sorting/searching/limiting the same list.
-  # Only these survive into canonical and og:url, so /survivors?sort=name and
-  # /survivors both canonicalise to /survivors instead of splitting ranking.
-  CANONICAL_PARAMS = %w[location_id season_id series_id season country item_type source page].freeze
+  # Query parameters that select genuinely different content for a page (a filtered
+  # list), as opposed to sorting/searching/limiting the same list, per "controller#action".
+  # Only these survive into canonical and og:url, so /survivors?sort=name and /survivors
+  # both canonicalise to /survivors instead of splitting ranking. A page that ignores a
+  # parameter must not list it: /survivors?foo=1 is /survivors. Anything not listed here
+  # keeps no parameters at all.
+  #
+  # `page` is deliberately not in these lists. It is kept (beyond page 1) only where the
+  # page really paginates, see canonical_page_number.
+  CANONICAL_PARAMS = {
+    "episodes#index"      => %w[location_id season_id series_id season],
+    "items#index"         => %w[country source],
+    "items#show"          => %w[country],
+    "items#type"          => %w[country],
+    "locations#index"     => %w[location_id country],
+    "food_sources#index"  => %w[category]
+  }.freeze
 
+  # Paginated lists that predate Paginatable (they never set @page_number). Their
+  # ?page=N is real, so it stays in the canonical URL.
+  LEGACY_PAGINATED_ACTIONS = %w[forum/topics#show forum/profiles#index].freeze
+
+  # Absolute canonical URL of the page being rendered, from the request host and path
+  # plus only the parameters that change what the page shows. The root keeps its
+  # trailing slash; every other path has none.
   def canonical_request_url
-    keep = request.query_parameters.slice(*CANONICAL_PARAMS)
-                  .reject { |k, v| v.blank? || (k == "page" && v.to_s == "1") }
-                  .sort.to_h
+    allowed = CANONICAL_PARAMS.fetch("#{controller_path}##{action_name}", [])
+    keep = request.query_parameters.slice(*allowed).select { |_, v| v.is_a?(String) && v.present? }
+    page = canonical_page_number
+    keep = keep.merge("page" => page.to_s) if page > 1
     url = "#{request.base_url}#{request.path}"
-    keep.any? ? "#{url}?#{keep.to_query}" : url
+    keep.any? ? "#{url}?#{keep.sort.to_h.to_query}" : url
+  end
+
+  # The page number to put in the canonical URL: > 1 only on a page that truly paginates
+  # (Paginatable sets @page_number after validating it); 1 everywhere else, where a
+  # ?page= is ignored and so must not produce its own canonical.
+  def canonical_page_number
+    return @page_number.to_i if @page_number
+    return 1 unless LEGACY_PAGINATED_ACTIONS.include?("#{controller_path}##{action_name}")
+    raw = request.query_parameters["page"].to_s
+    raw.match?(/\A[1-9]\d*\z/) ? raw.to_i : 1
   end
 
   # Structured data wants absolute URLs; rails_blob_path alone is a bare path.
@@ -23,6 +51,8 @@ module ApplicationHelper
     nil
   end
 
+  # One place for the address shown on the contact page and used as the
+  # recipient by ContactMailer and ForumMailer.
   def contact_email_address = ENV.fetch("CONTACT_EMAIL", "brad@nakedandafraidfan.com")
 
   def format_duration(seconds)
