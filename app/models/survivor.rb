@@ -22,6 +22,9 @@ class Survivor < ApplicationRecord
     attachable.variant :portrait,  resize_to_fill: [520, 680], saver: { quality: 85, strip: true }
     # Tiny inline avatar (Recently Active, episode "chip" links).
     attachable.variant :chip,      resize_to_fill: [80, 80],   saver: { quality: 80, strip: true }
+    # og:image / twitter:image (ShareImageHelper). Square and always JPEG so scrapers
+    # that cannot read WebP/AVIF or EXIF-rotated uploads get a plain 600x600 picture.
+    attachable.variant :share,     resize_to_fill: [600, 600], format: :jpeg, saver: { quality: 85, strip: true }
   end
 
   validates :full_name, presence: true, uniqueness: { case_sensitive: false }

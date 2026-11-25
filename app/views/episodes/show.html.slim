@@ -17,9 +17,9 @@
 - synopsis_plain = ActionView::Base.full_sanitizer.sanitize(@episode.synopsis.to_s).squish
 - factual_line = "#{title_text} (#{subtitle}) — Aired #{air_date || '—'}#{loc_str ? " • Location: #{loc_str}" : ""}."
 - meta_desc = synopsis_plain.present? ? "#{factual_line} #{synopsis_plain}".first(160) : "#{factual_line} Participants, PSR, days lasted, and items."
-/ Fallback og:image: first survivor avatar on this episode when the layout
-/ has no other image hint, so social embeds don't render a blank preview.
-- og_image_url = (@episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? }&.avatar rescue nil)
+/ og:image: first survivor avatar on this episode (permanent proxy URL); with no avatar the
+/ layout falls back to the site's default share image.
+- og_survivor = (@episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? } rescue nil)
 
 / Titles & meta
 - content_for :title, title_for_tag
@@ -28,9 +28,7 @@
 - content_for :canonical_url, canonical_request_url
 - content_for :og_title, "#{title_text} | #{subtitle}"
 - content_for :og_description, synopsis_plain.present? ? synopsis_plain.first(200) : "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
-- if og_image_url
-  - content_for :og_image, url_for(og_image_url)
-  - content_for :twitter_image, url_for(og_image_url)
+- set_share_image(avatar_share_image(og_survivor))
 
 / Server-rendered JSON-LD (TVEpisode)
 = render_jsonld(episode_show_jsonld(@episode, appearances: @active_appearances))

@@ -43,12 +43,10 @@ module ApplicationHelper
     raw.match?(/\A[1-9]\d*\z/) ? raw.to_i : 1
   end
 
-  # Structured data wants absolute URLs; rails_blob_path alone is a bare path.
+  # Structured data wants absolute, lasting URLs: the canonical-host proxy URL of the blob
+  # (see ShareImageHelper), not a bare /rails/active_storage redirect path.
   def absolute_blob_url(attachment)
-    return nil if attachment.nil? || !attachment.attached?
-    "#{request.base_url}#{rails_blob_path(attachment, only_path: true)}"
-  rescue StandardError
-    nil
+    permanent_storage_url(attachment)
   end
 
   # One place for the address shown on the contact page and used as the
