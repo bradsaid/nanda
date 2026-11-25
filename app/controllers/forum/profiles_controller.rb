@@ -2,6 +2,11 @@ module Forum
   class ProfilesController < BaseController
     PER_PAGE = 40
 
+    # Editing is account-only. The member directory is a thin list of usernames:
+    # keep it out of the index but let crawlers follow through to the profiles.
+    noindex only: %i[edit update]
+    noindex "noindex, follow", only: :index
+
     before_action :set_user, except: [:index]
     # Only the account holder may move their own address — not an admin, who
     # could otherwise take over an account without knowing the password.

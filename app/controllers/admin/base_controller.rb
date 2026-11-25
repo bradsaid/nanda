@@ -1,6 +1,7 @@
 module Admin
   class BaseController < ApplicationController
     skip_after_action :record_page_view
+    noindex # the whole admin area (views also set the robots meta tag)
 
     before_action :require_admin_user
     before_action :set_paper_trail_whodunnit

@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+  noindex # sign-in form: account-only, nothing to index
 
   def new
     @return_to = safe_return_to(params[:return_to]) || stored_return_to

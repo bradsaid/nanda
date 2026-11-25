@@ -1,4 +1,5 @@
 class EmailVerificationsController < ApplicationController
+  noindex # tokenised confirmation links
   # GET only shows a button. Verifying is a POST so a mail scanner or link
   # preview that merely fetches the URL cannot verify an address by itself.
   def show

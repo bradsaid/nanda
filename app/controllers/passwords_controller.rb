@@ -1,4 +1,5 @@
 class PasswordsController < ApplicationController
+  noindex # password-reset pages: account-only (and the edit URL carries a token)
   before_action :set_user_by_token, only: %i[edit update]
 
   def new

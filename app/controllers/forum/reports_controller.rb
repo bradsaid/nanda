@@ -1,5 +1,6 @@
 module Forum
   class ReportsController < BaseController
+    noindex # report form
     before_action :set_post
 
     def new

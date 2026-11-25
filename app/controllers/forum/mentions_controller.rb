@@ -4,6 +4,8 @@ module Forum
   class MentionsController < BaseController
     LIMIT = 8
 
+    noindex # JSON typeahead source, not a page
+
     def index
       query = params[:q].to_s.strip
       results =

@@ -1,6 +1,7 @@
 module Forum
   class TopicsController < BaseController
     include Paginatable
+    noindex only: %i[new create edit update] # composer pages: no search value
     before_action :set_category, only: [:new, :create]
     TOPICS_PER_PAGE = 30
     before_action :ensure_category_unlocked, only: [:new, :create]

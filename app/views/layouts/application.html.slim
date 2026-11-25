@@ -10,8 +10,9 @@ html
 
     / Canonical + robots
     link rel="canonical" href=(content_for?(:canonical_url) ? yield(:canonical_url) : canonical_request_url)
-    - if content_for?(:robots)
-      meta name="robots" content=yield(:robots)
+    - robots_value = content_for?(:robots) ? yield(:robots) : @robots_meta
+    - if robots_value.present?
+      meta name="robots" content=robots_value
 
     / === Open Graph (fallbacks; override via content_for in views) ===
     meta property="og:type"        content=(content_for?(:og_type)  ? yield(:og_type)  : "website")

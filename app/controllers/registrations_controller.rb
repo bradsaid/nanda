@@ -1,4 +1,5 @@
 class RegistrationsController < ApplicationController
+  noindex # signup form: account-only, nothing to index
   # Kill switch: setting SIGNUPS_DISABLED=1 in the environment blocks all
   # new registrations without a deploy. Used if the signup endpoint gets
   # hit by a bot avalanche.

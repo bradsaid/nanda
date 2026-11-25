@@ -2,6 +2,8 @@ module Forum
   class PostsController < BaseController
     EDIT_WINDOW = 15.minutes
 
+    noindex only: %i[create edit update] # edit form / failed-reply re-render
+
     before_action :set_topic, only: [:create]
     before_action :set_post,  only: [:edit, :update, :destroy]
     # Must be a before_action so the redirect halts the chain — calling this

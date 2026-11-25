@@ -5,6 +5,7 @@
 # changed state on GET was consumed by any mail scanner or preview bot that
 # fetched it, before the member had clicked anything.
 class EmailChangesController < ApplicationController
+  noindex # tokenised confirmation links
   def show
     @token = params[:token]
     return unless (user = pending_user)

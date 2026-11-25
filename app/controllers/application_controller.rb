@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include TrackPageViews
+  include Noindexable
 
   allow_browser versions: :modern unless Rails.env.test?
 
