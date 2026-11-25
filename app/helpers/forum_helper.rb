@@ -28,11 +28,13 @@ module ForumHelper
 
   # Avatar beside a poster's name. Falls back to an initial disc so every row
   # keeps the same shape whether or not the member uploaded a picture.
-  def forum_avatar(user, size: 28)
+  # Pass `loading: "eager"` for avatars above the fold (e.g. the nav).
+  def forum_avatar(user, size: 28, loading: "lazy")
     style = "width:#{size}px;height:#{size}px;object-fit:cover;flex:0 0 auto;"
     if user&.avatar&.attached?
       image_tag user.avatar.variant(:chip),
-                class: "rounded-circle border", style: style, alt: "", loading: "lazy"
+                class: "rounded-circle border", style: style, alt: "", loading: loading,
+                width: size, height: size
     else
       initial = forum_user_display(user).to_s[0, 1].upcase.presence || "?"
       content_tag :span, initial,

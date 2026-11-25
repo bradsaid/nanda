@@ -146,7 +146,7 @@ html
             / forum is ever closed again.
             - if (forum_enabled? || forum_preview_access?) && current_user.username.present?
               = link_to forum_profile_path(username: current_user.username), class: "nav-link d-inline-flex align-items-center gap-2" do
-                = forum_avatar(current_user, size: 22)
+                = forum_avatar(current_user, size: 22, loading: "eager")
                 span = current_user.username
             = button_to "Sign out", session_path, method: :delete, class: "nav-link btn btn-link"
           - elsif forum_enabled?

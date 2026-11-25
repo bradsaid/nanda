@@ -25,7 +25,7 @@ module SiteImagesHelper
         image_tag("NAKED.png",
                   alt: BANNER_ALT, class: "site-banner",
                   width: BANNER_WIDTH, height: BANNER_HEIGHT,
-                  fetchpriority: "high", decoding: "async")
+                  loading: "eager", fetchpriority: "high", decoding: "async")
       ])
     end
   end

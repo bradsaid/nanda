@@ -22,6 +22,14 @@ module Nakedandafraid
     # in config/environments, which are processed later.
     #
     config.time_zone = "Central Time (US & Canada)"
+
+    # Every image_tag defaults to loading="lazy" decoding="async" (below-the-fold
+    # avatars, shop products, flags, ...). image_tag only applies these when the
+    # call doesn't pass its own, so nothing is doubled. Above-the-fold images
+    # opt out with `loading: "eager"` (site banner, a survivor's main portrait,
+    # hero flags, the signed-in nav avatar).
+    config.action_view.image_loading  = "lazy"
+    config.action_view.image_decoding = "async"
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

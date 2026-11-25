@@ -7,7 +7,7 @@
     span = @user.username
   .d-flex.align-items-center.gap-3.flex-wrap
     - if @user.avatar.attached?
-      = image_tag @user.avatar.variant(resize_to_limit: [96, 96]), class: "rounded-circle border", style: "width:64px;height:64px;object-fit:cover;"
+      = image_tag @user.avatar.variant(resize_to_limit: [96, 96]), loading: "eager", class: "rounded-circle border", style: "width:64px;height:64px;object-fit:cover;"
     .d-flex.flex-column
       .d-flex.align-items-center.gap-2
         h1.h3.mb-0.logo = @user.username

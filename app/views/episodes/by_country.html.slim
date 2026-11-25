@@ -23,7 +23,7 @@
         .country-shape-wrap
           .country-shape.country-shape-lg(style="background-image: url(#{hero_flag}); --outline-url: url(#{hero_outline});" aria-label="#{@country} flag in country outline")
       - elsif hero_flag
-        = image_tag hero_flag, alt: @country, width: 96, class: "rounded shadow-sm"
+        = image_tag hero_flag, alt: @country, width: 96, loading: "eager", class: "rounded shadow-sm"
       .d-flex.flex-column
         h1.h3.mb-0.logo = "Episodes in #{@country}"
         p.subtitle.mb-0 = "All Episodes in #{@country}"

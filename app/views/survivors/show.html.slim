@@ -55,6 +55,8 @@
                 .text-center.flex-shrink-0
                   = image_tag url_for(@survivor.avatar.variant(:portrait)),
                               alt: @survivor.full_name,
+                              width: 160, height: 160,
+                              loading: "eager", fetchpriority: "high",
                               class: "avatar-lg rounded-circle shadow img-thumbnail"
 
             - if @shop_shelf && !@shop_shelf.empty?
