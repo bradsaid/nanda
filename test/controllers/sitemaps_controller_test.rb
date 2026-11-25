@@ -10,7 +10,16 @@ class SitemapsControllerTest < ActionDispatch::IntegrationTest
     Rails.cache = ActiveSupport::Cache::MemoryStore.new
   end
 
-  teardown { Rails.cache = @original_cache }
+  teardown do
+    Rails.cache = @original_cache
+    ENV["FORUM_ENABLED"] = nil
+  end
+
+  def url_nodes = Nokogiri::XML(response.body).remove_namespaces!.xpath("//url")
+
+  def lastmod_of(path)
+    url_nodes.find { |u| u.at("loc").text == "#{HOST}#{path}" }&.at("lastmod")&.text
+  end
 
   def locs
     Nokogiri::XML(response.body).remove_namespaces!.xpath("//url/loc").map(&:text)
@@ -44,13 +53,101 @@ class SitemapsControllerTest < ActionDispatch::IntegrationTest
     assert locs.none? { |l| l.end_with?("/guidelines") && !l.end_with?("/forum/guidelines") }, "/guidelines only redirects"
   end
 
-  test "excludes affiliate redirects, admin, forum and auth pages" do
+  test "excludes affiliate redirects, admin and auth pages" do
     get "/sitemap.xml"
     assert locs.none? { |l| l.include?("/go/") }, "affiliate redirects must not be listed"
     assert locs.none? { |l| l.include?("/admin") }
-    # The Community Guidelines page is the one public forum URL, so it is the only /forum entry.
+    assert locs.none? { |l| l =~ %r{/(session|passwords|signup|page_view_ping)} }
+  end
+
+  test "lists the contact, privacy policy and terms pages" do
+    get "/sitemap.xml"
+    %w[/contact /privacy_policy /terms_of_service].each { |path| assert_includes locs, "#{HOST}#{path}" }
+  end
+
+  test "does not list /home (it redirects to /) or any paginated or parameterised URL" do
+    get "/sitemap.xml"
+    assert_not_includes locs, "#{HOST}/home"
+    assert locs.none? { |l| l.include?("?") }, "only clean first-page URLs belong in the sitemap"
+  end
+
+  test "with the forum off, only the Community Guidelines page is listed under /forum" do
+    ENV["FORUM_ENABLED"] = nil
+    Forum::Topic.create!(forum_category: forum_categories(:general), user: users(:one), title: "Hidden while closed")
+    get "/sitemap.xml"
     assert_equal ["#{HOST}/forum/guidelines"], locs.select { |l| l.include?("/forum") }
-    assert locs.none? { |l| l =~ %r{/(session|passwords|signup|contact|page_view_ping)} }
+  end
+
+  test "with the forum open, lists the topic list and live topics but not deleted ones" do
+    ENV["FORUM_ENABLED"] = "true"
+    live    = Forum::Topic.create!(forum_category: forum_categories(:general), user: users(:one), title: "Live topic")
+    deleted = Forum::Topic.create!(forum_category: forum_categories(:general), user: users(:one), title: "Deleted topic")
+    deleted.update!(deleted_at: Time.current)
+    live.update_columns(last_post_at: Time.utc(2026, 5, 6, 7, 8, 9))
+
+    get "/sitemap.xml"
+    assert_includes locs, "#{HOST}/forum"
+    assert_includes locs, "#{HOST}#{forum_topic_path(live)}"
+    assert_not_includes locs, "#{HOST}#{forum_topic_path(deleted)}"
+    assert_equal "2026-05-06T07:08:09Z", lastmod_of(forum_topic_path(live))
+    assert locs.none? { |l| l =~ %r{/forum/(users|mentions|categories|topics/new)} }
+  end
+
+  test "toggling the forum, or adding/removing a topic, changes the cache key" do
+    ENV["FORUM_ENABLED"] = nil
+    closed = SitemapUrls.cache_key
+    ENV["FORUM_ENABLED"] = "true"
+    open_key = SitemapUrls.cache_key
+    assert_not_equal closed, open_key
+
+    topic = Forum::Topic.create!(forum_category: forum_categories(:general), user: users(:one), title: "Key topic")
+    with_topic = SitemapUrls.cache_key
+    assert_not_equal open_key, with_topic
+    topic.update!(deleted_at: Time.current)
+    assert_not_equal with_topic, SitemapUrls.cache_key
+  end
+
+  test "a change to the hand-kept lastmod table changes the cache key (a deploy refreshes the sitemap)" do
+    before = SitemapUrls.cache_key
+    original = SitemapUrls::STATIC_LASTMOD
+    begin
+      SitemapUrls.send(:remove_const, :STATIC_LASTMOD)
+      SitemapUrls.const_set(:STATIC_LASTMOD, original.merge("/about" => Date.new(2030, 1, 1)).freeze)
+      assert_not_equal before, SitemapUrls.cache_key
+    ensure
+      SitemapUrls.send(:remove_const, :STATIC_LASTMOD)
+      SitemapUrls.const_set(:STATIC_LASTMOD, original)
+    end
+  end
+
+  test "every URL carries a lastmod in W3C datetime format" do
+    ENV["FORUM_ENABLED"] = "true"
+    Forum::Topic.create!(forum_category: forum_categories(:general), user: users(:one), title: "Dated topic")
+    get "/sitemap.xml"
+    missing = url_nodes.reject { |u| u.at("lastmod") }.map { |u| u.at("loc").text }
+    assert_empty missing, "URLs without <lastmod>"
+    url_nodes.each do |u|
+      assert_match(/\A\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}Z)?\z/, u.at("lastmod").text, u.at("loc").text)
+    end
+  end
+
+  test "static pages use the documented revision dates" do
+    get "/sitemap.xml"
+    assert_equal "2026-11-20", lastmod_of("/privacy_policy")
+    assert_equal "2026-11-01", lastmod_of("/terms_of_service")
+    assert_equal StaticPagesController::GUIDELINES_UPDATED_ON.iso8601, lastmod_of("/forum/guidelines")
+    assert_equal "2026-11-02", lastmod_of("/about")
+    assert_equal "2026-10-29", lastmod_of("/podcasts")
+  end
+
+  test "list pages take their lastmod from the newest row behind them" do
+    stamp = Time.utc(2031, 2, 3, 4, 5, 6)
+    survivors(:one).update_columns(updated_at: stamp)
+    get "/sitemap.xml"
+    assert_equal "2031-02-03T04:05:06Z", lastmod_of("/survivors")
+    assert_equal "2031-02-03T04:05:06Z", lastmod_of("/"), "the homepage follows the newest of episodes/survivors/items"
+    assert_equal File.mtime(ShopCatalog::PATH).utc.iso8601, lastmod_of("/shop")
+    assert_equal File.mtime(ShopCatalog::PATH).utc.iso8601, lastmod_of("/shop/guides")
   end
 
   test "URLs are absolute, on the canonical host and unique" do
