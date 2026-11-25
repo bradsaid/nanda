@@ -1,6 +1,7 @@
 / ===== SEO + JSON-LD: Survivor Show =====
 - name        = @survivor.full_name
-- ep_total    = @episode_ids_count
+/ Same numbers the hero shows: "Episodes" is @appearances.size, "Challenges" the collapsed count.
+- ep_total    = @appearances.size
 - challenges  = @episodes_collapsed_count
 / Bio-derived description gives every survivor page a unique, keyword-rich
 / snippet in search results — much better than a boilerplate template line.
@@ -12,12 +13,12 @@
 - content_for :keywords, "#{name}, Naked and Afraid, survivor, contestant"
 - content_for :canonical_url, canonical_request_url
 - content_for :og_title, "#{name} – Naked and Afraid Survivor"
-- content_for :og_description, "#{name}: #{ep_total} episode(s), #{challenges} challenge(s)."
+- content_for :og_description, "#{name} #{survivor_appearance_summary(ep_total, challenges)}."
 / og:image / twitter:image: the survivor's avatar through a permanent proxy URL; no avatar -> site default.
 - set_share_image(avatar_share_image(@survivor))
 
 / Server-rendered JSON-LD (Person + BreadcrumbList)
-= render_jsonld(survivor_show_jsonld(survivor: @survivor, appearances: @appearances))
+= render_jsonld(survivor_show_jsonld(survivor: @survivor, appearances: @appearances, episodes_count: ep_total, challenges_count: challenges))
 / ===== end SEO + JSON-LD =====
 
 

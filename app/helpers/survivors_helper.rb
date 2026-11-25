@@ -1,4 +1,16 @@
 module SurvivorsHelper
+  # "appeared in 78 episodes across 12 challenges" -- the wording shared by the survivor
+  # page's meta/og descriptions and its Person JSON-LD, fed the numbers the page shows
+  # (Episodes = number of appearances, Challenges = continuous seasons count once).
+  def survivor_appearance_summary(episodes, challenges)
+    episodes   = episodes.to_i
+    challenges = challenges.to_i
+    return "has no episodes on record yet" if episodes <= 0
+    summary = "appeared in #{pluralize(episodes, 'episode')}"
+    summary += " across #{pluralize(challenges, 'challenge')}" if challenges.positive?
+    summary
+  end
+
   def flip_dir(dir) = (dir == "desc" ? "asc" : "desc")
 
   def sort_arrow(active, dir)

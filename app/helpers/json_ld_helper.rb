@@ -306,7 +306,10 @@ module JsonLdHelper
 
   def render_jsonld(schema)
     return "" if schema.nil?
-    json = JSON.generate(schema).gsub("</", "<\\/")
+    # json_escape writes < > & and U+2028/2029 as \uXXXX, so user-written text (forum posts)
+    # can never close the script element or open an HTML comment inside it; the result
+    # parses to exactly the same JSON.
+    json = ERB::Util.json_escape(JSON.generate(schema))
     content_tag(:script, raw(json), type: "application/ld+json")
   end
 
@@ -404,25 +407,30 @@ module JsonLdHelper
     schemas
   end
 
-  def episodes_index_jsonld(episodes:, season:, location:, episodes_by_season:, episode_counts:)
+  # Episodes listed in the season overview's ItemList (3 previews x SEASONS_PER_PAGE seasons).
+  EPISODES_OVERVIEW_ITEM_CAP = 24
+
+  # numberOfItems always equals the itemListElement entries emitted. `position_offset:`
+  # shifts `position` for a paginated page (page - 1 pages of EPISODES_OVERVIEW_ITEM_CAP).
+  def episodes_index_jsonld(episodes:, season:, location:, episodes_by_season:, episode_counts:, position_offset: 0)
     if location.present?
       loc_name = [location.site, location.region, location.country].compact_blank.join(", ").presence || "Unknown Location"
       name     = "Episodes in #{loc_name}"
       desc     = "Episodes filmed in #{loc_name}."
-      list     = Array(episodes)
+      list     = Array(episodes).first(20)
     elsif season.present?
       series_name = season.series&.name || "Naked and Afraid"
       title_txt   = "#{series_name} – Season #{season.number}"
       name        = "#{title_txt} Episodes"
       desc        = "Episodes for #{title_txt}."
-      list        = Array(episodes)
+      list        = Array(episodes).first(20)
     else
       name = "Naked and Afraid Episodes"
       desc = "Episode guide organized by season."
-      list = (episodes_by_season || {}).values.flatten
+      list = (episodes_by_season || {}).values.flatten.first(EPISODES_OVERVIEW_ITEM_CAP)
     end
 
-    items = list.first(20).each_with_index.map do |ep, i|
+    items = list.each_with_index.map do |ep, i|
       props = [
         ep.season&.series&.name && { "@type" => "PropertyValue", "name" => "Series",   "value" => ep.season.series.name },
         ep.season&.number       && { "@type" => "PropertyValue", "name" => "Season",   "value" => ep.season.number },
@@ -431,7 +439,7 @@ module JsonLdHelper
       ].compact
       {
         "@type"    => "ListItem",
-        "position" => i + 1,
+        "position" => position_offset + i + 1,
         "url"      => "#{request.base_url}#{episode_path(ep)}",
         "name"     => (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
         "additionalProperty" => props
@@ -443,13 +451,15 @@ module JsonLdHelper
       "@type" => "ItemList",
       "name" => name,
       "description" => desc,
-      "numberOfItems" => list.size,
+      "numberOfItems" => items.size,
       "itemListElement" => items
     }
   end
 
-  def episodes_by_country_jsonld(country:, episodes:)
-    items = Array(episodes).first(20).each_with_index.map do |ep, i|
+  # `episodes:` are the episodes on the page being rendered; `position_offset:` is where
+  # the page starts (page - 1 pages of EpisodesController::COUNTRY_BLOCKS_PER_PAGE cards).
+  def episodes_by_country_jsonld(country:, episodes:, position_offset: 0)
+    items = Array(episodes).each_with_index.map do |ep, i|
       props = [
         ep.season&.series&.name && { "@type" => "PropertyValue", "name" => "Series",   "value" => ep.season.series.name },
         ep.season&.number       && { "@type" => "PropertyValue", "name" => "Season",   "value" => ep.season.number },
@@ -457,7 +467,7 @@ module JsonLdHelper
         ep.air_date             && { "@type" => "PropertyValue", "name" => "Air Date", "value" => ep.air_date.strftime("%Y-%m-%d") }
       ].compact
       {
-        "@type" => "ListItem", "position" => i + 1,
+        "@type" => "ListItem", "position" => position_offset + i + 1,
         "url"   => "#{request.base_url}#{episode_path(ep)}",
         "name"  => (ep.title.presence || "Episode ##{ep.number_in_season || ep.id}"),
         "additionalProperty" => props
@@ -469,7 +479,7 @@ module JsonLdHelper
         "url"  => canonical_request_url,
         "about" => { "@type" => "Place", "name" => country } },
       { "@context" => "https://schema.org", "@type" => "ItemList",
-        "name" => "Episodes in #{country}", "numberOfItems" => Array(episodes).size,
+        "name" => "Episodes in #{country}", "numberOfItems" => items.size,
         "itemListElement" => items }
     ]
   end
@@ -533,7 +543,7 @@ module JsonLdHelper
     {
       "@context" => "https://schema.org", "@type" => "ItemList",
       "name" => name,
-      "numberOfItems" => items_in_type_count.to_i,
+      "numberOfItems" => items.size,
       "description" => "Given in #{Array(given_episode_ids).uniq.size} episode(s), brought in #{Array(brought_episode_ids).uniq.size}.",
       "itemListElement" => items
     }
@@ -567,7 +577,7 @@ module JsonLdHelper
     {
       "@context" => "https://schema.org", "@type" => "ItemList",
       "name" => "Naked and Afraid Seasons",
-      "numberOfItems" => seasons.size,
+      "numberOfItems" => items.size,
       "itemListElement" => items
     }
   end
@@ -624,8 +634,12 @@ module JsonLdHelper
     schemas
   end
 
-  def survivors_index_jsonld(top_survivors:, survivors:)
-    list = (Array(top_survivors).presence || Array(survivors)).first(20)
+  # Lists the survivors on the page being rendered (all of them, not just the top few), with
+  # `position` continuing from the page's offset (Kaminari's offset_value) so page 2 starts
+  # at 49. numberOfItems is the number of entries emitted.
+  def survivors_index_jsonld(survivors:, top_survivors: nil)
+    list   = Array(survivors)
+    offset = survivors.respond_to?(:offset_value) ? survivors.offset_value.to_i : 0
     items = list.each_with_index.map do |s, i|
       total     = s.respond_to?(:episodes_total_count)     ? s.episodes_total_count.to_i     : s.appearances.select(:episode_id).distinct.count
       collapsed = s.respond_to?(:episodes_collapsed_count) ? s.episodes_collapsed_count.to_i : total
@@ -640,18 +654,20 @@ module JsonLdHelper
         ]
       }
       person["image"] = img if img
-      { "@type" => "ListItem", "position" => i + 1,
+      { "@type" => "ListItem", "position" => offset + i + 1,
         "url" => person["url"], "name" => person["name"], "item" => person }
     end
     {
       "@context" => "https://schema.org", "@type" => "ItemList",
       "name" => "Naked and Afraid Survivors",
-      "numberOfItems" => list.size,
+      "numberOfItems" => items.size,
       "itemListElement" => items
     }
   end
 
-  def survivor_show_jsonld(survivor:, appearances:)
+  # `episodes_count:` / `challenges_count:` are the numbers the page displays
+  # (SurvivorsController#show); without them the helper derives what it can.
+  def survivor_show_jsonld(survivor:, appearances:, episodes_count: nil, challenges_count: nil)
     img = (absolute_blob_url(survivor.avatar) if survivor.respond_to?(:avatar))
     same_as = []
     if survivor.respond_to?(:instagram) && survivor.instagram.present?
@@ -665,15 +681,17 @@ module JsonLdHelper
 
     # Cheap in-memory derivation from the already-loaded appearances relation
     # to avoid firing an extra COUNT query per survivor page render.
-    episodes_total = appearances.respond_to?(:loaded?) && appearances.loaded? \
-                       ? appearances.map(&:episode_id).uniq.size \
-                       : appearances.pluck(:episode_id).uniq.size
-    challenges     = survivor.respond_to?(:episodes_collapsed_count) ? survivor.episodes_collapsed_count.to_i : episodes_total
+    episodes_total = episodes_count
+    episodes_total ||= appearances.respond_to?(:loaded?) && appearances.loaded? \
+                         ? appearances.map(&:episode_id).uniq.size \
+                         : appearances.pluck(:episode_id).uniq.size
+    challenges = challenges_count
+    challenges ||= survivor.respond_to?(:episodes_collapsed_count) ? survivor.episodes_collapsed_count.to_i : episodes_total
 
     person = {
       "@context" => "https://schema.org", "@type" => "Person",
       "name" => survivor.full_name.to_s, "url" => canonical_request_url,
-      "description" => "#{survivor.full_name} from Naked and Afraid with #{episodes_total} episode(s) and #{challenges} challenge(s)."
+      "description" => "#{survivor.full_name} from Naked and Afraid #{survivor_appearance_summary(episodes_total, challenges)}."
     }
     person["image"]  = img if img
     person["sameAs"] = same_as if same_as.any?
@@ -887,5 +905,62 @@ module JsonLdHelper
       "inLanguage" => "en",
       "isPartOf" => { "@type" => "WebSite", "name" => SITE_NAME, "url" => request.base_url }
     }
+  end
+
+  # DiscussionForumPosting for a public forum thread (page one of it). `opening_post` is the
+  # first live post, `replies` the live replies shown (at most 10 become `comment`),
+  # `reply_count` all live replies. Only public data: usernames and post text, never an
+  # email address (post text has them stripped by meta_excerpt).
+  def forum_topic_jsonld(topic:, opening_post:, replies:, reply_count:)
+    url       = "#{request.base_url}#{forum_topic_path(topic)}"
+    forum_url = "#{request.base_url}#{forum_path}"
+    html_of   = ->(post) { post.body_html.presence || post.body }
+
+    author_of = lambda do |user|
+      person = { "@type" => "Person", "name" => forum_user_display(user) }
+      if user&.username.present? && !user.banned?
+        person["url"] = "#{request.base_url}#{forum_profile_path(username: user.username)}"
+      end
+      person
+    end
+
+    posting = {
+      "@context" => "https://schema.org",
+      "@type" => "DiscussionForumPosting",
+      "@id" => "#{url}#topic",
+      "headline" => topic.title.to_s,
+      "text" => meta_excerpt(html_of.(opening_post), limit: 5000),
+      "author" => author_of.(opening_post.user),
+      "datePublished" => (opening_post.created_at || topic.created_at).iso8601,
+      "dateModified" => [ topic.last_post_at, opening_post.edited_at, opening_post.updated_at ].compact.max.iso8601,
+      "url" => url,
+      "mainEntityOfPage" => { "@type" => "WebPage", "@id" => url },
+      "inLanguage" => "en",
+      "isPartOf" => { "@type" => "CollectionPage", "name" => "Naked & Afraid Fan Forum", "url" => forum_url },
+      "commentCount" => reply_count.to_i,
+      "interactionStatistic" => [
+        { "@type" => "InteractionCounter", "interactionType" => "https://schema.org/CommentAction",
+          "userInteractionCount" => reply_count.to_i },
+        { "@type" => "InteractionCounter", "interactionType" => "https://schema.org/ViewAction",
+          "userInteractionCount" => topic.views_count.to_i }
+      ]
+    }
+
+    comments = Array(replies).first(10).filter_map do |post|
+      text = meta_excerpt(html_of.(post), limit: 5000)
+      next if text.blank?
+      comment = {
+        "@type" => "Comment",
+        "@id" => "#{url}#post-#{post.id}",
+        "url" => "#{url}#post-#{post.id}",
+        "text" => text,
+        "author" => author_of.(post.user),
+        "datePublished" => post.created_at.iso8601
+      }
+      comment["dateModified"] = post.edited_at.iso8601 if post.edited_at
+      comment
+    end
+    posting["comment"] = comments if comments.any?
+    posting
   end
 end

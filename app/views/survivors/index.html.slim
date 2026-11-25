@@ -1,7 +1,7 @@
 / ===== SEO + JSON-LD: Survivors Index =====
 - total_survivors = Array(@survivors).size
-- content_for :title, "Naked and Afraid Survivors"
-- content_for :meta_description, "Browse Naked and Afraid survivors with episode counts, challenges, items brought/given, and profiles."
+- content_for :title, paginated_title("Naked and Afraid Survivors", @page_number)
+- content_for :meta_description, paginated_description("Browse Naked and Afraid survivors with episode counts, challenges, items brought/given, and profiles.", @page_number)
 - content_for :keywords, "Naked and Afraid survivors, contestants, episode count, challenges"
 - content_for :canonical_url, canonical_request_url
 - content_for :robots, "noindex, follow" if @q.present? # internal search results stay out of the index
@@ -9,7 +9,7 @@
 - content_for :og_description, "Complete list of survivors with episode totals and challenges."
 
 / Server-rendered JSON-LD (ItemList of survivors)
-= render_jsonld(survivors_index_jsonld(top_survivors: @top_survivors, survivors: @survivors))
+= render_jsonld(survivors_index_jsonld(survivors: @survivors))
 / ===== end SEO + JSON-LD =====
 
 .container.my-4

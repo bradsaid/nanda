@@ -27,15 +27,16 @@
   - ep_counts   = (@episode_counts || {})
   - total_count = ep_counts.values.map(&:to_i).sum
 
-  - content_for :title, "Naked and Afraid Episodes – By Season"
-  - content_for :meta_description, "Complete episode guide organized by season with air dates, locations, survivors, and items."
+  - overview_title = "Naked and Afraid Episodes – By Season"
+  - content_for :title, paginated_title(overview_title, @page_number)
+  - content_for :meta_description, paginated_description("Complete episode guide organized by season with air dates, locations, survivors, and items.", @page_number)
   - content_for :keywords, "Naked and Afraid episodes, episode guide, seasons, survivors, locations, items"
   - content_for :canonical_url, canonical_request_url
   - content_for :og_title, "Naked and Afraid Episodes – Guide by Season"
   - content_for :og_description, "Browse seasons to see episodes with dates, locations, and survivors."
 
 / Server-rendered JSON-LD (ItemList of episodes)
-= render_jsonld(episodes_index_jsonld(episodes: @episodes, season: (defined?(@season) && @season.present?) ? @season : nil, location: @location, episodes_by_season: @episodes_by_season, episode_counts: @episode_counts))
+= render_jsonld(episodes_index_jsonld(episodes: @episodes, season: (defined?(@season) && @season.present?) ? @season : nil, location: @location, episodes_by_season: @episodes_by_season, episode_counts: @episode_counts, position_offset: ((@page_number || 1) - 1) * JsonLdHelper::EPISODES_OVERVIEW_ITEM_CAP))
 
 - if @location
   / === Filtered by location ===
@@ -187,7 +188,7 @@
   / === Overview (cards per season, with 'View all' link) ===
   .pb-2.mb-3.border-bottom.site-header.position-relative
     = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm position-absolute top-0 end-0 mt-2 me-2"
-    h1.h3.mb-0.logo.text-center Naked & Afraid — Fan Database - Episodes
+    h1.h3.mb-0.logo.text-center = overview_title
     / Count one challenge per episode for standard seasons, but only one per
     / (season, location) for continuous-story seasons / series.
     - episode_total = Episode.count
