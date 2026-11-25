@@ -1,0 +1,6 @@
+- if page.current?
+  li.page-item.active
+    span.page-link aria-current="page" = page
+- else
+  li.page-item
+    == link_to page, url, class: "page-link", rel: page.rel, "aria-label": "Page #{page}"

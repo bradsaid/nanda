@@ -1,5 +1,6 @@
 module Forum
   class TopicsController < BaseController
+    include Paginatable
     before_action :set_category, only: [:new, :create]
     TOPICS_PER_PAGE = 30
     before_action :ensure_category_unlocked, only: [:new, :create]
@@ -14,10 +15,13 @@ module Forum
     # The whole forum in one list — there is no category browsing layer.
     def index
       @sort = params[:sort].to_s.presence_in(Forum::Topic::SORTS) || "recent"
+      page  = requested_page or return
       @topics = Forum::Topic.active
                             .includes(:user, :last_post_user)
                             .sorted_by(@sort)
-                            .page(params[:page]).per(TOPICS_PER_PAGE)
+                            .page(page).per(TOPICS_PER_PAGE)
+      # An empty forum is still a 200 on page 1; ?page=2 of it is a 404.
+      ensure_page_in_range!(page, @topics.total_pages)
       # posts_count counts soft-deleted posts, so count live ones instead.
       @active_post_counts = Forum::Post.active
                                        .where(forum_topic_id: @topics.map(&:id))

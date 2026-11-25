@@ -1,0 +1,14 @@
+/ Bootstrap 5 pagination for every `paginate` call (replaces Kaminari's unstyled default).
+  Real <a href> links, so crawlers can follow them; prev/next carry rel="prev"/"next".
+== paginator.render do
+  nav.my-4 aria-label="Pagination"
+    ul.pagination.pagination-sm.flex-wrap.justify-content-center.mb-0
+      == first_page_tag unless current_page.first?
+      == prev_page_tag unless current_page.first?
+      - each_page do |page|
+        - if page.display_tag?
+          == page_tag page
+        - elsif !page.was_truncated?
+          == gap_tag
+      == next_page_tag unless current_page.last?
+      == last_page_tag unless current_page.last?
