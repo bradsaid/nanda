@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_11_04_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_25_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -148,9 +148,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_04_120000) do
     t.datetime "updated_at", null: false
     t.text "synopsis"
     t.boolean "no_traps", default: false, null: false
+    t.string "slug"
     t.index ["location_id"], name: "index_episodes_on_location_id"
     t.index ["season_id", "number_in_season"], name: "index_episodes_on_season_id_and_number_in_season", unique: true
     t.index ["season_id"], name: "index_episodes_on_season_id"
+    t.index ["slug"], name: "index_episodes_on_slug", unique: true
   end
 
   create_table "food_sources", force: :cascade do |t|
@@ -271,7 +273,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_04_120000) do
     t.string "item_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
     t.index ["name"], name: "index_items_on_name", unique: true
+    t.index ["slug"], name: "index_items_on_slug", unique: true
   end
 
   create_table "locations", force: :cascade do |t|

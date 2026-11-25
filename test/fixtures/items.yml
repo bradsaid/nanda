@@ -1,7 +1,9 @@
 one:
   name: SampleItemA
+  slug: sampleitema
   item_type: knife
 
 two:
   name: SampleItemB
+  slug: sampleitemb
   item_type: firestarter

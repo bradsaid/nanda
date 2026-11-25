@@ -1,8 +1,15 @@
 class Item < ApplicationRecord
+  extend FriendlyId
 
   has_many :appearance_items
   before_validation :normalize_name
   before_validation :set_item_type, if: :classify_needed?
+  # /items/<slug>, e.g. /items/fire-starter, from the (lower-cased) name. Unlike episodes,
+  # an item's slug follows its name: a rename generates the new slug and :history keeps the
+  # old one, which ItemsController#show 301s to the current URL, exactly as for survivors.
+  # Declared after normalize_name so the slug is built from the stored spelling.
+  friendly_id :name, use: [:slugged, :history]
+  include SequencedSlug
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   # The rules below used to be bare substring matches, and because they run in
@@ -78,6 +85,19 @@ class Item < ApplicationRecord
     when PLANT     then "plant"
     else "other"
     end
+  end
+
+  # A purely numeric slug ("1911") would be read as a record id by friendly.find, so it
+  # gets a suffix; a name with nothing sluggable in it (all punctuation) becomes "item".
+  def normalize_friendly_id(value)
+    slug = value.to_s.parameterize
+    slug = "item" if slug.blank?
+    slug = "#{slug}-item" if slug.match?(/\A\d+\z/)
+    slug
+  end
+
+  def should_generate_new_friendly_id?
+    slug.blank? || will_save_change_to_name?
   end
 
   private

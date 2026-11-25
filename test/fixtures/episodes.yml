@@ -2,6 +2,7 @@ one:
   season: one
   number_in_season: 1
   title: Test Episode A
+  slug: testseriesa-s1e1-test-episode-a
   air_date: 2025-09-10
   scheduled_days: 21
   location: one
@@ -10,6 +11,7 @@ two:
   season: two
   number_in_season: 1
   title: Test Episode B
+  slug: testseriesb-s1e1-test-episode-b
   air_date: 2025-09-11
   scheduled_days: 21
   location: two
