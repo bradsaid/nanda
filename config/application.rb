@@ -1,4 +1,5 @@
 require_relative "boot"
+require_relative "../lib/middleware/trailing_slash_redirect"
 
 require "rails/all"
 
@@ -14,13 +15,18 @@ module Nakedandafraid
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: %w[assets tasks middleware])
 
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
+    # "/forum/" and every other trailing-slash URL 301s to the unslashed path. Placed right
+    # before Rack::Sendfile, i.e. after host authorization and force_ssl's https redirect
+    # but ahead of static files and the router (see lib/middleware/trailing_slash_redirect.rb).
+    config.middleware.insert_before Rack::Sendfile, Middleware::TrailingSlashRedirect
+
     config.time_zone = "Central Time (US & Canada)"
 
     # Every image_tag defaults to loading="lazy" decoding="async" (below-the-fold
