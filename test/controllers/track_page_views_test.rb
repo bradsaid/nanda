@@ -71,7 +71,7 @@ class TrackPageViewsTest < ActionDispatch::IntegrationTest
   test "different pages, or a different visitor, are each counted" do
     visit
     assert_difference("PageView.count", 1) { visit(path: "/episodes") }
-    assert_difference("PageView.count", 1) { visit(path: "/episodes?page=2") }
+    assert_difference("PageView.count", 1) { visit(path: "/episodes?sort=newest") }
     assert_difference("PageView.count", 1) { visit(ip: "9.9.9.9") }
   end
 
