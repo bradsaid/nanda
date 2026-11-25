@@ -12,7 +12,9 @@ html lang="en"
     / content_for :keywords; nothing renders it.
 
     / Canonical + robots
-    link rel="canonical" href=(content_for?(:canonical_url) ? yield(:canonical_url) : canonical_request_url)
+    / Error pages (ErrorsController) are noindex and have no canonical address.
+    - unless @error_page
+      link rel="canonical" href=(content_for?(:canonical_url) ? yield(:canonical_url) : canonical_request_url)
     - robots_value = content_for?(:robots) ? yield(:robots) : @robots_meta
     - if robots_value.present?
       meta name="robots" content=robots_value

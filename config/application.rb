@@ -29,6 +29,12 @@ module Nakedandafraid
 
     config.time_zone = "Central Time (US & Canada)"
 
+    # Branded 404/422/500 (and other error) pages through the site layout instead
+    # of the static public/*.html files. ErrorsController falls back to those
+    # static files itself if the full layout cannot render. No routes involved:
+    # ShowExceptions rewrites PATH_INFO to "/<status>" before calling this.
+    config.exceptions_app = ->(env) { ErrorsController.action(:show).call(env) }
+
     # Every image_tag defaults to loading="lazy" decoding="async" (below-the-fold
     # avatars, shop products, flags, ...). image_tag only applies these when the
     # call doesn't pass its own, so nothing is doubled. Above-the-fold images

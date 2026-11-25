@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
     admin/forum/categories admin/forum/reports
     sessions registrations passwords email_verifications
     survivor_submissions
+    errors
   ].freeze
 
   def should_show_ads?

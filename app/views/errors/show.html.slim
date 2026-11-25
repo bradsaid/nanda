@@ -1,0 +1,33 @@
+- content_for :title, "#{@heading} (#{error_status}) – Naked & Afraid Fan Wiki"
+- content_for :meta_description, @message
+- content_for :og_url, request.original_url.sub(/\?.*\z/, "") # the layout's default would be "/<status>"
+.container.my-4
+  .pb-2.mb-3.border-bottom.site-header
+    p.text-muted.small.mb-1.text-uppercase.fw-semibold(style="letter-spacing: .5px;") = "Error #{error_status}"
+    h1.h3.mb-1.logo = @heading
+    p.subtitle.mb-0 = @message
+
+  - if error_status == 404
+    / Same GET search the Survivors page uses (survivors_path?q=).
+    = form_with url: survivors_path, method: :get, local: true, class: "d-flex gap-2 mb-4", role: "search" do
+      = label_tag :q, "Search survivors", class: "visually-hidden"
+      = text_field_tag :q, nil, placeholder: "Search survivors by name…", class: "form-control", autofocus: false
+      = submit_tag "Search", name: nil, class: "btn btn-outline-secondary"
+
+  h2.h5.mb-3 Popular pages
+  .row.g-3.mb-4
+    - links = [["Survivors", survivors_path, "Every survivalist, with episode and challenge counts"],
+               ["Episodes", episodes_path, "The full episode guide"],
+               ["Items", items_path, "What they brought and what they were given"],
+               ["Locations", locations_path, "Filming locations on a map"],
+               ["Shop", shop_path, "Gear seen on the show"],
+               ["Where to Watch", seasons_path, "Seasons and where to stream them"]]
+    - links << ["Forum", forum_path, "Talk about the show with other fans"] if forum_enabled? || forum_preview_access?
+    - links.each do |label, path, blurb|
+      .col-12.col-sm-6.col-lg-4
+        = link_to path, class: "card h-100 text-decoration-none shadow-sm" do
+          .card-body
+            .fw-semibold.link-primary = label
+            .small.text-muted = blurb
+
+  = link_to "Back to the homepage", root_path, class: "btn btn-primary"
