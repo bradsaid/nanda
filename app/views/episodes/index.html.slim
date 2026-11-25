@@ -208,8 +208,13 @@
     .form-floating.mb-3(style="max-width: 360px;" data-controller="season-jump")
       select.form-select#season-jump data-season-jump-target="select" data-action="change->season-jump#jump"
         option value=""
-        - @seasons.each do |s|
-          option value="season-#{s.id}" = "#{s.series.name} • S#{s.number}"
+        / Seasons are paginated: an entry for a season on another page carries that page's URL
+        / (data-href) and season_jump_controller.js navigates there instead of scrolling.
+        - @season_jump.each do |j|
+          - if j[:page] == @seasons_page.current_page
+            option value="season-#{j[:id]}" = j[:label]
+          - else
+            option value="season-#{j[:id]}" data-href=episodes_path(sort: @sort.presence, page: (j[:page] if j[:page] > 1), anchor: "season-#{j[:id]}") = j[:label]
       label for="season-jump" Jump to a season
 
     / Sort seasons box (CSP-safe Stimulus)
@@ -267,6 +272,8 @@
       - else
         .card-body
           .text-muted.py-4.px-3 No episodes yet in this season.
+
+  = paginate @seasons_page, window: 2
 
 style
   | [id^="season-"] { scroll-margin-top: 80px; }

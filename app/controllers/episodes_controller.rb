@@ -1,6 +1,13 @@
 # app/controllers/episodes_controller.rb
 class EpisodesController < ApplicationController
   include GearShelf
+  include Paginatable
+
+  # The season overview is ~8 KB of markup per season (cast chips, three episode rows), so
+  # eight seasons a page keeps /episodes near 100 KB instead of ~340 KB. The country
+  # pages paginate their cards (one per episode, or per continuous-story season).
+  SEASONS_PER_PAGE        = 8
+  COUNTRY_BLOCKS_PER_PAGE = 12
 
   def index
     @country = params[:country].to_s.strip
@@ -41,28 +48,44 @@ class EpisodesController < ApplicationController
 
     else
       @sort = params[:sort].to_s
+      page  = requested_page or return
 
       # Subquery for earliest valid airdate
       sub = Episode
               .where.not(air_date: nil)
               .select("season_id, MIN(air_date) AS first_air_date, MAX(air_date) AS last_air_date")
               .group("season_id")
+      with_dates = "LEFT JOIN (#{sub.to_sql}) epdates ON epdates.season_id = seasons.id"
+      dated_cols = "seasons.*, epdates.first_air_date, epdates.last_air_date, series.name AS series_name"
 
-      case @sort
-      when "airdate" # oldest first
-        @seasons = Season
-                    .joins(:series)
-                    .joins("LEFT JOIN (#{sub.to_sql}) epdates ON epdates.season_id = seasons.id")
-                    .select("seasons.*, epdates.first_air_date, epdates.last_air_date, series.name AS series_name")
-                    .order(Arel.sql("COALESCE(epdates.first_air_date, DATE '9999-12-31') ASC, series.name ASC, seasons.number ASC, seasons.id ASC"))
-      when "newest" # newest first
-        @seasons = Season
-                    .joins(:series)
-                    .joins("LEFT JOIN (#{sub.to_sql}) epdates ON epdates.season_id = seasons.id")
-                    .select("seasons.*, epdates.first_air_date, epdates.last_air_date, series.name AS series_name")
-                    .order(Arel.sql("COALESCE(epdates.last_air_date, DATE '1900-01-01') DESC, series.name ASC, seasons.number ASC, seasons.id ASC"))
-      else
-        @seasons = Season.includes(:series).order("series_id ASC, number ASC")
+      # `ordered` fixes the order of ALL seasons (every order ends in seasons.id, so page
+      # boundaries are stable); the page is a limit/offset slice of it.
+      ordered, columns =
+        case @sort
+        when "airdate" # oldest first
+          [Season.joins(:series).joins(with_dates)
+                 .order(Arel.sql("COALESCE(epdates.first_air_date, DATE '9999-12-31') ASC, series.name ASC, seasons.number ASC, seasons.id ASC")),
+           dated_cols]
+        when "newest" # newest first
+          [Season.joins(:series).joins(with_dates)
+                 .order(Arel.sql("COALESCE(epdates.last_air_date, DATE '1900-01-01') DESC, series.name ASC, seasons.number ASC, seasons.id ASC")),
+           dated_cols]
+        else
+          [Season.joins(:series).order(Arel.sql("seasons.series_id ASC, seasons.number ASC, seasons.id ASC")), nil]
+        end
+
+      # (id, series name, number) of every season in order: feeds the "Jump to a season"
+      # menu, whose entries for seasons on other pages link to the page they are on.
+      all_seasons = ordered.pluck("seasons.id", "series.name", "seasons.number")
+      ensure_page_in_range!(page, total_pages_for(all_seasons.size, SEASONS_PER_PAGE))
+      limit, offset = page_window(page, SEASONS_PER_PAGE)
+
+      page_scope = ordered.includes(:series).limit(limit).offset(offset)
+      page_scope = page_scope.select(columns) if columns
+      @seasons = page_scope.to_a
+      @seasons_page = Kaminari.paginate_array(@seasons, total_count: all_seasons.size).page(page).per(SEASONS_PER_PAGE)
+      @season_jump = all_seasons.each_with_index.map do |(id, series_name, number), i|
+        { id: id, label: "#{series_name} • S#{number}", page: i / SEASONS_PER_PAGE + 1 }
       end
 
       season_ids = @seasons.map(&:id)
@@ -184,6 +207,7 @@ class EpisodesController < ApplicationController
 
   def by_country
     @country = params[:country].to_s.strip
+    page = requested_page or return
     @episodes =
       Episode
         .includes(:location, season: :series, appearances: { survivor: { avatar_attachment: :blob } })
@@ -191,9 +215,34 @@ class EpisodesController < ApplicationController
         .where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
         .order(Arel.sql("air_date IS NULL, air_date DESC"))
 
+    # Cards, newest first: a continuous-story season with 2+ episodes here is ONE card with
+    # shared cast, any other episode is its own card. The cards are what get paginated.
+    blocks = country_blocks(@episodes.to_a)
+    ensure_page_in_range!(page, total_pages_for(blocks.size, COUNTRY_BLOCKS_PER_PAGE))
+    limit, offset = page_window(page, COUNTRY_BLOCKS_PER_PAGE)
+    @blocks = Kaminari.paginate_array(blocks.slice(offset, limit).to_a, total_count: blocks.size).page(page).per(COUNTRY_BLOCKS_PER_PAGE)
+
     # Shop cards for gear brought or given in this country, busiest items first.
+    # (Built for the whole country; only page 1 shows it.)
     build_gear_shelf(label: "Seen in #{@country}", episodes: @episodes.to_a) do |scope|
       scope.where("TRIM(LOWER(locations.country)) = ?", @country.downcase)
     end
+  end
+
+  private
+
+  def country_blocks(episodes)
+    blocks = []
+    episodes.group_by(&:season).each do |season, eps|
+      if season&.continuous_story_effective? && eps.size >= 2
+        sorted = eps.sort_by { |ep| [ep.air_date || Date.new(1, 1, 1), ep.id] }
+        blocks << { kind: :season, season: season, eps: sorted, id: sorted.first.id,
+                    sort_date: (eps.map(&:air_date).compact.max || Date.new(1, 1, 1)) }
+      else
+        eps.each { |ep| blocks << { kind: :ep, ep: ep, id: ep.id, sort_date: (ep.air_date || Date.new(1, 1, 1)) } }
+      end
+    end
+    # id breaks date ties, so card order (and therefore the page boundaries) is stable.
+    blocks.sort_by { |b| [-b[:sort_date].to_time.to_i, b[:id]] }
   end
 end
