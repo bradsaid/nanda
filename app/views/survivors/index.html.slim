@@ -38,16 +38,24 @@
   - else
     - shop_counts = ShopCatalog.survivor_counts
     / A-Z sorted by name: the first survivor of each initial gets an anchor, and phones get a
-    / row of letter links (the full list is ~190 screens long on a phone).
+    / row of letter links (the full list is ~190 screens long on a phone). The list is
+    / paginated, so each letter links to the page it starts on (@az_pages, over the whole
+    / list) and only that page carries its anchor.
     - az_letters = {}
     - if @sort == "name"
       - @survivors.each do |s|
         - letter = s.full_name.to_s.strip[0].to_s.upcase
         - letter = "#" unless letter.match?(/[A-Z]/)
-        - az_letters[letter] ||= s.id
+        - az_letters[letter] ||= s.id if @az_pages[letter] == @survivors.current_page
       nav.survivor-az.d-md-none.mb-3 aria-label="Jump to a letter"
-        - az_letters.each_key do |letter|
-          a href="#az-#{letter == '#' ? 'other' : letter}" = letter
+        - @az_pages.each do |letter, letter_page|
+          - frag = "az-#{letter == '#' ? 'other' : letter}"
+          - if letter_page == @survivors.current_page
+            a href="##{frag}" = letter
+          - else
+            = link_to letter, survivors_path(sort: "name", q: @q.presence, page: (letter_page if letter_page > 1), anchor: frag)
+    - first_shown = @survivors.offset_value + 1
+    p.small.text-muted.mb-2 = "Showing #{first_shown}–#{first_shown + @survivors.size - 1} of #{@survivors.total_count} survivors"
     #survivors-results.row.g-3
       - @survivors.each do |s|
         - name = s.full_name.to_s
@@ -85,4 +93,5 @@
                 small.text-muted.mt-1 = "#{collapsed} #{'challenge'.pluralize(collapsed)}"
               - if (gear_n = shop_counts[name.downcase].to_i).positive?
                 small.mt-1.badge.bg-warning-subtle.text-dark.border title="#{gear_n} #{'product'.pluralize(gear_n)} tied to #{name}" = "🛒 #{gear_n}"
+    = paginate @survivors, window: 2, params: { anchor: "survivors-results" }
     = render "shared/back_to_top"

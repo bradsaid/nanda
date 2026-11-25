@@ -1,4 +1,8 @@
 class SurvivorsController < ApplicationController
+  include Paginatable
+
+  # Cards per page: ~48 keeps /survivors around 45 KB of HTML instead of ~370 KB.
+  PER_PAGE = 48
 
   before_action :set_survivor, only: %i[show]
 
@@ -6,6 +10,7 @@ class SurvivorsController < ApplicationController
     @q    = params[:q].to_s.strip.first(100)
     @like = "%#{ActiveRecord::Base.sanitize_sql_like(@q)}%"
     @sort = params[:sort].to_s.presence_in(%w[challenges episodes name popular newest oldest recent]) || "challenges"
+    page  = requested_page or return
 
     # Short-circuit: if the search matches no survivor, skip the heavy
     # GROUP BY/aggregation entirely. Cache the exists-check briefly so
@@ -17,11 +22,17 @@ class SurvivorsController < ApplicationController
         Survivor.where("full_name ILIKE ?", @like).exists?
       end
       unless has_match
-        @survivors = []
+        ensure_page_in_range!(page, 1)
+        @survivors = paginated_survivors([], 0, page)
         @view_counts = {} if @sort == "popular"
         render :index and return
       end
     end
+
+    matching = Survivor.where("survivors.full_name ILIKE ?", @like)
+    total    = matching.count
+    ensure_page_in_range!(page, total_pages_for(total, PER_PAGE))
+    limit, offset = page_window(page, PER_PAGE)
 
     base =
       Survivor
@@ -39,34 +50,34 @@ class SurvivorsController < ApplicationController
         ].join(", "))
         .group("survivors.id")
 
-    case @sort
-    when "episodes"
-      @survivors = base.order("episodes_total_count DESC, episodes_collapsed_count DESC, survivors.full_name ASC").to_a
-    when "name"
-      @survivors = base.order("survivors.full_name ASC").to_a
-    when "newest"
-      @survivors = base.order(Arel.sql("MIN(episodes.air_date) DESC NULLS LAST, survivors.full_name ASC")).to_a
-    when "oldest"
-      @survivors = base.order(Arel.sql("MIN(episodes.air_date) ASC NULLS LAST, survivors.full_name ASC")).to_a
-    when "recent"
-      @survivors = base.order(Arel.sql("MAX(episodes.air_date) DESC NULLS LAST, survivors.full_name ASC")).to_a
-    when "popular"
-      @survivors = base.order("survivors.full_name ASC").to_a
-      # A scan of every survivor page view ever recorded, on each request for
-      # the "popular" sort. Ten minutes stale is invisible for a ranking.
-      view_counts_by_path = Rails.cache.fetch("survivors/popular_view_counts/v1", expires_in: 10.minutes) do
-        PageView.where("path LIKE '/survivors/%'").group(:path).count
-      end
-      @view_counts = @survivors.each_with_object({}) do |s, h|
-        h[s.id] = view_counts_by_path["/survivors/#{s.slug}"].to_i if s.slug.present?
-      end
-      @survivors = @survivors.sort_by { |s| [-(@view_counts[s.id] || 0), s.full_name.to_s] }
-    else  # "challenges" — default
-      @survivors = base.order("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC").to_a
+    # Every order ends in survivors.id so the page boundaries are stable between requests.
+    ordered = lambda do |sql|
+      base.order(Arel.sql("#{sql}, survivors.id ASC")).limit(limit).offset(offset).to_a
     end
 
+    rows =
+      case @sort
+      when "episodes"
+        ordered.("episodes_total_count DESC, episodes_collapsed_count DESC, survivors.full_name ASC")
+      when "name"
+        ordered.("survivors.full_name ASC")
+      when "newest"
+        ordered.("MIN(episodes.air_date) DESC NULLS LAST, survivors.full_name ASC")
+      when "oldest"
+        ordered.("MIN(episodes.air_date) ASC NULLS LAST, survivors.full_name ASC")
+      when "recent"
+        ordered.("MAX(episodes.air_date) DESC NULLS LAST, survivors.full_name ASC")
+      when "popular"
+        popular_page(base, matching, limit, offset)
+      else  # "challenges" - default
+        ordered.("episodes_collapsed_count DESC, episodes_total_count DESC, survivors.full_name ASC")
+      end
+
+    @survivors = paginated_survivors(rows, total, page)
+    @az_pages = az_pages_for(matching) if @sort == "name"
+
     # Top-6 callout uses the same shape as before so the JSON-LD helper still works.
-    @top_survivors = @survivors.first(6) if @survivors.respond_to?(:first)
+    @top_survivors = @survivors.first(6)
   end
 
   def show
@@ -134,6 +145,42 @@ class SurvivorsController < ApplicationController
   end
 
   private
+
+  # Wraps one page of rows so the view can `paginate` it (and still use it as a plain array).
+  def paginated_survivors(rows, total, page)
+    Kaminari.paginate_array(rows, total_count: total).page(page).per(PER_PAGE)
+  end
+
+  # "Popular" ranks by page views, which live in the page_views table keyed by path and
+  # not in this query, so the ranking is done in Ruby on a light (id, slug, name) list of
+  # every matching survivor; only the requested page of ids goes through the heavy
+  # aggregate query, and its rows are put back in ranked order.
+  def popular_page(base, matching, limit, offset)
+    # A scan of every survivor page view ever recorded, on each request for
+    # the "popular" sort. Ten minutes stale is invisible for a ranking.
+    view_counts_by_path = Rails.cache.fetch("survivors/popular_view_counts/v1", expires_in: 10.minutes) do
+      PageView.where("path LIKE '/survivors/%'").group(:path).count
+    end
+    people = matching.pluck(:id, :slug, :full_name)
+    @view_counts = people.each_with_object({}) do |(id, slug, _), h|
+      h[id] = view_counts_by_path["/survivors/#{slug}"].to_i if slug.present?
+    end
+    ranked   = people.sort_by { |id, _, name| [-(@view_counts[id] || 0), name.to_s, id] }
+    page_ids = ranked.slice(offset, limit).to_a.map(&:first)
+    by_id    = base.where(survivors: { id: page_ids }).index_by(&:id)
+    page_ids.filter_map { |id| by_id[id] }
+  end
+
+  # For the phone A-Z strip on the name sort: first page each initial appears on, over the
+  # whole (searched) list, so a letter link can lead to another page.
+  def az_pages_for(matching)
+    names = matching.order(Arel.sql("survivors.full_name ASC, survivors.id ASC")).pluck(:full_name)
+    names.each_with_index.each_with_object({}) do |(name, i), h|
+      letter = name.to_s.strip[0].to_s.upcase
+      letter = "#" unless letter.match?(/[A-Z]/)
+      h[letter] ||= i / PER_PAGE + 1
+    end
+  end
 
   # More internal links for the survivor page: other survivalists from the
   # seasons this person was on, and from the countries they filmed in. Only ids
