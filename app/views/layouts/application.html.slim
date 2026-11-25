@@ -92,8 +92,9 @@ html
 
     / Preload the site banner image (rendered above-the-fold on every page)
     / and app CSS so the browser can start those fetches in parallel with the
-    / HTML rather than serially after parsing.
-    link rel="preload" href=(asset_path("NAKED.png")) as="image" fetchpriority="high"
+    / HTML rather than serially after parsing. The banner preload mirrors the
+    / <picture> in site_banner_tag (AVIF candidates only; see SiteImagesHelper).
+    = site_banner_preload_tag
     link rel="preload" href=(asset_path("application.css")) as="style"
 
     / Fonts — preconnect warms up the TLS handshake to Google's font server so
@@ -120,9 +121,7 @@ html
 
     / ===== Header =====
     header.container.text-center.my-2
-      = image_tag "NAKED.png",
-        alt: "Naked and Afraid Fan Database",
-        class: "site-banner"
+      = site_banner_tag
 
     main.container.mx-auto.mt-8.px-5.flex
       .container.my-4
