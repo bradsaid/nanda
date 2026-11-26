@@ -68,4 +68,19 @@ class Admin::EpisodeFormTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_match(/duplicates an existing record/i, response.body)
   end
+
+  test "Wickiup is a shelter type option and a saved wickiup gets its own shelter page" do
+    get edit_admin_episode_path(@episode)
+    assert_response :success
+    assert_select "select[name*='shelter_type'] option[value='Wickiup']"
+
+    patch admin_episode_path(@episode), params: { episode: {
+      episode_shelters_attributes: { "0" => { shelter_type: "Wickiup" } }
+    } }
+    assert_redirected_to admin_episodes_path
+    assert_equal ["Wickiup"], @episode.reload.episode_shelters.pluck(:shelter_type)
+
+    get shelter_path(shelter_type: "wickiup")
+    assert_response :success
+  end
 end
