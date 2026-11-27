@@ -1,5 +1,5 @@
 doctype html
-html lang="en"
+html lang=(content_for?(:html_lang) ? yield(:html_lang) : "en")
   head
     / Must be first in <head> (within the first 1024 bytes, before any text).
     meta charset="utf-8"

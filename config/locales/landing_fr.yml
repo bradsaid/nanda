@@ -1,0 +1,48 @@
+# French copy for /fr/naked-and-afraid-guide-des-episodes (EpisodeGuidesController).
+# Looked up with an explicit `locale:` (see EpisodeGuidesHelper#landing_t); the site's own
+# locale stays English. Written without a native review: have a French speaker proofread it.
+fr:
+  landing:
+    guide:
+      lang_name: "Français"
+      html_title: "Naked and Afraid : guide des épisodes par saison"
+      h1: "Naked and Afraid : guide des épisodes"
+      subtitle: "Toutes les saisons et tous les épisodes, par série"
+      description: "Guide des épisodes de Naked and Afraid : %{seasons} et %{episodes} dans %{series}, avec l'année, les pays de tournage et des liens vers chaque saison."
+      breadcrumb_home: "Accueil"
+      seasons:
+        one: "%{count} saison"
+        other: "%{count} saisons"
+      episodes:
+        one: "%{count} épisode"
+        other: "%{count} épisodes"
+      series:
+        one: "%{count} série"
+        other: "%{count} séries"
+      places:
+        one: "%{count} lieu"
+        other: "%{count} lieux"
+      and_word: "et"
+      intro_1: "Ce guide réunit %{seasons} et %{episodes} de Naked and Afraid issus de notre base de données, classés par série, avec l'année de chaque saison et les pays ou lieux de tournage."
+      intro_2: "Les titres des épisodes et les noms des participants sont des noms propres et sont affichés tels quels. Les pages de chaque saison sont en anglais."
+      table_season: "Saison"
+      table_year: "Année"
+      table_episodes: "Épisodes"
+      table_places: "Pays et lieux de tournage"
+      season_link: "Saison %{number}"
+      series_summary: "%{seasons} · %{episodes}"
+      faq_heading: "Questions fréquentes"
+      faq_total_q: "Combien de saisons et d'épisodes de Naked and Afraid cette base de données contient-elle ?"
+      faq_total_a: "Elle contient %{seasons} et %{episodes}, répartis dans %{series}."
+      faq_where_q: "Où Naked and Afraid a-t-il été tourné ?"
+      faq_where_a: "Les épisodes de notre base de données ont été tournés dans %{places}, notamment %{top}."
+      faq_where_link: "Voir tous les lieux (en anglais)"
+      faq_latest_q: "Quelle est la saison la plus récente ?"
+      faq_latest_a: "La saison dont l'épisode le plus récent déjà diffusé figure dans notre base de données est %{season}, avec un épisode daté du %{date}."
+      faq_latest_link: "Voir la dernière saison (en anglais)"
+      date: "%{day} %{month} %{year}"
+      months: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+      other_languages: "Autres langues"
+      english_link: "English (catalogue des séries)"
+      footer_link: "Guide en français"
+      date_first: "1er %{month} %{year}"

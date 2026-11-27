@@ -18,6 +18,8 @@ footer.footer.container.mt-5.py-4.border-top
         li = link_to "Podcasts & Books", podcasts_path, class: "text-decoration-none text-muted"
         li = link_to "Where to Watch", seasons_path, class: "text-decoration-none text-muted"
         li = link_to "Shop", shop_path, class: "text-decoration-none text-muted"
+        - EpisodeGuides::PATHS.each do |code, path|
+          li = link_to I18n.t("landing.guide.footer_link", locale: code.to_sym), path, hreflang: code, lang: code, class: "text-decoration-none text-muted"
 
     / Connect & Legal combined section
     .col-md-5.mb-3

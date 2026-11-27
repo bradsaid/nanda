@@ -19,7 +19,7 @@ class SitemapUrls
   # Bump to invalidate every cached sitemap after changing the URL set below.
   # (3: episode, item, country, food source, shelter and item-type pages moved to slug URLs.
   #  4: region hubs, /seasons/latest and the localized episode guides were added.)
-  VERSION = 4
+  VERSION = 5
 
   # <lastmod> for pages whose content is a template, not data. There is no way to read a
   # template's last git commit at runtime on Heroku, so each is the date of its last
@@ -164,6 +164,10 @@ class SitemapUrls
     add seasons_path,      changefreq: "weekly", priority: 0.7, lastmod: latest(stamp(Season), stamp(Series))
     add latest_seasons_path, changefreq: "daily", priority: 0.7, lastmod: latest(stamp(Episode), stamp(Season))
     add series_index_path, changefreq: "weekly", priority: 0.7, lastmod: latest(stamp(Series), stamp(Season))
+    # Localized guide pages (hreflang alternates of each other; see EpisodeGuides).
+    EpisodeGuides::PATHS.each_value do |path|
+      add path, changefreq: "weekly", priority: 0.5, lastmod: latest(stamp(Episode), stamp(Season), stamp(Series))
+    end
   end
 
   # Filter / facet pages. Lists carry the newest change in the data behind them; each

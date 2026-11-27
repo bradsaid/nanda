@@ -1,0 +1,65 @@
+/ ===== SEO + JSON-LD: localized episode guide (es / pt / fr) =====
+- faq_qas = episode_guide_faq_qas(@guide)
+- desc = episode_guide_description(@guide)
+- content_for :html_lang, @lang
+- content_for :title, episode_guide_title
+- content_for :meta_description, desc
+- content_for :canonical_url, canonical_request_url
+- content_for :og_title, landing_t(:h1)
+- content_for :og_description, desc
+- content_for :head, episode_guide_hreflang_tags
+= render_jsonld(episode_guide_jsonld(@guide, qas: faq_qas))
+/ ===== end SEO + JSON-LD =====
+
+.pb-2.mb-3.border-bottom.site-header
+  .d-flex.flex-column
+    h1.h3.mb-0.logo = landing_t(:h1)
+    p.subtitle.mb-0 = landing_t(:subtitle)
+
+section.mb-4.guide-intro
+  p = landing_t(:intro_1, seasons: landing_count(:seasons, @guide.season_count), episodes: landing_count(:episodes, @guide.episode_count))
+  - [:intro_2, :intro_3].each do |key|
+    - if I18n.exists?("landing.guide.#{key}", locale: @lang.to_sym)
+      p.text-muted = landing_t(key)
+  nav.small.guide-languages aria-label=landing_t(:other_languages)
+    span.text-muted.me-2 = "#{landing_t(:other_languages)}:"
+    = link_to "English", EpisodeGuides::DEFAULT_PATH, hreflang: "en", lang: "en", class: "me-2", title: landing_t(:english_link)
+    - EpisodeGuides::PATHS.each do |code, path|
+      - next if code == @lang
+      = link_to landing_t(:lang_name, lang: code), path, hreflang: code, lang: code, class: "me-2"
+
+- if @guide.rows.empty?
+  .card.shadow-sm.mb-4
+    .card-body.text-center.text-muted.py-4 —
+
+/ ===== Series -> seasons (data from the database, links go to the English season pages) =====
+- @guide.rows.each do |row|
+  section.card.shadow-sm.mb-4.guide-series aria-labelledby="guide-series-#{row.series.id}"
+    .card-header.d-flex.flex-wrap.align-items-center.justify-content-between.gap-2
+      h2.h5.mb-0 id="guide-series-#{row.series.id}" = link_to(row.series.name, series_path(row.series), class: "text-decoration-none link-light")
+      span.small.opacity-75 = landing_t(:series_summary, seasons: landing_count(:seasons, row.seasons.size), episodes: landing_count(:episodes, row.episode_count))
+    .table-responsive.table-stack-host
+      table.table.table-stack.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th(scope="col") = landing_t(:table_season)
+            th(scope="col") = landing_t(:table_year)
+            th(scope="col") = landing_t(:table_episodes)
+            th(scope="col") = landing_t(:table_places)
+        tbody
+          - row.seasons.each do |s|
+            tr
+              td data-label=landing_t(:table_season) = link_to(landing_t(:season_link, number: s.number), season_path(s.season))
+              td data-label=landing_t(:table_year) = s.year || "—"
+              td data-label=landing_t(:table_episodes) = s.episode_count
+              td data-label=landing_t(:table_places) = s.places.join(", ").presence || "—"
+
+/ ===== FAQ (visible text matches the FAQPage JSON-LD) =====
+section.card.shadow-sm.mb-4 aria-labelledby="guide-faq-heading"
+  .card-header
+    h2#guide-faq-heading.h6.mb-0 = landing_t(:faq_heading)
+  .card-body
+    - faq_qas.each_with_index do |qa, i|
+      details.mb-2 open=(i == 0)
+        summary.fw-semibold = qa[:q]
+        p.mt-2.mb-0.text-muted = qa[:a_html].presence || qa[:a]

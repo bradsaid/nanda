@@ -130,6 +130,11 @@ Rails.application.routes.draw do
   resources :locations, only: [:index]
   # Declared before resources :seasons so "latest" is not read as a season id.
   get "seasons/latest", to: "latest_seasons#show", as: :latest_seasons
+  # Localized episode-guide landing pages (copy in config/locales/landing_*.yml; keep in step
+  # with EpisodeGuides::PATHS, which a test checks).
+  get "es/naked-and-afraid-guia-de-episodios", to: "episode_guides#show", defaults: { lang: "es" }, as: :episode_guide_es
+  get "pt/naked-and-afraid-guia-de-episodios", to: "episode_guides#show", defaults: { lang: "pt" }, as: :episode_guide_pt
+  get "fr/naked-and-afraid-guide-des-episodes", to: "episode_guides#show", defaults: { lang: "fr" }, as: :episode_guide_fr
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]
   get "shop", to: "shop#index"
