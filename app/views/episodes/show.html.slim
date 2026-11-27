@@ -5,28 +5,26 @@
 - season_num  = season&.number
 - ep_num      = @episode.number_in_season
 - title_text  = @episode.title.presence || "Episode"
-- subtitle    = [series&.name, ("S#{season_num}" if season_num), ("E#{ep_num}" if ep_num)].compact.join(" • ")
-- series_short = (series&.name.to_s.sub(/\ANaked and Afraid[: ]*/i, "").presence || series&.name)
-- short_sub = [series_short, ("S#{season_num}E#{ep_num}" if season_num && ep_num)].compact.join(" ")
-- title_for_tag = (short_sub.present? ? "#{title_text} (#{short_sub})" : title_text).first(60)
+- subtitle    = episode_subtitle_parts(@episode).join(" · ")
+- heading_phrase = episode_page_heading_phrase(@episode)
 - air_date    = @episode.air_date&.strftime("%b %-d, %Y")
 - loc         = @episode.location
 - loc_str     = [loc&.country, loc&.region, loc&.site].compact_blank.join(", ").presence
-/ Synopsis-derived description reads better in search results than the
-/ boilerplate "Participants, PSR, ..." version when a synopsis exists.
+/ Series, season, episode number, air date, location and the start of the synopsis (when there is
+/ one) in the description; title and H1 name the series + "Season N Episode M" so the page matches
+/ searches in the "Season 11 Episode 4" and "(Season 1, Episode 8)" formats.
 - synopsis_plain = ActionView::Base.full_sanitizer.sanitize(@episode.synopsis.to_s).squish
-- factual_line = "#{title_text} (#{subtitle}) — Aired #{air_date || '—'}#{loc_str ? " • Location: #{loc_str}" : ""}."
-- meta_desc = synopsis_plain.present? ? "#{factual_line} #{synopsis_plain}".first(160) : "#{factual_line} Participants, PSR, days lasted, and items."
+- meta_desc = episode_page_description(@episode)
 / og:image: first survivor avatar on this episode (permanent proxy URL); with no avatar the
 / layout falls back to the site's default share image.
 - og_survivor = (@episode.appearances.map(&:survivor).find { |s| s&.avatar&.attached? } rescue nil)
 
 / Titles & meta
-- content_for :title, title_for_tag
+- content_for :title, episode_page_title(@episode)
 - content_for :meta_description, meta_desc
 - content_for :keywords, "Naked and Afraid episode, #{series&.name}, Season #{season_num}, Episode #{ep_num}, #{title_text}, survivors, PSR, items"
 - content_for :canonical_url, canonical_request_url
-- content_for :og_title, "#{title_text} | #{subtitle}"
+- content_for :og_title, "#{heading_phrase}: #{title_text}"
 - content_for :og_description, synopsis_plain.present? ? synopsis_plain.first(200) : "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
 - set_share_image(avatar_share_image(og_survivor))
 
@@ -49,9 +47,10 @@
         - if subtitle.present?
           p.text-muted.mb-0
             - if season
-              = link_to [series&.name, ("S#{season_num}" if season_num)].compact.join(" • "), season_path(season), class: "text-muted text-decoration-underline"
-              - if ep_num
-                |  • E#{ep_num}
+              = link_to episode_subtitle_parts(@episode).first(2).join(" · "), season_path(season), class: "text-muted text-decoration-underline"
+              - rest = episode_subtitle_parts(@episode).drop(2)
+              - if rest.any?
+                = " · #{rest.join(' · ')}"
             - else
               = subtitle
       .d-flex.flex-wrap.gap-2
