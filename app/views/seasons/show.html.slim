@@ -1,38 +1,114 @@
 / ===== SEO + JSON-LD: Season Show =====
+/ The series is always in the name ("Naked and Afraid XL Season 10" vs "Naked and Afraid Season 10"),
+/ in the title, the H1, the breadcrumb and the structured data, so XL season N is never mistaken
+/ for regular season N.
 - series_name  = @season.series&.name || "Naked and Afraid"
 - season_num   = @season.number
-- ep_count     = (@episodes || []).size
+- season_name  = season_full_name(@season)
+- ov           = @overview
+- services     = season_watch_services(@season)
+- faq_qas      = season_faq_qas(@season, ov, services: services)
+- is_continuous = @season.continuous_story_effective?
 
-- content_for :title, "#{series_name} — Season #{season_num}"
-- content_for :meta_description, "#{series_name} Season #{season_num}: #{ep_count} episode(s) with air dates, locations, survivors, and items."
-- content_for :keywords, "Naked and Afraid, #{series_name}, Season #{season_num}, episodes, survivors, locations"
+- content_for :title, season_page_title(@season)
+- content_for :meta_description, season_page_description(@season, ov)
+- content_for :keywords, "#{season_name}, #{series_name}, Season #{season_num}, cast, episodes, locations, where to watch"
 - content_for :canonical_url, canonical_request_url
-- content_for :og_title, "#{series_name} — Season #{season_num}"
-- content_for :og_description, "Episode guide for #{series_name} Season #{season_num}."
+- content_for :og_title, "#{season_name}: Cast, Episodes & Locations"
+- content_for :og_description, season_page_description(@season, ov)
 
-/ Server-rendered JSON-LD (TVSeason + ItemList)
-= render_jsonld(season_show_jsonld(season: @season, episodes: @episodes))
+/ Server-rendered JSON-LD (TVSeason + ItemList + FAQPage)
+= render_jsonld(season_show_jsonld(season: @season, episodes: @episodes) + [faq_page_jsonld(faq_qas)].compact)
 / ===== end SEO + JSON-LD =====
 
 
 .container.my-4
-  = link_to "← All seasons", episodes_path, class: "small link-primary text-decoration-underline"
-  h1.h3.mt-2.mb-4 = "#{@season.series&.name} — Season #{@season.number}"
+  nav.small.mb-2 aria-label="Breadcrumb"
+    = link_to "Home", root_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    = link_to "Seasons", seasons_path, class: "text-decoration-none text-muted"
+    span.mx-1 &raquo;
+    span = season_name
+  h1.h3.mt-2.mb-1 = season_name
+  p.text-muted.mb-3
+    | Cast, episodes and filming locations · part of
+    = " "
+    = link_to display_series_name(@season.series), series_path(@season.series), class: "link-primary text-decoration-underline" if @season.series
+
+  - if @prev_season || @next_season
+    nav.d-flex.justify-content-between.gap-3.mb-3.small aria-label="Other seasons of this series"
+      - if @prev_season
+        = link_to "← #{season_full_name(@prev_season)}", season_path(@prev_season), rel: "prev", class: "link-primary text-decoration-underline"
+      - else
+        span
+      - if @next_season
+        = link_to "#{season_full_name(@next_season)} →", season_path(@next_season), rel: "next", class: "link-primary text-decoration-underline"
 
   - if @season.intro.present?
     .season-intro.mb-4
       - @season.intro.to_s.split(/\n\s*\n/).each do |para|
         p.mb-2 == linkify_season_intro(para.strip, @season)
   - else
-    - synopsis = season_synopsis(@season)
+    - synopsis = season_synopsis(@season, episodes: @episodes, survivor_count: @survivors.size)
     - if synopsis.present?
       p.text-muted.mb-4 = synopsis
+
+  / ===== Season at a glance (every row only when the data exists) =====
+  - if ov.episode_count.positive?
+    section.card.shadow-sm.mb-4 aria-labelledby="season-facts-heading"
+      .card-header
+        h2#season-facts-heading.h5.mb-0 = "#{season_name} at a glance"
+      .card-body
+        dl.row.mb-0
+          dt.col-sm-4 Series
+          dd.col-sm-8 = link_to(display_series_name(@season.series), series_path(@season.series)) if @season.series
+          - if ov.premiere
+            dt.col-sm-4 Premiere
+            dd.col-sm-8 = long_date(ov.premiere)
+          - if ov.finale && ov.finale != ov.premiere
+            dt.col-sm-4 Finale
+            dd.col-sm-8 = long_date(ov.finale)
+          dt.col-sm-4 Episodes
+          dd.col-sm-8 = ov.episode_count
+          - if ov.countries.any?
+            dt.col-sm-4 = "Filmed in"
+            dd.col-sm-8
+              = safe_join(ov.countries.map { |c| link_to(c, by_country_episodes_path(c)) }, ", ")
+          - if ov.location_counts.any? && ov.location_counts.size <= 4 && ov.location_counts.any? { |label, _, _| label.include?(",") }
+            dt.col-sm-4 = "Location".pluralize(ov.location_counts.size)
+            dd.col-sm-8 = ov.location_counts.map(&:first).join("; ")
+          - if ov.scheduled_days.any?
+            dt.col-sm-4 Challenge length
+            dd.col-sm-8
+              - if ov.scheduled_days.size == 1
+                = pluralize(ov.scheduled_days.first, "day")
+              - else
+                = "#{ov.scheduled_days.first} to #{pluralize(ov.scheduled_days.last, 'day')}"
+          dt.col-sm-4 Format
+          dd.col-sm-8
+            = is_continuous ? "Continuous story: one challenge told across all episodes" : "Standalone episodes: a separate challenge in each episode"
+          - if ov.arrangements.any?
+            dt.col-sm-4 Participants
+            dd.col-sm-8 = ov.arrangements.first(3).join(", ")
+          - if @survivors.any?
+            dt.col-sm-4 Cast
+            dd.col-sm-8 = pluralize(@survivors.size, "survivalist")
+
+  - if services.any?
+    section.card.shadow-sm.mb-4 aria-labelledby="season-watch-heading"
+      .card-header
+        h2#season-watch-heading.h5.mb-0 = "Where to watch #{season_name}"
+      .card-body
+        .d-flex.flex-wrap.gap-2
+          - services.each do |service_key, url|
+            = link_to url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm" do
+              = streaming_label(service_key)
 
   - if @survivors.any?
     .card.shadow-sm.mb-4
       .card-header
         .d-flex.justify-content-between.align-items-center
-          span.fw-semibold = "Survivalists (#{@survivors.size})"
+          h2.h6.fw-semibold.mb-0 = "Survivalists (#{@survivors.size})"
       .card-body
         .row.g-3
           - @survivors.each do |s|
@@ -47,10 +123,13 @@
                     .first-name = parts[0]
                     .last-name = parts[1].to_s
 
+  / ===== Highlights: only the statistics the data supports =====
+  = render "shared/overview_highlights", ov: ov, name: season_name, id: "season-highlights-heading"
+
   - if @episodes.empty?
     p.text-muted.mb-0 No episodes in this season yet.
   - else
-    - is_continuous = @season.continuous_story || @season.series&.continuous_story
+    h2.h5.mb-3 = "#{season_name} episodes"
     .row.row-cols-1.g-3
       - @episodes.each do |ep|
         - loc = ep.location
@@ -62,9 +141,14 @@
           .card.shadow-sm
             .card-body
               .d-flex.justify-content-between.align-items-start.gap-3
-                h2.h6.mb-0 = link_to(title, episode_path(ep), class: "link-primary text-decoration-underline")
+                h3.h6.mb-0 = link_to(title, episode_path(ep), class: "link-primary text-decoration-underline")
                 span.badge.text-bg-secondary = "E#{ep.number_in_season || '—'}"
               .small.text-muted.mt-1 = air_str
               .small.text-muted = loc_str
               - if !is_continuous && ep_survivors.any?
-                .mt-2 = survivor_chips(ep_survivors, size: 28)
+                .mt-2
+                  span.small.text-muted.me-1 = ep_survivors.size == 2 ? "Partners:" : "Cast:"
+                  = survivor_chips(ep_survivors, size: 28)
+
+  .mt-4
+    = render "shared/faq_block", qas: faq_qas, id: "season-faq-heading"
