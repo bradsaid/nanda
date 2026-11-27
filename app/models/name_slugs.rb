@@ -70,7 +70,7 @@ module NameSlugs
       return nil if text.blank?
       with_mapping(kind) do |mapping|
         match_in(kind, mapping, text)
-      end
+      end || resolve_alias(kind, text)
     end
 
     # Every [name, slug] pair, in sorted order, for pages that list them all.
@@ -111,6 +111,19 @@ module NameSlugs
 
     def plain_slug(text, kind)
       text.parameterize.presence || kind.fallback
+    end
+
+    # A country URL that is only a common misspelling or alternate name ("columbia",
+    # "phillipines", config/country_aliases.yml) resolves to the real country, so the
+    # page 301s to its slug. Real names are tried first (see #resolve), and an alias for a
+    # country that is not in the data is still a not-found.
+    def resolve_alias(kind, text)
+      return nil unless kind.name == :country
+      CountryAliases.canonicals_for(text).each do |canonical|
+        match = with_mapping(kind) { |mapping| match_in(kind, mapping, canonical) }
+        return match if match
+      end
+      nil
     end
 
     def match_in(kind, mapping, text)

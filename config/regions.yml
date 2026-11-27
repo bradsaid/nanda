@@ -1,0 +1,86 @@
+# Which region (continent hub) each filming location belongs to, for /episodes/by_region/<slug>.
+#
+# `countries` are matched to locations.country case-insensitively. The show stores some US
+# states in the country column (Louisiana, Texas, ...); those sit under North America, and
+# "Georgia" is the US state (its description in country_descriptions.yml is about the state's
+# pine and hardwood forests), not the country.
+#
+# A location whose country is not listed here simply belongs to no region page: add it to
+# the right list when the show films somewhere new. A region with no episodes in the database
+# is hidden everywhere (page, links, sitemap), so listing a country before it has episodes is
+# harmless. `aliases` are extra names for the region's URL (a 301 to its slug).
+- name: Africa
+  countries:
+    - Botswana
+    - Madagascar
+    - Mozambique
+    - Namibia
+    - South Africa
+    - Tanzania
+    - Zambia
+
+- name: Asia
+  countries:
+    - Cambodia
+    - India
+    - Malaysia
+    - Maldives
+    - Philippines
+    - Thailand
+
+- name: Europe
+  countries:
+    - Bulgaria
+    - Croatia
+
+- name: Oceania
+  countries:
+    - Australia
+    - Fiji
+
+- name: South America
+  countries:
+    - Argentina
+    - Bolivia
+    - Brazil
+    - Colombia
+    - Ecuador
+    - Guyana
+    - Peru
+
+- name: Central America & Caribbean
+  aliases:
+    - Caribbean
+    - Central America
+    - Central America and Caribbean
+  countries:
+    - Bahamas
+    - Belize
+    - Costa Rica
+    - Dominica
+    - Honduras
+    - Montserrat
+    - Nicaragua
+    - Panama
+    - Tobago
+    - Trinidad
+
+- name: North America
+  countries:
+    - Canada
+    - Mexico
+    # US states stored as the "country"
+    - Alabama
+    - Alaska
+    - Arizona
+    - Colorado
+    - Florida
+    - Georgia
+    - Illinois
+    - Kentucky
+    - Louisiana
+    - Mississippi
+    - Montana
+    - New Mexico
+    - Tennessee
+    - Texas

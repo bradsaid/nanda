@@ -50,7 +50,8 @@ class LocationsController < ApplicationController
     @country_challenges = @countries_by_eps_adj.dup
     if @q.present?
       needle = @q.downcase
-      @country_challenges = @country_challenges.select { |c, _| c.to_s.downcase.include?(needle) }
+      # Matches the name, or a common misspelling / alternate name ("columbia" finds Colombia).
+      @country_challenges = @country_challenges.select { |c, _| c.to_s.downcase.include?(needle) || CountryAliases.match?(c, needle) }
     end
     @country_challenges =
       case @sort

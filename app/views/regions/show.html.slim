@@ -1,0 +1,79 @@
+/ ===== SEO + JSON-LD: Region hub (Naked and Afraid in Africa, ...) =====
+- region_name = @summary.name
+- faq_qas     = region_faq_qas(@summary)
+- content_for :title, region_title(@summary)
+- content_for :meta_description, region_meta_description(@summary)
+- content_for :canonical_url, canonical_request_url
+- content_for :og_title, "Naked and Afraid in #{region_name}"
+- content_for :og_description, region_meta_description(@summary)
+= render_jsonld(region_jsonld(@summary, qas: faq_qas))
+/ ===== end SEO + JSON-LD =====
+
+.pb-2.mb-3.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+    .d-flex.flex-column
+      h1.h3.mb-0.logo = "Naked and Afraid in #{region_name}"
+      p.subtitle.mb-0 = "Every filming location and episode in #{region_name}"
+    = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
+
+.card.shadow-sm.mb-4.region-intro
+  .card-body
+    p.mb-0 = region_intro(@summary, season_count: @season_count, survivor_count: @survivor_count)
+
+/ ===== Places (countries, or US states the show stores as the country) =====
+section.mb-4 aria-labelledby="region-places-heading"
+  h2#region-places-heading.h5.mb-3 = "Filming locations in #{region_name}"
+  .row.g-3
+    - @summary.countries.each do |c|
+      - flag = country_flag_url(c[:name], size: 160)
+      - lead = country_description_lead(c[:name])
+      .col-12.col-md-6.col-lg-4
+        .card.shadow-sm.h-100.region-country-card
+          .card-body
+            .d-flex.align-items-center.gap-3.mb-2
+              - if flag
+                = image_tag flag, alt: country_flag_alt(c[:name]), width: 48, loading: "lazy", class: "rounded shadow-sm flex-shrink-0"
+              div
+                h3.h6.mb-0 = link_to c[:name], by_country_episodes_path(country: c[:name]), class: "text-decoration-none"
+                small.text-muted = pluralize(c[:episodes], "episode")
+            - if lead
+              p.small.text-muted.mb-0 = lead
+
+/ ===== Newest episodes filmed here =====
+- if @recent_episodes.any?
+  section.card.shadow-sm.mb-4 aria-labelledby="region-recent-heading"
+    .card-header
+      h2#region-recent-heading.h5.mb-0 = "Latest episodes filmed in #{region_name}"
+    .table-responsive.table-stack-host
+      table.table.table-stack.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th(scope="col") Episode
+            th(scope="col") Season
+            th(scope="col") Aired
+            th(scope="col") Location
+        tbody
+          - @recent_episodes.each do |ep|
+            tr
+              td data-label="Episode" = link_to(ep.title.presence || "Episode ##{ep.number_in_season}", episode_path(ep))
+              td data-label="Season" = [ep.season&.series&.name, ("Season #{ep.season.number}" if ep.season&.number)].compact.join(" — ")
+              td data-label="Aired" = ep.air_date.strftime("%b %-d, %Y")
+              td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ")
+
+/ ===== FAQ (visible content backing the FAQPage schema) =====
+section.card.shadow-sm.mb-4 aria-labelledby="region-faq-heading"
+  .card-header
+    h2#region-faq-heading.h6.mb-0 Frequently Asked Questions
+  .card-body
+    - faq_qas.each_with_index do |qa, i|
+      details.mb-2 open=(i == 0)
+        summary.fw-semibold = qa[:q]
+        p.mt-2.mb-0.text-muted = qa[:a_html].presence || qa[:a]
+
+/ ===== Other regions =====
+- if @other_regions.any?
+  nav.mb-4 aria-label="Other regions"
+    .small.text-muted.text-uppercase.fw-semibold.mb-2(style="letter-spacing: .5px;") Other regions
+    .d-flex.flex-wrap.gap-2
+      - @other_regions.each do |s|
+        = link_to s.name, by_region_episodes_path(region: s.slug), class: "badge rounded-pill text-bg-light border text-decoration-none fw-normal fs-6"

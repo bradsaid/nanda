@@ -3,7 +3,8 @@
 - ep_list      = (@episodes || [])
 
 - content_for :title, paginated_title("Naked and Afraid Episodes in #{country_name}", @page_number)
-- content_for :meta_description, paginated_description("All #{ep_list.size} episode(s) filmed in #{country_name}: air dates, locations, and survivors.", @page_number)
+- country_alias_names = CountryAliases.for(country_name)
+- content_for :meta_description, country_meta_description(country_name, ep_list.size, country_alias_names, @page_number)
 - content_for :keywords, "Naked and Afraid episodes, #{country_name}, filming locations, survivors, episode guide"
 - content_for :canonical_url, canonical_request_url
 - content_for :og_title, "Episodes in #{country_name} – Naked and Afraid"
@@ -29,7 +30,19 @@
       .d-flex.flex-column
         h1.h3.mb-0.logo = "Episodes in #{@country}"
         p.subtitle.mb-0 = "All Episodes in #{@country}"
+        / Misspellings / alternate names people search for ("Columbia"); config/country_aliases.yml.
+        - if country_alias_names.any?
+          p.small.text-muted.mb-0.country-aliases = "Also spelled or known as: #{country_alias_names.join(', ')}"
     = link_to "All locations", locations_path, class: "btn btn-outline-secondary btn-sm"
+
+/ Sideways links to the rest of the region (config/regions.yml); nothing when the country is in no region.
+- if (region_summary = region_summary_for_country(@country))
+  - sibling_countries = region_summary.countries.reject { |c| c[:name].casecmp?(@country.to_s) }
+  nav.small.mb-3.country-region-links aria-label="More in #{region_summary.name}"
+    strong.me-1 = "More in #{region_summary.name}:"
+    - sibling_countries.first(12).each do |c|
+      = link_to c[:name], by_country_episodes_path(country: c[:name]), class: "me-2 text-nowrap"
+    = link_to "All of #{region_summary.name} →", by_region_episodes_path(region: region_summary.slug), class: "text-nowrap fw-semibold"
 
 - if @page_number == 1 && (country_desc = country_description(@country))
   .card.shadow-sm.mb-4.country-description-card

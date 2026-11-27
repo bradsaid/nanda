@@ -17,8 +17,9 @@ class SitemapUrls
   HOST = "https://www.nakedandafraidfan.com".freeze
 
   # Bump to invalidate every cached sitemap after changing the URL set below.
-  # (3: episode, item, country, food source, shelter and item-type pages moved to slug URLs.)
-  VERSION = 3
+  # (3: episode, item, country, food source, shelter and item-type pages moved to slug URLs.
+  #  4: region hubs, /seasons/latest and the localized episode guides were added.)
+  VERSION = 4
 
   # <lastmod> for pages whose content is a template, not data. There is no way to read a
   # template's last git commit at runtime on Heroku, so each is the date of its last
@@ -62,7 +63,15 @@ class SitemapUrls
       stamps << forum_stamp
       stamps << "shop:#{ShopCatalog.guides.map(&:slug).join(',')}:#{shop_updated_at.to_i}"
       stamps << "static:#{STATIC_LASTMOD.map { |path, date| "#{path}=#{date}" }.join(',')}:#{FALLBACK_LASTMOD}"
+      # Region membership lives in a config file: editing it (a deploy) refreshes the cache.
+      stamps << "regions:#{file_digest(Regions::PATH)}"
       "sitemap/v#{VERSION}/#{Digest::SHA256.hexdigest(stamps.join('|'))}"
+    end
+
+    def file_digest(path)
+      Digest::SHA256.file(path).hexdigest
+    rescue SystemCallError
+      "missing"
     end
 
     # mtime of config/shop_products.yml: the shop pages' lastmod. (On Heroku that is the
@@ -169,6 +178,13 @@ class SitemapUrls
     NameSlugs.all(:country).each do |country, slug|
       add by_country_episodes_path(country: slug), changefreq: "weekly", priority: 0.6,
           lastmod: latest(country_stamp.(country_episodes, country), country_stamp.(country_places, country))
+    end
+
+    # Region hubs (config/regions.yml): only regions that have episodes, each dated by the
+    # newest change among its countries' episodes and locations.
+    Regions.summaries.each do |summary|
+      stamps = summary.countries.flat_map { |c| [country_stamp.(country_episodes, c[:name]), country_stamp.(country_places, c[:name])] }
+      add by_region_episodes_path(region: summary.slug), changefreq: "weekly", priority: 0.6, lastmod: latest(stamps)
     end
 
     type_stamps = Item.group(:item_type).maximum(:updated_at)

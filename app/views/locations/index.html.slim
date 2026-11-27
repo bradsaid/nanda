@@ -46,6 +46,17 @@
     .legend-dot
     span Pins show unique locations. Popups include a link to filter Challenges by that location.
 
+  / ===== Regions (continent hubs; only regions that have episodes) =====
+  - region_summaries = Regions.summaries
+  - if region_summaries.any?
+    nav.mt-4.region-strip aria-label="Browse by region"
+      .small.text-muted.text-uppercase.fw-semibold.mb-2(style="letter-spacing: .5px;") Browse by region
+      .d-flex.flex-wrap.gap-2
+        - region_summaries.each do |s|
+          = link_to by_region_episodes_path(region: s.slug), class: "badge rounded-pill text-bg-light border text-decoration-none fw-normal fs-6" do
+            = s.name
+            span.text-muted.ms-1 = s.episode_count
+
   / ===== Sort pills + Search =====
   - sort_options = [["challenges", "Challenges"], ["episodes", "Episodes"], ["name", "A–Z"]]
   .d-flex.flex-wrap.gap-3.align-items-center.mt-4.mb-3
@@ -78,6 +89,8 @@
               - else
                 .display-6.mb-1(aria-hidden="true") 🌍
               .fw-semibold.mt-2 = country
+              - if @q.present? && !country.to_s.downcase.include?(@q.downcase) && (matched = CountryAliases.matching(country, @q)).any?
+                small.text-muted.country-alias-hint = "also spelled #{matched.first}"
               small.text-muted = "#{total} #{'challenge'.pluralize(total)}"
               - eps = @country_episodes[country].to_i
               small.text-muted = "#{eps} #{'episode'.pluralize(eps)}"

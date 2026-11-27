@@ -91,4 +91,27 @@ module LocationsHelper
     return nil if country.blank?
     COUNTRY_DESCRIPTIONS[country.to_s.downcase.strip]
   end
+
+  # The first sentence of a country's description, for cards that link to the full page.
+  def country_description_lead(country)
+    text = country_description(country).to_s.squish
+    return nil if text.blank?
+    text[/\A.*?[.!?](?=\s|\z)/m] || text
+  end
+
+  # <meta name="description"> of a country page: the usual sentence, with the country's
+  # misspellings / alternate names ("Columbia" for Colombia) worked in only when the result
+  # still fits in 160 characters (all aliases, then the first, else none).
+  def country_meta_description(country, episode_count, aliases, page = nil)
+    build = lambda do |also|
+      label = also.empty? ? country : "#{country} (also searched as #{also.to_sentence(two_words_connector: ' or ', last_word_connector: ', or ')})"
+      paginated_description("All #{episode_count} episode(s) filmed in #{label}: air dates, locations, and survivors.", page)
+    end
+    aliases = Array(aliases)
+    [aliases, aliases.first(1), []].each do |also|
+      text = build.call(also)
+      return text if text.length <= SeoHelper::DESCRIPTION_LIMIT
+    end
+    build.call([])
+  end
 end

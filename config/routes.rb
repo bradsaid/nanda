@@ -113,6 +113,9 @@ Rails.application.routes.draw do
       # The segment is a hyphenated slug (south-africa); the constraint lets the OLD
       # spelling through too ("St. Lucia" has a dot), which then 301s to the slug.
       get "by_country/:country", to: "episodes#by_country", as: :by_country, constraints: { country: /[^\/]+/ }
+      # Region hubs (Africa, Asia, ...): the segment is a hyphenated slug from config/regions.yml;
+      # other spellings of it 301 to the slug and an unknown or empty region is a 404.
+      get "by_region/:region", to: "regions#show", as: :by_region, constraints: { region: /[^\/]+/ }
     end
   end
   resources :items, only: [:index, :show] do
