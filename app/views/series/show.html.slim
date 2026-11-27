@@ -1,8 +1,16 @@
-/ The series name already says "Naked and Afraid", so the title is the name plus what the page holds,
-/ with no site-name suffix repeating it (site_title adds one only where it fits and is not redundant).
-- content_for :title, site_title("#{@series.name} — Seasons, Episodes & Cast")
-- content_for :meta_description, ((series_synopsis(@series) || "").presence || "#{@series.name}: #{@seasons.size} season(s), #{@episode_count} episode(s), #{@survivor_count} survivalists.").first(160)
+/ ===== SEO + JSON-LD: Series hub =====
+/ The series name already says "Naked and Afraid", so the title is the name plus what the page holds
+/ (episodes, cast, location, dates), fitted to the title length budget by series_page_title.
+- ov       = @overview
+- faq_qas  = series_faq_qas(@series, @seasons, ov)
+- services = @seasons.size == 1 ? services_for(@series.name, @seasons.first.number) : {}
+- multi_season = @seasons.size > 1
+- content_for :title, series_page_title(@series)
+- content_for :meta_description, series_page_description(@series, ov, @seasons.size)
 - content_for :canonical_url, canonical_request_url
+
+= render_jsonld(series_show_jsonld(@series, seasons: @seasons, episode_count: @episode_count, first_air: @first_air, qas: faq_qas))
+/ ===== end SEO + JSON-LD =====
 
 .container.my-4
   .pb-2.mb-4.border-bottom.site-header
@@ -66,9 +74,79 @@
     .card.shadow-sm
       .card-body.text-muted.text-center.py-4 No seasons recorded yet.
 
+  - if services.any?
+    section.card.shadow-sm.mb-4 aria-labelledby="series-watch-heading"
+      .card-header
+        h2#series-watch-heading.h5.mb-0 = "Where to watch #{display_series_name(@series)}"
+      .card-body
+        .d-flex.flex-wrap.gap-2
+          - services.each do |service_key, url|
+            = link_to url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm" do
+              = streaming_label(service_key)
+
+  / ===== Episode list with air date, location and a recap excerpt =====
+  - if @list_episodes && @episodes.any?
+    h2.h5.mt-4.mb-3 = "#{display_series_name(@series)} episode list"
+    .row.row-cols-1.g-3.mb-4
+      - @episodes.each do |ep|
+        - loc = ep.location
+        - loc_str = [loc&.country, loc&.region, loc&.site].compact_blank.join(" • ").presence
+        - excerpt = episode_excerpt(ep)
+        .col
+          .card.shadow-sm
+            .card-body
+              .d-flex.justify-content-between.align-items-start.gap-3
+                h3.h6.mb-0 = link_to(ep.title.presence || "Untitled", episode_path(ep), class: "link-primary text-decoration-underline")
+                span.badge.text-bg-secondary = "#{multi_season ? "S#{ep.season.number}" : ''}E#{ep.number_in_season || '—'}"
+              .small.text-muted.mt-1 = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "Air date not recorded"
+              - if loc_str
+                .small.text-muted = loc_str
+              - if excerpt
+                p.small.mb-0.mt-2 = excerpt
+
+  / ===== Cast =====
+  - if @list_cast
+    section.card.shadow-sm.mb-4 aria-labelledby="series-cast-heading"
+      .card-header
+        h2#series-cast-heading.h5.mb-0 = "#{display_series_name(@series)} cast (#{ov.survivors.size})"
+      .card-body
+        - if ov.team_count
+          p.small.text-muted.mb-2 = "Our episode data records #{ov.team_count} teams#{" (#{ov.team_arrangement})" if ov.team_arrangement}; which survivalists make up each team is not recorded, so the cast is listed together."
+        = survivor_chips(ov.survivors, size: 32)
+
+  = render "shared/overview_highlights", ov: ov, name: display_series_name(@series), id: "series-highlights-heading"
+
+  / ===== Weight loss: only when at least one appearance has it =====
+  - if ov.weight_loss_recorded?
+    - wl_rows = ov.weight_loss_rows.first(EpisodeSetOverview::WEIGHT_LOSS_CAP)
+    section.card.shadow-sm.mb-4#weight-loss aria-labelledby="series-weight-loss-heading"
+      .card-header
+        h2#series-weight-loss-heading.h5.mb-0 = "#{display_series_name(@series)} weight loss"
+      .table-responsive
+        table.table.table-striped.mb-0
+          thead
+            tr
+              th scope="col" Survivalist
+              th scope="col" Episode
+              th.text-end scope="col" Weight loss
+          tbody
+            - wl_rows.each do |row|
+              tr
+                td = link_to(row[:survivor].full_name, survivor_path(row[:survivor]))
+                td = link_to("#{multi_season ? "S#{row[:episode].season.number}" : ''}E#{row[:episode].number_in_season}: #{row[:episode].title}", episode_path(row[:episode]))
+                td.text-end = "#{row[:value].to_i} lbs"
+      .card-footer.small.text-muted
+        = "Weight loss as recorded in our database, largest first"
+        - if ov.weight_loss_rows.size > wl_rows.size
+          = " (showing #{wl_rows.size} of #{ov.weight_loss_rows.size})"
+        | ; it is not recorded for every survivalist.
+
   - if @countries.any?
     hr.my-4
     h2.h6.text-muted.mb-2 Countries filmed in
     .d-flex.flex-wrap.gap-2
       - @countries.sort.each do |c|
         = link_to c, by_country_episodes_path(country: c), class: "badge text-bg-light border text-decoration-none"
+
+  .mt-4
+    = render "shared/faq_block", qas: faq_qas, id: "series-faq-heading"

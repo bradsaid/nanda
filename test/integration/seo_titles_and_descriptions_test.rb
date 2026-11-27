@@ -150,13 +150,13 @@ class SeoTitlesAndDescriptionsTest < ActionDispatch::IntegrationTest
     Series.all.each do |s|
       get series_path(s)
       assert_response :success
-      assert title.start_with?("#{s.name} — Seasons, Episodes & Cast"), title
+      assert title.start_with?("#{s.name}: Episodes, Cast"), title
       assert_operator title.scan("Fan Wiki").size, :<=, 1
       assert_operator title.length, :<=, 65
     end
     xl = Series.create!(name: "Naked and Afraid XL")
     get series_path(xl)
-    assert_equal "Naked and Afraid XL — Seasons, Episodes & Cast", title
+    assert_equal "Naked and Afraid XL: Episodes, Cast, Location & Air Dates", title
     assert_operator title.length, :<=, 65
     assert_equal 1, title.scan("Naked and Afraid").size
   end
