@@ -29,6 +29,65 @@ class Survivor < ApplicationRecord
 
   validates :full_name, presence: true, uniqueness: { case_sensitive: false }
 
+  # ----- Search aliases: spelling variants and nicknames ("Ally", "Analis") -----
+  MAX_ALIASES      = 20
+  MAX_ALIAS_LENGTH = 60
+
+  before_validation :normalize_aliases
+
+  # Quick facts (all optional, admin-entered; nothing renders until they are filled in).
+  # Publicly shared basics only: no fields for anything personal.
+  MIN_BIRTH_YEAR = 1900
+  validates :birth_year, numericality: { only_integer: true, greater_than_or_equal_to: MIN_BIRTH_YEAR }, allow_nil: true
+  validate  :birth_year_not_in_the_future
+  before_validation :normalize_quick_facts
+
+  # Survivors whose name OR any alias contains `like` (an already-escaped "%text%" pattern).
+  # Used by the survivors search so "ally", "analis" or "jarrel" find the person.
+  scope :matching_name_or_alias, lambda { |like|
+    where("survivors.full_name ILIKE :q OR EXISTS (SELECT 1 FROM unnest(survivors.aliases) AS alias_name WHERE alias_name ILIKE :q)", q: like)
+  }
+
+  # Tidy a list of aliases: strip, squish, drop blanks and anything equal to the survivor's
+  # own name, dedupe case-insensitively (first spelling wins), cap the length of each and
+  # the number kept. Accepts an Array or a comma/semicolon/newline separated String.
+  def self.clean_aliases(value, full_name: nil)
+    list = value.is_a?(String) ? value.split(/[,;\n]/) : Array(value)
+    seen = { full_name.to_s.squish.downcase => true }
+    list.filter_map do |raw|
+      text = raw.to_s.squish.first(MAX_ALIAS_LENGTH).strip
+      next if text.blank?
+      key = text.downcase
+      next if seen[key]
+      seen[key] = true
+      text
+    end.first(MAX_ALIASES)
+  end
+
+  # The admin form's single comma-separated field.
+  def aliases_text
+    Array(aliases).join(", ")
+  end
+
+  def aliases_text=(value)
+    self.aliases = self.class.clean_aliases(value, full_name: full_name)
+  end
+
+  # Aliases worth showing: tidy, never the name itself.
+  def display_aliases
+    self.class.clean_aliases(aliases, full_name: full_name)
+  end
+
+  # Age is only ever approximate (a birth year, not a date): this year minus the year.
+  def approximate_age(today = Date.current)
+    return nil unless birth_year
+    today.year - birth_year
+  end
+
+  def quick_facts?
+    birth_year.present? || hometown.present? || nationality.present?
+  end
+
   # Optional: Normalize the slug (e.g., downcase, replace spaces with hyphens)
   def normalize_friendly_id(input)
     input.to_s.to_slug.normalize(transliterations: :russian).to_s  # Adjust transliterations if needed for international names
@@ -38,5 +97,23 @@ class Survivor < ApplicationRecord
   def should_generate_new_friendly_id?
     full_name_changed? || super
   end
-  
+
+  private
+
+  def normalize_aliases
+    return unless has_attribute?(:aliases)
+    cleaned = self.class.clean_aliases(aliases, full_name: full_name)
+    self.aliases = cleaned.presence
+  end
+
+  def normalize_quick_facts
+    self.hometown    = hometown.to_s.squish.first(120).presence    if has_attribute?(:hometown)
+    self.nationality = nationality.to_s.squish.first(80).presence  if has_attribute?(:nationality)
+  end
+
+  def birth_year_not_in_the_future
+    return if birth_year.blank?
+    errors.add(:birth_year, "cannot be in the future") if birth_year > Date.current.year
+  end
+
 end

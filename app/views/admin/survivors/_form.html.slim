@@ -19,8 +19,31 @@
         = image_tag url_for(survivor.avatar), class: "img-thumbnail", style: "max-height: 80px;"
 
   .col-12
+    = f.label :aliases_text, "Also searched as (aliases)", class: "form-label"
+    = f.text_field :aliases_text, class: "form-control", placeholder: "Analis, Annalise, Ana Liz"
+    .form-text
+      | Comma-separated spelling variants and nicknames people search for. Shown as "Also searched as: …" on the survivor page, added to the page's structured data and matched by the survivors search. Duplicates and the survivor's own name are dropped; up to #{Survivor::MAX_ALIASES} aliases.
+
+  .col-12
     = f.label :bio, class: "form-label"
     = f.text_area :bio, class: "form-control", rows: 3
+
+  .col-12
+    h2.h6.mb-0 Quick facts (optional)
+    .form-text Publicly shared basics only. Leave a field empty to show nothing for it on the survivor page.
+
+  .col-md-4
+    = f.label :birth_year, class: "form-label"
+    = f.number_field :birth_year, class: "form-control", min: Survivor::MIN_BIRTH_YEAR, max: Date.current.year, step: 1, placeholder: "e.g. 1985"
+    .form-text Shown as "Born 1985 (~N years ago)"; the age is worked out from the year.
+
+  .col-md-4
+    = f.label :hometown, class: "form-label"
+    = f.text_field :hometown, class: "form-control", maxlength: 120, placeholder: "City, State or Country"
+
+  .col-md-4
+    = f.label :nationality, class: "form-label"
+    = f.text_field :nationality, class: "form-control", maxlength: 80
 
   .col-md-6
     = f.label :instagram, class: "form-label"

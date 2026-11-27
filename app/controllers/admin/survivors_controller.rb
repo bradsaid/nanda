@@ -5,7 +5,7 @@ module Admin
 
     def index
       @survivors = Survivor.order(:full_name)
-      @survivors = @survivors.where("full_name ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s)}%") if params[:q].present?
+      @survivors = @survivors.matching_name_or_alias("%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s)}%") if params[:q].present?
     end
 
     def show
@@ -49,7 +49,8 @@ module Admin
     def survivor_params
       params.require(:survivor).permit(
         :full_name, :bio, :instagram, :facebook, :youtube,
-        :website, :onlyfans, :merch, :cameo, :other, :avatar
+        :website, :onlyfans, :merch, :cameo, :other, :avatar,
+        :aliases_text, :birth_year, :hometown, :nationality
       )
     end
   end

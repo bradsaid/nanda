@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_11_25_180000) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_27_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -514,6 +514,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_25_180000) do
     t.string "bio_source_url"
     t.string "bio_lookup_status", default: "pending", null: false
     t.datetime "bio_checked_at"
+    t.text "aliases", array: true
+    t.integer "birth_year"
+    t.string "hometown"
+    t.string "nationality"
     t.index ["bio_lookup_status"], name: "index_survivors_on_bio_lookup_status"
     t.index ["full_name"], name: "index_survivors_on_full_name", unique: true
     t.index ["slug"], name: "index_survivors_on_slug", unique: true

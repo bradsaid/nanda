@@ -19,7 +19,7 @@ class SurvivorsController < ApplicationController
       # Hashed: the raw string went straight into the cache key, so a crawler
       # could mint unbounded keys of any length.
       has_match = Rails.cache.fetch("survivors_search_hit/#{Digest::SHA256.hexdigest(@q.downcase)[0, 32]}", expires_in: 30.minutes) do
-        Survivor.where("full_name ILIKE ?", @like).exists?
+        Survivor.matching_name_or_alias(@like).exists?
       end
       unless has_match
         ensure_page_in_range!(page, 1)
@@ -29,7 +29,7 @@ class SurvivorsController < ApplicationController
       end
     end
 
-    matching = Survivor.where("survivors.full_name ILIKE ?", @like)
+    matching = Survivor.matching_name_or_alias(@like)
     total    = matching.count
     ensure_page_in_range!(page, total_pages_for(total, PER_PAGE))
     limit, offset = page_window(page, PER_PAGE)
@@ -39,7 +39,7 @@ class SurvivorsController < ApplicationController
         .left_joins(appearances: { episode: { season: :series } })
         .joins(appearance_exits_join)
         .with_attached_avatar
-        .where("survivors.full_name ILIKE ?", @like)
+        .matching_name_or_alias(@like)
         .select([
           "survivors.*",
           episodes_total_capped_sql("episodes_total_count"),

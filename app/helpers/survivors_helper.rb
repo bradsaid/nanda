@@ -11,6 +11,78 @@ module SurvivorsHelper
     summary
   end
 
+  META_DESCRIPTION_LIMIT = 160
+
+  # The survivor page's <meta name="description">. Same text as before: the bio's first 160
+  # characters, or a generic profile line when there is no bio. When the survivor has search
+  # aliases they are woven in ONLY if the whole sentence still fits in 160 characters;
+  # otherwise the description is exactly what it was.
+  def survivor_meta_description(survivor, bio_plain)
+    name  = survivor.full_name.to_s
+    names = survivor.display_aliases
+    if bio_plain.present?
+      base = bio_plain.first(META_DESCRIPTION_LIMIT)
+      return base if names.empty?
+      woven = "#{bio_plain} (Also searched as: #{names.to_sentence(two_words_connector: ' or ', last_word_connector: ', or ')}.)"
+      woven.length <= META_DESCRIPTION_LIMIT ? woven : base
+    else
+      generic = "Profile for #{name}: episodes, challenges, items brought/given, locations, and results."
+      return generic if names.empty?
+      woven = "Profile for #{name} (also searched as #{names.to_sentence(two_words_connector: ' or ', last_word_connector: ', or ')}): episodes, challenges, items brought/given, locations, and results."
+      woven.length <= META_DESCRIPTION_LIMIT ? woven : generic
+    end
+  end
+
+  # Rows for the survivor page's "Quick facts" card: [{ label:, value: }] with value a
+  # string or safe HTML. Born/hometown/nationality appear ONLY when filled in; the rest is
+  # computed from the appearances the page already loaded. Empty when there is nothing to show.
+  def survivor_quick_facts(survivor, appearances:, episodes_count:, challenges_count:, country_names:)
+    rows = []
+    if survivor.birth_year
+      age = survivor.approximate_age
+      rows << { label: "Born", value: "#{survivor.birth_year} (~#{age} #{'year'.pluralize(age)} ago)" }
+    end
+    rows << { label: "Hometown",    value: survivor.hometown }    if survivor.hometown.present?
+    rows << { label: "Nationality", value: survivor.nationality } if survivor.nationality.present?
+
+    dated = Array(appearances).select { |a| a.episode&.air_date }
+    if dated.any?
+      first = dated.min_by { |a| [a.episode.air_date, a.episode_id] }.episode
+      last  = dated.max_by { |a| [a.episode.air_date, a.episode_id] }.episode
+      rows << { label: "First appearance", value: survivor_fact_episode_link(first) }
+      rows << { label: "Latest appearance", value: survivor_fact_episode_link(last) } if last.id != first.id
+    end
+    if episodes_count.to_i.positive?
+      rows << { label: "Episodes",   value: episodes_count.to_i.to_s }
+      rows << { label: "Challenges", value: challenges_count.to_i.to_s } if challenges_count.to_i.positive?
+    end
+    names = Array(country_names).compact_blank
+    if names.any?
+      rows << { label: names.size == 1 ? "Country" : "Countries",
+                value: safe_join(names.map { |c| link_to(c, by_country_episodes_path(country: c)) }, ", ") }
+    end
+    rows
+  end
+
+  # Data-driven Q&As for the optional quick facts: one per fact that is filled in, none
+  # otherwise. Same {q:, a:} shape as the rest of survivor_faq_qas.
+  def survivor_fact_qas(survivor)
+    name = survivor.full_name.to_s
+    qas  = []
+    if survivor.birth_year
+      age = survivor.approximate_age
+      qas << { q: "How old is #{name}?",
+               a: "#{name} was born in #{survivor.birth_year}, about #{age} #{'year'.pluralize(age)} ago (the age is worked out from the birth year)." }
+    end
+    if survivor.hometown.present?
+      qas << { q: "Where is #{name} from?", a: "#{name}'s listed hometown is #{survivor.hometown}." }
+    end
+    if survivor.nationality.present?
+      qas << { q: "What nationality is #{name}?", a: "#{name}'s listed nationality is #{survivor.nationality}." }
+    end
+    qas
+  end
+
   def flip_dir(dir) = (dir == "desc" ? "asc" : "desc")
 
   def sort_arrow(active, dir)
@@ -92,6 +164,11 @@ module SurvivorsHelper
   end
 
   private
+
+  def survivor_fact_episode_link(episode)
+    label = episode.title.presence || "Episode #{episode.number_in_season}"
+    safe_join([link_to(label, episode_path(episode)), " (#{episode.air_date.strftime('%b %-d, %Y')})"])
+  end
 
   def clean_handle(value, domain_pattern)
     value.to_s.strip

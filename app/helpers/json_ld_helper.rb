@@ -695,6 +695,12 @@ module JsonLdHelper
     }
     person["image"]  = img if img
     person["sameAs"] = same_as if same_as.any?
+    # Spelling variants / nicknames, and the optional admin-entered quick facts (only when filled in).
+    aliases = survivor.display_aliases
+    person["alternateName"] = aliases if aliases.any?
+    person["birthDate"]     = survivor.birth_year.to_s if survivor.birth_year
+    person["homeLocation"]  = { "@type" => "Place", "name" => survivor.hometown } if survivor.hometown.present?
+    person["nationality"]   = { "@type" => "Country", "name" => survivor.nationality } if survivor.nationality.present?
 
     breadcrumb = breadcrumb_jsonld([
       { name: "Home",      path: root_path },
@@ -815,6 +821,9 @@ module JsonLdHelper
         }
       end
     end
+
+    # Optional quick facts (birth year, hometown, nationality): one Q&A per fact that is filled in.
+    qas.concat(survivor_fact_qas(survivor))
 
     qas
   end

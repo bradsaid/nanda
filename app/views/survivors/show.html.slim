@@ -6,7 +6,8 @@
 / Bio-derived description gives every survivor page a unique, keyword-rich
 / snippet in search results — much better than a boilerplate template line.
 - bio_plain = ActionView::Base.full_sanitizer.sanitize(@survivor.bio.to_s).squish
-- meta_desc = bio_plain.present? ? bio_plain.first(160) : "Profile for #{name}: episodes, challenges, items brought/given, locations, and results."
+/ The bio's first 160 characters (or a generic line); search aliases are woven in only when they still fit.
+- meta_desc = survivor_meta_description(@survivor, bio_plain)
 
 - content_for :title, "#{name} – Naked and Afraid Survivor".first(60)
 - content_for :meta_description, meta_desc
@@ -33,6 +34,9 @@
         .d-flex.flex-column.flex-md-row.align-items-md-center.justify-content-md-between.gap-3
           .me-md-4
             h1.h2.mb-2.survivor-name = @survivor.full_name
+            / Spelling variants and nicknames people search for; nothing is shown without any.
+            - if (alias_names = @survivor.display_aliases).any?
+              p.small.text-muted.mb-2.survivor-aliases = "Also searched as: #{alias_names.join(', ')}"
 
             / Quick stats
             .d-flex.align-items-center.justify-content-between.flex-wrap.gap-4
@@ -194,6 +198,18 @@
                       .d-flex.gap-2.align-items-center
                         = f.submit "Send", class: "btn btn-sm btn-primary"
                         span.text-muted.small.fst-italic Goes straight to Brad's inbox.
+
+    / ===== Quick facts: optional admin-entered basics plus what the page already computes =====
+    - quick_facts = survivor_quick_facts(@survivor, appearances: @appearances, episodes_count: @appearances.size, challenges_count: @episodes_collapsed_count, country_names: @country_counts.keys)
+    - if quick_facts.any?
+      section.card.shadow-sm.mb-4.survivor-quick-facts aria-labelledby="quick-facts-heading"
+        .card-header
+          h2#quick-facts-heading.h5.mb-0 = "#{@survivor.full_name} – Quick Facts"
+        .card-body
+          dl.row.mb-0
+            - quick_facts.each do |fact|
+              dt.col-sm-4.col-md-3 = fact[:label]
+              dd.col-sm-8.col-md-9 = fact[:value]
 
     / ===== Challenge Summary =====
     - challenges = []
