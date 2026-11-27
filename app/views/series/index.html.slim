@@ -1,6 +1,10 @@
-- content_for :title, site_title("All Naked and Afraid Series")
-- content_for :meta_description, "Every series in the Naked and Afraid franchise: the original show, XL, Solo, Alone, Last One Standing, Castaways, Apocalypse, Global Showdown, Shipwrecked, and more."
+- stats   = @franchise_stats
+- faq_qas = series_index_faq_qas(stats)
+- content_for :title, series_index_title
+- content_for :meta_description, series_index_description(stats)
 - content_for :canonical_url, canonical_request_url
+
+= render_jsonld(faq_page_jsonld(faq_qas))
 
 .container.my-4
   .pb-2.mb-4.border-bottom.site-header
@@ -11,6 +15,10 @@
     h1.h3.mb-0.logo Series
     p.subtitle.mb-0.mt-1 Every branch of the Naked and Afraid franchise.
 
+  - if stats[:total_series].positive?
+    = render "shared/franchise_guide", stats: stats
+
+  h2.h5.mb-3 All series, A to Z
   .card.shadow-sm
     .list-group.list-group-flush
       - @series.each do |s|
@@ -24,3 +32,6 @@
               = "#{s.seasons_count} #{'season'.pluralize(s.seasons_count.to_i)}"
               br
               = "#{s.episodes_count} #{'episode'.pluralize(s.episodes_count.to_i)}"
+
+  .mt-4
+    = render "shared/faq_block", qas: faq_qas, id: "series-faq-heading", heading: "Naked and Afraid series: quick answers"

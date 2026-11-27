@@ -1,23 +1,26 @@
-/ ===== SEO + JSON-LD: Seasons Index =====
+/ ===== SEO + JSON-LD: Seasons Index (franchise guide) =====
 - seasons_list  = Array(@seasons)
-- total_seasons = seasons_list.size
-- total_episodes = seasons_list.sum { |s| (s.respond_to?(:episodes) ? s.episodes.size : 0) }
+- stats         = @franchise_stats
+- faq_qas       = seasons_index_faq_qas(stats)
 
-- content_for :title, "Naked and Afraid Seasons"
-- content_for :meta_description, "Browse #{total_seasons} seasons (#{total_episodes} total episodes) of Naked and Afraid. Jump to a series and find where to watch."
-- content_for :keywords, "Naked and Afraid seasons, episode guide, where to watch"
+- content_for :title, seasons_index_title
+- content_for :meta_description, seasons_index_description(stats)
+- content_for :keywords, "Naked and Afraid seasons, all seasons, episode guide, where to watch"
 - content_for :canonical_url, canonical_request_url
-- content_for :og_title, "Naked and Afraid Seasons"
+- content_for :og_title, "All Naked and Afraid Seasons"
 - content_for :og_description, "All seasons organized by series with episode counts and streaming links."
 
 / Server-rendered JSON-LD (ItemList of seasons)
-= render_jsonld(seasons_index_jsonld(seasons: seasons_list))
+= render_jsonld([seasons_index_jsonld(seasons: seasons_list), faq_page_jsonld(faq_qas)].compact)
 / ===== end SEO + JSON-LD =====
 
 .pb-3.mb-4.border-bottom.site-header
   h1.h2.mb-0.fw-bold.logo Seasons
   p.subtitle.mb-0
     | Discover where to watch every season of Naked and Afraid — from the original 21-day challenges to XL team challenges.
+
+- if stats[:total_seasons].positive?
+  = render "shared/franchise_guide", stats: stats
 
 
 - if @seasons.blank?
@@ -65,5 +68,5 @@
                 - else
                   span.text-muted —
 
-
-
+.mt-4
+  = render "shared/faq_block", qas: faq_qas, id: "seasons-faq-heading", heading: "Naked and Afraid seasons: quick answers"
