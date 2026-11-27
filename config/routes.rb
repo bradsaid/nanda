@@ -128,6 +128,8 @@ Rails.application.routes.draw do
   resources :food_sources, only: [:index, :show], param: :name, constraints: { name: /[^\/]+/ }
   resources :shelters, only: [:index, :show], param: :shelter_type, constraints: { shelter_type: /[^\/]+/ }
   resources :locations, only: [:index]
+  # Declared before resources :seasons so "latest" is not read as a season id.
+  get "seasons/latest", to: "latest_seasons#show", as: :latest_seasons
   resources :seasons,   only: [:index, :show]
   resources :series,    only: [:index, :show]
   get "shop", to: "shop#index"

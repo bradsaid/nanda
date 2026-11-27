@@ -162,6 +162,7 @@ class SitemapUrls
     add shop_guides_path, changefreq: "weekly", priority: 0.5, lastmod: shop_lastmod
     ShopCatalog.guides.each { |g| add shop_guide_path(g.slug), changefreq: "weekly", priority: 0.5, lastmod: shop_lastmod }
     add seasons_path,      changefreq: "weekly", priority: 0.7, lastmod: latest(stamp(Season), stamp(Series))
+    add latest_seasons_path, changefreq: "daily", priority: 0.7, lastmod: latest(stamp(Episode), stamp(Season))
     add series_index_path, changefreq: "weekly", priority: 0.7, lastmod: latest(stamp(Series), stamp(Season))
   end
 

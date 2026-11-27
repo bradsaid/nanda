@@ -1,0 +1,92 @@
+/ ===== SEO + JSON-LD: Latest season =====
+- faq_qas = latest_season_faq_qas(@guide)
+- today   = @guide.today
+- content_for :title, site_title(LatestSeasonsHelper::LATEST_TITLE)
+- content_for :meta_description, latest_meta_description(@guide)
+- content_for :canonical_url, canonical_request_url
+- content_for :og_title, LatestSeasonsHelper::LATEST_TITLE
+- content_for :og_description, latest_meta_description(@guide)
+= render_jsonld(latest_seasons_jsonld(@guide, qas: faq_qas))
+/ ===== end SEO + JSON-LD =====
+
+.pb-2.mb-3.border-bottom.site-header
+  .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+    .d-flex.flex-column
+      h1.h3.mb-0.logo = LatestSeasonsHelper::LATEST_TITLE
+      p.subtitle.mb-0 The newest season of each series in our database, with every episode and air date
+    = link_to "All seasons", seasons_path, class: "btn btn-outline-secondary btn-sm"
+
+p.text-muted.latest-note We add every new season and episode as soon as it is announced; seasons not listed here have not been added to the database yet.
+
+/ ===== Next unaired episode =====
+- if (nxt = @guide.next_episode)
+  - badge_class, badge_label = episode_status_badge(nxt, today)
+  .card.shadow-sm.border-info.mb-4.latest-next
+    .card-body
+      .small.text-muted.text-uppercase.fw-semibold.mb-1(style="letter-spacing: .5px;") Next unaired episode
+      h2.h5.mb-1 = link_to(nxt.title, episode_path(nxt), class: "text-decoration-none")
+      p.mb-1.text-muted = latest_episode_ref(nxt)
+      p.mb-0
+        span.badge.me-2 class=badge_class = badge_label
+        = episode_air_date_text(nxt)
+        - if (loc = [nxt.location&.country, nxt.location&.region, nxt.location&.site].compact_blank.join(", ")).present?
+          span.text-muted.ms-2 = "· #{loc}"
+
+/ ===== Quick answers (visible content backing the FAQPage schema) =====
+section.card.shadow-sm.mb-4 aria-labelledby="latest-faq-heading"
+  .card-header
+    h2#latest-faq-heading.h6.mb-0 Quick answers
+  .card-body
+    - faq_qas.each_with_index do |qa, i|
+      details.mb-2 open=(i == 0)
+        summary.fw-semibold = qa[:q]
+        p.mt-2.mb-0.text-muted = qa[:a_html].presence || qa[:a]
+
+/ ===== Latest season of each active series =====
+- if @guide.active.empty?
+  .card.shadow-sm.mb-4
+    .card-body.text-center.text-muted.py-4 No dated episodes have been added yet.
+- @guide.active.each do |entry|
+  - season = entry.season
+  section.card.shadow-sm.mb-4.latest-season aria-labelledby="latest-season-#{season.id}"
+    .card-header.d-flex.flex-wrap.align-items-center.justify-content-between.gap-2
+      h2.h5.mb-0 id="latest-season-#{season.id}" = link_to(latest_season_label(season), season_path(season), class: "text-decoration-none link-light")
+      span.small.opacity-75
+        = "#{pluralize(entry.episodes.size, 'episode')}"
+        - if entry.first_air
+          = " · first dated #{entry.first_air.strftime('%b %-d, %Y')}"
+        - if entry.last_air && entry.last_air != entry.first_air
+          = ", latest #{entry.last_air.strftime('%b %-d, %Y')}"
+    .table-responsive.table-stack-host
+      table.table.table-stack.table-striped.table-hover.mb-0
+        thead.table-light
+          tr
+            th(scope="col") #
+            th(scope="col") Air date
+            th(scope="col") Episode
+            th(scope="col") Location
+            th(scope="col") Status
+        tbody
+          - entry.episodes.each do |ep|
+            - badge_class, badge_label = episode_status_badge(ep, today)
+            tr
+              td data-label="#" = ep.number_in_season
+              td data-label="Air date" = ep.air_date ? ep.air_date.strftime("%b %-d, %Y") : "—"
+              td data-label="Episode" = link_to(ep.title.presence || "Episode #{ep.number_in_season}", episode_path(ep))
+              td data-label="Location" = [ep.location&.country, ep.location&.region, ep.location&.site].compact_blank.join(", ").presence || "—"
+              td data-label="Status"
+                - if badge_label
+                  span.badge class=badge_class = badge_label
+                - else
+                  span.text-muted —
+
+/ ===== Latest season of every other series =====
+- if @guide.others.any?
+  section.card.shadow-sm.mb-4 aria-labelledby="latest-others-heading"
+    .card-header
+      h2#latest-others-heading.h5.mb-0 Other series: most recent season
+    ul.list-group.list-group-flush
+      - @guide.others.each do |entry|
+        li.list-group-item.d-flex.flex-wrap.justify-content-between.gap-2
+          = link_to(latest_season_label(entry.season), season_path(entry.season), class: "fw-semibold text-decoration-none")
+          span.text-muted.small = "latest episode dated #{entry.last_air.strftime('%b %-d, %Y')}"

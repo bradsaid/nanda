@@ -115,6 +115,7 @@
                   = link_to url, target: "_blank", rel: "noopener", class: "btn btn-sm btn-primary py-0" do
                     = streaming_label(service_key)
             span.badge.bg-secondary = "Aired #{air_str}"
+            p.small.mt-3.mb-0 = link_to("Latest season & upcoming episodes →", latest_seasons_path)
         - else
           .card-body
             .alert.alert-info.mb-0 No episodes yet.
