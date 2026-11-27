@@ -1,0 +1,41 @@
+/ Results on record, highest PSR and most-brought items for a set of episodes (a season or a series).
+/ Renders nothing when the data has none of them. locals: ov (EpisodeSetOverview), name, id
+- results = ov.results
+- top_psr = ov.top_psr
+- brought = ov.brought_items
+- if results || top_psr || brought.any?
+  section.card.shadow-sm.mb-4 aria-labelledby=id
+    .card-header
+      h2.h5.mb-0(id=id) = "#{name} highlights"
+    .card-body
+      - if results
+        p.mb-2
+          strong Results on record:
+          = " #{results.recorded} of #{pluralize(results.survivor_total, 'survivalist')} (results are not recorded for every survivalist)."
+        ul.mb-3
+          - if results.completed.any?
+            li
+              strong Completed:
+              = " "
+              = survivor_links_or_count(results.completed)
+          - if results.tapped_out.any?
+            li
+              strong Tapped out:
+              = " "
+              = survivor_links_or_count(results.tapped_out)
+          - if results.eliminated.any?
+            li
+              strong Eliminated:
+              = " "
+              = survivor_links_or_count(results.eliminated)
+      - if top_psr
+        p.mb-2
+          strong Highest ending PSR on record:
+          = " #{EpisodeSetOverview.format_psr(top_psr[:value])} — "
+          = safe_join(top_psr[:survivors].map { |s| link_to(s.full_name, survivor_path(s)) }, ", ")
+      - if brought.any?
+        p.mb-1
+          strong Items brought by the most survivalists:
+        ul.mb-0
+          - brought.each do |item, count|
+            li = safe_join([link_to(item.name, item_path(item)), " — #{count}"])

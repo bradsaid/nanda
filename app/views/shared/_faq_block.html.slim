@@ -1,0 +1,12 @@
+/ Visible Q&A that backs the FAQPage JSON-LD emitted by the page (faq_page_jsonld(qas)).
+/ locals: qas ([{q:, a:, a_html:}]), id (heading id), heading (optional)
+- heading = local_assigns[:heading] || "Frequently Asked Questions"
+- if qas.any?
+  section.card.shadow-sm.mb-4 aria-labelledby=id
+    .card-header
+      h2.h5.mb-0(id=id) = heading
+    .card-body
+      - qas.each do |qa|
+        .mb-3.faq-item
+          h3.h6.fw-semibold.mb-1 = qa[:q]
+          p.mb-0.text-muted = qa[:a_html].presence || qa[:a]

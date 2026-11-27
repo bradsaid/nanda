@@ -1,0 +1,59 @@
+/ "Quick answers" and the series-in-order timeline, shared by /seasons and /series.
+/ locals: stats (FranchiseStats.fetch)
+- first = stats[:first_aired]
+- last  = stats[:last_aired]
+section.card.shadow-sm.mb-4 aria-labelledby="quick-answers-heading"
+  .card-header
+    h2#quick-answers-heading.h5.mb-0 Naked and Afraid at a glance
+  .card-body
+    .row.g-3.text-center
+      .col-6.col-md-3
+        .h4.mb-0 = stats[:total_seasons]
+        small.text-muted = "season".pluralize(stats[:total_seasons])
+      .col-6.col-md-3
+        .h4.mb-0 = stats[:total_episodes]
+        small.text-muted = "episode".pluralize(stats[:total_episodes])
+      .col-6.col-md-3
+        .h4.mb-0 = stats[:total_series]
+        small.text-muted series
+      - if stats[:countries_count].positive?
+        .col-6.col-md-3
+          .h4.mb-0 = stats[:countries_count]
+          small.text-muted = "country".pluralize(stats[:countries_count]) + " filmed in"
+    - if first || last
+      ul.list-unstyled.mt-3.mb-0
+        - if first
+          li
+            strong First aired:
+            = " #{long_date(first[:date])} — "
+            = stats_marker_link(first)
+        - if last
+          li
+            strong Most recent episode:
+            = " #{long_date(last[:date])} — "
+            = stats_marker_link(last)
+
+- timeline = stats[:series]
+- if timeline.any?
+  section.card.shadow-sm.mb-4 aria-labelledby="series-in-order-heading"
+    .card-header
+      h2#series-in-order-heading.h5.mb-0 Naked and Afraid series in order of first airing
+    .table-responsive
+      table.table.table-striped.mb-0
+        thead
+          tr
+            th scope="col" #
+            th scope="col" Series
+            th scope="col" First aired
+            th.text-end scope="col" Seasons
+            th.text-end scope="col" Episodes
+            th.text-end scope="col" Countries
+        tbody
+          - timeline.each_with_index do |row, i|
+            tr
+              td = i + 1
+              td = stats_series_link(row)
+              td = row[:first_air] ? row[:first_air].strftime("%b %Y") : "—"
+              td.text-end = row[:seasons]
+              td.text-end = row[:episodes]
+              td.text-end = row[:countries].positive? ? row[:countries] : "—"
