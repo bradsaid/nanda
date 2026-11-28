@@ -3,7 +3,8 @@
 /*= require_self */
 
 /* app/assets/stylesheets/application.css */
-@import "vendor/bootstrap.min.css";
+/* Bootstrap is linked separately by the layout (vendor/bootstrap.min.css) so it is
+   not fetched a second time through an @import here. */
 
 /* your overrides below */
 :root {
