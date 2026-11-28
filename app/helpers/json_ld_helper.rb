@@ -493,6 +493,56 @@ module JsonLdHelper
     }
   end
 
+  # ---- Item page: Product (with a real Offer) or ItemPage (no price) -------------------
+  #
+  # Google only accepts a Product with offers, review or aggregateRating, and a price must
+  # never be invented. Every item name here is gear that appeared on the show, not a thing the
+  # site sells, and config/shop_products.yml deliberately holds no prices. So:
+  #   * if a catalog product for the item carries a numeric `price` and a `price_currency`
+  #     (and a buy link), the page is a Product with that Offer (item_offer_jsonld);
+  #   * otherwise it is an ItemPage about a Thing: valid, and honest about what the page is.
+  # This is the one place that decides; the Offer branch switches on by itself as soon as a
+  # verified price is added to the catalog.
+  def item_primary_jsonld(item:, props:, subject_of:)
+    description = "#{item.name} appearances across Naked and Afraid episodes."
+    offer = item_offer_jsonld(item)
+    if offer
+      return {
+        "@context" => "https://schema.org", "@type" => "Product",
+        "name" => item.name.to_s, "category" => item.item_type.presence,
+        "url" => canonical_request_url, "description" => description,
+        "offers" => offer, "additionalProperty" => props, "subjectOf" => subject_of
+      }.compact
+    end
+    {
+      "@context" => "https://schema.org", "@type" => "ItemPage",
+      "name" => item.name.to_s, "url" => canonical_request_url, "description" => description,
+      "keywords" => item.item_type.presence, "inLanguage" => "en",
+      "about" => { "@type" => "Thing", "name" => item.name.to_s, "description" => description, "subjectOf" => subject_of }
+    }.compact
+  end
+
+  # catalog `availability` values that map to a schema.org ItemAvailability (no value = InStock)
+  OFFER_AVAILABILITY = {
+    "out_of_stock" => "https://schema.org/OutOfStock",
+    "discontinued" => "https://schema.org/Discontinued"
+  }.freeze
+
+  # An Offer from the first catalog product for this item that has a usable price, or nil.
+  def item_offer_jsonld(item)
+    ShopCatalog.for_item(item.name).each do |product|
+      price = product[:price].to_s.strip
+      currency = product[:price_currency].to_s.strip.upcase
+      url = Array(product[:buy]).filter_map { |b| b[:url].presence || b["url"].presence }.first
+      next unless price.match?(/\A\d+(\.\d{1,2})?\z/) && price.to_f.positive? && currency.match?(/\A[A-Z]{3}\z/) && url
+      return {
+        "@type" => "Offer", "price" => price, "priceCurrency" => currency, "url" => url,
+        "availability" => OFFER_AVAILABILITY.fetch(product[:availability].to_s, "https://schema.org/InStock")
+      }
+    end
+    nil
+  end
+
   def item_show_jsonld(item:, given_ai:, brought_ai:, country:)
     given_ep_ids   = Array(given_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
     brought_ep_ids = Array(brought_ai).map { |ai| ai.appearance&.episode_id }.compact.uniq
@@ -517,15 +567,7 @@ module JsonLdHelper
     ]
     props << { "@type" => "PropertyValue", "name" => "Filtered country", "value" => country } if country.present?
 
-    product = {
-      "@context" => "https://schema.org", "@type" => "Product",
-      "name" => item.name.to_s,
-      "category" => (item.respond_to?(:item_type) ? item.item_type : nil),
-      "url" => canonical_request_url,
-      "description" => "#{item.name} appearances across Naked and Afraid episodes.",
-      "additionalProperty" => props,
-      "subjectOf" => subject_of
-    }
+    product = item_primary_jsonld(item: item, props: props, subject_of: subject_of)
     breadcrumb = breadcrumb_jsonld([
       { name: "Home",  path: root_path },
       { name: "Items", path: items_path },
