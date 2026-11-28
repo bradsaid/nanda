@@ -10,9 +10,21 @@ class HomeController < ApplicationController
   # or discontinued; everything else lives deeper in the site.
   HOME_MATCHES = %w[confirmed].freeze
 
+  # How many rows the home page's "Top Countries" card shows.
+  TOP_COUNTRIES = 5
+
+  # { "Mexico" => 18, "Philippines" => 12, ... }: the `limit` countries with the most
+  # challenges, highest first; countries with the same count are alphabetical (case-insensitive).
+  def self.rank_countries(counts, limit: TOP_COUNTRIES)
+    counts.reject { |country, _| country.blank? }
+          .sort_by { |country, n| [ -n.to_i, country.to_s.downcase, country.to_s ] }
+          .first(limit)
+          .to_h
+  end
+
   def index
     @counts, @top_countries, @challenges_by_country =
-      Rails.cache.fetch("home/aggregates/v1", expires_in: AGGREGATES_TTL) { home_aggregates }
+      Rails.cache.fetch("home/aggregates/v2", expires_in: AGGREGATES_TTL) { home_aggregates }
 
     @latest_episode =
       Episode
@@ -92,12 +104,6 @@ class HomeController < ApplicationController
       locations: Location.distinct.count(:country)
     }
 
-    top_countries =
-      Episode.joins(:location)
-             .group("locations.country")
-             .order(Arel.sql("COUNT(*) DESC"))
-             .limit(5).count
-
     # Per-country challenge counts using the same continuous-story dedupe used
     # on the Locations index: one challenge per episode for standard seasons,
     # and one per (season, location) pair for continuous-story seasons/series.
@@ -111,6 +117,12 @@ class HomeController < ApplicationController
                              .distinct.pluck("locations.country", :season_id, :location_id)
                              .group_by(&:first).transform_values(&:size)
     challenges_by_country = non_cont_by_country.merge(cont_by_country) { |_k, a, b| a + b }
+
+    # "Top Countries" is labelled Challenges and shows challenges_by_country, so it is ranked
+    # by that same number. It used to be ranked by raw episode count, which disagreed with
+    # the numbers shown (Philippines, 12, listed above Mexico, 18) whenever a country's
+    # episodes collapse into fewer challenges (continuous-story seasons).
+    top_countries = self.class.rank_countries(challenges_by_country, limit: TOP_COUNTRIES)
 
     [counts, top_countries, challenges_by_country]
   end
