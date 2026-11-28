@@ -15,13 +15,19 @@ class Survivor < ApplicationRecord
   # episode page already renders a call with no survivor.
   has_many :medical_calls, dependent: :nullify
 
+  # Avatar variants are WebP (quality 80-85, metadata stripped) at 2x the size they are shown
+  # at, so a Retina phone gets a sharp image without the full upload. They are served through
+  # Active Storage's proxy route (SurvivorsHelper#avatar_src) with long-lived cache headers.
   has_one_attached :avatar do |attachable|
-    # Small circular grid tile (Survivors index, chip lists, home cards).
-    attachable.variant :thumb,     resize_to_fill: [260, 340], saver: { quality: 82, strip: true }
-    # Larger portrait for the survivor show hero + episode participants table.
-    attachable.variant :portrait,  resize_to_fill: [520, 680], saver: { quality: 85, strip: true }
-    # Tiny inline avatar (Recently Active, episode "chip" links).
-    attachable.variant :chip,      resize_to_fill: [80, 80],   saver: { quality: 80, strip: true }
+    # Survivor grids and cards (.avatar-portrait is 130x170, 100x130 on phones): home page,
+    # survivors index, season pages, podcast hosts.
+    attachable.variant :thumb,     resize_to_fill: [260, 340], format: :webp, saver: { quality: 82, strip: true }
+    # Larger portrait (520x680). Kept for any caller that wants the big crop.
+    attachable.variant :portrait,  resize_to_fill: [520, 680], format: :webp, saver: { quality: 85, strip: true }
+    # Survivor page headshot: shown 160x160 (120x120 on phones), so 320x320 covers 2x.
+    attachable.variant :profile,   resize_to_fill: [320, 320], format: :webp, saver: { quality: 82, strip: true }
+    # Tiny inline avatar (Recently Active, episode "chip" links, 22-64px).
+    attachable.variant :chip,      resize_to_fill: [80, 80],   format: :webp, saver: { quality: 80, strip: true }
     # og:image / twitter:image (ShareImageHelper). Square and always JPEG so scrapers
     # that cannot read WebP/AVIF or EXIF-rotated uploads get a plain 600x600 picture.
     attachable.variant :share,     resize_to_fill: [600, 600], format: :jpeg, saver: { quality: 85, strip: true }

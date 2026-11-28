@@ -67,10 +67,7 @@
         .col-6.col-sm-4.col-md-4.col-lg-2 id=(letter ? "az-#{letter == '#' ? 'other' : letter}" : nil)
           = link_to survivor_path(s), class: "card h-100 text-center border-0 text-decoration-none" do
             .card-body.py-3.d-flex.flex-column.align-items-center
-              = image_tag avatar_src(s, name: name),
-                          alt: name,
-                          loading: "lazy",
-                          class: "avatar-portrait shadow img-thumbnail d-block mb-2"
+              = survivor_avatar_tag s, name: name, class: "avatar-portrait shadow img-thumbnail d-block mb-2"
               .survivor-name-stack
                 .first-name = parts[0]
                 .last-name = parts[1].to_s

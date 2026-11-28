@@ -135,19 +135,40 @@ module SurvivorsHelper
     safe_join(chips)
   end
 
+  # Displayed size (CSS px) of each avatar variant, for explicit width/height attributes so
+  # the browser reserves the box before the image arrives (no layout shift). The variants
+  # themselves are 2x these (see Survivor).
+  AVATAR_DISPLAY_SIZES = {
+    thumb:    [ 130, 170 ],  # .avatar-portrait (100x130 on phones; same aspect ratio)
+    portrait: [ 130, 170 ],
+    profile:  [ 160, 160 ],  # .avatar-lg (120x120 on phones)
+    chip:     [ 40, 40 ]
+  }.freeze
+
   # Returns a URL for the survivor's avatar at the requested variant size.
-  # Variants defined on Survivor: :chip (80×80), :thumb (260×340),
-  # :portrait (520×680). Serving these instead of the raw upload cuts the
-  # Survivors grid payload by ~90%. Falls back to the raw blob path if the
-  # requested variant isn't declared, and to an initials SVG if no avatar
-  # is attached at all.
+  # Variants defined on Survivor: :chip (80x80), :thumb (260x340), :portrait (520x680),
+  # :profile (320x320), all WebP.
+  #
+  # The URL is Active Storage's PROXY route (/rails/active_storage/representations/proxy/...),
+  # not the default redirect route. The redirect route answers 302 -> a short-lived signed S3
+  # URL, so browsers and CDNs can never cache the image and every view pays an extra round
+  # trip. The proxy URL is stable (signed blob id with no expiry: expires_in: nil) and the
+  # response is `Cache-Control: public, max-age=<100 years>, immutable` (see
+  # config/initializers/active_storage_cache_control.rb). Trade-off: the dyno streams the
+  # bytes from S3 on a cache miss; put a CDN in front of /rails/active_storage/.
+  #
+  # Degrades safely: if the variant cannot be built (unknown name, blob not variable) it
+  # falls back to the proxied original, then to an initials SVG if nothing is attached.
   def avatar_src(record, name: nil, variant: :thumb)
     if record&.avatar&.attached?
       begin
-        variant_path = rails_representation_path(record.avatar.variant(variant), only_path: true)
-        return variant_path
-      rescue ArgumentError, NoMethodError
-        return rails_blob_path(record.avatar, only_path: true)
+        return rails_storage_proxy_path(record.avatar.variant(variant), only_path: true, expires_in: nil)
+      rescue StandardError
+        begin
+          return rails_storage_proxy_path(record.avatar, only_path: true, expires_in: nil)
+        rescue StandardError
+          nil
+        end
       end
     end
 
@@ -161,6 +182,17 @@ module SurvivorsHelper
       </svg>
     SVG
     "data:image/svg+xml;utf8,#{ERB::Util.url_encode(svg)}"
+  end
+
+  # <img> for a survivor avatar: stable cacheable proxy URL, WebP variant, explicit width and
+  # height matching the displayed size, async decoding. Lazy by default; pass
+  # loading: "eager" (and fetchpriority: "high") only for an image that is above the fold.
+  def survivor_avatar_tag(survivor, name: nil, variant: :thumb, loading: "lazy", fetchpriority: nil, **options)
+    width, height = AVATAR_DISPLAY_SIZES.fetch(variant, AVATAR_DISPLAY_SIZES[:thumb])
+    name ||= survivor.full_name
+    attrs = { alt: name, width: width, height: height, loading: loading, decoding: "async" }
+    attrs[:fetchpriority] = fetchpriority if fetchpriority
+    image_tag(avatar_src(survivor, name: name, variant: variant), **attrs, **options)
   end
 
   private

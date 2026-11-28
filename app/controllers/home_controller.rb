@@ -45,6 +45,7 @@ class HomeController < ApplicationController
     # 🔽 Sort Top Survivors by COLLAPSED, but also select TOTAL so the view can show both
     @top_survivors =
       Survivor
+        .with_attached_avatar
         .left_joins(appearances: { episode: { season: :series } })
         .joins(appearance_exits_join)
         .select([
