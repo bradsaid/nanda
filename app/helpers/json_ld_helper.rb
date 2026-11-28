@@ -334,10 +334,39 @@ module JsonLdHelper
     { "@type" => "Person", "name" => "Brad Said", "url" => "#{request.base_url}#{about_path}" }
   end
 
+  # The site's identity for search engines. Name, host and logo are fixed facts, not request
+  # data: the canonical host (ShareImageHelper::CANONICAL_ORIGIN, never request.host, which can
+  # be the herokuapp one) and the existing public/favicon.png (512x512, the site icon).
+  #
+  # Left out on purpose: `sameAs`, because the code contains no profile URL for the site itself
+  # (the Instagram/Facebook links in this file are survivors' own); and a WebSite SearchAction,
+  # because the only GET searches (?q= on /survivors, /items, /shop) each cover one section, not
+  # the site, and a SearchAction would claim a site-wide search that does not exist.
+  SITE_ORGANIZATION_LOGO_PATH = "/favicon.png".freeze
+  SITE_ORGANIZATION_LOGO_SIZE = 512
+
+  def site_origin_url = "#{ShareImageHelper::CANONICAL_ORIGIN}/"
+
+  def site_organization_jsonld
+    { "@context" => "https://schema.org", "@type" => "Organization",
+      "@id" => "#{site_origin_url}#organization",
+      "name" => SeoHelper::SITE_TITLE_NAME, "url" => site_origin_url,
+      "logo" => { "@type" => "ImageObject", "url" => "#{ShareImageHelper::CANONICAL_ORIGIN}#{SITE_ORGANIZATION_LOGO_PATH}",
+                  "width" => SITE_ORGANIZATION_LOGO_SIZE, "height" => SITE_ORGANIZATION_LOGO_SIZE } }
+  end
+
+  def site_website_jsonld
+    { "@context" => "https://schema.org", "@type" => "WebSite",
+      "@id" => "#{site_origin_url}#website",
+      "name" => SeoHelper::SITE_TITLE_NAME, "url" => site_origin_url, "inLanguage" => "en",
+      "publisher" => { "@id" => "#{site_origin_url}#organization" } }
+  end
+
+  # Home page only (the one view that calls home_jsonld): Organization + WebSite + CollectionPage.
   def home_jsonld
     [
-      { "@context" => "https://schema.org", "@type" => "WebSite",
-        "name" => SITE_NAME, "url" => request.base_url },
+      site_organization_jsonld,
+      site_website_jsonld,
       { "@context" => "https://schema.org", "@type" => "CollectionPage",
         "name" => SITE_NAME,
         "description" => "Fan-maintained guide to episodes, survivors, items, and locations.",
