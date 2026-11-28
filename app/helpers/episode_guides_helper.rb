@@ -41,12 +41,15 @@ module EpisodeGuidesHelper
     truncate_at_word(text, SeoHelper::DESCRIPTION_LIMIT)
   end
 
-  # <link rel="alternate" hreflang> set: every guide language, plus x-default pointing at
-  # the English series index. Every language page renders the same full set (so each pair
-  # links back to the other), self-reference included.
+  # <link rel="alternate" hreflang> set shared by the English series index (/series) and
+  # the es / pt / fr guides: en, es, pt, fr, plus x-default, both English entries pointing
+  # at /series. Every one of the four pages renders the SAME full set (itself included), so
+  # each pair links back to the other. URLs are absolute and always on the canonical host
+  # (ShareImageHelper::CANONICAL_ORIGIN), never whatever host the request arrived on.
   def episode_guide_alternates
-    base = request.base_url
-    alternates = EpisodeGuides::PATHS.map { |lang, path| { hreflang: lang, href: "#{base}#{path}" } }
+    base = ShareImageHelper::CANONICAL_ORIGIN
+    alternates = [ { hreflang: "en", href: "#{base}#{EpisodeGuides::DEFAULT_PATH}" } ]
+    alternates += EpisodeGuides::PATHS.map { |lang, path| { hreflang: lang, href: "#{base}#{path}" } }
     alternates << { hreflang: "x-default", href: "#{base}#{EpisodeGuides::DEFAULT_PATH}" }
   end
 

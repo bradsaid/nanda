@@ -3,6 +3,8 @@
 - content_for :title, series_index_title
 - content_for :meta_description, series_index_description(stats)
 - content_for :canonical_url, canonical_request_url
+/ English member of the hreflang set shared with the es / pt / fr episode guides (EpisodeGuidesHelper).
+- content_for :head, episode_guide_hreflang_tags
 
 = render_jsonld(faq_page_jsonld(faq_qas))
 

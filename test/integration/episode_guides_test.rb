@@ -14,6 +14,9 @@ class EpisodeGuidesTest < ActionDispatch::IntegrationTest
     Episode.create!(season: @season, number_in_season: 2, title: "Coast", location: @namibia, air_date: Date.new(2023, 2, 9))
   end
 
+  # hreflang URLs are always on the canonical host, whatever host the request came in on.
+  HREFLANG_HOST = ShareImageHelper::CANONICAL_ORIGIN
+
   def canonical = css_select("link[rel=canonical]").first["href"]
   def description = css_select('head meta[name="description"]').first["content"]
   def json_ld = css_select('script[type="application/ld+json"]').map { |n| JSON.parse(n.text) }.flatten
@@ -78,14 +81,16 @@ class EpisodeGuidesTest < ActionDispatch::IntegrationTest
     test "#{lang}: the page and its alternates reference each other (hreflang symmetry)" do
       get path
       mine = alternates
-      assert_equal %w[es pt fr x-default].sort, mine.keys.sort
-      assert_equal "http://www.example.com/series", mine["x-default"]
-      EpisodeGuides::PATHS.each { |l, p| assert_equal "http://www.example.com#{p}", mine[l] }
-      # Self-reference, and every other language page lists exactly the same set.
-      assert_equal "http://www.example.com#{path}", mine[lang]
-      EpisodeGuides::PATHS.each_value do |other|
+      assert_equal %w[en es pt fr x-default].sort, mine.keys.sort
+      assert_equal "#{HREFLANG_HOST}/series", mine["x-default"]
+      assert_equal "#{HREFLANG_HOST}/series", mine["en"]
+      EpisodeGuides::PATHS.each { |l, p| assert_equal "#{HREFLANG_HOST}#{p}", mine[l] }
+      # Self-reference, and every other page of the set (the English /series page and the
+      # other languages) lists exactly the same set. See also hreflang_test.rb.
+      assert_equal "#{HREFLANG_HOST}#{path}", mine[lang]
+      ([ EpisodeGuides::DEFAULT_PATH ] + EpisodeGuides::PATHS.values).each do |other|
         get other
-        assert_equal mine, alternates
+        assert_equal mine, alternates, other
       end
     end
   end
@@ -108,8 +113,8 @@ class EpisodeGuidesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "English pages are unchanged: lang en, no hreflang alternates" do
-    [ "/", "/series", "/episodes", "/seasons", "/seasons/latest", "/survivors" ].each do |path|
+  test "other English pages are unchanged: lang en, no hreflang alternates" do
+    [ "/", "/episodes", "/seasons", "/seasons/latest", "/survivors" ].each do |path|
       get path
       assert_response :success
       assert_select "html[lang=en]", 1, "#{path} should stay lang=en"
