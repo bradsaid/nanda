@@ -1,5 +1,6 @@
 require_relative "boot"
 require_relative "../lib/middleware/trailing_slash_redirect"
+require_relative "../lib/middleware/canonical_host_redirect"
 
 require "rails/all"
 
@@ -26,6 +27,12 @@ module Nakedandafraid
     # before Rack::Sendfile, i.e. after host authorization and force_ssl's https redirect
     # but ahead of static files and the router (see lib/middleware/trailing_slash_redirect.rb).
     config.middleware.insert_before Rack::Sendfile, Middleware::TrailingSlashRedirect
+
+    # nakedandafraidfan.com/<anything> 301s to https://www.nakedandafraidfan.com/<anything>.
+    # First in the stack (ahead of force_ssl's ActionDispatch::SSL), so http://nakedandafraidfan.com/x
+    # reaches https://www in ONE hop instead of http -> https -> www. Every other host
+    # (www, *.herokuapp.com, localhost, the test host) passes straight through.
+    config.middleware.insert_before 0, Middleware::CanonicalHostRedirect
 
     config.time_zone = "Central Time (US & Canada)"
 

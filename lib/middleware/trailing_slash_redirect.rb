@@ -14,6 +14,7 @@
 #     into a protocol-relative redirect to another host.
 #   * It sits after ActionDispatch::SSL, so an http request is first sent to https (by
 #     SSL) and then, if it has a trailing slash, to the clean path: two hops at most.
+#     (Bare-domain requests are handled one step earlier by CanonicalHostRedirect.)
 module Middleware
   class TrailingSlashRedirect
     SKIPPED_PREFIXES = %w[/assets/ /rails/ /admin/ /cable/ /up/].freeze
@@ -22,26 +23,35 @@ module Middleware
       @app = app
     end
 
-    def call(env)
-      return @app.call(env) unless redirect?(env)
+    # The redirect target path ("/path/" -> "/path"), or nil when this request is not one the
+    # middleware rewrites. Shared with Middleware::CanonicalHostRedirect so an apex request
+    # with a trailing slash is cleaned in the same single redirect.
+    def self.clean_path(env)
+      return nil unless redirect?(env)
 
-      path = env["PATH_INFO"].to_s.sub(%r{/+\z}, "").sub(%r{\A/+}, "/")
-      path = "/" if path.empty?
-      query = env["QUERY_STRING"].to_s
-      location = "#{env['SCRIPT_NAME']}#{path}"
-      location = "#{location}?#{query}" unless query.empty?
-
-      [301, { "location" => location, "content-type" => "text/html; charset=utf-8", "content-length" => "0" }, []]
+      path = env["PATH_INFO"].to_s
+      path = path.b unless path.valid_encoding? # a mangled path must not raise in the regexes
+      path = path.sub(%r{/+\z}, "").sub(%r{\A/+}, "/")
+      path.empty? ? "/" : path
     end
 
-    private
-
-    def redirect?(env)
+    def self.redirect?(env)
       return false unless %w[GET HEAD].include?(env["REQUEST_METHOD"])
       path = env["PATH_INFO"].to_s
       return false unless path.end_with?("/")
       return false if path == "/"
       !SKIPPED_PREFIXES.any? { |prefix| path.start_with?(prefix) }
+    end
+
+    def call(env)
+      path = self.class.clean_path(env)
+      return @app.call(env) unless path
+
+      query = env["QUERY_STRING"].to_s
+      location = "#{env['SCRIPT_NAME']}#{path}"
+      location = "#{location}?#{query}" unless query.empty?
+
+      [301, { "location" => location, "content-type" => "text/html; charset=utf-8", "content-length" => "0" }, []]
     end
   end
 end
