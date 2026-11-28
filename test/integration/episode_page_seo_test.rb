@@ -35,7 +35,8 @@ class EpisodePageSeoTest < ActionDispatch::IntegrationTest
   test "spin-off episode names the series, not just the season number" do
     ep = episode_in("Naked and Afraid Shipwrecked", 1, 1, "Abandon Ship", air_date: Date.new(2022, 7, 22))
     get episode_path(ep)
-    assert_equal "Naked and Afraid Shipwrecked Season 1 Episode 1: Abandon Ship", title
+    # "…Season 1 Episode 1: Abandon Ship" is 61 characters (cap 60, was 65), so the compact code is used
+    assert_equal "Naked and Afraid Shipwrecked S1E1: Abandon Ship", title
     assert_equal "Naked and Afraid Shipwrecked · Season 1 · Episode 1 · Aired Jul 22, 2022", css_select("h1").first.parent.at_css("p.text-muted").text.squish
     # no synopsis: the factual line plus the standard tail
     assert_equal "Naked and Afraid Shipwrecked Season 1 Episode 1 aired Jul 22, 2022 in Choco, Colombia. Participants, PSR, days lasted and items.", description
@@ -44,7 +45,8 @@ class EpisodePageSeoTest < ActionDispatch::IntegrationTest
   test "a colon in the series name does not double up in the title" do
     ep = episode_in("Naked and Afraid: Global Showdown", 1, 8, "Sharp Spears, Broken Spirits", air_date: Date.new(2023, 3, 1))
     get episode_path(ep)
-    assert_equal "Naked and Afraid Global Showdown Season 1 Episode 8: Sharp Spears, Broken Spirits", title
+    # 67 characters in full (cap 60, was 65): the series name and episode code stay, the episode title is cut at a word
+    assert_equal "Naked and Afraid Global Showdown S1E8: Sharp Spears, Broken…", title
     assert_not_includes title, ": Global"
   end
 

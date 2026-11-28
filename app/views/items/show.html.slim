@@ -4,12 +4,9 @@
 - given_ep_cnt  = (@given_ai   || []).map { |ai| ai.appearance&.episode_id }.compact.uniq.size
 - brought_ep_cnt= (@brought_ai || []).map { |ai| ai.appearance&.episode_id }.compact.uniq.size
 - total_cnt     = given_ep_cnt + brought_ep_cnt
-- subtitle_bits = []
-- subtitle_bits << "in #{country_param}" if country_param
-- subtitle_str  = subtitle_bits.any? ? " — " + subtitle_bits.join(" ") : ""
 
 / Title + meta
-- content_for :title, "#{item_name} – Naked and Afraid Item#{subtitle_str}"
+- content_for :title, item_page_title(item_name, country: country_param)
 - content_for :meta_description, "#{item_name} usage across Naked & Afraid episodes#{country_param ? " in #{country_param}" : ""}: given in #{given_ep_cnt}, brought in #{brought_ep_cnt}, total #{total_cnt}. Episode lists and country breakdown."
 - content_for :keywords, "#{item_name}, Naked and Afraid item, survival gear, brought items, given items#{country_param ? ", #{country_param}" : ""}"
 - content_for :canonical_url, canonical_request_url

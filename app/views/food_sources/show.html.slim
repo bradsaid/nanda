@@ -1,6 +1,6 @@
 - food_name = @name.titleize
 - facts = food_source_facts(@food_sources, @name)
-- content_for :title, "#{food_name} – Naked and Afraid Food Source"
+- content_for :title, food_source_page_title(food_name)
 - content_for :meta_description, fact_meta_description(facts, "#{food_name} across all Naked and Afraid episodes: who obtained it, where, and how.")
 
 .container.my-4

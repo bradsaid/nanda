@@ -4,12 +4,9 @@
 - given_cnt     = (@given_episode_ids   || []).uniq.size
 - brought_cnt   = (@brought_episode_ids || []).uniq.size
 - total_items   = (@items_in_type_count || 0)
-- subtitle_bits = []
-- subtitle_bits << "in #{country_param}" if country_param
-- subtitle_str  = subtitle_bits.any? ? " — " + subtitle_bits.join(" ") : ""
 
 / Title + meta
-- content_for :title, "#{type_name} Items – Naked and Afraid#{subtitle_str}"
+- content_for :title, item_type_page_title(type_name, country: country_param)
 - content_for :meta_description, "#{type_name} items used on Naked & Afraid#{country_param ? " in #{country_param}" : ""}. #{total_items} item(s) in this type. Given in #{given_cnt} episode(s) and brought in #{brought_cnt}."
 - content_for :keywords, "Naked and Afraid items, #{type_name.downcase} items, survival gear, brought items, given items#{country_param ? ", #{country_param}" : ""}"
 - content_for :canonical_url, canonical_request_url

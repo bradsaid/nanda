@@ -7,28 +7,50 @@
 module SeoHelper
   SITE_TITLE_NAME   = "Naked & Afraid Fan Wiki".freeze
   TITLE_SEPARATOR   = " — ".freeze
-  # Longest <title> we are happy to emit when adding the site name; search engines
-  # truncate around 60 to 65 characters, so the suffix is dropped rather than overflow.
-  MAX_TITLE_LENGTH  = 65
+  # Longest <title> any public page may emit, page suffix included (search engines cut
+  # around 60 characters). The ONE constant: change it here and every template follows.
+  # Titles are built from candidates, richest first (see #site_title); the site-name suffix
+  # is the first thing dropped, then the page's own qualifiers, and only as a last resort is
+  # the text cut at a word boundary.
+  MAX_TITLE_LENGTH  = 60
   DESCRIPTION_LIMIT = 160
   EXCERPT_LENGTH    = 150
 
-  # `core` with the site name appended, unless it already ends with a site name (the
-  # suffix is never doubled: "Naked and Afraid Fan Wiki", "Naked & Afraid Fan Database"),
-  # is the site name, or would push the title past MAX_TITLE_LENGTH.
-  def site_title(core, page: nil)
-    core = core.to_s.squish
-    return paginated_title(SITE_TITLE_NAME, page) if core.blank?
-    title = core
-    unless title_names_site?(title) || (title + TITLE_SEPARATOR + SITE_TITLE_NAME).length > MAX_TITLE_LENGTH
+  # The title for a page: the first of `core` and `fallbacks` (richest first) that fits in
+  # MAX_TITLE_LENGTH together with the "— Page N" suffix, with the site name appended when
+  # that still fits (never doubled: "Naked and Afraid Fan Wiki", "Naked & Afraid Fan Database"
+  # already end in a site name, and the site name alone is left alone). If even the last
+  # fallback is too long it is cut at a word boundary ("…"), so no page ever overflows.
+  #
+  #   site_title("Privacy Policy")                                # "Privacy Policy — Naked & Afraid Fan Wiki"
+  #   site_title("Long qualified title", "Shorter title", page: 3)
+  def site_title(core, *fallbacks, page: nil)
+    title = fitted_title(core, *fallbacks, page: page, with_page: false)
+    room  = MAX_TITLE_LENGTH - page_suffix(page).length
+    unless title_names_site?(title) || (title + TITLE_SEPARATOR + SITE_TITLE_NAME).length > room
       title += TITLE_SEPARATOR + SITE_TITLE_NAME
     end
     paginated_title(title, page)
   end
 
-  # " — Page N" after the first page; page one keeps its title.
+  # Like #site_title but never adds the site name: the first candidate that fits (with the
+  # "— Page N" suffix), else the last one cut at a word boundary.
+  def fitted_title(*candidates, page: nil, with_page: true)
+    candidates = candidates.flatten.map { |c| c.to_s.squish }.reject(&:blank?)
+    return paginated_title(SITE_TITLE_NAME, (page if with_page)) if candidates.empty?
+    room  = MAX_TITLE_LENGTH - page_suffix(page).length
+    title = candidates.find { |c| c.length <= room } || truncate_at_word(candidates.last, room)
+    with_page ? paginated_title(title, page) : title
+  end
+
+  # " — Page N" after the first page; page one keeps its title. A base title that would push
+  # the result past MAX_TITLE_LENGTH is cut at a word boundary to make room for the suffix.
   def paginated_title(title, page)
-    page.to_i > 1 ? "#{title}#{TITLE_SEPARATOR}Page #{page.to_i}" : title.to_s
+    title = title.to_s
+    return title unless page.to_i > 1
+    suffix = page_suffix(page)
+    title = truncate_at_word(title, MAX_TITLE_LENGTH - suffix.length) if (title + suffix).length > MAX_TITLE_LENGTH
+    "#{title}#{suffix}"
   end
 
   # "(page N)" after the first page, trimming the base text so the result still fits.
@@ -59,6 +81,8 @@ module SeoHelper
   end
 
   private
+
+  def page_suffix(page) = page.to_i > 1 ? "#{TITLE_SEPARATOR}Page #{page.to_i}" : ""
 
   # Does the title already end in the site's name? "&" and "and" count the same.
   def title_names_site?(title)

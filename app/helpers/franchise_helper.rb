@@ -87,7 +87,9 @@ module FranchiseHelper
 
   def season_page_title(season)
     name = season_full_name(season)
-    site_title(fit_title("#{name}: Cast, Episodes & Locations", "#{name}: Cast & Episodes", name))
+    short = display_series_name(season.series).sub(/\ANaked and Afraid\s+/i, "").presence
+    site_title("#{name}: Cast, Episodes & Locations", "#{name}: Cast & Episodes", name,
+               ("#{short} Season #{season.number}" if short))
   end
 
   def season_page_description(season, overview)
@@ -139,11 +141,11 @@ module FranchiseHelper
 
   def series_page_title(series)
     name = display_series_name(series)
-    site_title(fit_title("#{name}: Episodes, Cast, Location & Air Dates",
-                         "#{name}: Episodes, Cast, Location & Dates",
-                         "#{name}: Episodes, Cast & Location",
-                         "#{name}: Episodes & Cast",
-                         name))
+    site_title("#{name}: Episodes, Cast, Location & Air Dates",
+               "#{name}: Episodes, Cast, Location & Dates",
+               "#{name}: Episodes, Cast & Location",
+               "#{name}: Episodes & Cast",
+               name)
   end
 
   def series_page_description(series, overview, seasons_count)
@@ -319,7 +321,8 @@ module FranchiseHelper
     link_to(label, season_path(marker[:season_id]))
   end
 
-  def seasons_index_title = site_title("All Naked and Afraid Seasons: Episodes, Cast & Where to Watch")
+  def seasons_index_title = site_title("All Naked and Afraid Seasons: Episodes, Cast & Where to Watch",
+                                          "All Naked and Afraid Seasons: Episodes & Cast", "All Naked and Afraid Seasons")
 
   def seasons_index_description(stats)
     return "Every Naked and Afraid season with episode counts, cast and where to watch." if stats[:total_seasons].zero?
@@ -438,10 +441,39 @@ module FranchiseHelper
     [series, ("Season #{season.number}" if season&.number), ("Episode #{episode.number_in_season}" if episode.number_in_season)].compact.join(" ")
   end
 
+  # The shortest title worth keeping after "Series Season N Episode M: " (cut at a word).
+  MIN_EPISODE_TITLE_ROOM = 20
+
+  # "Naked and Afraid Season 14 Episode 12: Title" when it fits SeoHelper::MAX_TITLE_LENGTH;
+  # otherwise, in order: the same with the episode title cut at a word, "Series S14E12: Title"
+  # (cut likewise), the bare phrase, and, for a very long series name, the series name without
+  # its "Naked and Afraid" prefix. Series, season and episode numbers are never cut.
   def episode_page_title(episode)
-    phrase = episode_page_heading_phrase(episode)
-    title  = episode.title.presence
-    site_title(title ? "#{phrase}: #{title}" : phrase)
+    season = episode.season
+    title  = episode.title.to_s.squish.presence
+    full   = episode_page_heading_phrase(episode)
+    code   = episode_code(episode)
+    series = display_series_name(season&.series)
+    short_series = series.sub(/\ANaked and Afraid\s+/i, "").presence
+    phrases = [ full, ([ series, code ].join(" ") if code) ]
+    phrases << [ short_series, code ].compact.join(" ") if short_series && short_series != series && code
+    phrases = phrases.compact.uniq
+    cands = []
+    if title
+      phrases.each do |phrase|
+        room = SeoHelper::MAX_TITLE_LENGTH - phrase.length - 2
+        cands << "#{phrase}: #{title}"
+        cands << "#{phrase}: #{truncate_at_word(title, room)}" if room >= MIN_EPISODE_TITLE_ROOM && title.length > room
+      end
+    end
+    site_title(*cands, *phrases)
+  end
+
+  # "S14E12" (nil without a season and episode number).
+  def episode_code(episode)
+    season_number = episode.season&.number
+    return nil unless season_number && episode.number_in_season
+    "S#{season_number}E#{episode.number_in_season}"
   end
 
   def episode_page_description(episode)

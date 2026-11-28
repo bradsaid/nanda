@@ -4,7 +4,7 @@
   - loc_name  = loc_parts.join(", ").presence || "Unknown Location"
   - ep_list   = (@episodes || [])
 
-  - content_for :title, "Naked and Afraid Episodes in #{loc_name}"
+  - content_for :title, location_episodes_title(@location)
   - content_for :meta_description, "Guide to #{ep_list.size} episode(s) filmed in #{loc_name}: air dates, survivors, and details."
   - content_for :keywords, "Naked and Afraid episodes, #{loc_name}, locations, survivors, episode guide"
   - content_for :canonical_url, canonical_request_url
@@ -16,7 +16,7 @@
   - title_txt   = "#{series_name} – Season #{@season.number}"
   - ep_list     = (@episodes || [])
 
-  - content_for :title, "#{title_txt} (Episode Guide)"
+  - content_for :title, season_episodes_title(series_name, @season.number)
   - content_for :meta_description, "#{title_txt}: #{ep_list.size} episode(s) with air dates, locations, survivors, and items."
   - content_for :keywords, "Naked and Afraid, #{series_name}, Season #{@season.number}, episodes, survivors, items"
   - content_for :canonical_url, canonical_request_url

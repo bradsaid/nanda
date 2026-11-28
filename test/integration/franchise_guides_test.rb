@@ -30,8 +30,9 @@ class FranchiseGuidesTest < ActionDispatch::IntegrationTest
   test "/seasons title, description and quick answers use the data" do
     get seasons_path
     assert_response :success
-    assert_equal "All Naked and Afraid Seasons: Episodes, Cast & Where to Watch", title
-    assert_operator title.length, :<=, 65
+    # The old wording was 61 characters, over the 60-character cap (was 65): the next candidate wins.
+    assert_equal "All Naked and Afraid Seasons: Episodes & Cast", title
+    assert_operator title.length, :<=, SeoHelper::MAX_TITLE_LENGTH
     assert_operator description.length, :<=, 160
     assert_includes description, "#{Season.count} Naked and Afraid seasons across #{Series.count} series (#{Episode.count} episodes)"
 

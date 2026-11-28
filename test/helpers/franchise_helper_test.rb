@@ -38,6 +38,9 @@ class FranchiseHelperTest < ActionView::TestCase
       assert_operator t.length, :<=, SeoHelper::MAX_TITLE_LENGTH, t
       assert t.start_with?(season_full_name(season)), t
     end
-    assert_equal "Naked and Afraid Last One Standing Season 12: Cast & Episodes", season_page_title(Season.new(number: 12, series: Series.new(name: "Naked and Afraid Last One Standing")))
+    # The "…: Cast & Episodes" form is 61 characters for this series, over the 60-character cap
+    # (it was 65), so the title falls back to the bare season name.
+    assert_equal "Naked and Afraid Last One Standing Season 12", season_page_title(Season.new(number: 12, series: Series.new(name: "Naked and Afraid Last One Standing")))
+    assert_equal "Naked and Afraid Season 12: Cast, Episodes & Locations", season_page_title(Season.new(number: 12, series: Series.new(name: "Naked and Afraid")))
   end
 end

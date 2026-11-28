@@ -1,5 +1,5 @@
 - facts = shelter_facts(@shelters, @shelter_type)
-- content_for :title, "#{@shelter_type} – Naked and Afraid Shelter"
+- content_for :title, shelter_page_title(@shelter_type)
 - content_for :meta_description, fact_meta_description(facts, "#{@shelter_type} shelter across all Naked and Afraid episodes: where and when it was built.")
 
 .container.my-4

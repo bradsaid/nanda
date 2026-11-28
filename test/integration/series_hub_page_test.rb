@@ -27,8 +27,9 @@ class SeriesHubPageTest < ActionDispatch::IntegrationTest
   test "title, description and h1 for a single-season series" do
     get series_path(@series)
     assert_response :success
-    assert_equal "Naked and Afraid Shipwrecked: Episodes, Cast, Location & Dates", title
-    assert_operator title.length, :<=, 65
+    # the "…, Location & Dates" wording is 61 characters (cap 60, was 65), so the next wording is used
+    assert_equal "Naked and Afraid Shipwrecked: Episodes, Cast & Location", title
+    assert_operator title.length, :<=, SeoHelper::MAX_TITLE_LENGTH
     assert_equal "Naked and Afraid Shipwrecked", css_select("h1").map { |h| h.text.strip }.first
     assert_equal 1, css_select("h1").size
     assert_equal "Naked and Afraid Shipwrecked: 2 episodes, premiering Jul 22, 2022. Filmed in Panama. Episode list, cast, air dates and where to watch.", description

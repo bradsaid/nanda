@@ -1,6 +1,6 @@
 / ===== SEO =====
 - list_page = canonical_page_number
-- content_for :title, paginated_title("#{@topic.title} — Forum", list_page)
+- content_for :title, forum_topic_title(@topic.title, page: list_page)
 / The thread's own opening post makes the description unique per thread; no first post, no excerpt.
 - thread_desc = meta_excerpt(@opening_post_text).presence || "Discussion on the Naked & Afraid fan forum."
 - content_for :meta_description, paginated_description(thread_desc, list_page)

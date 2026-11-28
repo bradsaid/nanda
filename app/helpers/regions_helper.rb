@@ -7,7 +7,7 @@ module RegionsHelper
   def region_title(region)
     full  = "Naked and Afraid in #{region.name}: Every Filming Location & Episode"
     short = "Naked and Afraid in #{region.name}: Locations & Episodes"
-    site_title(full.length <= SeoHelper::MAX_TITLE_LENGTH ? full : short)
+    site_title(full, short, "Naked and Afraid in #{region.name}", "Filming in #{region.name}", region.name)
   end
 
   # Unique, <= 160 characters, naming as many of the region's places as fit.

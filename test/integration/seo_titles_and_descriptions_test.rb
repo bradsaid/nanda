@@ -36,7 +36,7 @@ class SeoTitlesAndDescriptionsTest < ActionDispatch::IntegrationTest
   end
 
   test "site_title leaves a title alone when the suffix would make it too long" do
-    long = "Naked and Afraid Last One Standing — Seasons, Episodes & Cast"
+    long = "Naked and Afraid Last One Standing — Seasons & Episodes"
     assert_equal long, helper.site_title(long)
     assert_operator helper.site_title("Short").length, :<=, SeoHelper::MAX_TITLE_LENGTH
   end

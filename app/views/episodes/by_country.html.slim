@@ -2,7 +2,7 @@
 - country_name = @country.to_s
 - ep_list      = (@episodes || [])
 
-- content_for :title, paginated_title("Naked and Afraid Episodes in #{country_name}", @page_number)
+- content_for :title, country_episodes_title(country_name, page: @page_number)
 - country_alias_names = CountryAliases.for(country_name)
 - content_for :meta_description, country_meta_description(country_name, ep_list.size, country_alias_names, @page_number)
 - content_for :keywords, "Naked and Afraid episodes, #{country_name}, filming locations, survivors, episode guide"
