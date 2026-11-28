@@ -24,7 +24,8 @@ module Forum
     # No style, class or id: style enables defacement and CSS-based tracking,
     # class would let a post borrow Bootstrap's layout utilities, and id can
     # collide with the page's own anchors. No target either, which keeps
-    # tabnabbing off the table without needing rel=noopener everywhere.
+    # tabnabbing off the table. No rel: authors cannot choose their own, so a post can
+    # never mark a link "dofollow"; Forum::UgcLinks sets rel on every outbound link.
     ALLOWED_ATTRIBUTES = %w[
       href src alt title width height colspan rowspan start lang dir
     ].freeze
@@ -64,9 +65,11 @@ module Forum
         extension: { table: true, autolink: true, strikethrough: true },
         render:    { hardbreaks: true, unsafe: true }
       })
-      self.body_html = ActionController::Base.helpers.sanitize(
+      sanitized = ActionController::Base.helpers.sanitize(
         raw_html, tags: ALLOWED_TAGS, attributes: ALLOWED_ATTRIBUTES
       )
+      # Outbound links get rel="ugc nofollow noopener noreferrer" (see Forum::UgcLinks).
+      self.body_html = Forum::UgcLinks.apply(sanitized)
     end
 
     def touch_topic_activity
