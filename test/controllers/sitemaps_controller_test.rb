@@ -36,6 +36,8 @@ class SitemapsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "includes the shop, shop guides, a survivor and an episode" do
+    # Episodes without a synopsis are noindexed and not listed (ThinContent), so give this one a synopsis.
+    episodes(:one).update_columns(synopsis: "Two survivalists face a hard week.")
     get "/sitemap.xml"
     assert_includes locs, "#{HOST}/shop"
     assert_includes locs, "#{HOST}/shop/guides"
@@ -44,6 +46,29 @@ class SitemapsControllerTest < ActionDispatch::IntegrationTest
     assert_includes locs, "#{HOST}#{episode_path(episodes(:one))}"
     assert_includes locs, "#{HOST}#{season_path(seasons(:one))}"
     assert_includes locs, "#{HOST}#{item_path(items(:one))}"
+  end
+
+  test "leaves out episodes without a synopsis while NOINDEX_THIN_EPISODES is on, lists them when it is off" do
+    episodes(:one).update_columns(synopsis: "Two survivalists face a hard week.")
+    episodes(:two).update_columns(synopsis: " <p>&nbsp;</p> ")
+    get "/sitemap.xml"
+    assert_includes locs, "#{HOST}#{episode_path(episodes(:one))}"
+    assert_not_includes locs, "#{HOST}#{episode_path(episodes(:two))}"
+
+    # Flipping the flag rebuilds the cached XML (it is part of the cache key).
+    with_env("NOINDEX_THIN_EPISODES" => "false") do
+      get "/sitemap.xml"
+      assert_includes locs, "#{HOST}#{episode_path(episodes(:one))}"
+      assert_includes locs, "#{HOST}#{episode_path(episodes(:two))}"
+    end
+  end
+
+  def with_env(vars)
+    old = vars.keys.to_h { |k| [k, ENV[k]] }
+    vars.each { |k, v| ENV[k] = v }
+    yield
+  ensure
+    old.each { |k, v| ENV[k] = v }
   end
 
   test "lists the public Community Guidelines page, with the forum off or on" do

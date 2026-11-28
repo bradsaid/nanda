@@ -72,8 +72,8 @@
                 td= episode.air_date&.strftime("%b %-d, %Y") || "—"
                 td= episode.location&.full_address || "—"
                 td.text-center
-                  - if episode.synopsis.present?
-                    span.badge.text-bg-success = "#{episode.synopsis.length} ch"
+                  - if episode.synopsis_present?
+                    span.badge.text-bg-success = "#{episode.synopsis_text.length} ch"
                   - else
                     span.text-muted —
                 td.text-end.small

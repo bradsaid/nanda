@@ -61,6 +61,7 @@ class SitemapUrls
         "#{model.table_name}:#{model.count}:#{model.maximum(:updated_at)&.utc&.to_f}"
       end
       stamps << forum_stamp
+      stamps << "thin:#{ThinContent.cache_stamp}"
       stamps << "shop:#{ShopCatalog.guides.map(&:slug).join(',')}:#{shop_updated_at.to_i}"
       stamps << "static:#{STATIC_LASTMOD.map { |path, date| "#{path}=#{date}" }.join(',')}:#{FALLBACK_LASTMOD}"
       # Region membership lives in a config file: editing it (a deploy) refreshes the cache.
@@ -214,7 +215,8 @@ class SitemapUrls
 
   def records
     Survivor.find_each { |s| add survivor_path(s), lastmod: s.updated_at, changefreq: "weekly",  priority: 0.7 }
-    Episode.find_each  { |e| add episode_path(e),  lastmod: e.updated_at, changefreq: "weekly",  priority: 0.7 }
+    # Thin pages (ThinContent) are noindexed, so they are not offered here either.
+    Episode.indexable.find_each { |e| add episode_path(e), lastmod: e.updated_at, changefreq: "weekly", priority: 0.7 }
     Item.find_each     { |i| add item_path(i),     lastmod: i.updated_at, changefreq: "monthly", priority: 0.5 }
     Season.find_each   { |s| add season_path(s),   lastmod: s.updated_at, changefreq: "monthly", priority: 0.6 }
     Series.find_each   { |s| add series_path(s),   lastmod: s.updated_at, changefreq: "monthly", priority: 0.6 }

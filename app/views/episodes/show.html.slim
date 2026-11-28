@@ -13,7 +13,7 @@
 / Series, season, episode number, air date, location and the start of the synopsis (when there is
 / one) in the description; title and H1 name the series + "Season N Episode M" so the page matches
 / searches in the "Season 11 Episode 4" and "(Season 1, Episode 8)" formats.
-- synopsis_plain = ActionView::Base.full_sanitizer.sanitize(@episode.synopsis.to_s).squish
+- synopsis_plain = @episode.synopsis_text
 - meta_desc = episode_page_description(@episode)
 / og:image: first survivor avatar on this episode (permanent proxy URL); with no avatar the
 / layout falls back to the site's default share image.
@@ -25,7 +25,8 @@
 - content_for :keywords, "Naked and Afraid episode, #{series&.name}, Season #{season_num}, Episode #{ep_num}, #{title_text}, survivors, PSR, items"
 - content_for :canonical_url, canonical_request_url
 - content_for :og_title, "#{heading_phrase}: #{title_text}"
-- content_for :og_description, synopsis_plain.present? ? synopsis_plain.first(200) : "Aired #{air_date || '—'}#{loc_str ? " • #{loc_str}" : ""}. Participants, PSR, results, items."
+- og_facts = [("Aired #{air_date}" if air_date), loc_str].compact.join(" • ")
+- content_for :og_description, synopsis_plain.present? ? synopsis_plain.first(200) : "#{og_facts}#{'. ' if og_facts.present?}Participants, PSR, results, items."
 - set_share_image(avatar_share_image(og_survivor))
 
 / Server-rendered JSON-LD (TVEpisode)
@@ -60,50 +61,54 @@
         - if season
           = link_to "View Season #{season.number}", season_path(season), class: "btn btn-outline-secondary btn-sm"
 
+
   / ===== Episode meta =====
-  .row.g-3.mb-4
-    .col-md-4
-      .card.shadow-sm.h-100
-        .card-body
-          .d-flex.align-items-center.gap-3
-            - flag = country_flag_url(country, size: 80)
-            - outline = country_outline_url(country, width: 160)
-            - if flag
-              = image_tag flag, alt: country_flag_alt(country), width: 40, height: 30, class: "shadow-sm rounded", style: "object-fit: cover; flex-shrink: 0;"
-            - else
-              span.fs-3(aria-hidden="true") 📍
-            .flex-grow-1
-              .text-uppercase.small.text-muted Location
-              .fw-semibold
-              - if country || region || site
-                - parts = []
-                - if country
-                  - parts << link_to(country, by_country_episodes_path(country))
-                - if region
-                  - parts << region
-                - if site
-                  - parts << site
-                = safe_join(parts, " • ")
-              - else
-                | —
-            - if outline
-              = image_tag outline, alt: "#{country} outline", class: "flex-shrink-0", style: "max-height: 50px; max-width: 60px; object-fit: contain;"
-    .col-md-4
-      .card.shadow-sm.h-100
-        .card-body
-          .d-flex.align-items-center.gap-3
-            span.fs-3(aria-hidden="true") 📅
-            .flex-grow-1
-              .text-uppercase.small.text-muted Air Date
-              .fw-semibold = air_date.presence || "—"
-    .col-md-4
-      .card.shadow-sm.h-100
-        .card-body
-          .d-flex.align-items-center.gap-3
-            span.fs-3(aria-hidden="true") ⏱️
-            .flex-grow-1
-              .text-uppercase.small.text-muted Scheduled Days
-              .fw-semibold = (@episode.scheduled_days.presence || "—")
+  / Only the facts we have: a card is left out when its value is unknown.
+  - meta_cards = []
+  - meta_cards << :location if country || region || site
+  - meta_cards << :air_date if air_date.present?
+  - meta_cards << :days if @episode.scheduled_days.present?
+  - if meta_cards.any?
+    .row.g-3.mb-4
+      - if meta_cards.include?(:location)
+        .col-md-4
+          .card.shadow-sm.h-100
+            .card-body
+              .d-flex.align-items-center.gap-3
+                - flag = country_flag_url(country, size: 80)
+                - outline = country_outline_url(country, width: 160)
+                - if flag
+                  = image_tag flag, alt: country_flag_alt(country), width: 40, height: 30, class: "shadow-sm rounded", style: "object-fit: cover; flex-shrink: 0;"
+                - else
+                  span.fs-3(aria-hidden="true") 📍
+                .flex-grow-1
+                  .text-uppercase.small.text-muted Location
+                  .fw-semibold
+                    - parts = []
+                    - parts << link_to(country, by_country_episodes_path(country)) if country
+                    - parts << region if region
+                    - parts << site if site
+                    = safe_join(parts, " • ")
+                - if outline
+                  = image_tag outline, alt: "#{country} outline", class: "flex-shrink-0", style: "max-height: 50px; max-width: 60px; object-fit: contain;"
+      - if meta_cards.include?(:air_date)
+        .col-md-4
+          .card.shadow-sm.h-100
+            .card-body
+              .d-flex.align-items-center.gap-3
+                span.fs-3(aria-hidden="true") 📅
+                .flex-grow-1
+                  .text-uppercase.small.text-muted Air Date
+                  .fw-semibold = air_date
+      - if meta_cards.include?(:days)
+        .col-md-4
+          .card.shadow-sm.h-100
+            .card-body
+              .d-flex.align-items-center.gap-3
+                span.fs-3(aria-hidden="true") ⏱️
+                .flex-grow-1
+                  .text-uppercase.small.text-muted Scheduled Days
+                  .fw-semibold = @episode.scheduled_days
 
   / ===== Where to Watch =====
   - watch_services = series && season ? services_for(series.name, season.number) : {}
@@ -118,7 +123,10 @@
             = link_to url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm" do
               = streaming_label(service_key)
 
-  - if @episode.synopsis.present?
+  / ===== Synopsis =====
+  / Written synopsis, or a clear "coming soon" note. Without one the page is thin and, while
+  / ThinContent.noindex_episodes_without_synopsis? is on, noindex (see EpisodesController#show).
+  - if @episode.synopsis_present?
     .card.shadow-sm.mb-4
       .card-header
         .d-flex.align-items-center
@@ -126,6 +134,14 @@
           h2.h5.mb-0 Episode Synopsis
       .card-body
         = linkify_survivors(@episode.synopsis, @episode.survivors)
+  - else
+    .card.shadow-sm.mb-4.episode-synopsis-pending
+      .card-header
+        .d-flex.align-items-center
+          span.me-3.fs-3(aria-hidden="true") 📝
+          h2.h5.mb-0 Episode Synopsis
+      .card-body
+        p.text-muted.mb-0 Synopsis coming soon. The cast, results and gear for this episode are listed below.
 
   - if @episode.notes.present?
     .card.shadow-sm.mb-4
@@ -138,15 +154,20 @@
   / above the table, once, and skipped in the per-row given column. With several
   / teams (arrangement "3+3+3+3") the banner says each team got one. Given items nobody has classified yet follow the old rule: identical
   / given sets on every row mean a team item. "Each person" items stay per row.
+  / Columns nobody has data for (role, PSR, days, result, weight loss, items) are left out, and
+  / the whole card is left out when nobody is recorded (EpisodeTablesHelper).
   - banner      = AppearanceItem.team_given_banner(@active_appearances)
   - team_groups = banner[:groups]
   - hoisted_ids = banner[:hoisted_ids]
+  - p_rows = participant_rows(@active_appearances, episode: @episode, shelf: @shop_shelf, hoisted_ids: hoisted_ids)
+  - items_visible = p_rows.any? { |r| r[:brought] || r[:given] }
+  - p_cols = visible_columns(p_rows, :role, :psr, :days, :result, :weight_loss)
 
-  .card.shadow-sm
-    .card-header.d-flex.align-items-center
-      span.me-3.fs-3(aria-hidden="true") 👥
-      h2.h5.mb-0 Participants
-    - if @active_appearances.present?
+  - if p_rows.any?
+    .card.shadow-sm
+      .card-header.d-flex.align-items-center
+        span.me-3.fs-3(aria-hidden="true") 👥
+        h2.h5.mb-0 Participants
       - if team_groups.any?
         .px-3.py-2.bg-light.border-bottom.small
           strong.me-1 = @episode.multi_team? ? "Given to each team (#{@episode.team_count}):" : "Team given:"
@@ -162,23 +183,21 @@
           thead.table-light
             tr
               th(scope="col") Name
-              th(scope="col") Role
-              th(scope="col" class="text-nowrap") PSR
-              th(scope="col" class="text-end") Days
-              th(scope="col") Result
-              th(scope="col") Weight Loss
-              th(scope="col") Items
+              - if p_cols.include?(:role)
+                th(scope="col") Role
+              - if p_cols.include?(:psr)
+                th(scope="col" class="text-nowrap") PSR
+              - if p_cols.include?(:days)
+                th(scope="col" class="text-end") Days
+              - if p_cols.include?(:result)
+                th(scope="col") Result
+              - if p_cols.include?(:weight_loss)
+                th(scope="col") Weight Loss
+              - if items_visible
+                th(scope="col") Items
           tbody
-            - @active_appearances.sort_by { |ap| ap.survivor&.full_name.to_s.split.first.to_s.downcase }.each do |a|
-              - s = a.survivor
-              - start_psr = a.starting_psr
-              - end_psr   = a.ending_psr
-              - days_cell = a.days_lasted
-              / Items per appearance
-              - brought_items = a.appearance_items.select { |ai| ai.source == "brought" }
-              - brought = safe_join(brought_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode, shelf: @shop_shelf) }, ", ")
-              - given_items = a.appearance_items.select { |ai| ai.source == "given" && !hoisted_ids.include?(ai.id) }
-              - given = safe_join(given_items.filter_map { |ai| appearance_item_label(ai, survivor: s, episode: @episode, shelf: @shop_shelf) }, ", ")
+            - p_rows.each do |row|
+              - s = row[:survivor]
               tr
                 td data-label="Name"
                   .d-flex.align-items-center.gap-2
@@ -186,41 +205,37 @@
                       = image_tag avatar_src(s, name: s.full_name, variant: :chip), alt: s.full_name, loading: "lazy", class: "rounded-circle border", width: 40, height: 40, style: "object-fit: cover;"
                     div
                       = link_to(s.full_name, survivor_path(s), class: "link-primary fw-medium")
-                      - if a.partner_replacement
+                      - if row[:appearance].partner_replacement
                         span.badge.text-bg-warning.ms-2 title="Partner replacement" PR
-                td data-label="Role" = a.role.presence || "—"
-                td data-label="PSR" = ([start_psr, end_psr].compact.join(" → ").presence || "—")
-                td.text-end data-label="Days" = (days_cell.presence || "—")
-                td data-label="Result"
-                  - if a.result.present?
-                    - ok = (a.result == "success")
-                    span.badge class=(ok ? "bg-success" : "bg-danger") = a.result
-                  - else
-                    span.text-muted —
-                td data-label="Weight Loss" = a.weight_loss.present? ? "#{a.weight_loss.to_i} lbs" : "—"
-                td data-label="Items"
-                  - if brought.present?
-                    span
-                      = "brought: "
-                      = brought
-                  - else
-                    span.text-muted —
-                  - if given.present?
-                    br
-                    span
-                      = "given: "
-                      = given
-    - else
-      .card-body
-        p.text-muted.mb-0 No participants recorded.
-
-  / ===== Shop the gear =====
-  - if @shop_shelf && !@shop_shelf.empty?
-    .mt-4
-      = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear From This Episode", dom_id: "episode-shop"
+                - if p_cols.include?(:role)
+                  td data-label="Role" = row[:role]
+                - if p_cols.include?(:psr)
+                  td data-label="PSR" = row[:psr]
+                - if p_cols.include?(:days)
+                  td.text-end data-label="Days" = row[:days]
+                - if p_cols.include?(:result)
+                  td data-label="Result"
+                    - if row[:result]
+                      span.badge class=(row[:result] == "success" ? "bg-success" : "bg-danger") = row[:result]
+                - if p_cols.include?(:weight_loss)
+                  td data-label="Weight Loss" = row[:weight_loss]
+                - if items_visible
+                  td data-label="Items"
+                    - if row[:brought]
+                      span
+                        = "brought: "
+                        = row[:brought]
+                    - if row[:given]
+                      - if row[:brought]
+                        br
+                      span
+                        = "given: "
+                        = row[:given]
 
   / ===== Traps =====
-  - if @episode.episode_traps.any?
+  - t_rows = trap_rows(@episode.episode_traps)
+  - if t_rows.any?
+    - t_cols = visible_columns(t_rows, :builders, :result, :caught)
     .card.shadow-sm.mt-4
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🪤
@@ -230,27 +245,26 @@
           thead.table-light
             tr
               th Type
-              th Built By
-              th Result
-              th Caught
+              - if t_cols.include?(:builders)
+                th Built By
+              - if t_cols.include?(:result)
+                th Result
+              - if t_cols.include?(:caught)
+                th Caught
           tbody
-            - @episode.episode_traps.each do |trap|
+            - t_rows.each do |row|
               tr
-                td.fw-semibold data-label="Type" = trap.trap_type
-                td data-label="Built By"
-                  - if trap.builders&.any?
-                    = safe_join(trap.builders.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
-                  - else
-                    span.text-muted —
-                td data-label="Result"
-                  - if trap.result.present?
-                    - ok = (trap.result == "Success")
-                    span.badge class=(ok ? "bg-success" : "bg-danger") = trap.result
-                  - else
-                    span.text-muted —
-                td data-label="Caught"
-                  - catches = trap.food_sources.map { |fs| fs.quantity.to_i > 1 ? "#{fs.name.titleize} ×#{fs.quantity}" : fs.name.titleize }
-                  = catches.any? ? catches.join(", ") : "—"
+                td.fw-semibold data-label="Type" = row[:trap].trap_type
+                - if t_cols.include?(:builders)
+                  td data-label="Built By"
+                    - if row[:builders]
+                      = safe_join(row[:builders].map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                - if t_cols.include?(:result)
+                  td data-label="Result"
+                    - if row[:result]
+                      span.badge class=(row[:result] == "Success" ? "bg-success" : "bg-danger") = row[:result]
+                - if t_cols.include?(:caught)
+                  td data-label="Caught" = row[:caught]
 
   / ===== Shelter =====
   - if @episode.episode_shelters.any?
@@ -269,6 +283,8 @@
 
   / ===== Food Sources =====
   - if @episode.food_sources.any?
+    - f_rows = food_source_rows(@episode.food_sources.order(:category, :name))
+    - f_cols = visible_columns(f_rows, :method, :tools)
     .card.shadow-sm.mt-4
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🍖
@@ -279,11 +295,14 @@
             tr
               th Name
               th Category
-              th Method
+              - if f_cols.include?(:method)
+                th Method
               th Obtained By
-              th Tools Used
+              - if f_cols.include?(:tools)
+                th Tools Used
           tbody
-            - @episode.food_sources.order(:category, :name).each do |fs|
+            - f_rows.each do |row|
+              - fs = row[:food]
               tr
                 td data-label="Name"
                   = link_to fs.name.titleize, food_source_path(fs.name)
@@ -296,22 +315,20 @@
                     span.badge.bg-danger-subtle.text-danger-emphasis Animal
                   - else
                     span.badge.bg-success-subtle.text-success-emphasis Plant
-                td data-label="Method" = fs.method&.humanize || "—"
+                - if f_cols.include?(:method)
+                  td data-label="Method" = row[:method]
                 td data-label="Obtained By"
                   - if fs.survivors&.any?
                     = safe_join(fs.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     | Team
-                td data-label="Tools Used"
-                  - parts = []
-                  - if fs.episode_trap
-                    - tname = fs.episode_trap.trap_type.to_s
-                    - parts << (tname =~ /(trap|basket|net)\z/i ? tname : "#{tname} Trap")
-                  - parts << fs.tools_used if fs.tools_used.present?
-                  = parts.any? ? parts.join(" with ") : "—"
+                - if f_cols.include?(:tools)
+                  td data-label="Tools Used" = row[:tools]
 
   / ===== Medical Calls =====
-  - if @episode.medical_calls.any?
+  - m_rows = medical_call_rows(@episode.medical_calls)
+  - if m_rows.any?
+    - m_cols = visible_columns(m_rows, :reason, :notes)
     .card.shadow-sm.mt-4
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🩺
@@ -321,27 +338,31 @@
           thead.table-light
             tr
               th Survivor
-              th Reason
+              - if m_cols.include?(:reason)
+                th Reason
               th.text-center Tap Out
-              th Notes
+              - if m_cols.include?(:notes)
+                th Notes
           tbody
-            - @episode.medical_calls.each do |mc|
+            - m_rows.each do |row|
               tr
                 td data-label="Survivor"
-                  - if mc.survivor
-                    = link_to mc.survivor.full_name, survivor_path(mc.survivor)
-                  - else
-                    span.text-muted —
-                td data-label="Reason" = mc.reason.presence || "—"
+                  - if row[:survivor]
+                    = link_to row[:survivor].full_name, survivor_path(row[:survivor])
+                - if m_cols.include?(:reason)
+                  td data-label="Reason" = row[:reason]
                 td.text-center data-label="Tap Out"
-                  - if mc.led_to_tapout
+                  - if row[:call].led_to_tapout
                     span.badge.bg-danger Yes
                   - else
                     span.text-muted No
-                td.text-muted data-label="Notes" = mc.notes.presence || "—"
+                - if m_cols.include?(:notes)
+                  td.text-muted data-label="Notes" = row[:notes]
 
   / ===== Bushcraft Items =====
-  - if @episode.bushcraft_items.any?
+  - b_rows = bushcraft_rows(@episode.bushcraft_items)
+  - if b_rows.any?
+    - b_cols = visible_columns(b_rows, :materials, :builders, :notes)
     .card.shadow-sm.mt-4
       .card-header.d-flex.align-items-center
         span.me-3.fs-3(aria-hidden="true") 🪵
@@ -351,20 +372,24 @@
           thead.table-light
             tr
               th Item
-              th Materials
-              th Built By
-              th Notes
+              - if b_cols.include?(:materials)
+                th Materials
+              - if b_cols.include?(:builders)
+                th Built By
+              - if b_cols.include?(:notes)
+                th Notes
           tbody
-            - @episode.bushcraft_items.each do |bi|
+            - b_rows.each do |row|
               tr
-                td.fw-semibold data-label="Item" = bi.item_type
-                td data-label="Materials" = bi.materials.presence || "—"
-                td data-label="Built By"
-                  - if bi.builders&.any?
-                    = safe_join(bi.builders.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
-                  - else
-                    span.text-muted —
-                td.text-muted data-label="Notes" = bi.notes.presence || "—"
+                td.fw-semibold data-label="Item" = row[:item].item_type
+                - if b_cols.include?(:materials)
+                  td data-label="Materials" = row[:materials]
+                - if b_cols.include?(:builders)
+                  td data-label="Built By"
+                    - if row[:builders]
+                      = safe_join(row[:builders].map { |s| link_to s.full_name, survivor_path(s) }, ", ")
+                - if b_cols.include?(:notes)
+                  td.text-muted data-label="Notes" = row[:notes]
 
   / ===== Related episodes =====
   - if @related_episodes.present?
@@ -400,6 +425,17 @@
           details.mb-2 open=(i == 0)
             summary.fw-semibold = qa[:q]
             p.mt-2.mb-0.text-muted = qa[:a]
+
+  / ===== Gear used in this episode (affiliate) =====
+  / Collapsed and last, below everything unique to the episode, so the repeated product cards do
+  / not dominate the page. Links stay the tracked /go/ redirects with rel="sponsored nofollow".
+  / The jump button in the header (#episode-shop) opens the section in current browsers.
+  - if @shop_shelf && !@shop_shelf.empty?
+    - gear_count = @shop_shelf.products.size
+    details.mt-4.episode-gear
+      summary.fw-semibold.text-muted.small.py-2 = "Gear used in this episode (#{gear_count} #{'product'.pluralize(gear_count)}, affiliate links)"
+      .mt-2
+        = render "shop/shelf", shelf: @shop_shelf, links: @shop_links, heading: "Shop the Gear From This Episode", dom_id: "episode-shop"
 
   / ===== Author byline (E-A-T) =====
   .card.shadow-sm.mt-4.small.text-muted

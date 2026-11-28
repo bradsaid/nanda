@@ -13,13 +13,13 @@ module Admin
 
       case params[:filter]
       when "missing_synopsis"
-        scope = scope.where(synopsis: [nil, ""])
+        scope = scope.without_synopsis
       when "has_synopsis"
-        scope = scope.where.not(synopsis: [nil, ""])
+        scope = scope.with_synopsis
       end
 
-      @missing_count = Episode.where(synopsis: [nil, ""]).count
-      @with_count    = Episode.where.not(synopsis: [nil, ""]).count
+      @missing_count = Episode.without_synopsis.count
+      @with_count    = Episode.with_synopsis.count
       @filter        = params[:filter].to_s.presence
       @sort          = params[:sort].to_s.presence
 
@@ -36,7 +36,7 @@ module Admin
       # "Next up": highest-traffic episode still missing a synopsis, to give
       # the writer an obvious starting point when they open the page.
       top_ids     = @traffic_by_episode_id.sort_by { |_, c| -c }.map(&:first).first(100)
-      missing_set = Episode.where(id: top_ids, synopsis: [nil, ""]).ids.to_set
+      missing_set = Episode.where(id: top_ids).without_synopsis.ids.to_set
       top_id      = top_ids.find { |id| missing_set.include?(id) }
       @next_up    = Episode.includes(season: :series, location: {}).find_by(id: top_id) if top_id
     end

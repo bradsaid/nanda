@@ -17,6 +17,12 @@
           strong = "#{@done} / #{@total} episodes have a synopsis"
           span.text-muted.ms-2 = "(#{@progress}%)"
         span.small.text-muted = "#{@missing} remaining"
+      - if ThinContent.noindex_episodes_without_synopsis?
+        p.small.text-muted.mb-0.mt-2
+          = "#{@noindexed} episode pages without a synopsis are served noindex and left out of the sitemap until one is written. "
+          = link_to "Show them", admin_synopsis_queue_path(sort: @sort, only: "missing")
+      - else
+        p.small.text-muted.mb-0.mt-2 Episodes without a synopsis are currently indexed (NOINDEX_THIN_EPISODES=false).
       .progress(style="height: 10px;")
         .progress-bar.bg-success role="progressbar" style="width: #{@progress}%" aria-valuenow=@progress aria-valuemin="0" aria-valuemax="100"
 
@@ -52,11 +58,11 @@
               td.text-muted.text-center.py-4(colspan="9") Nothing to show with those filters.
           - else
             - @episodes.each_with_index do |episode, i|
-              - has_syn = episode.synopsis.present?
+              - has_syn = episode.synopsis_present?
               - views   = @traffic_by_episode_id[episode.id].to_i
               tr class=(has_syn ? "table-success-subtle" : "")
                 td.text-center
-                  input.form-check-input(type="checkbox" checked=has_syn disabled title=(has_syn ? "Synopsis written (#{episode.synopsis.length} chars)" : "No synopsis yet"))
+                  input.form-check-input(type="checkbox" checked=has_syn disabled title=(has_syn ? "Synopsis written (#{episode.synopsis_text.length} chars)" : "No synopsis yet"))
                 td.small.text-muted = i + 1
                 td.text-nowrap
                   = episode.season.series.name
@@ -72,7 +78,7 @@
                     span.text-muted —
                 td.text-center
                   - if has_syn
-                    span.badge.text-bg-success = "#{episode.synopsis.length} ch"
+                    span.badge.text-bg-success = "#{episode.synopsis_text.length} ch"
                   - else
                     span.badge.text-bg-warning missing
                 td.text-end.text-nowrap

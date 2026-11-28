@@ -878,6 +878,8 @@ table.items-compact thead th {
     border: 0 !important;
     text-align: left !important;
   }
+  /* A cell with no value shows no label either (episode pages leave unknowns blank, not "—"). */
+  .table-stack tbody td:empty { display: none; }
   .table-stack tbody td::before {
     content: attr(data-label);
     display: inline-block;

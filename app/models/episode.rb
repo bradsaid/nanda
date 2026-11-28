@@ -43,6 +43,37 @@ class Episode < ApplicationRecord
 
   validates :title, :number_in_season, presence: true
 
+  # ---- Synopsis presence (see ThinContent for the noindex policy built on it) ----
+  #
+  # A synopsis counts as present when something readable is left after tags, entities and
+  # whitespace are removed ("   " and "<p>&nbsp;</p>" are not synopses). The Ruby check and
+  # the SQL scopes below apply the same rule, so the admin synopsis queue, the sitemap and the
+  # page's robots tag always agree (the model test compares them).
+  BLANK_SYNOPSIS_SQL = <<~SQL.squish.freeze
+    btrim(regexp_replace(COALESCE(episodes.synopsis, ''),
+          '<[^>]*>|&nbsp;|&#160;|&#x0*a0;|[[:space:]]|' || chr(160), '', 'gi')) = ''
+  SQL
+
+  scope :without_synopsis, -> { where(BLANK_SYNOPSIS_SQL) }
+  scope :with_synopsis,    -> { where.not(BLANK_SYNOPSIS_SQL) }
+  # The episodes SitemapUrls lists: every episode, or only those with a synopsis while
+  # ThinContent says episodes without one are noindexed.
+  scope :indexable, -> { ThinContent.noindex_episodes_without_synopsis? ? with_synopsis : all }
+
+  # The synopsis as plain text: markup and entities removed, whitespace squished. "" when none.
+  def synopsis_text
+    plain = ActionView::Base.full_sanitizer.sanitize(synopsis.to_s)
+    plain = plain.gsub(/&nbsp;|&#160;|&#x0*a0;/i, " ")
+    CGI.unescapeHTML(plain).gsub(/[[:space:]]+/, " ").strip
+  end
+
+  def synopsis_present? = synopsis_text.present?
+
+  # True when the page should be served `noindex, follow` and kept out of the sitemap.
+  def thin?
+    ThinContent.noindex_episodes_without_synopsis? && !synopsis_present?
+  end
+
   # HOW MANY TEAMS? There is no survivor-to-team data, so it comes from the free-text
   # participant_arrangement: split on "+" and count the parts that are positive whole
   # numbers. "3+3+3+3" = 4 teams, "3+2" = 2, "3+3+3+3+1" = 5, "2+2+2+2+2+2+2" = 7.

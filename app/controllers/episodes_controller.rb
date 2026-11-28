@@ -150,6 +150,10 @@ class EpisodesController < ApplicationController
     )
     return if redirect_to_current_slug(@episode)
 
+    # No synopsis = thin page: `noindex, follow` (meta + X-Robots-Tag) and out of the sitemap,
+    # while ThinContent.noindex_episodes_without_synopsis? (NOINDEX_THIN_EPISODES) is on.
+    set_robots("noindex, follow") if @episode.thin?
+
     # On continuous-story seasons (XL, Global Showdown, Alone, etc.) the
     # "Copy participants from previous episode" admin button carries every
     # survivor forward to every later episode by default — so the raw
