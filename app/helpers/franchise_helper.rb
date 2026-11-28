@@ -451,7 +451,7 @@ module FranchiseHelper
     prefix += " aired #{short_date(episode.air_date)}" if episode.air_date
     prefix += " in #{place}" if place
     prefix += "."
-    synopsis = ActionView::Base.full_sanitizer.sanitize(episode.synopsis.to_s).squish
+    synopsis = episode.synopsis_text
     return truncate_at_word("#{prefix} Participants, PSR, days lasted and items.", SeoHelper::DESCRIPTION_LIMIT) if synopsis.blank?
     truncate_at_word("#{prefix} #{synopsis}", SeoHelper::DESCRIPTION_LIMIT)
   end
@@ -466,7 +466,7 @@ module FranchiseHelper
 
   # ~160-char plain-text excerpt of an episode synopsis for recap lists; nil when none.
   def episode_excerpt(episode, limit: 160)
-    plain = ActionView::Base.full_sanitizer.sanitize(episode.synopsis.to_s).squish
+    plain = episode.synopsis_text
     plain.present? ? truncate_at_word(plain, limit) : nil
   end
 end

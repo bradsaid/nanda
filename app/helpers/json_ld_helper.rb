@@ -386,7 +386,7 @@ module JsonLdHelper
 
     schemas = [tv_ep, breadcrumb]
 
-    synopsis_plain = ActionView::Base.full_sanitizer.sanitize(episode.synopsis.to_s).squish
+    synopsis_plain = episode.synopsis_text
     if synopsis_plain.present?
       schemas << {
         "@context" => "https://schema.org",

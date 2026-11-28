@@ -60,11 +60,16 @@ class Episode < ApplicationRecord
   # ThinContent says episodes without one are noindexed.
   scope :indexable, -> { ThinContent.noindex_episodes_without_synopsis? ? with_synopsis : all }
 
-  # The synopsis as plain text: markup and entities removed, whitespace squished. "" when none.
+  # The synopsis as plain text, the way the page reads it: tags removed, entities decoded
+  # (the sanitizer returns "&amp;", which an attribute or JSON-LD must not carry twice),
+  # *italic* markers dropped (the page renders them as emphasis), whitespace squished, and
+  # no character of the text itself touched. "" when none. Meta descriptions, OG tags, JSON-LD
+  # and recap excerpts all take their text from here.
   def synopsis_text
     plain = ActionView::Base.full_sanitizer.sanitize(synopsis.to_s)
     plain = plain.gsub(/&nbsp;|&#160;|&#x0*a0;/i, " ")
-    CGI.unescapeHTML(plain).gsub(/[[:space:]]+/, " ").strip
+    plain = CGI.unescapeHTML(plain).gsub(/(?<!\*)\*([^*\n]+)\*(?!\*)/, '\1')
+    plain.gsub(/[[:space:]]+/, " ").strip
   end
 
   def synopsis_present? = synopsis_text.present?
