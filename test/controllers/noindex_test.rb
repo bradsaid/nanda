@@ -62,9 +62,9 @@ class NoindexTest < ActionDispatch::IntegrationTest
     assert_noindex new_forum_post_report_path(@other_post)
   end
 
-  test "the member directory is noindex but followable; profiles stay indexable" do
+  test "the member directory and public profiles are noindex but followable" do
     assert_noindex forum_profiles_path, "noindex, follow"
-    assert_indexable forum_profile_path(username: @owner.username)
+    assert_noindex forum_profile_path(username: @owner.username), "noindex, follow"
   end
 
   test "the mentions typeahead JSON is noindex" do
