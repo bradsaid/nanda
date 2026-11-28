@@ -68,6 +68,23 @@ html lang=(content_for?(:html_lang) ? yield(:html_lang) : "en")
     = javascript_include_tag "gtag", defer: true
 
     meta name="viewport" content="width=device-width,initial-scale=1"
+
+    / === Critical resource hints, ahead of the importmap's ~17 modulepreloads so the
+    / browser requests the LCP image, font and CSS first ===
+    / Preload the site banner image (the LCP element on every page, rendered above the
+    / fold) and the CSS so the browser starts those fetches in parallel with the HTML
+    / rather than serially after parsing. The banner preload mirrors the <picture> in
+    / site_banner_tag (AVIF candidates only; see SiteImagesHelper).
+    = site_banner_preload_tag
+    link rel="preload" href=(asset_path("vendor/bootstrap.min.css")) as="style"
+    link rel="preload" href=(asset_path("application.css")) as="style"
+
+    / Fonts — Montserrat is self-hosted (FontsHelper): the critical upright file is
+    / preloaded and the @font-face rules are inlined, so there is no third-party
+    / stylesheet and no googleapis/gstatic connection to set up.
+    = font_preload_tag
+    = font_face_style_tag
+
     meta name="apple-mobile-web-app-capable" content="yes"
     meta name="mobile-web-app-capable" content="yes"
     meta name="leaflet-icon"    content=(asset_path('leaflet/marker-icon.png'))
@@ -84,20 +101,6 @@ html lang=(content_for?(:html_lang) ? yield(:html_lang) : "en")
     link rel="icon" href="/favicon.png" type="image/png"
     link rel="icon" href="/icon.svg" type="image/svg+xml"
     link rel="apple-touch-icon" href="/favicon.png"
-
-    / Preload the site banner image (rendered above-the-fold on every page)
-    / and app CSS so the browser can start those fetches in parallel with the
-    / HTML rather than serially after parsing. The banner preload mirrors the
-    / <picture> in site_banner_tag (AVIF candidates only; see SiteImagesHelper).
-    = site_banner_preload_tag
-    link rel="preload" href=(asset_path("vendor/bootstrap.min.css")) as="style"
-    link rel="preload" href=(asset_path("application.css")) as="style"
-
-    / Fonts — Montserrat is self-hosted (FontsHelper): the critical upright file is
-    / preloaded and the @font-face rules are inlined, so there is no third-party
-    / stylesheet and no googleapis/gstatic connection to set up.
-    = font_preload_tag
-    = font_face_style_tag
 
     / CSS — Bootstrap 5.3.3 (self-hosted, app/assets/stylesheets/vendor/, served by
     / Propshaft with a digest; byte-identical to the jsdelivr file) first, then our own
