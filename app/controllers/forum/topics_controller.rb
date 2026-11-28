@@ -31,11 +31,14 @@ module Forum
     end
 
     def show
+      page = requested_page or return
       @posts = @topic.posts
                       .active
                       .includes({ user: { avatar_attachment: :blob } }, images_attachments: :blob)
                       .chronological
-                      .page(params[:page]).per(Forum::Topic::POSTS_PER_PAGE)
+                      .page(page).per(Forum::Topic::POSTS_PER_PAGE)
+      # ?page=N beyond the thread's last page is a 404 (and is not counted as a view).
+      ensure_page_in_range!(page, @posts.total_pages)
       @new_post = Forum::Post.new
       # The opening post's text feeds the meta description and structured data, and is
       # needed on later pages too, where the post itself is not in @posts.

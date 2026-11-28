@@ -1,11 +1,14 @@
 module Forum
   class ProfilesController < BaseController
+    include Paginatable
     PER_PAGE = 40
 
-    # Editing is account-only. The member directory is a thin list of usernames:
-    # keep it out of the index but let crawlers follow through to the profiles.
+    # Editing is account-only. The member directory is a thin list of usernames and a
+    # profile is a thin page of user-generated text (bio, recent posts that already live on
+    # their topic pages): keep both out of the index, but let crawlers follow their links to
+    # the threads. Profiles are also left out of the sitemap (see SitemapUrls).
     noindex only: %i[edit update]
-    noindex "noindex, follow", only: :index
+    noindex "noindex, follow", only: %i[index show]
 
     before_action :set_user, except: [:index]
     # Only the account holder may move their own address — not an admin, who
@@ -20,9 +23,11 @@ module Forum
       scope = User.not_banned.where.not(username: [nil, ""])
       scope = scope.where("LOWER(username) LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(@q.downcase)}%") if @q.present?
 
+      page = requested_page or return
       @members = scope.with_attached_avatar
                       .order(Arel.sql("LOWER(username)"))
-                      .page(params[:page]).per(PER_PAGE)
+                      .page(page).per(PER_PAGE)
+      ensure_page_in_range!(page, @members.total_pages)
 
       ids = @members.map(&:id)
       @post_counts = ::Forum::Post.active

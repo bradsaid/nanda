@@ -2,6 +2,7 @@ module Admin
   module Forum
     # Directory of forum members, with the moderation actions that go with it.
     class UsersController < Admin::BaseController
+      include Paginatable
       PER_PAGE = 50
 
       # Deleting an account and issuing a password reset are full-admin only;
@@ -26,7 +27,9 @@ module Admin
           else scope
           end
 
-        @users = scope.order(created_at: :desc).page(params[:page]).per(PER_PAGE)
+        page = requested_page or return
+        @users = scope.order(created_at: :desc).page(page).per(PER_PAGE)
+        ensure_page_in_range!(page, @users.total_pages)
 
         # One grouped query each instead of a count per row.
         ids = @users.map(&:id)

@@ -18,8 +18,9 @@ module ApplicationHelper
   }.freeze
 
   # Paginated lists that predate Paginatable (they never set @page_number). Their
-  # ?page=N is real, so it stays in the canonical URL.
-  LEGACY_PAGINATED_ACTIONS = %w[forum/topics#show forum/profiles#index].freeze
+  # ?page=N is real, so it stays in the canonical URL. None left: every paginated list
+  # (forum thread, member directory, forum index, ...) now uses Paginatable.
+  LEGACY_PAGINATED_ACTIONS = [].freeze
 
   # Absolute canonical URL of the page being rendered, from the request host and path
   # plus only the parameters that change what the page shows. The root keeps its
