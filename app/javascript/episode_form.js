@@ -361,9 +361,6 @@ function initEpisodeForm() {
       if (scopeFld) scopeFld.value = givenScope;
       syncGivenScope(entry);
     });
-    if (skipped > 0) {
-      console.log("[bulk-given-add] skipped " + skipped + " survivor(s) that already had this item");
-    }
     itemSelect.value = "";
   });
 

@@ -1,5 +1,4 @@
 // app/javascript/locations_map.js
-//console.log("[map] locations_map loaded");
 import "leaflet";                // UMD build -> window.L
 
 const pick = n => document.querySelector(`meta[name="${n}"]`)?.content;
@@ -46,7 +45,6 @@ function initLocationsMap() {
   fetch(url, { headers: { Accept: "application/json" } })
     .then(r => r.json())
     .then(points => {
-      console.log("[map] points", points);
       if (!points.length) return map.setView([20, 0], 2);
 
       const markers = points.map(p => {

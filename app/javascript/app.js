@@ -1,4 +1,3 @@
-//console.log("[app] application.js loaded");
 // Only code needed on every page lives here. Page-specific modules are imported
 // by the pages that use them (javascript_import_module_tag):
 //   locations_map (+ leaflet)  -> layout, on map pages (locations, episodes by country/location)

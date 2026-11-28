@@ -52,29 +52,20 @@ html lang=(content_for?(:html_lang) ? yield(:html_lang) : "en")
       script type="application/ld+json"
         = yield :json_ld
 
-    / Google Tag Manager
-    /javascript:
-      console.log("test")
-      (function(w,d,s,l,i){
-        w[l]=w[l]||[];
-        w[l].push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
-        var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),
-            dl=l!='dataLayer'?'&l='+l:'';
-        j.async=true;
-        j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-        f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KG87PJGV');
-    / End Google Tag Manager
+    / Google tag (gtag.js) for GA4 property G-8JGV4BSL96. Loaded and configured
+    / exactly once per page, here. Both tags are nonce'd for script-src. Note the
+    / parentheses: without them Slim renders <script>async src=...</script>.
+    script(async src="https://www.googletagmanager.com/gtag/js?id=G-8JGV4BSL96" nonce=content_security_policy_nonce)
+    = javascript_tag nonce: true do
+      | window.dataLayer = window.dataLayer || [];
+      | function gtag(){dataLayer.push(arguments);}
+      | gtag('js', new Date());
+      | gtag('config', 'G-8JGV4BSL96');
 
-    / Google tag (gtag.js)
+    / Google Tag Manager container GTM-KG87PJGV (app/javascript/gtag.js, a classic
+    / deferred script). It must NOT carry a second GA4 tag for G-8JGV4BSL96, or
+    / every pageview is counted twice.
     = javascript_include_tag "gtag", defer: true
-    script async src="https://www.googletagmanager.com/gtag/js?id=G-8JGV4BSL96"
-    /javascript:
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-8JGV4BSL96');
 
     meta name="viewport" content="width=device-width,initial-scale=1"
     meta name="apple-mobile-web-app-capable" content="yes"
