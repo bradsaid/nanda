@@ -1,5 +1,6 @@
+- facts = shelter_facts(@shelters, @shelter_type)
 - content_for :title, "#{@shelter_type} – Naked and Afraid Shelter"
-- content_for :meta_description, "#{@shelter_type} shelter across all Naked and Afraid episodes: where and when it was built."
+- content_for :meta_description, fact_meta_description(facts, "#{@shelter_type} shelter across all Naked and Afraid episodes: where and when it was built.")
 
 .container.my-4
   .pb-2.mb-3.border-bottom.site-header
@@ -7,8 +8,27 @@
     h1.h3.mb-0.logo = @shelter_type
     p.subtitle
       span.badge.bg-secondary-subtle.text-secondary-emphasis Shelter
-      span.ms-2 = "#{@episode_count} episode(s)"
+      span.ms-2 = pluralize(@episode_count, "episode")
 
+  / Facts computed from the rows below (FactPagesHelper); nothing here is written by hand.
+  - sentences = fact_sentences(facts)
+  - if sentences.any?
+    section.card.shadow-sm.mb-3 aria-labelledby="facts-heading"
+      .card-body
+        h2#facts-heading.h6.text-uppercase.text-muted.mb-2 = "About #{@shelter_type} shelters on Naked and Afraid"
+        p.mb-2 = sentences.join(" ")
+        - if facts.countries.any?
+          p.small.mb-2
+            span.text-muted.me-1 Countries:
+            = safe_join(facts.countries.map { |c| link_to(c, by_country_episodes_path(country: c)) }, ", ")
+        - if facts.examples.any?
+          p.small.mb-0
+            span.text-muted.me-1 Most recent:
+            = safe_join(facts.examples.map { |e| link_to(e.title, episode_path(e)) }, ", ")
+
+  / Columns nobody has data for are left out instead of showing placeholders.
+  - rows = @shelters.map { |sh| { shelter: sh, ep: sh.episode, country: sh.episode.location&.country.presence, materials: sh.materials.presence, notes: sh.notes.presence } }
+  - cols = visible_columns(rows, :country, :materials, :notes)
   .card.shadow-sm
     .card-header.d-flex.justify-content-between.align-items-center
       span.fw-medium Episodes
@@ -19,20 +39,26 @@
           tr
             th Episode
             th Season
-            th.d-none.d-md-table-cell Location
-            th Materials
-            th.d-none.d-md-table-cell Notes
+            - if cols.include?(:country)
+              th.d-none.d-md-table-cell Location
+            - if cols.include?(:materials)
+              th Materials
+            - if cols.include?(:notes)
+              th.d-none.d-md-table-cell Notes
         tbody
-          - if @shelters.blank?
+          - if rows.empty?
             tr
               td.text-muted.py-4(colspan="5") No data
           - else
-            - @shelters.each do |shelter|
-              - ep = shelter.episode
+            - rows.each do |row|
+              - ep = row[:ep]
               - season = ep.season
               tr
                 td = link_to ep.title, episode_path(ep)
                 td = link_to season_label(season), season_path(season)
-                td.d-none.d-md-table-cell = ep.location&.country || "—"
-                td = shelter.materials.presence || "—"
-                td.d-none.d-md-table-cell = shelter.notes.presence || "—"
+                - if cols.include?(:country)
+                  td.d-none.d-md-table-cell = row[:country]
+                - if cols.include?(:materials)
+                  td = row[:materials]
+                - if cols.include?(:notes)
+                  td.d-none.d-md-table-cell = row[:notes]

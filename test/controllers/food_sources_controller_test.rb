@@ -25,10 +25,12 @@ class FoodSourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "td.text-end", text: "7"
   end
 
-  test "plants without a quantity show a dash" do
+  # Changed from "show a dash": empty columns are now left out instead of rendering placeholders.
+  test "plants without a quantity leave the quantity column out" do
     FoodSource.create!(episode: @episode, name: "coconut", category: "plant")
     get food_source_path("coconut")
-    assert_select "td.text-end", text: "—"
+    assert_select "th", text: "Qty", count: 0
+    assert_select "td", text: "—", count: 0
   end
 
   # Rails reads everything after a dot as the format, so "mud crab. large" or

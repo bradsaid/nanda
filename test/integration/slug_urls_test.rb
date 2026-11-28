@@ -306,7 +306,13 @@ class SlugUrlsTest < ActionDispatch::IntegrationTest
   test "the sitemap lists slug URLs and no numeric episode or item URL, no spaced name URL" do
     FoodSource.create!(episode: @episode, name: "angel fish", category: "animal")
     EpisodeShelter.create!(episode: @episode, shelter_type: "Lean-to")
+    # Thin pages are not listed (ThinContent): give the episode a synopsis, and let food and
+    # shelter pages with a single episode count.
+    @episode.update_columns(synopsis: "Two survivalists land in the jungle.")
+    old_env = %w[THIN_FOOD_SOURCE_MIN_EPISODES THIN_SHELTER_MIN_EPISODES].to_h { |k| [ k, ENV[k] ] }
+    old_env.each_key { |k| ENV[k] = "0" }
     get "/sitemap.xml"
+    old_env.each { |k, v| ENV[k] = v }
     assert_response :success
     locs = Nokogiri::XML(response.body).remove_namespaces!.xpath("//url/loc").map(&:text)
 

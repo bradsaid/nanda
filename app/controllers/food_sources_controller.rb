@@ -24,5 +24,8 @@ class FoodSourcesController < ApplicationController
       .includes(episode: [:location, { season: :series }])
       .order("episodes.air_date DESC NULLS LAST")
     @episode_count = @food_sources.distinct.count(:episode_id)
+    # Linked to fewer episodes than ThinContent.food_source_min_episodes: noindex, follow, and
+    # not in the sitemap (SitemapUrls applies the same rule).
+    set_robots("noindex, follow") if ThinContent.thin_food_source?(@episode_count)
   end
 end

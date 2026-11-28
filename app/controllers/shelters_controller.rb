@@ -17,5 +17,7 @@ class SheltersController < ApplicationController
       .includes(episode: [:location, { season: :series }])
       .order("episodes.air_date DESC NULLS LAST")
     @episode_count = @shelters.distinct.count(:episode_id)
+    # Same thin-page rule as food sources (ThinContent.shelter_min_episodes).
+    set_robots("noindex, follow") if ThinContent.thin_shelter?(@episode_count)
   end
 end

@@ -1,6 +1,7 @@
 - food_name = @name.titleize
+- facts = food_source_facts(@food_sources, @name)
 - content_for :title, "#{food_name} – Naked and Afraid Food Source"
-- content_for :meta_description, "#{food_name} across all Naked and Afraid episodes: who obtained it, where, and how."
+- content_for :meta_description, fact_meta_description(facts, "#{food_name} across all Naked and Afraid episodes: who obtained it, where, and how.")
 
 .container.my-4
   .pb-2.mb-3.border-bottom.site-header
@@ -16,8 +17,29 @@
           span.badge.bg-danger-subtle.text-danger-emphasis Animal
         - else
           span.badge.bg-success-subtle.text-success-emphasis Plant
-        span.ms-2 = "#{@episode_count} episode(s)"
+        span.ms-2 = pluralize(@episode_count, "episode")
 
+  / Facts computed from the rows below (FactPagesHelper); nothing here is written by hand.
+  - sentences = fact_sentences(facts)
+  - if sentences.any?
+    section.card.shadow-sm.mb-3 aria-labelledby="facts-heading"
+      .card-body
+        h2#facts-heading.h6.text-uppercase.text-muted.mb-2 = "About #{food_name} on Naked and Afraid"
+        p.mb-2 = sentences.join(" ")
+        - if facts.countries.any?
+          p.small.mb-2
+            span.text-muted.me-1 Countries:
+            = safe_join(facts.countries.map { |c| link_to(c, by_country_episodes_path(country: c)) }, ", ")
+        - if facts.examples.any?
+          p.small.mb-0
+            span.text-muted.me-1 Most recent:
+            = safe_join(facts.examples.map { |e| link_to(e.title, episode_path(e)) }, ", ")
+
+  / Columns nobody has data for are left out instead of showing placeholders.
+  - rows = @food_sources.map { |fs| { fs: fs, ep: fs.episode, country: fs.episode.location&.country.presence, method: fs.method&.humanize.presence, tools: fs.tools_used.presence, qty: fs.quantity } }
+  - cols = visible_columns(rows, :country, :method, :tools, :qty)
+  / An animal with no quantity is shown as ? (unknown), so animals always keep the column.
+  - cols << :qty if rows.any? { |r| r[:fs].category_animal? } && cols.exclude?(:qty)
   .card.shadow-sm
     .card-header.d-flex.justify-content-between.align-items-center
       span.fw-medium Episodes
@@ -28,18 +50,23 @@
           tr
             th Episode
             th Season
-            th.text-end Qty
-            th.d-none.d-md-table-cell Location
+            - if cols.include?(:qty)
+              th.text-end Qty
+            - if cols.include?(:country)
+              th.d-none.d-md-table-cell Location
             th Obtained By
-            th Method
-            th.d-none.d-md-table-cell Tools Used
+            - if cols.include?(:method)
+              th Method
+            - if cols.include?(:tools)
+              th.d-none.d-md-table-cell Tools Used
         tbody
-          - if @food_sources.blank?
+          - if rows.empty?
             tr
               td.text-muted.py-4(colspan="7") No data
           - else
-            - @food_sources.each do |fs|
-              - ep = fs.episode
+            - rows.each do |row|
+              - fs = row[:fs]
+              - ep = row[:ep]
               - season = ep.season
               tr
                 td = link_to ep.title, episode_path(ep)
@@ -47,18 +74,20 @@
                 / nil means "unknown" for animals (the admin form says to leave
                 / it blank), and a plant may have no quantity either. .to_i
                 / rendered both as 0, which read as "none caught".
-                td.text-end
-                  - if fs.quantity.present?
-                    = fs.quantity
-                  - elsif fs.category_plant?
-                    span.text-muted —
-                  - else
-                    span.text-muted title="Quantity unknown" ?
-                td.d-none.d-md-table-cell = ep.location&.country || "—"
+                - if cols.include?(:qty)
+                  td.text-end
+                    - if fs.quantity.present?
+                      = fs.quantity
+                    - elsif fs.category_animal?
+                      span.text-muted title="Quantity unknown" ?
+                - if cols.include?(:country)
+                  td.d-none.d-md-table-cell = row[:country]
                 td
                   - if fs.survivors&.any?
                     = safe_join(fs.survivors.map { |s| link_to s.full_name, survivor_path(s) }, ", ")
                   - else
                     | Team
-                td = fs.method&.humanize || "—"
-                td.d-none.d-md-table-cell = fs.tools_used.presence || "—"
+                - if cols.include?(:method)
+                  td = row[:method]
+                - if cols.include?(:tools)
+                  td.d-none.d-md-table-cell = row[:tools]

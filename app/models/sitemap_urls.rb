@@ -200,13 +200,18 @@ class SitemapUrls
 
     add food_sources_path, changefreq: "weekly", priority: 0.6, lastmod: latest(stamp(FoodSource))
     food_stamps = FoodSource.group(:name).maximum(:updated_at)
+    # Episodes per page, keyed the way the page itself looks its rows up (FoodSourcesController#show).
+    food_episodes = FoodSource.group(:name).distinct.count(:episode_id)
     NameSlugs.all(:food_source).each do |name, slug|
+      next if ThinContent.thin_food_source?(food_episodes[name.to_s.strip.downcase]) # noindexed, so not offered
       add food_source_path(name: slug), changefreq: "monthly", priority: 0.5, lastmod: latest(food_stamps[name])
     end
 
     add shelters_path, changefreq: "weekly", priority: 0.6, lastmod: latest(stamp(EpisodeShelter))
     shelter_stamps = EpisodeShelter.group(:shelter_type).maximum(:updated_at)
+    shelter_episodes = EpisodeShelter.group(:shelter_type).distinct.count(:episode_id)
     NameSlugs.all(:shelter).each do |type, slug|
+      next if ThinContent.thin_shelter?(shelter_episodes[type.to_s.strip]) # noindexed, so not offered
       add shelter_path(shelter_type: slug), changefreq: "monthly", priority: 0.5, lastmod: latest(shelter_stamps[type])
     end
 
