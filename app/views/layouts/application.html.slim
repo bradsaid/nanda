@@ -61,11 +61,8 @@ html lang=(content_for?(:html_lang) ? yield(:html_lang) : "en")
       | function gtag(){dataLayer.push(arguments);}
       | gtag('js', new Date());
       | gtag('config', 'G-8JGV4BSL96');
-
-    / Google Tag Manager container GTM-KG87PJGV (app/javascript/gtag.js, a classic
-    / deferred script). It must NOT carry a second GA4 tag for G-8JGV4BSL96, or
-    / every pageview is counted twice.
-    = javascript_include_tag "gtag", defer: true
+    / The Google Tag Manager container (GTM-KG87PJGV) is no longer loaded: it has no
+    / tags, and GA4 is sent by the Google tag above.
 
     meta name="viewport" content="width=device-width,initial-scale=1"
 
@@ -116,11 +113,6 @@ html lang=(content_for?(:html_lang) ? yield(:html_lang) : "en")
     = stylesheet_link_tag "map", "data-turbo-track": "reload"
 
   body
-    / Google Tag Manager (noscript)
-    noscript
-      iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KG87PJGV" height="0" width="0" style="display:none;visibility:hidden"
-    / End Google Tag Manager (noscript)
-
     / ===== Header =====
     header.container.text-center.my-2
       = site_banner_tag

@@ -12,7 +12,6 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 pin "sort_table",    to: "sort_table.js"
 pin "leaflet",       to: "leaflet.js", preload: false           # ~147 KB; map pages only
 pin "locations_map", to: "locations_map.js", preload: false  # imported by the layout on map pages
-pin "gtag",          to: "gtag.js", preload: false           # loaded by the classic <script> in the layout, not as a module
 pin "page_timer",    to: "page_timer.js"
 pin "episode_form",  to: "episode_form.js", preload: false      # admin episode form only
 pin "survivors_search", to: "survivors_search.js"

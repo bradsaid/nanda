@@ -1,8 +1,7 @@
 require "test_helper"
 
 # The GA4 tag (G-8JGV4BSL96) must render as a well-formed, nonce'd gtag.js loader plus ONE
-# nonce'd inline config, and the Google Tag Manager bootstrap (app/javascript/gtag.js) must
-# not configure GA4 a second time.
+# nonce'd inline config, and nothing else on the page may load or configure GA4 a second time.
 class GoogleTagTest < ActionDispatch::IntegrationTest
   GA_ID  = "G-8JGV4BSL96".freeze
   GTM_ID = "GTM-KG87PJGV".freeze
@@ -79,15 +78,17 @@ class GoogleTagTest < ActionDispatch::IntegrationTest
     assert_includes directives["frame-src"], "https://www.googletagmanager.com"
   end
 
-  test "GTM is still bootstrapped once by the deferred classic script, without a second GA4 config" do
+  # The container was emptied (its only tag duplicated the GA4 tag above), so the page no
+  # longer loads it: no gtm.js bootstrap, no <noscript> iframe.
+  test "the Google Tag Manager container is not loaded" do
     doc = page
-    assert_equal 1, doc.css("script[src*='/assets/gtag-'][defer]").size
-    source = Rails.root.join("app/javascript/gtag.js").read
-    assert_includes source, GTM_ID
-    asset = source.lines.reject { |l| l.strip.start_with?("//") }.join
-    assert_no_match(/gtag\s*\(\s*['"]config['"]/, asset)
-    assert_no_match(/gtag\s*\(\s*['"]js['"]/, asset)
-    assert_no_match(/function gtag\b/, asset)
+    assert_empty doc.css("script[src*='/assets/gtag-']")
+    assert_empty doc.css("iframe[src*='googletagmanager.com/ns.html']")
+    assert_not_includes response.body, "gtm.js"
+    assert_not_includes response.body, GTM_ID
+    assert_not Rails.root.join("app/javascript/gtag.js").exist?
+    js = Dir[Rails.root.join("app/javascript/**/*.js")].map { |f| File.read(f) }.join
+    assert_not_includes js, GTM_ID
   end
 
   test "dead commented-out GTM/gtag blocks are gone from the layout" do

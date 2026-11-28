@@ -4,8 +4,7 @@
 //   episode_form               -> admin/episodes/_form
 //   forum_mentions             -> forum composers (topic reply, new topic, edit post)
 //   admin_views_chart          -> admin dashboard
-// gtag.js is loaded once, as a classic <script>, by the layout (importing it here
-// as well ran the Google Tag Manager/gtag bootstrap twice per page).
+// Google Analytics (gtag.js) is loaded by the layout's <head>, not from here.
 import "@hotwired/turbo-rails";
 import "controllers";
 import "sort_table";

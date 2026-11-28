@@ -4,7 +4,7 @@ require "test_helper"
 # and modulepreloaded; page-specific modules are imported by the pages that use
 # them.
 class JavascriptLoadingTest < ActionDispatch::IntegrationTest
-  PAGE_ONLY = %w[leaflet locations_map episode_form forum_mentions admin_views_chart gtag].freeze
+  PAGE_ONLY = %w[leaflet locations_map episode_form forum_mentions admin_views_chart].freeze
 
   setup { ENV["FORUM_ENABLED"] = "true" }
   teardown { ENV["FORUM_ENABLED"] = nil }
@@ -48,11 +48,13 @@ class JavascriptLoadingTest < ActionDispatch::IntegrationTest
     imported.each { |m| assert_includes pins, m, "#{m} is imported by app.js but not pinned" }
   end
 
-  test "gtag.js is loaded once, as a classic script, not also as a module" do
+  test "the old Tag Manager bootstrap (gtag.js asset) is neither loaded nor pinned" do
     get "/"
     doc = Nokogiri::HTML(response.body)
-    assert_equal 1, doc.css("script[src*='/assets/gtag-']").size
+    assert_empty doc.css("script[src*='/assets/gtag-']")
     assert_not_includes module_imports(doc), "gtag"
+    map = JSON.parse(doc.at_css("script[type=importmap]").text)["imports"]
+    assert_not map.key?("gtag")
   end
 
   test "the locations page imports the map module" do
